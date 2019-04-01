@@ -32,6 +32,14 @@
         );
     }
 
+    /**
+     * Module init method
+     *
+     */
+    public function init() {
+        // Creating a new API variable
+        $this->wire('snipwire', $this);
+    }
     public function ready() {
         // Add a hook after page is rendered and add Snipcart CSS/JS
         $this->addHookAfter('Page::render', $this, 'addCSSJS');
