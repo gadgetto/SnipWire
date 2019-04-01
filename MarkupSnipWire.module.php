@@ -50,7 +50,6 @@
         $this->addHookAfter('Page::render', $this, 'addCSSJS');
     }
 
-
     /**
      * Include JavaScript and CSS files in output
      *
@@ -137,7 +136,6 @@
             $event->return = str_replace('</body>', $jsResource . PHP_EOL . '</body>', $event->return);
         }
     }
-    
     /**
      * Adds credit card labels to the given credit card keys and builds required array format for Snipcart
      *
