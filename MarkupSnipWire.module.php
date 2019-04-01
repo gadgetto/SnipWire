@@ -33,6 +33,17 @@
     }
 
     /**
+     * Initalize module config variables (properties)
+     *
+     */
+    public function __construct() {
+        parent::__construct();
+
+        // Default button/link prompt
+        $this->set('defaultPrompt', $this->_('Buy now'));
+    }
+    
+    /**
      * Module init method
      *
      */
