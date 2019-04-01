@@ -40,6 +40,11 @@
         // Creating a new API variable
         $this->wire('snipwire', $this);
     }
+
+    /**
+     * Module ready method
+     *
+     */
     public function ready() {
         // Add a hook after page is rendered and add Snipcart CSS/JS
         $this->addHookAfter('Page::render', $this, 'addCSSJS');
