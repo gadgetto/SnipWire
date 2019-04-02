@@ -40,7 +40,7 @@
         parent::__construct();
 
         // Default button/link prompt
-        $this->set('defaultPrompt', $this->_('Buy now'));
+        $this->set('defaultLinkPrompt', $this->_('Buy now'));
     }
     
     /**
