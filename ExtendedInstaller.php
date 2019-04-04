@@ -217,6 +217,12 @@ class ExtendedInstaller extends Wire {
                 $page->parent = $item['parent'];
                 $page->process = $this;
                 $page->title = $item['title'];
+                // Populate page-field values
+                if (!empty($item['fields']) && is_array($item['fields'])) {
+                    foreach ($item['fields'] as $fieldname => $value) {
+                        if ($page->hasField($fieldname)) $page->$fieldname = $value;
+                    }
+                }
                 $page->save();
                 $this->message('Created Page: '.$page->path);
             }
