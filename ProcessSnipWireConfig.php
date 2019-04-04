@@ -78,14 +78,15 @@ class ProcessSnipWireConfig extends ModuleConfig {
 
         // Additional setup steps
 
+        $redirectUrl = urlencode($_SERVER['REQUEST_URI']);
+
         $steps = array();
         $steps[] = array(
             'name' => 'product_package',
-            'url' => '../setup/snipwire/install-product-package/',
-            'uninstall_url' => '../setup/snipwire/uninstall-product-package/',
+            'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
+            'uninstall_url' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
             'prompt' => $this->_('Install Snipcart products package'),
             'description' => $this->_('This contains product templates, files, fields and some demo pages required by Snipcart. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled.'),
-            'target' => '_blank',
         );
         
         $stepsCounter = count($steps);
@@ -117,7 +118,6 @@ class ProcessSnipWireConfig extends ModuleConfig {
                 $f->value .= '</li>';
             }
             $f->value .= '</ul>';
-            $f->notes = $this->_('Some links above will open in a new window/tab. Close each after finishing to return here.');
             
             $inputfields->add($f);
         }

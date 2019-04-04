@@ -149,9 +149,6 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         return $this->snipcartAPIkeys;
     }
 
-
-
-
     /**
      * Install product templates, fields and some demo pages required by Snipcart.
      * (Called when the URL is this module's page URL + "/install-product-package/")
@@ -161,46 +158,66 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
      */
     public function ___executeInstallProductPackage() {
         $modules = $this->wire('modules');
+        $input = $this->wire('input');
+        $sanitizer = $this->wire('sanitizer');
+
+        $comeFromUrl = $sanitizer->url($input->get('ret'));
+        $submitInstall = $input->post('submit_install');
 
         $this->browserTitle($this->_('SnipWire installer'));
         $this->headline($this->_('Install SnipWire product package'));
 
-        $out = '';
+        /** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm'); 
+        $form->attr('id', 'SnipWireInstallerForm'); 
+        $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
+        $form->attr('method', 'post');
 
         $moduleconfig = $modules->getConfig($this->className());
         
         // Prevent installation when already installed
         if (isset($moduleconfig['product_package']) && $moduleconfig['product_package']) {
-            $out .= '<p class="ui-state-error-text">';
-            $out .= $this->_('SnipWire product package is already installed!');
-            $out .= '</p>';
+            
+            $this->warning($this->_('SnipWire product package is already installed!'));
+            $this->wire('session')->redirect($comeFromUrl);
             
         // Install
         } else {
+
+            /** @var InputfieldMarkup $f (info install) */
+            $f = $modules->get('InputfieldMarkup');
+            $f->icon = 'sign-in';
+            $f->label = $this->_('Install');
+            $f->description = $this->_('Install the SnipWire product package? This will create product templates, files, fields and pages required by Snipcart.');
+            $form->add($f);
             
-            /** @var ExstendedInstaller $installer */
-            $installer = $this->wire(new ExtendedInstaller());            
-            
-            if (!$installer->installResources(ExtendedInstaller::installerModeAll)) {
-                $out .= '<p class="description">';
-                $out .= $this->_('Installation of SnipWire product package not completet successfully! Please check for warnings and errors.');
-                $out .= '</p>';
-            } else {
-                $out .= '<p class="description">';
-                $out .= $this->_('Installation of SnipWire product package completet successfully! You can now close this window/tab.');
-                $out .= '</p>';
-                
-                // Set module config to tell system that product package is already installed
-                $moduleconfig['product_package'] = true;
-                $modules->saveConfig($this->className(), $moduleconfig);            
+            /** @var InputfieldSubmit $f */
+            $f = $modules->get('InputfieldSubmit');
+            $f->attr('name', 'submit_install');
+            $f->attr('value', $this->_('Install'));
+            $f->icon = 'sign-in';
+            $form->add($f);
+
+            // Was the form submitted?
+            if ($submitInstall) {
+                /** @var ExstendedInstaller $installer */
+                $installer = $this->wire(new ExtendedInstaller());
+                $installResources = $installer->installResources(ExtendedInstaller::installerModeAll);
+                if (!$installResources) {                        
+                    $this->warning($this->_('Installation of SnipWire product package not completet. Please check the warnings...'));
+                } else {
+                    // Update module config to tell system that product package is installed
+                    $moduleconfig['product_package'] = true;
+                    $modules->saveConfig($this->className(), $moduleconfig);            
+                    $this->message($this->_('Installation of SnipWire product package completet!'));
+                }
+                $this->wire('session')->redirect($comeFromUrl);
             }
-    
-            $out .= '<p class="ui-state-highlight">';
-            $out .= $this->_('You can now close this window/tab.');
-            $out .= '</p>';
-            $out .= '<script>window.onunload = refreshParent; function refreshParent() { window.opener.location.reload(); }</script>';
+
         }
 
+        $out = $form->render();
+        //$out .= '<script>window.onunload = refreshParent; function refreshParent() { window.opener.location.reload(); }</script>';            
         return $out;
     }
     
@@ -211,45 +228,76 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
      */
     public function ___executeUninstallProductPackage() {
         $modules = $this->wire('modules');
+        $input = $this->wire('input');
+        $sanitizer = $this->wire('sanitizer');
+        
+        $comeFromUrl = $sanitizer->url($input->get('ret'));
+        $submitUninstall = $input->post('submit_uninstall');
 
         $this->browserTitle($this->_('SnipWire uninstaller'));
         $this->headline($this->_('Uninstall SnipWire product package'));
-
-        $out = '';
+        
+        /** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm'); 
+        $form->attr('id', 'SnipWireUninstallerForm'); 
+        $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
+        $form->attr('method', 'post');
         
         $moduleconfig = $modules->getConfig($this->className());
         
         // Prevent uninstallation when already uninstalled
         if (!isset($moduleconfig['product_package']) || !$moduleconfig['product_package']) {
-            $out .= '<p class="ui-state-error-text">';
-            $out .= $this->_('SnipWire product package is not installed!');
-            $out .= '</p>';
-            
+
+            $this->warning($this->_('SnipWire product package is not installed!'));
+            $this->wire('session')->redirect($comeFromUrl);
+
         // Uninstall
         } else {
             
-            /** @var ExstendedInstaller $installer */
-            $installer = $this->wire(new ExtendedInstaller());            
-            
-            if (!$installer->uninstallResources(ExtendedInstaller::installerModeAll)) {
-                $out .= '<p class="description">';
-                $out .= $this->_('Uninstallation of SnipWire product package not completet successfully! Please check the warnings and errors.');
-                $out .= '</p>';
-            } else {
-                $out .= '<p class="description">';
-                $out .= $this->_('Uninstallation of SnipWire product package completet successfully! You can now close this window/tab.');
-                $out .= '</p>';
-                
-                // Update module config to tell system that product package is not installed
-                $moduleconfig['product_package'] = false;
-                $modules->saveConfig($this->className(), $moduleconfig);            
-            }
-            $out .= '<p class="ui-state-highlight">';
-            $out .= $this->_('You can now close this window/tab.');
-            $out .= '</p>';
-            $out .= '<script>window.onunload = refreshParent; function refreshParent() { window.opener.location.reload(); }</script>';            
-        }
+            /** @var InputfieldCheckbox $f (confirm uninstall) */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'uninstall');
+            $f->attr('value', '1');
+            $f->icon = 'times-circle';
+            $f->label = $this->_('Uninstall');
+            $f->label2 = $this->_('Confirm uninstall');
+            $f->description = $this->_('Uninstall the SnipWire product package? This will delete product templates, files, fields and pages installed and required by Snipcart. This step can not be undone!');
 
+            $form->add($f);
+
+            /** @var InputfieldSubmit $f */
+            $f = $modules->get('InputfieldSubmit');
+            $f->attr('name', 'submit_uninstall');
+            $f->attr('value', $this->_('Uninstall'));
+            $f->icon = 'times-circle';
+            $form->add($f);
+
+            // Was the form submitted?
+            if ($submitUninstall) {
+                $form->processInput($input->post); 
+                if ($form->get('uninstall')->value) {
+                    /** @var ExstendedInstaller $installer */
+                    $installer = $this->wire(new ExtendedInstaller());
+                    $uninstallResources = $installer->uninstallResources(ExtendedInstaller::installerModeAll);
+                    if (!$uninstallResources) {                        
+                        $this->warning($this->_('Uninstallation of SnipWire product package not completet. Please check the warnings...'));
+                    } else {
+                        // Update module config to tell system that product package is not installed
+                        $moduleconfig['product_package'] = false;
+                        $modules->saveConfig($this->className(), $moduleconfig);            
+                        $this->message($this->_('Uninstallation of SnipWire product package completet!'));
+                    }
+                    
+                    $this->wire('session')->redirect($comeFromUrl);
+
+                } else {
+                    $this->warning('You need to confirm uninstallation by activating the checkbox!');
+                }
+            }
+        }
+    
+        $out = $form->render();
+        //$out .= '<script>window.onunload = refreshParent; function refreshParent() { window.opener.location.reload(); }</script>';            
         return $out;
     }
     
