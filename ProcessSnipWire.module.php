@@ -126,20 +126,6 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
     }
 
     /**
-     * The subscribers management page for GroupMailer.
-     *
-     */
-    /*
-    public function ___executeSubscribers() {
-        $this->headline($this->_('GroupMailer Subscribers'));
-        $this->browserTitle($this->_('GroupMailer Subscribers'));
-
-        $out = '<p><a href="../">Back</a></p>';
-        return $out; 
-    }
-    */
-
-    /**
      * Getter for snipcartAPIkeys property
      *
      * @return array
