@@ -75,8 +75,8 @@ $resources = array(
     */
     
     'fields' => array(
-        'snipcart_data_item_price' => array(
-            'name' => 'snipcart_data_item_price',
+        'snipcart_item_price' => array(
+            'name' => 'snipcart_item_price',
             'type' => 'FieldtypeText',
             'label' => __('Product Price'),
             'description' => __('The product price as decimal number.'),
@@ -87,8 +87,8 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
-        'snipcart_data_item_description' => array(
-            'name' => 'snipcart_data_item_description',
+        'snipcart_item_description' => array(
+            'name' => 'snipcart_item_description',
             'type' => 'FieldtypeTextarea',
             'label' => __('Product Description'),
             'description' => __('The product description that your customers will see on product pages in cart and during checkout.'),
@@ -99,8 +99,8 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
-        'snipcart_data_item_image' => array(
-            'name' => 'snipcart_data_item_image',
+        'snipcart_item_image' => array(
+            'name' => 'snipcart_item_image',
             'type' => 'FieldtypeImage',
             'label' => __('Product Image(s)'),
             'description' => __('The product image(s) your customers will see on product pages in cart and during checkout.'),
@@ -126,25 +126,37 @@ $resources = array(
             'parent' => '/', // needs to be page path
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'snipcart-product-1' => array(
-            'name' => 'snipcart-product-1',
-            'title' => 'Snipcart Product 1',
+        'lorem-ipsum-dolor' => array(
+            'name' => 'lorem-ipsum-dolor',
+            'title' => 'Lorem Ipsum Dolor',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
+            'fields' => array(
+                'snipcart_item_price' => '99.98',
+                'snipcart_item_description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'snipcart-product-2' => array(
-            'name' => 'snipcart-product-2',
-            'title' => 'Snipcart Product 2',
+        'ut-enim-ad-minim' => array(
+            'name' => 'ut-enim-ad-minim',
+            'title' => 'Ut Enim ad Minim',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
+            'fields' => array(
+                'snipcart_item_price' => '23.90',
+                'snipcart_item_description' => 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+            ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'snipcart-product-3' => array(
-            'name' => 'snipcart-product-3',
-            'title' => 'Snipcart Product 3',
+        'duis-aute-irure-dolor' => array(
+            'name' => 'duis-aute-irure-dolor',
+            'title' => 'Duis Aute Irure Dolor',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
+            'fields' => array(
+                'snipcart_item_price' => '119',
+                'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+            ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
     ),
