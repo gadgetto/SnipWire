@@ -32,6 +32,9 @@
         );
     }
 
+    const snicpartAnchorTypeButton = 1;
+    const snicpartAnchorTypeLink = 2;
+
     /**
      * Initalize module config variables (properties)
      *
@@ -173,6 +176,63 @@
             $event->return = str_replace('</body>', $jsResource . PHP_EOL . '</body>', $event->return);
         }
     }
+
+    /**
+     * Renders a Snipcart anchor (buy button or link)
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param string $prompt The button or link label
+     * @param string $class Add class name to HTML tag (multiple class names separated by blank)
+     * @param string $id Add id to HTML tag
+     * @param integer $type The link type [default = snicpartAnchorTypeButton]
+     *
+     * @return string $out The HTML for a snipcart buy button or link (HTML button | a tag)
+     *
+     */
+    public function anchor(Page $product, $prompt = '', $class = '', $id = '', $type = self::snicpartAnchorTypeButton) {
+        $sanitizer = $this->wire('sanitizer');
+        
+        // @todo: Check if $product (Page) is a Snipcart product
+        
+        
+        
+        $out = '';
+        
+        $prompt = empty($prompt) ? $this->defaultLinkPrompt : $prompt; // @todo: add sanitizer (coul'd be also HTML content!)
+        $class = empty($class) ? '' :  ' ' . $class;
+        $id = empty($id) ? '' :  ' id="' . $id . '"';
+        
+        if ($type == self::snicpartAnchorTypeButton) {
+            $open = '<button';
+            $close = '</button>';
+        } else { 
+            $open = '<a href="#"';
+            $close = '</a>';
+        }
+
+        $out .= $open;
+        $out .= ' class="snipcart-add-item' . $class . '"';
+        $out .= $id;
+
+        // Snipcart data-item-* values
+
+        $out .= ' data-item-id="' . $product->id . '"';
+        $out .= ' data-item-name="' . $product->title . '"';
+        $out .= ' data-item-url="' . $product->url() . '"';
+        $out .= ' data-item-price="' . $product->snipcart_item_price . '"';
+        $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
+        $out .= ' data-item-image="' . $product->snipcart_item_image->url . '"';
+        
+        
+        
+
+        $out .= '>';
+        $out .= $prompt;
+        $out .= $close;
+
+        return $out;
+    }
+
     /**
      * Adds credit card labels to the given credit card keys and builds required array format for Snipcart
      *
