@@ -218,7 +218,7 @@
 
         $out .= ' data-item-id="' . $product->id . '"';
         $out .= ' data-item-name="' . $product->title . '"';
-        $out .= ' data-item-url="' . $product->url() . '"';
+        $out .= ' data-item-url="' . $product->url . '"';
         $out .= ' data-item-price="' . $product->snipcart_item_price . '"';
         $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
         $out .= ' data-item-image="' . $product->snipcart_item_image->url . '"';
