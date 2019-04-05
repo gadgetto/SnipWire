@@ -69,7 +69,7 @@
      *
      */
     public function init() {
-        // Creating a new API variable
+        /** @var MarkupSnipWire Custom SnipWire API variable */
         $this->wire('snipwire', $this);
     }
 
@@ -214,7 +214,7 @@
         $out .= ' class="snipcart-add-item' . $class . '"';
         $out .= $id;
 
-        // Snipcart data-item-* values
+        // Snipcart data-item-* properties
 
         $out .= ' data-item-id="' . $product->id . '"';
         $out .= ' data-item-name="' . $product->title . '"';
