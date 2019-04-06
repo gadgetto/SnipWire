@@ -38,11 +38,11 @@ function ukProductOverview(PageArray $products) {
 
     if (!$products->count) return '';
     
-    $out = '<div class="uk-child-width-1-2@s uk-grid" uk-grid="">';
+    $out = '<div class="uk-child-width-1-3@s uk-grid" uk-grid="">';
 
     foreach ($products as $product) {
-        $out .= '<div>';
-        $out .= '    <div class="uk-card uk-card-default">';
+        $out .= '<a class="uk-link-reset" href="' . $product->url . '">';
+        $out .= '    <div class="uk-card uk-card-default uk-card-hover">';
         $out .= '        <div class="uk-card-media-top">';
         $out .= '            <img src="' . $product->snipcart_item_image->url . '" alt="' . $product->title . '">';
         $out .= '        </div>';
@@ -52,11 +52,15 @@ function ukProductOverview(PageArray $products) {
         $out .= '        </div>';
         $out .= '        <div class="uk-card-footer">';
         $out .= '            <p>';
+                                 // This is the part where we render the Snipcart anchor (buy button)
+                                 // with data-item-* attributes required by Snipcart.
+                                 // The $snipwire->anchor method is provided by MarkupSnipWire module and can be called 
+                                 // via custom API variable: $snipwire->anchor()
         $out .= '                ' . wire('snipwire')->anchor($product, 'Buy now', 'uk-button uk-button-primary');
         $out .= '            </p>';
         $out .= '        </div>';        
         $out .= '    </div>';        
-        $out .= '</div>';
+        $out .= '</a>';
     }
 
     $out .= '</div>';
