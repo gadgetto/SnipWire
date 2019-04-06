@@ -196,9 +196,7 @@
         
         
         
-        $out = '';
-        
-        $prompt = empty($prompt) ? $this->defaultLinkPrompt : $prompt; // @todo: add sanitizer (coul'd be also HTML content!)
+        $prompt = empty($prompt) ? $this->defaultLinkPrompt : $prompt; // @todo: add sanitizer (could be also HTML content!)
         $class = empty($class) ? '' :  ' ' . $class;
         $id = empty($id) ? '' :  ' id="' . $id . '"';
         
