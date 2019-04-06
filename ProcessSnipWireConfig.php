@@ -156,7 +156,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->columnWidth = 50;
         $fsAPI->add($f);
 
-        $f = $this->modules->get('InputfieldCheckbox');
+        $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'single_page_website'); 
         $f->label = $this->_('Single-Page Website');
         $f->label2 = $this->_('This Snipcart shop runs on a single-page website');
@@ -165,7 +165,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->columnWidth = 50;
         $fsAPI->add($f);
 
-        $f = $this->wire('modules')->get('InputfieldAsmSelect');
+        $f = $modules->get('InputfieldAsmSelect');
         $f->attr('name', 'credit_cards');
         $f->label = 'Accepted Credit Cards';
         $f->description = $this->_('Specify which credit cards you want to accept during checkout.');
@@ -177,7 +177,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->required = true;
         $fsAPI->add($f);
 
-        $f = $this->modules->get('InputfieldCheckbox');
+        $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'show_cart_automatically'); 
         $f->label = $this->_('Show Shopping Cart Automatically');
         $f->label2 = $this->_('Show cart automatically');
@@ -185,7 +185,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->columnWidth = 50;
         $fsAPI->add($f);
 
-        $f = $this->modules->get('InputfieldCheckbox');
+        $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'shipping_same_as_billing'); 
         $f->label = $this->_('Use Billing Address for Shipping');
         $f->label2 = $this->_('Use billing address for shipping preselected');
@@ -193,7 +193,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->columnWidth = 50;
         $fsAPI->add($f);
 
-        $f = $this->modules->get('InputfieldCheckbox');
+        $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'show_continue_shopping'); 
         $f->label = $this->_('"Continue shopping" Button');
         $f->label2 = $this->_('Show the "Continue shopping" button');
@@ -201,7 +201,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->columnWidth = 50;
         $fsAPI->add($f);
 
-        $f = $this->modules->get('InputfieldCheckbox');
+        $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'split_firstname_and_lastname'); 
         $f->label = $this->_('Split First Name and Last Name');
         $f->label2 = $this->_('Split the First name and Last name');
@@ -223,18 +223,18 @@ class ProcessSnipWireConfig extends ModuleConfig {
 
         // Markup configuration
 
-        $fsOther = $this->wire('modules')->get('InputfieldFieldset');
-        $fsOther->label = $this->_('Markup Output Configuration');
+        $fsMarkup = $modules->get('InputfieldFieldset');
+        $fsMarkup->label = $this->_('Markup Output Configuration');
 
-        $f = $this->modules->get('InputfieldCheckbox');
+        $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'include_jquery'); 
         $f->label = $this->_('Include jQuery in Your Output');
         $f->label2 = $this->_('Include jQuery');
         $f->description = $this->_('Whether SnipWire should add the jQuery library to your output or not. If jQuery is already included in your template, you should not include it twice, so you can uncheck this option.');
         $f->notes = $this->_('Snipcart uses [jQuery](https://jquery.com/), so we need to make sure it is included in your output!');
-        $fsOther->add($f);
+        $fsMarkup->add($f);
 
-        $f = $this->wire('modules')->get('InputfieldAsmSelect');
+        $f = $modules->get('InputfieldAsmSelect');
         $f->attr('name', 'excluded_templates');
         $f->label = 'Exclude Templates from Snipcart Integration';
         $f->description = $this->_('The chosen templates will be excluded from Snipcart scripts (JS) and styles (CSS) integration.');
