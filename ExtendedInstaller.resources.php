@@ -35,7 +35,6 @@ $resources = array(
         ),
     ),
 
-
     /*
     Snipcart fields: https://docs.snipcart.com/configuration/product-definition
     
@@ -134,6 +133,7 @@ $resources = array(
             'fields' => array(
                 'snipcart_item_price' => '99.98',
                 'snipcart_item_description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                'snipcart_item_image' => 'sample_images/cake.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
@@ -145,6 +145,7 @@ $resources = array(
             'fields' => array(
                 'snipcart_item_price' => '23.90',
                 'snipcart_item_description' => 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                'snipcart_item_image' => 'sample_images/cookies.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
@@ -156,6 +157,7 @@ $resources = array(
             'fields' => array(
                 'snipcart_item_price' => '119',
                 'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+                'snipcart_item_image' => 'sample_images/pastries.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
