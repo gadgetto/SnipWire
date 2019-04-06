@@ -68,6 +68,12 @@ class ProcessSnipWireConfig extends ModuleConfig {
             'split_firstname_and_lastname' => 1,
             'include_jquery' => 1,
             'excluded_templates' => array(),
+            'cart_image_width' => 65,
+            'cart_image_height' => 65,
+            'cart_image_cropping' => 1,
+            'cart_image_quality' => 70,
+            'cart_image_hidpi' => 1,
+            'cart_image_hidpiQuality' => 50,
         );
     }
 
@@ -244,9 +250,58 @@ class ProcessSnipWireConfig extends ModuleConfig {
             $label = !empty($t->label) ? $t->label . ' [' . $name. ']' :  $name;
             $f->addOption($name, $label);
         }
-        $fsOther->add($f);
+        $fsMarkup->add($f);
+        
+        $inputfields->add($fsMarkup);
 
-        $inputfields->add($fsOther);
+        // Cart image configuration
+        $fsCartImage = $modules->get('InputfieldFieldset');
+        $fsCartImage->label = $this->_('Cart thumbnail sizing');
+        $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled [snipcart_item_image] PageField as cart image thumbnail. The following settings will define how the cart thumbnail is sized/cropped to the specified dimensions.');
+
+        $f = $modules->get('InputfieldInteger');
+        $f->attr('name', 'cart_image_width');
+        $f->label = $this->_('Width in px');
+        $f->required = true;
+        $f->columnWidth = 33;
+        $fsCartImage->add($f);
+
+        $f = $modules->get('InputfieldInteger');
+        $f->attr('name', 'cart_image_height');
+        $f->label = $this->_('Height in px');
+        $f->required = true;
+        $f->columnWidth = 33;
+        $fsCartImage->add($f);
+
+        $f = $modules->get('InputfieldInteger');
+        $f->attr('name', 'cart_image_quality');
+        $f->label = $this->_('Quality in %');
+        $f->required = true;
+        $f->columnWidth = 33;
+        $fsCartImage->add($f);
+
+        $f = $modules->get('InputfieldCheckbox');
+        $f->attr('name', 'cart_image_hidpi'); 
+        $f->label = $this->_('Use HiDPI/retina pixel doubling?');
+        $f->label2 = $this->_('Use HiDPI');
+        $f->columnWidth = 33;
+        $fsCartImage->add($f);
+
+        $f = $modules->get('InputfieldInteger');
+        $f->attr('name', 'cart_image_hidpiQuality');
+        $f->label = $this->_('HiDPI Quality in %');
+        $f->required = true;
+        $f->columnWidth = 33;
+        $fsCartImage->add($f);
+
+        $f = $modules->get('InputfieldCheckbox');
+        $f->attr('name', 'cart_image_cropping'); 
+        $f->label = $this->_('Crop');
+        $f->label2 = $this->_('Crop thumbnail');
+        $f->columnWidth = 33;
+        $fsCartImage->add($f);
+
+        $inputfields->add($fsCartImage);
 
         return $inputfields;
     }

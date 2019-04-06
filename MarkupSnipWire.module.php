@@ -190,11 +190,26 @@
      *
      */
     public function anchor(Page $product, $prompt = '', $class = '', $id = '', $type = self::snicpartAnchorTypeButton) {
+        $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
-        
+
         // @todo: Check if $product (Page) is a Snipcart product
+
+        // Get ProcessSnipWire module config
+        $moduleConfig = $modules->getConfig('ProcessSnipWire');
+        bd($moduleConfig);
         
+        // Generate Snipcart product thumbnail
+        // (first image in snipcart_item_image field will be used as the Snipcart thumbnail image)
+        $image = $product->snipcart_item_image->first();
         
+        // Create required product image variant
+        $productImageThumb = $image->size($moduleConfig['cart_image_width'], $moduleConfig['cart_image_height'], [
+            'cropping' => $moduleConfig['cart_image_cropping'] ? true : false,
+            'quality' => $moduleConfig['cart_image_quality'],
+            'hidpi' => $moduleConfig['cart_image_hidpi'] ? true : false,
+            'hidpiQuality' => $moduleConfig['cart_image_hidpiQuality'],
+         ]);
         
         $prompt = empty($prompt) ? $this->defaultLinkPrompt : $prompt; // @todo: add sanitizer (could be also HTML content!)
         $class = empty($class) ? '' :  ' ' . $class;
@@ -208,20 +223,17 @@
             $close = '</a>';
         }
 
-        $out .= $open;
+        $out = $open;
         $out .= ' class="snipcart-add-item' . $class . '"';
         $out .= $id;
 
         // Snipcart data-item-* properties
-
         $out .= ' data-item-id="' . $product->id . '"';
         $out .= ' data-item-name="' . $product->title . '"';
         $out .= ' data-item-url="' . $product->url . '"';
         $out .= ' data-item-price="' . $product->snipcart_item_price . '"';
         $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
-        $out .= ' data-item-image="' . $product->snipcart_item_image->url . '"';
-        
-        
+        $out .= ' data-item-image="' . $productImageThumb->url . '"';
         
         // @todo: add more data-item-* properties
 
