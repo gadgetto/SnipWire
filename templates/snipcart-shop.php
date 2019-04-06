@@ -17,12 +17,14 @@ if (!defined('PROCESSWIRE')) die();
     echo ukProductOverview($products); 
     ?>
 </div>
-<aside id="sidebar">
-	<?php 
-	$categories = pages()->get('/categories/'); 
-	echo ukNav($categories->children, [ 'header' => $categories->title ]); 
-	?>		
-</aside>
+
+<?php
+/* 
+    We hide the <aside> element which is not used in our shop sample.
+    (this is only needed to use our sample templates with the "site-regular" site-profile)
+*/
+?>
+<aside id="sidebar" hidden></aside>
 
 <?php
 /**
