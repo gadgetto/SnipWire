@@ -83,6 +83,8 @@ class ExtendedInstaller extends Wire {
         $modules     = $this->wire('modules');
         $config      = $this->wire('config');
         
+        $sourceDir = dirname(__FILE__) . '/';
+        
         /* ====== Pre installation checks ====== */
 
         if (!$this->preInstallChecks($mode)) { return false; }
@@ -141,7 +143,7 @@ class ExtendedInstaller extends Wire {
         
         if (!empty($this->resources['files']) && is_array($this->resources['files']) && $mode & self::installerModeFiles) {
             foreach ($this->resources['files'] as $file) {
-                $source = dirname(__FILE__) . '/' . $file['type'] . '/' . $file['name'];
+                $source = $sourceDir . $file['type'] . '/' . $file['name'];
                 $destination = $config->paths->templates . $file['name'];
                 if (!file_exists($destination)) {
                     if ($this->wire('files')->copy($source, $destination)) {
@@ -217,14 +219,24 @@ class ExtendedInstaller extends Wire {
                 $page->parent = $item['parent'];
                 $page->process = $this;
                 $page->title = $item['title'];
+                $page->save();
+                $this->message('Created Page: '.$page->path);
+                
                 // Populate page-field values
                 if (!empty($item['fields']) && is_array($item['fields'])) {
                     foreach ($item['fields'] as $fieldname => $value) {
-                        if ($page->hasField($fieldname)) $page->$fieldname = $value;
+                        if ($page->hasField($fieldname)) {
+                            $type = $page->getField($fieldname)->type;
+                            if ($type == 'FieldtypeImage') {
+                                $source = $sourceDir . $value;
+                                $page->$fieldname->add($source);
+                            } else {
+                                $page->$fieldname = $value;
+                            }
+                        }
                     }
                 }
                 $page->save();
-                $this->message('Created Page: '.$page->path);
             }
         }
 
