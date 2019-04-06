@@ -223,6 +223,7 @@
         
         
         
+        // @todo: add more data-item-* properties
 
         $out .= '>';
         $out .= $prompt;
