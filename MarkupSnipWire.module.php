@@ -34,6 +34,7 @@
 
     const snicpartAnchorTypeButton = 1;
     const snicpartAnchorTypeLink = 2;
+    const snipcartProductTemplate = 'snipcart-product';
 
     /**
      * Initalize module config variables (properties)
@@ -193,7 +194,8 @@
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
 
-        // @todo: Check if $product (Page) is a Snipcart product
+        // Check if $product (Page) is a Snipcart product
+        if ($product->template != self::snipcartProductTemplate) return '';
 
         // Get ProcessSnipWire module config
         $moduleConfig = $modules->getConfig('ProcessSnipWire');
