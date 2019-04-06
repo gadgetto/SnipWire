@@ -197,7 +197,6 @@
 
         // Get ProcessSnipWire module config
         $moduleConfig = $modules->getConfig('ProcessSnipWire');
-        bd($moduleConfig);
         
         // Generate Snipcart product thumbnail
         // (first image in snipcart_item_image field will be used as the Snipcart thumbnail image)
