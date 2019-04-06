@@ -38,7 +38,7 @@ function ukProductOverview(PageArray $products) {
 
     if (!$products->count) return '';
     
-    $out = '<div class="uk-child-width-1-3@s uk-grid" uk-grid="">';
+    $out = '<div class="uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>';
 
     foreach ($products as $product) {
         
