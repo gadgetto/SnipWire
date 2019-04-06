@@ -165,6 +165,16 @@
         
         // Add Snipcart JS API config
         $jsResources[] = $jsAPI;
+
+        // Prepare Snipcart JS debugging switch
+        $jsDebug = '<script>' . PHP_EOL;
+        $jsDebug .= 'document.addEventListener("snipcart.ready", function() {' . PHP_EOL;
+        $jsDebug .= '    Snipcart.DEBUG = ' . ($moduleConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
+        $jsDebug .= '});' . PHP_EOL;
+        $jsDebug .= '</script>';
+
+        // Add Snipcart JS debugging switch
+        $jsResources[] = $jsDebug;
         
         // Output CSSJS
         reset($cssResources);

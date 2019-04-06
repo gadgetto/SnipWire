@@ -66,6 +66,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
+            'snipcart_debug' => 1,
             'include_jquery' => 1,
             'excluded_templates' => array(),
             'cart_image_width' => 65,
@@ -213,6 +214,14 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->label2 = $this->_('Split the First name and Last name');
         $f->description = $this->_('Use this setting to split the First name and Last name in billing address and shipping address forms.');
         $f->columnWidth = 50;
+        $fsAPI->add($f);
+
+        $f = $modules->get('InputfieldCheckbox');
+        $f->attr('name', 'snipcart_debug'); 
+        $f->label = $this->_('Snipcart JavaScript Debug Mode');
+        $f->label2 = $this->_('Enable Snipcart JavaScript debug mode');
+        $f->description = $this->_('This will allow you to see JavaScript errors on your site, failing requests and logs from the services you use in your browsers developer console.');
+        $f->notes = $this->_('All logs from the Snipcart script will be prefixed with Snipcart:');
         $fsAPI->add($f);
 
         $f = $modules->get('InputfieldMarkup');
