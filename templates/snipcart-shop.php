@@ -36,7 +36,7 @@ if (!defined('PROCESSWIRE')) die();
  */
 function ukProductOverview(PageArray $products) {
 
-    if(!$products->count) return '';
+    if (!$products->count) return '';
     
     $out = '<div class="uk-child-width-1-2@s uk-grid" uk-grid="">';
 
