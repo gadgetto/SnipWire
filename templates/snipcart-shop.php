@@ -64,6 +64,7 @@ function ukProductOverview(PageArray $products) {
                                  // The $snipwire->anchor method is provided by MarkupSnipWire module and can be called 
                                  // via custom API variable: $snipwire->anchor()
         $out .= '                ' . wire('snipwire')->anchor($product, 'Buy now', 'uk-button uk-button-primary');
+        $out .= '               <span class="uk-align-right uk-text-primary">' . $product->snipcart_item_price . '</span>';
         $out .= '            </p>';
         $out .= '        </div>';        
         $out .= '    </div>';        
