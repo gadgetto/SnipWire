@@ -41,10 +41,17 @@ function ukProductOverview(PageArray $products) {
     $out = '<div class="uk-child-width-1-3@s uk-grid" uk-grid="">';
 
     foreach ($products as $product) {
+        
+        // We use the first image in snipcart_item_image field
+        $image = $product->snipcart_item_image->first();
+        
+        // Create required product image variant
+        $productImageMedium = $image->size(600, 0, array('quality' => 70));
+        
         $out .= '<a class="uk-link-reset" href="' . $product->url . '">';
         $out .= '    <div class="uk-card uk-card-default uk-card-hover">';
         $out .= '        <div class="uk-card-media-top">';
-        $out .= '            <img src="' . $product->snipcart_item_image->url . '" alt="' . $product->title . '">';
+        $out .= '            <img src="' . $productImageMedium->url . '" alt="' . $product->title . '">';
         $out .= '        </div>';
         $out .= '        <div class="uk-card-body">';
         $out .= '            <h3 class="uk-card-title">' . $product->title . '</h3>';
