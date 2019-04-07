@@ -139,6 +139,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
 
         $fsAPI = $this->wire('modules')->get('InputfieldFieldset');
         $fsAPI->label = $this->_('Snipcart API Configuration');
+        $fsAPI->set('themeOffset', true);
 
         $f = $modules->get('InputfieldMarkup');
         $f->description = $this->_('To get your API keys, you will need a Snipcart account. To register, go to [https://app.snipcart.com/account/register](https://app.snipcart.com/account/register). Once you’ve signed up and confirmed your account, log in and head to the Account > API Keys section, where you’ll find your API keys.');
@@ -246,6 +247,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
 
         $fsMarkup = $modules->get('InputfieldFieldset');
         $fsMarkup->label = $this->_('Markup Output Configuration');
+        $fsMarkup->set('themeOffset', true);
 
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'snipcart_css_path');
@@ -320,6 +322,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $fsCartImage = $modules->get('InputfieldFieldset');
         $fsCartImage->label = $this->_('Cart thumbnail sizing');
         $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled "snipcart_item_image" PageField as cart thumbnail. The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions. Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
+        $fsCartImage->set('themeOffset', true);
         
         $f = $modules->get('InputfieldInteger');
         $f->attr('name', 'cart_image_width');
