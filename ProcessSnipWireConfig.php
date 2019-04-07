@@ -318,8 +318,8 @@ class ProcessSnipWireConfig extends ModuleConfig {
         // Cart image configuration
         $fsCartImage = $modules->get('InputfieldFieldset');
         $fsCartImage->label = $this->_('Cart thumbnail sizing');
-        $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled [snipcart_item_image] PageField as cart image thumbnail. The following settings will define how the cart thumbnail is sized/cropped to the specified dimensions.');
-
+        $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled "snipcart_item_image" PageField as cart thumbnail. The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions. Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
+        
         $f = $modules->get('InputfieldInteger');
         $f->attr('name', 'cart_image_width');
         $f->label = $this->_('Width in px');
