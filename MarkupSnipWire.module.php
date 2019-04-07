@@ -43,24 +43,6 @@
     public function __construct() {
         parent::__construct();
 
-        // Path to jQuery JS file
-        $this->set('jqueryJSFile', array(
-            'path' => 'https://code.jquery.com/jquery-3.3.1.min.js',
-            'integrity' => 'sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8='
-        ));
-
-        // Path to the Snipcart CSS file
-        $this->set('snipcartCSSFile', array(
-            'path' => 'https://cdn.snipcart.com/themes/2.0/base/snipcart.min.css',
-            'integrity' => ''
-        ));
-
-        // Path to Snipcart JS file
-        $this->set('snipcartJSFile', array(
-            'path' => 'https://cdn.snipcart.com/scripts/2.0/snipcart.js',
-            'integrity' => ''
-        ));
-        
         // Default button/link prompt
         $this->set('defaultLinkPrompt', $this->_('Buy now'));
     }
@@ -116,21 +98,21 @@
         $jsResources = array();
 
         // Add Snipcart CSS resource
-        $cssResources[] = '<link rel="stylesheet" href="' . $this->snipcartCSSFile['path'] . '"'
-            . (!empty($this->snipcartCSSFile['integrity']) ? ' integrity="' . $this->snipcartCSSFile['integrity'] . '"' : '')
+        $cssResources[] = '<link rel="stylesheet" href="' . $moduleConfig['snipcart_css_path'] . '"'
+            . (!empty($moduleConfig['snipcart_css_integrity']) ? ' integrity="' . $moduleConfig['snipcart_css_integrity'] . '"' : '')
             . ' crossorigin="anonymous">';
         
         // Add jQuery JS resource
         if ($moduleConfig['include_jquery']) {
-            $jsResources[] = '<script src="' . $this->jqueryJSFile['path'] . '"'
-            . (!empty($this->jqueryJSFile['integrity']) ? ' integrity="' . $this->jqueryJSFile['integrity'] . '"' : '')
+            $jsResources[] = '<script src="' . $moduleConfig['jquery_js_path'] . '"'
+            . (!empty($moduleConfig['jquery_js_integrity']) ? ' integrity="' . $moduleConfig['jquery_js_integrity'] . '"' : '')
             . ' crossorigin="anonymous"></script>';
         }
         
         // Add Snipcart JS resource
         $jsResources[] = $environmentStatus;
-        $jsResources[] = '<script src="' . $this->snipcartJSFile['path']. '"'
-            . (!empty($this->snipcartJSFile['integrity']) ? ' integrity="' . $this->snipcartJSFile['integrity'] . '"' : '')
+        $jsResources[] = '<script src="' . $moduleConfig['snipcart_js_path'] . '"'
+            . (!empty($moduleConfig['snipcart_js_integrity']) ? ' integrity="' . $moduleConfig['snipcart_js_integrity'] . '"' : '')
             . ' data-api-key="' . $snipcartAPIKey . '"'
             . ' id="snipcart"'
             . ' crossorigin="anonymous"></script>';

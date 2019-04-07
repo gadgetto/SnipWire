@@ -67,7 +67,13 @@ class ProcessSnipWireConfig extends ModuleConfig {
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
             'snipcart_debug' => 1,
+            'snipcart_css_path' => 'https://cdn.snipcart.com/themes/2.0/base/snipcart.min.css',
+            'snipcart_css_integrity' => '',
+            'snipcart_js_path' => 'https://cdn.snipcart.com/scripts/2.0/snipcart.js',
+            'snipcart_js_integrity' => '',
             'include_jquery' => 1,
+            'jquery_js_path' => 'https://code.jquery.com/jquery-3.3.1.min.js',
+            'jquery_js_integrity' => 'sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=',
             'excluded_templates' => array(),
             'cart_image_width' => 65,
             'cart_image_height' => 65,
@@ -241,12 +247,58 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $fsMarkup = $modules->get('InputfieldFieldset');
         $fsMarkup->label = $this->_('Markup Output Configuration');
 
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'snipcart_css_path');
+        $f->label = $this->_('Path to Snipcart CSS File');
+        $f->notes = $this->_('Use your own CSS file to change the Cart theme. Check the [Snipcart Theme Repository](https://github.com/snipcart/snipcart-theme) on GitHub for more info.');
+        $f->required = true;
+        $f->columnWidth = 60;
+        $fsMarkup->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'snipcart_css_integrity');
+        $f->label = $this->_('Snipcart CSS File Integrity Hash');
+        $f->notes = $this->_('If empty - browsers Subresource Integrity check will be disabled.');
+        $f->columnWidth = 40;
+        $fsMarkup->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'snipcart_js_path');
+        $f->label = $this->_('Path to Snipcart JS File');
+        $f->required = true;
+        $f->columnWidth = 60;
+        $fsMarkup->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'snipcart_js_integrity');
+        $f->label = $this->_('Snipcart JS File Integrity Hash');
+        $f->notes = $this->_('If empty - browsers Subresource Integrity check will be disabled.');
+        $f->columnWidth = 40;
+        $fsMarkup->add($f);
+
         $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'include_jquery'); 
         $f->label = $this->_('Include jQuery in Your Output');
         $f->label2 = $this->_('Include jQuery');
         $f->description = $this->_('Whether SnipWire should add the jQuery library to your output or not. If jQuery is already included in your template, you should not include it twice, so you can uncheck this option.');
         $f->notes = $this->_('Snipcart uses [jQuery](https://jquery.com/), so we need to make sure it is included in your output!');
+        $fsMarkup->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'jquery_js_path');
+        $f->label = $this->_('Path to jQuery JS File');
+        $f->required = true; // needs to be set when using requiredIf
+        $f->columnWidth = 60;
+        $f->requiredIf = 'include_jquery=1';
+        $f->showIf = 'include_jquery=1';
+        $fsMarkup->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'jquery_js_integrity');
+        $f->label = $this->_('jQuery JS File Integrity Hash');
+        $f->notes = $this->_('If empty - browsers Subresource Integrity check will be disabled.');
+        $f->columnWidth = 40;
+        $f->showIf = 'include_jquery=1';
         $fsMarkup->add($f);
 
         $f = $modules->get('InputfieldAsmSelect');
