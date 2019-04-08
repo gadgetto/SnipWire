@@ -60,7 +60,8 @@ class ProcessSnipWireConfig extends ModuleConfig {
             'api_key' => 'YOUR_LIVE_API_KEY',
             'api_key_test' => 'YOUR_TEST_API_KEY',
             'snipcart_environment' => 0,
-            'single_page_website' => 0,
+            'single_page_shop' => 0,
+            'single_page_shop_page' => 1,
             'credit_cards' => array('visa', 'mastercard', 'maestro'),
             'show_cart_automatically' => 0,
             'shipping_same_as_billing' => 1,
@@ -172,12 +173,20 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $fsAPI->add($f);
 
         $f = $modules->get('InputfieldCheckbox');
-        $f->attr('name', 'single_page_website'); 
-        $f->label = $this->_('Single-Page Website');
+        $f->attr('name', 'single_page_shop'); 
+        $f->label = $this->_('Single-Page Shop');
         $f->label2 = $this->_('This Snipcart shop runs on a single-page website');
-        $f->description = $this->_('For single-page websites, the data-item-url field will be filled with only the basic domain name, such as www.example.com');
+        $f->description = $this->_('For single-page shops, the data-item-url field of each product will be filled with the full URL to the selected page.');
         $f->notes = $this->_('This tells the Snipcart crawler where to find your products to validate an order\'s integrity.');
         $f->columnWidth = 50;
+        $fsAPI->add($f);
+
+        $f = $modules->get('InputfieldPageListSelect');
+        $f->attr('name', 'single_page_shop_page');
+        $f->label = $this->_('Select Your Single-Page Shop Page');
+        $f->required = true; // needs to be set when using requiredIf
+        $f->requiredIf = 'single_page_shop=1';
+        $f->showIf = 'single_page_shop=1';
         $fsAPI->add($f);
 
         $f = $modules->get('InputfieldAsmSelect');
