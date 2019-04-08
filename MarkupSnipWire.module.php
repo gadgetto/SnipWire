@@ -240,9 +240,9 @@
     /**
      * Adds credit card labels to the given credit card keys and builds required array format for Snipcart
      *
-     * Snipcart.api.configure('credit_cards', [
-     *     {'type': 'visa', 'display': 'Visa'},
-     *     {'type': 'mastercard', 'display': 'Mastercard'}
+     * Snipcart.api.configure("credit_cards", [
+     *     {"type": "visa", "display": "Visa"},
+     *     {"type": "mastercard", "display": "Mastercard"}
      * ]);
      *
      * @param array $cards The credit card array
