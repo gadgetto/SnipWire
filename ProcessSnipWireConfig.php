@@ -81,6 +81,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
             'cart_image_quality' => 70,
             'cart_image_hidpi' => 1,
             'cart_image_hidpiQuality' => 50,
+            'data_item_name_field' => 'title',
         );
     }
 
@@ -367,6 +368,37 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $fsCartImage->add($f);
 
         $inputfields->add($fsCartImage);
+        
+        // SnipWire API configuration
+        
+        $fsSnipWire = $modules->get('InputfieldFieldset');
+        $fsSnipWire->label = $this->_('SnipWire API Configuration');
+        $fsSnipWire->set('themeOffset', true);
+        
+        $productTemplateFields = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)->fields;
+        bd($productTemplateFields);
+        
+        $allowedFieldTypes = array(
+            'FieldtypeText',
+            'FieldtypeTextLanguage',
+            'FieldtypePageTitle',
+            'FieldtypePageTitleLanguage',
+        );
+
+        $f = $modules->get('InputfieldSelect'); 
+        $f->attr('name', 'data_item_name_field'); 
+        $f->label = $this->_('Set Field for Snipcart Product Name'); 
+        $f->notes = 'Used as Snipcart anchor property "data-item-name"';
+        $f->required = true;
+
+        foreach ($productTemplateFields as $field) {
+            if (in_array($field->type, $allowedFieldTypes)) {
+                $f->addOption($field->name, $field->name, array());
+            }
+        }
+        $fsSnipWire->add($f);
+
+        $inputfields->add($fsSnipWire);
 
         return $inputfields;
     }
