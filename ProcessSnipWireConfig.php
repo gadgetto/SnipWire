@@ -376,7 +376,6 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $fsSnipWire->set('themeOffset', true);
         
         $productTemplateFields = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)->fields;
-        bd($productTemplateFields);
         
         $allowedFieldTypes = array(
             'FieldtypeText',
