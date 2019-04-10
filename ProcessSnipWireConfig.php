@@ -14,6 +14,9 @@
 
 class ProcessSnipWireConfig extends ModuleConfig {
 
+    /** @var SnipREST $snipREST Interface class for Snipcart REST API */
+    protected $snipREST = null;
+    
     /** @var array Available creditcard types */
     protected $availableCreditCards = array(            
         'visa',
@@ -31,6 +34,8 @@ class ProcessSnipWireConfig extends ModuleConfig {
 
     public function __construct() {
         parent::__construct();
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SnipREST.php';
+        $this->snipREST = new SnipREST();
     }
 
     /**
@@ -55,6 +60,16 @@ class ProcessSnipWireConfig extends ModuleConfig {
         );
     }
 
+    /**
+     * Returns an array of currency labels, indexed by currency name
+     * 
+     * @return array
+     * 
+     */
+    public static function getCurrencyLabels() {
+        return require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Currencies.php';
+    }
+
     public function getDefaults() {
         return array(
             'api_key' => 'YOUR_LIVE_API_KEY',
@@ -65,6 +80,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
             'single_page_shop' => 0,
             'single_page_shop_page' => 1,
             'credit_cards' => array('visa', 'mastercard', 'maestro'),
+            'default_currency' => 'eur',
             'show_cart_automatically' => 0,
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
@@ -217,6 +233,22 @@ class ProcessSnipWireConfig extends ModuleConfig {
             $f->addOption($card, $cardlabel);
         }
         $f->required = true;
+        $f->columnWidth = 50;
+        $fsAPI->add($f);
+        
+        $f = $modules->get('InputfieldSelect');
+        $f->attr('name', 'default_currency'); 
+        $f->label = $this->_('Set the Default Currency'); 
+        $f->description = $this->_('The currency you choose will be used in your shop catalogue and in the SnipCart shopping-cart system during checkout. You will need to setup the currency format in your [SnipCart Dashboard - Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
+        $f->notes = $this->_('The currency settings are fetched directly from Snipcart dashboard.');
+        $currencyLabels = self::getCurrencyLabels();
+        $currencies = $this->snipREST->getCurrencies();
+        foreach ($currencies as $key => $currency) {
+            $currencylabel = isset($currencyLabels[$currency['currency']]) ? $currencyLabels[$currency['currency']] : $currency['currency'];
+            $f->addOption($currency['currency'], $currencylabel);
+        }
+        $f->required = true;
+        $f->columnWidth = 50;
         $fsAPI->add($f);
 
         $f = $modules->get('InputfieldCheckbox');
