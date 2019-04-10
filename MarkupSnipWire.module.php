@@ -188,22 +188,7 @@
 
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return '';
-
-        // Get ProcessSnipWire module config
-        $moduleConfig = $modules->getConfig('ProcessSnipWire');
-        
-        // Generate Snipcart product thumbnail
-        // (first image in snipcart_item_image field will be used as the Snipcart thumbnail image)
-        $image = $product->snipcart_item_image->first();
-        
-        // Create required product image variant
-        $productImageThumb = $image->size($moduleConfig['cart_image_width'], $moduleConfig['cart_image_height'], [
-            'cropping' => $moduleConfig['cart_image_cropping'] ? true : false,
-            'quality' => $moduleConfig['cart_image_quality'],
-            'hidpi' => $moduleConfig['cart_image_hidpi'] ? true : false,
-            'hidpiQuality' => $moduleConfig['cart_image_hidpiQuality'],
-         ]);
-        
+                
         $prompt = empty($prompt) ? $this->defaultLinkPrompt : $prompt; // @todo: add sanitizer (could be also HTML content!)
         $class = empty($class) ? '' :  ' ' . $class;
         $id = empty($id) ? '' :  ' id="' . $id . '"';
@@ -220,13 +205,23 @@
         $out .= ' class="snipcart-add-item' . $class . '"';
         $out .= $id;
 
-        // Snipcart data-item-* properties
+        $moduleConfig = $modules->getConfig('ProcessSnipWire');
+
+        // Required Snipcart data-item-* properties
+        
         $out .= ' data-item-id="' . $product->id . '"';
-        $out .= ' data-item-name="' . $product->title . '"';
-        $out .= ' data-item-url="' . $product->url . '"';
-        $out .= ' data-item-price="' . $product->snipcart_item_price . '"';
-        $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
-        $out .= ' data-item-image="' . $productImageThumb->url . '"';
+        $out .= ' data-item-name="' . $this->getProductName($product, $moduleConfig) . '"';
+        $out .= ' data-item-url="' . $this->getProductUrl($product, $moduleConfig) . '"';
+        $out .= ' data-item-price="' . $this->getProductPrice($product, $moduleConfig) . '"';
+        
+        // Optional Snipcart data-item-* properties
+
+        if ($product->snipcart_item_description) {
+            $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
+        }
+        if ($productThumb = $this->getProductThumb($product, $moduleConfig)) {
+            $out .= ' data-item-image="' . $productThumb->httpUrl . '"';
+        }
         
         // @todo: add more data-item-* properties
 
@@ -236,6 +231,119 @@
 
         return $out;
     }
+
+    /**
+     * Returns the product name using the selected product name field from ProcessSnipWire module config.
+     * Fallback to $page->title field.
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param array $moduleConfig The ProcessSnipWire module config
+     *
+     * @return string $productName The product name
+     *
+     */
+    public function getProductName(Page $product, $moduleConfig = array()) {
+        // Check if $product (Page) is a Snipcart product
+        if ($product->template != self::snipcartProductTemplate) return '';
+        
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        if (!$product->hasField($moduleConfig['data_item_name_field']) || empty($product->{$moduleConfig['data_item_name_field']})) {
+            $productName = $product->title;
+        } else {
+            $productName = $product->{$moduleConfig['data_item_name_field']};
+        }
+        return $productName;
+    }
+
+    /**
+     * Returns the full product page url depending on ProcessSnipWire module config.
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param array $moduleConfig The ProcessSnipWire module config
+     *
+     * @return string $productUrl The product page url
+     *
+     */
+    public function getProductUrl(Page $product, $moduleConfig = array()) {
+        // Check if $product (Page) is a Snipcart product
+        if ($product->template != self::snipcartProductTemplate) return '';
+
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        if ($moduleConfig['single_page_shop']) {
+            $productUrl = $this->wire('pages')->get($moduleConfig['single_page_shop_page'])->httpUrl;
+        } else {
+            $productUrl = $product->httpUrl;
+        }
+        return $productUrl;
+    }
+
+    /**
+     * Returns the product price (optionally formatted by currency property from ProcessSnipWire module config).
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param array $moduleConfig The ProcessSnipWire module config
+     * @param boolean $formatted (unformatted or formatted)
+     *
+     * @return string $productPrice The product price (unformatted or formatted)
+     *
+     */
+    public function getProductPrice(Page $product, $moduleConfig = array(), $formatted = false) {
+        // Check if $product (Page) is a Snipcart product
+        if ($product->template != self::snipcartProductTemplate) return '';
+
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        if ($formatted) {
+            
+            
+            $priceFormatted = new \NumberFormatter('us_US', \NumberFormatter::CURRENCY);
+            $priceFormatted->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 0);
+            $productPrice = $priceFormatted->format($product->snipcart_item_price);
+            
+            
+        } else {
+            $productPrice = $product->snipcart_item_price;
+        }
+        return $productPrice;
+    }
+    
+    /**
+     * Helper method to get the formatted product price.
+     *
+     * @see function getProductPrice
+     * @return string The formatted product price 
+     *
+     */
+    public function getProductPriceFormatted(Page $product, $moduleConfig = array()) {
+        return $this->getProductPrice($product, $moduleConfig, true);
+    }
+
+    /**
+     * Generates a Thumbnail from first image of product page-image field and returns it.
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param array $moduleConfig The ProcessSnipWire module config
+     *
+     * @return null|Pageimage $productThumb The product thumbnail or null if no image found
+     *
+     */
+    public function getProductThumb(Page $product, $moduleConfig = array()) {
+        // Check if $product (Page) is a Snipcart product
+        if ($product->template != self::snipcartProductTemplate) return null;
+
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        $productThumb = null;
+        $image = $product->snipcart_item_image->first();
+        if ($image) {
+            $productThumb = $image->size($moduleConfig['cart_image_width'], $moduleConfig['cart_image_height'], [
+                'cropping' => $moduleConfig['cart_image_cropping'] ? true : false,
+                'quality' => $moduleConfig['cart_image_quality'],
+                'hidpi' => $moduleConfig['cart_image_hidpi'] ? true : false,
+                'hidpiQuality' => $moduleConfig['cart_image_hidpiQuality'],
+            ]);
+        }
+        return $productThumb;
+    }
+
 
     /**
      * Adds credit card labels to the given credit card keys and builds required array format for Snipcart
