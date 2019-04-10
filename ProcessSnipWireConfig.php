@@ -59,6 +59,8 @@ class ProcessSnipWireConfig extends ModuleConfig {
         return array(
             'api_key' => 'YOUR_LIVE_API_KEY',
             'api_key_test' => 'YOUR_TEST_API_KEY',
+            'api_key_secret' => 'YOUR_LIVE_API_KEY_SECRET',
+            'api_key_secret_test' => 'YOUR_TEST_API_KEY_SECRET',
             'snipcart_environment' => 0,
             'single_page_shop' => 0,
             'single_page_shop_page' => 1,
@@ -144,12 +146,12 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $fsAPI->set('themeOffset', true);
 
         $f = $modules->get('InputfieldMarkup');
-        $f->description = $this->_('To get your API keys, you will need a Snipcart account. To register, go to [https://app.snipcart.com/account/register](https://app.snipcart.com/account/register). Once you’ve signed up and confirmed your account, log in and head to the Account > API Keys section, where you’ll find your API keys.');
+        $f->description = $this->_('To get your public JavaScript - and secret REST API keys, you will need a Snipcart account. To register, go to [https://app.snipcart.com/account/register](https://app.snipcart.com/account/register). Once you’ve signed up and confirmed your account, log in and head to the [Account > API Keys section](https://app.snipcart.com/dashboard/account/credentials). There you’ll find your public API keys and also need to create your secret API keys for live and test environment.');
         $fsAPI->add($f);
         
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key');
-        $f->label = $this->_('Snipcart Public Live API Key');
+        $f->label = $this->_('Snipcart Public API Key');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
@@ -157,6 +159,22 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key_test');
         $f->label = $this->_('Snipcart Public Test API Key');
+        $f->required = true;
+        $f->columnWidth = 50;
+        $fsAPI->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'api_key_secret');
+        $f->label = $this->_('Snipcart Secret API Key');
+        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account. This key should never be visible to anyone.');
+        $f->required = true;
+        $f->columnWidth = 50;
+        $fsAPI->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'api_key_secret_test');
+        $f->label = $this->_('Snipcart Secret Test API Key');
+        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account. This key should never be visible to anyone.');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
