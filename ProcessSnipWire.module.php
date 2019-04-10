@@ -56,6 +56,9 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
     /** @var boolean $debug Whether or not module debug mode is active */
     protected $debug = false;
 
+    /** @var SnipREST $snipREST Interface class for Snipcart REST API */
+    protected $snipREST = null;
+    
     /** @var array $snipcartAPIkeys All Snipcart configuration API settings keys (some are currently not in use here) */
     protected $snipcartAPIkeys = array(
         'credit_cards',
@@ -77,6 +80,8 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
     public function __construct() {
         parent::__construct();
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'ExtendedInstaller.php';
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SnipREST.php';
+        $this->snipREST = new SnipREST();
     }
 
     /**
@@ -90,7 +95,7 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
      *
      */
     public function init() {
-        parent::init(); 
+        parent::init();
     }    
     
     /**
@@ -115,9 +120,11 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $this->browserTitle($this->_('SnipWireDashboard'));
         $this->headline($this->_('SnipWire Dashboard'));
 
-
+        $currencies = $this->snipREST->getCurrencies();
+        $out = '<pre>' . print_r($currencies, true) . '</pre>';
         
-        $out = 'The SnipWire Dashboard';
+        
+        
 
         // Dashboard markup wrapper
         $out = '<div id="snipwire-dashboard">'.$out.'</div>';
