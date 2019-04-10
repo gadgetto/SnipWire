@@ -59,15 +59,20 @@ function ukProductOverview(PageArray $products) {
         $out .= '        </div>';
         $out .= '        <div class="uk-card-footer">';
         $out .= '            <p>';
-                                 // This is the part where we render the Snipcart anchor (buy button)
-                                 // with data-item-* attributes required by Snipcart.
-                                 // The $snipwire->anchor method is provided by MarkupSnipWire module and can be called 
-                                 // via custom API variable: $snipwire->anchor()
-        $out .= '                ' . wire('snipwire')->anchor($product, 'Buy now', 'uk-button uk-button-primary');
-        $out .= '               <span class="uk-align-right uk-text-primary">' . $product->snipcart_item_price . '</span>';
+                                // This is the part where we render the Snipcart anchor (buy button)
+                                // with data-item-* attributes required by Snipcart.
+                                // The anchor method is provided by MarkupSnipWire module and can be called 
+                                // via custom API variable: $snipwire->anchor()
+        $out .= '               ' . wire('snipwire')->anchor($product, 'Buy now', 'uk-button uk-button-primary');
+        $out .= '               <span class="uk-align-right uk-text-primary">';
+                                    // Get the formatted product price.
+                                    // The getProductPriceFormatted method is provided by MarkupSnipWire module and can be called 
+                                    // via custom API variable: $snipwire->getProductPriceFormatted()
+        $out .= '                   ' . wire('snipwire')->getProductPriceFormatted($product);
+        $out .= '               </span>';
         $out .= '            </p>';
-        $out .= '        </div>';        
-        $out .= '    </div>';        
+        $out .= '        </div>';
+        $out .= '    </div>';
         $out .= '</a>';
     }
 
