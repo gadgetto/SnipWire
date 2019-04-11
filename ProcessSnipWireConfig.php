@@ -17,7 +17,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
     /** @var SnipREST $snipREST Interface class for Snipcart REST API */
     protected $snipREST = null;
     
-    /** @var array Available creditcard types */
+    /** @var array $availableCreditCards Available creditcard types */
     protected $availableCreditCards = array(            
         'visa',
         'mastercard',
@@ -32,6 +32,10 @@ class ProcessSnipWireConfig extends ModuleConfig {
         'postepay',
     );
 
+    /**
+     * Construct/initialize
+     * 
+     */
     public function __construct() {
         parent::__construct();
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SnipREST.php';
