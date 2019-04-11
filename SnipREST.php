@@ -33,7 +33,7 @@ class SnipREST extends WireHttp {
     const resourcePathSettingsDomain = '/settings/domain';
     
     const settingsCacheName = 'SnipcartSettingsGeneral';
-    const settingsCacheExpires = 60; // seconds
+    const settingsCacheExpires = 300; // seconds
     
 
     /**
@@ -89,7 +89,7 @@ class SnipREST extends WireHttp {
     public function getCurrencies($forceNew = false) {
         if ($forceNew) $this->wire('cache')->delete(self::settingsCacheName);
 
-        // Try to get currencies array from cache (re-fetch only every 60 seconds)
+        // Try to get currencies array from cache (re-fetch only every n seconds)
         $response = $this->wire('cache')->get(self::settingsCacheName, self::settingsCacheExpires, function() {
             return $this->getJSON(self::apiEndpoint . self::resourcePathSettingsGeneral);
         });
