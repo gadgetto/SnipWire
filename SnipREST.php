@@ -63,38 +63,22 @@ class SnipREST extends WireHttp {
     }
 
     /**
-     * Get the available currencies from Snipcart dashboard as array.
+     * Get the available settings from Snipcart dashboard as array.
      * This method uses the WireCache to prevent reloading Snipcart data on each request.
      *
-     * Sample array:
-     *
-     * Array
-     * (
-     *     [0] => Array
-     *         (
-     *             [currency] => eur
-     *             [precision] => 2
-     *             [decimalSeparator] => ,
-     *             [thousandSeparator] => .
-     *             [negativeNumberFormat] => - %s%v
-     *             [numberFormat] => %s%v
-     *             [currencySymbol] => €
-     *             [id] => a9bd71db-657b-4f91-a261-7cc41f8fd7f3
-     *         )
-     * )
-     *
-     * @return bool|array False if request failed or currencies array
+     * @var string $key Which settings key to return (fallback to full settings array if $key doesnt exist)
+     * @var boolean $forceRefresh Wether to refresh the settings cache
+     * @return boolean|array False if request failed or currencies array
      *
      */
-    public function getCurrencies($forceNew = false) {
-        if ($forceNew) $this->wire('cache')->delete(self::settingsCacheName);
+    public function getSettings($key = '', $forceRefresh = false) {
+        if ($forceRefresh) $this->wire('cache')->delete(self::settingsCacheName);
 
         // Try to get currencies array from cache first (re-fetch only every n seconds)
         $response = $this->wire('cache')->get(self::settingsCacheName, self::settingsCacheExpires, function() {
             return $this->getJSON(self::apiEndpoint . self::resourcePathSettingsGeneral);
         });
-
-        return $response['currencies'];
+        return ($key && isset($response[$key])) ? $response[$key] : $response;
     }
 
 }
