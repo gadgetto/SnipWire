@@ -313,6 +313,8 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
      *
      */
     public function ___uninstall() {
+        // Remove all caches created by SnipWire
+        $this->wire('cache')->delete(SnipREST::settingsCacheName);
         parent::___uninstall();
     }
 
