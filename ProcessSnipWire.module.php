@@ -59,8 +59,8 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
     /** @var SnipREST $snipREST Interface class for Snipcart REST API */
     protected $snipREST = null;
     
-    /** @var array $snipcartAPIkeys All Snipcart configuration API settings keys (some are currently not in use here) */
-    protected $snipcartAPIkeys = array(
+    /** @var array $snipcartAPIproperties All Snipcart configuration API properties (some are currently not in use here) */
+    protected $snipcartAPIproperties = array(
         'credit_cards',
         'allowed_shipping_methods',
         'excluded_shipping_methods',
@@ -139,13 +139,13 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
     }
 
     /**
-     * Getter for snipcartAPIkeys property
+     * Getter for snipcartAPIproperties
      *
      * @return array
      *
      */
-    public function getSnipcartAPIkeys() {
-        return $this->snipcartAPIkeys;
+    public function getSnipcartAPIproperties() {
+        return $this->snipcartAPIproperties;
     }
 
     /**
