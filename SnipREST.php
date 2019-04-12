@@ -44,22 +44,31 @@ class SnipREST extends WireHttp {
         parent::__construct();
         
         // Get ProcessSnipWire module config
-        $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
-        
-        // Snipcart environment (TEST | LIVE?)
-        if ($moduleConfig['snipcart_environment'] == 1) {
-            $snipcartAPIKey = $moduleConfig['api_key_secret'];
-        } else {
-            $snipcartAPIKey = $moduleConfig['api_key_secret_test'];
+        if ($moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire')) {
+            // Snipcart environment (TEST | LIVE?)
+            $snipcartAPIKey = ($moduleConfig['snipcart_environment'] == 1) ? $moduleConfig['api_key_secret'] : $moduleConfig['api_key_secret_test'];
+            
+            // Set headers required by Snipcart
+            // -> Authorization: Basic <credentials>, where credentials is the base64 encoding of the secret API key and empty(!) password joined by a colon
+            $this->setHeaders(array(
+                'cache-control' => 'no-cache',
+                'Authorization' => 'Basic ' . base64_encode($snipcartAPIKey . ':'),
+                'Accept' => 'application/json',
+            ));
         }
+    }
 
-        // Set headers required by Snipcart
-        // -> Authorization: Basic <credentials>, where credentials is the base64 encoding of the secret API key and empty(!) password joined by a colon
-        $this->setHeaders(array(
-            'cache-control' => 'no-cache',
-            'Authorization' => 'Basic ' . base64_encode($snipcartAPIKey . ':'),
-            'Accept' => 'application/json',
-        ));        
+
+    /**
+     * Snipcart REST API connection test.
+     * (uses resourcePathSettingsDomain for test request)
+     *
+     * @return mixed True on success or string of status code on error
+     * 
+     */
+    public function testConnection() {
+        if (!$this->headers) return false;
+        return ($this->get(self::apiEndpoint . self::resourcePathSettingsDomain)) ? true : $this->getError();
     }
 
     /**
@@ -72,6 +81,7 @@ class SnipREST extends WireHttp {
      *
      */
     public function getSettings($key = '', $forceRefresh = false) {
+        if (!$this->headers) return false;
         if ($forceRefresh) $this->wire('cache')->delete(self::settingsCacheName);
 
         // Try to get currencies array from cache first (re-fetch only every n seconds)

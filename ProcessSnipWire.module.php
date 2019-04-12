@@ -120,9 +120,15 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $this->browserTitle($this->_('SnipWireDashboard'));
         $this->headline($this->_('SnipWire Dashboard'));
 
-        $settings = $this->snipREST->getSettings();
-        $out = '<pre>' . print_r($settings, true) . '</pre>';
+        $test = $this->snipREST->testConnection();
+        $out = '<pre>' . $test . '</pre>';
         
+        /*
+        $moduleConfig = $modules->getConfig('ProcessSnipWire');
+        $out = '<pre>' . print_r($moduleConfig['currencies'], true) . '</pre>';
+        $out .= '<pre>' . print_r(wireDecodeJSON($moduleConfig['currencies'][0]), true) . '</pre>';
+        $out .= '<pre>' . print_r(wireDecodeJSON($moduleConfig['currencies'][1]), true) . '</pre>';
+        */
         
         
 
