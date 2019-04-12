@@ -463,7 +463,16 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $fsSnipWire->label = $this->_('SnipWire API Configuration');
         $fsSnipWire->set('themeOffset', true);
         
-        $productTemplateFields = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)->fields;
+        $productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate);
+        if ($productTemplate) {
+            $productTemplateFields = $productTemplate->fields;
+        } else {
+            $productTemplateFields = new FieldsArray();
+            $defaults = $this->getDefaults();
+            $defaultFieldName = $defaults['data_item_name_field'];
+            $defaultField = $this->wire('fields')->get($defaultFieldName);
+            $productTemplateFields->add($defaultField);
+        }
         
         $allowedFieldTypes = array(
             'FieldtypeText',
