@@ -269,8 +269,10 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->description = $this->_('Selected currency(s) will be used in your shop catalogue and in the SnipCart shopping-cart system during checkout. As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [SnipCart Dashboard - Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
         $f->notes = $this->_('The first currency in the list will be the default one used in your product catalogue and in Snipcart shopping-cart.');
         $currencyLabels = self::getCurrencyLabels();
-        $currencies = $this->snipREST->getSettings('currencies');
-        foreach ($currencies as $key => $currency) {
+        $currencies = array();
+        if (!$currencies = $this->snipREST->getSettings('currencies')) $currencies[] = $this->getDefaultCurrency();
+        foreach ($currencies as $currency) {
+            unset($currency['id']); // remove id key from fetched REST result as it is not needed
             $currencyLabel = isset($currencyLabels[$currency['currency']]) ? $currencyLabels[$currency['currency']] : $currency['currency'];
             $currencyJson = wireEncodeJSON($currency, true); // needs to be stored as Json string
             $f->addOption($currencyJson, $currencyLabel);
