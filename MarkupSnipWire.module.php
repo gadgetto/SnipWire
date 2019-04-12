@@ -117,9 +117,9 @@
             . ' id="snipcart"'
             . ' crossorigin="anonymous"></script>';
 
-        // Pick available Snipcart JS API keys from module config for API output
+        // Pick available Snipcart JS API properties from module config for API output
         $snipcartAPI = array();
-        foreach ($moduleSnipWire->getSnipcartAPIkeys() as $key) {
+        foreach ($moduleSnipWire->getSnipcartAPIproperties() as $key) {
             if (isset($moduleConfig[$key])) {
                 $snipcartAPI[$key] = $moduleConfig[$key];
             }
