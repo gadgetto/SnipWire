@@ -41,8 +41,6 @@ class SnipREST extends WireHttp {
      * 
      */
     public function __construct() {
-        parent::__construct();
-        
         // Get ProcessSnipWire module config
         if ($moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire')) {
             // Snipcart environment (TEST | LIVE?)
@@ -56,6 +54,7 @@ class SnipREST extends WireHttp {
                 'Accept' => 'application/json',
             ));
         }
+        parent::__construct();
     }
 
 

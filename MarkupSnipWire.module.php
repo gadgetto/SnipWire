@@ -41,10 +41,8 @@
      *
      */
     public function __construct() {
-        parent::__construct();
-
-        // Default button/link prompt
         $this->set('defaultLinkPrompt', $this->_('Buy now'));
+        parent::__construct();
     }
     
     /**
