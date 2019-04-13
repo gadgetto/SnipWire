@@ -67,7 +67,7 @@ class SnipREST extends WireHttp {
      * 
      */
     public function testConnection() {
-        if (!$this->headers) return false;
+        if (!$this->headers) return $this->_('Missing request headers for Snipcart REST connection.');
         return ($this->get(self::apiEndpoint . self::resourcePathSettingsDomain)) ? true : $this->getError();
     }
 
