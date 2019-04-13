@@ -191,14 +191,14 @@ class ProcessSnipWireConfig extends ModuleConfig {
         
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key');
-        $f->label = $this->_('Snipcart Public API Key');
+        $f->label = $this->_('Snipcart Public JavaScript API Key');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
 
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key_test');
-        $f->label = $this->_('Snipcart Public Test API Key');
+        $f->label = $this->_('Snipcart Public JavaScript Test API Key');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
@@ -206,7 +206,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key_secret');
         $f->label = $this->_('Snipcart Secret API Key');
-        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account. This key should never be visible to anyone.');
+        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account via REST API. This key should never be visible to anyone.');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
@@ -214,7 +214,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key_secret_test');
         $f->label = $this->_('Snipcart Secret Test API Key');
-        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account. This key should never be visible to anyone.');
+        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account via REST API. This key should never be visible to anyone.');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
