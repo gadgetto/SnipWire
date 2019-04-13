@@ -14,9 +14,6 @@
 
 class ProcessSnipWireConfig extends ModuleConfig {
 
-    /** @var SnipREST $snipREST Interface class for Snipcart REST API */
-    protected $snipREST = null;
-    
     /** @var array $availableCreditCards Available creditcard types */
     protected $availableCreditCards = array(            
         'visa',
@@ -38,8 +35,6 @@ class ProcessSnipWireConfig extends ModuleConfig {
      */
     public function __construct() {
         parent::__construct();
-        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SnipREST.php';
-        $this->snipREST = new SnipREST();
     }
 
     /**
@@ -134,6 +129,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
 
     public function getInputfields() {
         $modules = $this->wire('modules');
+        $snipREST = $this->wire('snipREST');
         
         $inputfields = parent::getInputfields();
 
@@ -270,7 +266,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         $f->notes = $this->_('The first currency in the list will be the default one used in your product catalogue and in Snipcart shopping-cart.');
         $currencyLabels = self::getCurrencyLabels();
         $currencies = array();
-        if (!$currencies = $this->snipREST->getSettings('currencies')) $currencies[] = $this->getDefaultCurrency();
+        if (!$currencies = $snipREST->getSettings('currencies')) $currencies[] = $this->getDefaultCurrency();
         foreach ($currencies as $currency) {
             unset($currency['id']); // remove id key from fetched REST result as it is not needed
             $currencyLabel = isset($currencyLabels[$currency['currency']]) ? $currencyLabels[$currency['currency']] : $currency['currency'];

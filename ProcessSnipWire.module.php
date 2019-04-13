@@ -26,6 +26,8 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
             'author'  => 'Martin Gartner',
             'href' => 'http://modules.processwire.com/processsnipwire', 
             'icon' => 'shopping-cart', 
+            'singular' => true, 
+            'autoload' => true, 
             'permissions' => array(
                 'snipwire-dashboard' => __('Use the ProcessSnipWire Dashboard'),
             ), 
@@ -53,12 +55,6 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         );
     }
 
-    /** @var boolean $debug Whether or not module debug mode is active */
-    protected $debug = false;
-
-    /** @var SnipREST $snipREST Interface class for Snipcart REST API */
-    protected $snipREST = null;
-    
     /** @var array $snipcartAPIproperties All Snipcart configuration API properties (some are currently not in use here) */
     protected $snipcartAPIproperties = array(
         'credit_cards',
@@ -95,9 +91,11 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
      */
     public function init() {
         parent::init();
-        $this->snipREST = new SnipREST();
+        /** @var SnipREST $snipREST Custom ProcessWire API variable */
+        $this->wire('snipREST', new SnipREST());
+
     }    
-    
+
     /**
      * The GroupMailer dashboard page.
      *
@@ -111,6 +109,7 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $ajax = $config->ajax;
+        $snipREST = $this->wire('snipREST');
         
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
@@ -120,7 +119,7 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $this->browserTitle($this->_('SnipWireDashboard'));
         $this->headline($this->_('SnipWire Dashboard'));
 
-        $test = $this->snipREST->testConnection();
+        $test = $snipREST->testConnection();
         $out = '<pre>' . $test . '</pre>';
         
         /*
