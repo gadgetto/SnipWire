@@ -41,8 +41,9 @@ class SnipREST extends WireHttp {
      * 
      */
     public function __construct() {
-        // Get ProcessSnipWire module config
-        if ($moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire')) {
+        $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
+        // Need to check if module configuration is available (if configuration form was never submitted, the necessary keys aren't available!)
+        if ($moduleConfig && isset($moduleConfig['submit_save_module'])) {
             // Snipcart environment (TEST | LIVE?)
             $snipcartAPIKey = ($moduleConfig['snipcart_environment'] == 1) ? $moduleConfig['api_key_secret'] : $moduleConfig['api_key_secret_test'];
             

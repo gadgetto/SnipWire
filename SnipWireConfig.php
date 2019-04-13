@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * ProcessSnipWireConfig - Config file for ProcessSnipWire.
+ * SnipWireConfig - Config file for SnipWire.
  * (This file is part of the SnipWire package)
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
@@ -12,7 +12,7 @@
  *
  */
 
-class ProcessSnipWireConfig extends ModuleConfig {
+class SnipWireConfig extends ModuleConfig {
 
     /** @var array $availableCreditCards Available creditcard types */
     protected $availableCreditCards = array(            
@@ -103,7 +103,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
             'single_page_shop' => 0,
             'single_page_shop_page' => 1,
             'credit_cards' => array('visa', 'mastercard', 'maestro'),
-            'currencies' => ProcessSnipWireConfig::getDefaultCurrency(true),
+            'currencies' => SnipWireConfig::getDefaultCurrency(true),
             'show_cart_automatically' => 0,
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
@@ -150,7 +150,7 @@ class ProcessSnipWireConfig extends ModuleConfig {
         
         if ($stepsCounter) {
             // Check which steps are already done and add flag
-            $data = $modules->getConfig('ProcessSnipWire');
+            $data = $modules->getConfig('SnipWire');
             for ($i = 0; $i < count($steps); $i++) {
                 $steps[$i]['done'] = (isset($data[$steps[$i]['name']]) && $data[$steps[$i]['name']]) ? true : false;;
             }

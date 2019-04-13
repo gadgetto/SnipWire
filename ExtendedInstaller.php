@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * Extended resources installer and uninstaller for ProcessSnipWire.
+ * Extended resources installer and uninstaller for SnipWire.
  * (This file is part of the SnipWire package)
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
@@ -31,8 +31,8 @@ class ExtendedInstaller extends Wire {
      * 
      */
     public function __construct() {
-        parent::__construct();
         $this->getInstallResourcesExternal();
+        parent::__construct();
     }
 
     /**

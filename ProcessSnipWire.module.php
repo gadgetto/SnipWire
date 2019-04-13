@@ -1,8 +1,8 @@
 <?php namespace ProcessWire;
 
 /**
- * ProcessSnipWire - Full Snipcart shopping cart integration for ProcessWire CMF.
- * (This module is the master for all other SnipWire modules and files)
+ * ProcessSnipWire - Snipcart dashboard integration for ProcessWire.
+ * (This file is part of the SnipWire package)
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2018 by Martin Gartner
@@ -12,7 +12,7 @@
  *
  */
 
-class ProcessSnipWire extends Process implements Module, ConfigurableModule {
+class ProcessSnipWire extends Process implements Module {
 
     /**
      * Returns information for ProcessSnipWire module.
@@ -21,13 +21,10 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
     public static function getModuleInfo() {
         return array(
             'title' => __('SnipWire'),
-            'summary' => __('Full Snipcart shopping cart integration for ProcessWire CMF.'),
+            'summary' => __('Snipcart dashboard integration for ProcessWire.'),
             'version' => 1, 
             'author'  => 'Martin Gartner',
-            'href' => 'http://modules.processwire.com/processsnipwire', 
             'icon' => 'shopping-cart', 
-            'singular' => true, 
-            'autoload' => true, 
             'permissions' => array(
                 'snipwire-dashboard' => __('Use the ProcessSnipWire Dashboard'),
             ), 
@@ -45,29 +42,13 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
                 ),
             ),
             */
-            'installs' => array(
-                'MarkupSnipWire',
-            ),
             'requires' => array(
                 'PHP>=5.6.0', 
                 'ProcessWire>=3.0.118',
+                'SnipWire',
             ),
         );
     }
-
-    /** @var array $snipcartAPIproperties All Snipcart configuration API properties (some are currently not in use here) */
-    protected $snipcartAPIproperties = array(
-        'credit_cards',
-        'allowed_shipping_methods',
-        'excluded_shipping_methods',
-        'show_cart_automatically',
-        'shipping_same_as_billing',
-        'allowed_countries',
-        'allowed_provinces',
-        'provinces_for_country',
-        'show_continue_shopping',
-        'split_firstname_and_lastname',
-    );
 
     /**
      * Initalize module config variables (properties)
@@ -122,7 +103,7 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $out = '<pre>' . $test . '</pre>';
         
         /*
-        $moduleConfig = $modules->getConfig('ProcessSnipWire');
+        $moduleConfig = $modules->getConfig('SnipWire');
         $out = '<pre>' . print_r($moduleConfig['currencies'], true) . '</pre>';
         $out .= '<pre>' . print_r(wireDecodeJSON($moduleConfig['currencies'][0]), true) . '</pre>';
         $out .= '<pre>' . print_r(wireDecodeJSON($moduleConfig['currencies'][1]), true) . '</pre>';
@@ -134,16 +115,6 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $out = '<div id="snipwire-dashboard">'.$out.'</div>';
 
         return $out;
-    }
-
-    /**
-     * Getter for snipcartAPIproperties
-     *
-     * @return array
-     *
-     */
-    public function getSnipcartAPIproperties() {
-        return $this->snipcartAPIproperties;
     }
 
     /**
@@ -170,7 +141,7 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
         $form->attr('method', 'post');
 
-        $moduleconfig = $modules->getConfig($this->className());
+        $moduleconfig = $modules->getConfig('SnipWire');
         
         // Prevent installation when already installed
         if (isset($moduleconfig['product_package']) && $moduleconfig['product_package']) {
@@ -203,9 +174,9 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
                 if (!$installResources) {                        
                     $this->warning($this->_('Installation of SnipWire product package not completet. Please check the warnings...'));
                 } else {
-                    // Update module config to tell system that product package is installed
+                    // Update SnipWire module config to tell system that product package is installed
                     $moduleconfig['product_package'] = true;
-                    $modules->saveConfig($this->className(), $moduleconfig);            
+                    $modules->saveConfig('SnipWire', $moduleconfig);            
                     $this->message($this->_('Installation of SnipWire product package completet!'));
                 }
                 $this->wire('session')->redirect($comeFromUrl);
@@ -240,7 +211,7 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
         $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
         $form->attr('method', 'post');
         
-        $moduleconfig = $modules->getConfig($this->className());
+        $moduleconfig = $modules->getConfig('SnipWire');
         
         // Prevent uninstallation when already uninstalled
         if (!isset($moduleconfig['product_package']) || !$moduleconfig['product_package']) {
@@ -279,9 +250,9 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
                     if (!$uninstallResources) {                        
                         $this->warning($this->_('Uninstallation of SnipWire product package not completet. Please check the warnings...'));
                     } else {
-                        // Update module config to tell system that product package is not installed
+                        // Update SnipWire module config to tell system that product package is not installed
                         $moduleconfig['product_package'] = false;
-                        $modules->saveConfig($this->className(), $moduleconfig);            
+                        $modules->saveConfig('SnipWire', $moduleconfig);            
                         $this->message($this->_('Uninstallation of SnipWire product package completet!'));
                     }
                     
@@ -311,8 +282,6 @@ class ProcessSnipWire extends Process implements Module, ConfigurableModule {
      *
      */
     public function ___uninstall() {
-        // Remove all caches created by SnipWire
-        $this->wire('cache')->delete(SnipREST::settingsCacheName);
         parent::___uninstall();
     }
 

@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * MarkupSnipWire - Markup output for ProcessSnipWire.
+ * MarkupSnipWire - Snipcart markup output for SnipWire.
  * (This module is part of the SnipWire package)
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
@@ -17,17 +17,16 @@
     public static function getModuleInfo() {
         return array(
             'title' => 'SnipWire Markup', 
-            'summary' => 'Module that outputs markup for SnipWire module.', 
+            'summary' => 'Snipcart markup output for SnipWire.', 
             'version' => 1, 
             'author'  => 'Martin Gartner',
-            'href' => 'http://modules.processwire.com/processsnipwire', 
             'icon' => 'shopping-cart', 
             'singular' => true, 
             'autoload' => true, 
             'requires' => array(
                 'PHP>=5.6.0', 
                 'ProcessWire>=3.0.118',
-                'ProcessSnipWire',
+                'SnipWire',
              )
         );
     }
@@ -35,6 +34,21 @@
     const snicpartAnchorTypeButton = 1;
     const snicpartAnchorTypeLink = 2;
     const snipcartProductTemplate = 'snipcart-product';
+
+    /** @var array $snipcartAPIproperties All Snipcart configuration API properties (some are currently not in use here) */
+    protected $snipcartAPIproperties = array(
+        'credit_cards',
+        'allowed_shipping_methods',
+        'excluded_shipping_methods',
+        'show_cart_automatically',
+        'shipping_same_as_billing',
+        'allowed_countries',
+        'allowed_provinces',
+        'provinces_for_country',
+        'show_continue_shopping',
+        'split_firstname_and_lastname',
+    );
+
 
     /**
      * Initalize module config variables (properties)
@@ -64,12 +78,21 @@
     }
 
     /**
+     * Getter for snipcartAPIproperties
+     *
+     * @return array
+     *
+     */
+    public function getSnipcartAPIproperties() {
+        return $this->snipcartAPIproperties;
+    }
+
+    /**
      * Include JavaScript and CSS files in output
      *
      */
     public function addCSSJS($event) {
         $modules = $this->wire('modules');
-        $moduleSnipWire = $modules->get('ProcessSnipWire');
 
         /** @var Page $page */
         $page = $event->object;
@@ -77,8 +100,8 @@
         // Prevent adding to pages with system templates
         if ($page->template->flags & Template::flagSystem) return;
         
-        // Get ProcessSnipWire module config
-        $moduleConfig = $modules->getConfig('ProcessSnipWire');
+        // Get SnipWire module config
+        $moduleConfig = $modules->getConfig('SnipWire');
         
         // Prevent adding to pages with selected templates (excluded_templates)
         if (in_array($page->template->name, $moduleConfig['excluded_templates'])) return;
@@ -117,7 +140,7 @@
 
         // Pick available Snipcart JS API properties from module config for API output
         $snipcartAPI = array();
-        foreach ($moduleSnipWire->getSnipcartAPIproperties() as $key) {
+        foreach ($this->getSnipcartAPIproperties() as $key) {
             if (isset($moduleConfig[$key])) {
                 $snipcartAPI[$key] = $moduleConfig[$key];
             }
@@ -203,7 +226,7 @@
         $out .= ' class="snipcart-add-item' . $class . '"';
         $out .= $id;
 
-        $moduleConfig = $modules->getConfig('ProcessSnipWire');
+        $moduleConfig = $modules->getConfig('SnipWire');
 
         // Required Snipcart data-item-* properties
         
@@ -231,11 +254,11 @@
     }
 
     /**
-     * Returns the product name using the selected product name field from ProcessSnipWire module config.
+     * Returns the product name using the selected product name field from SnipWire module config.
      * Fallback to $page->title field.
      *
      * @param Page $product The product page which holds Snipcart related product fields
-     * @param array $moduleConfig The ProcessSnipWire module config
+     * @param array $moduleConfig The SnipWire module config
      *
      * @return string $productName The product name
      *
@@ -244,7 +267,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return '';
         
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
         if (!$product->hasField($moduleConfig['data_item_name_field']) || empty($product->{$moduleConfig['data_item_name_field']})) {
             $productName = $product->title;
         } else {
@@ -254,10 +277,10 @@
     }
 
     /**
-     * Returns the full product page url depending on ProcessSnipWire module config.
+     * Returns the full product page url depending on SnipWire module config.
      *
      * @param Page $product The product page which holds Snipcart related product fields
-     * @param array $moduleConfig The ProcessSnipWire module config
+     * @param array $moduleConfig The SnipWire module config
      *
      * @return string $productUrl The product page url
      *
@@ -266,7 +289,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return '';
 
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
         if ($moduleConfig['single_page_shop']) {
             $productUrl = $this->wire('pages')->get($moduleConfig['single_page_shop_page'])->httpUrl;
         } else {
@@ -276,10 +299,10 @@
     }
 
     /**
-     * Returns the product price (optionally formatted by currency property from ProcessSnipWire module config).
+     * Returns the product price (optionally formatted by currency property from SnipWire module config).
      *
      * @param Page $product The product page which holds Snipcart related product fields
-     * @param array $moduleConfig The ProcessSnipWire module config
+     * @param array $moduleConfig The SnipWire module config
      * @param boolean $formatted (unformatted or formatted)
      *
      * @return string $productPrice The product price (unformatted or formatted)
@@ -289,7 +312,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return '';
 
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
         if ($formatted) {
             
             
@@ -319,7 +342,7 @@
      * Generates a Thumbnail from first image of product page-image field and returns it.
      *
      * @param Page $product The product page which holds Snipcart related product fields
-     * @param array $moduleConfig The ProcessSnipWire module config
+     * @param array $moduleConfig The SnipWire module config
      *
      * @return null|Pageimage $productThumb The product thumbnail or null if no image found
      *
@@ -328,7 +351,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return null;
 
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('ProcessSnipWire');
+        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
         $productThumb = null;
         $image = $product->snipcart_item_image->first();
         if ($image) {
@@ -357,8 +380,7 @@
     public function addCreditCardLabels($cards) {
         $cardsWithLabels = array();
         
-        // Get ProcessSnipWire module config
-        $creditcardLabels = ProcessSnipWireConfig::getCreditCardLabels();
+        $creditcardLabels = SnipWireConfig::getCreditCardLabels();
         foreach ($cards as $card) {
             $cardsWithLabels[] = array(
                 'type' => $card,
