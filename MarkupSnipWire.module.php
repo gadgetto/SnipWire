@@ -52,7 +52,7 @@
      *
      */
     public function init() {
-        /** @var MarkupSnipWire Custom SnipWire API variable */
+        /** @var MarkupSnipWire $snipwire Custom ProcessWire API variable */
         $this->wire('snipwire', $this);
     }
 
