@@ -25,6 +25,7 @@ class ProcessSnipWire extends Process implements Module {
             'version' => 1, 
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
+            'permission' => 'snipwire-dashboard',
             'permissions' => array(
                 'snipwire-dashboard' => __('Use the ProcessSnipWire Dashboard'),
             ), 
