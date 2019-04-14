@@ -74,7 +74,7 @@
      */
     public function ready() {
         // Add a hook after page is rendered and add Snipcart CSS/JS
-        $this->addHookAfter('Page::render', $this, 'addCSSJS');
+        $this->addHookAfter('Page::render', $this, 'renderCSSJS');
     }
 
     /**
@@ -91,7 +91,7 @@
      * Include JavaScript and CSS files in output
      *
      */
-    public function addCSSJS(HookEvent $event) {
+    public function renderCSSJS(HookEvent $event) {
         $modules = $this->wire('modules');
 
         /** @var Page $page */
