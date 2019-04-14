@@ -91,19 +91,20 @@
      * Include JavaScript and CSS files in output
      *
      */
-    public function addCSSJS($event) {
+    public function addCSSJS(HookEvent $event) {
         $modules = $this->wire('modules');
 
         /** @var Page $page */
         $page = $event->object;
                 
-        // Prevent adding to pages with system templates
+        // Prevent adding to pages with system templates assigned
         if ($page->template->flags & Template::flagSystem) return;
         
         // Get SnipWire module config
         $moduleConfig = $modules->getConfig('SnipWire');
-        
-        // Prevent adding to pages with selected templates (excluded_templates)
+        if (!$moduleConfig || !isset($moduleConfig['submit_save_module'])) return;
+
+        // Prevent adding to pages with excluded templates assigned
         if (in_array($page->template->name, $moduleConfig['excluded_templates'])) return;
         
         // Snipcart environment (TEST | LIVE?)
