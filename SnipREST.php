@@ -85,7 +85,7 @@ class SnipREST extends WireHttp {
         if ($forceRefresh) $this->wire('cache')->delete(self::settingsCacheName);
 
         // Try to get currencies array from cache first (re-fetch only every n seconds)
-        $response = $this->wire('cache')->get(self::settingsCacheName, self::settingsCacheExpires, function() {
+        $response = $this->wire('cache')->getFor('SnipWire', self::settingsCacheName, self::settingsCacheExpires, function() {
             return $this->getJSON(self::apiEndpoint . self::resourcePathSettingsGeneral);
         });
         return ($key && isset($response[$key])) ? $response[$key] : $response;
