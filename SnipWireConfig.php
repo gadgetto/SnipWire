@@ -145,6 +145,13 @@ class SnipWireConfig extends ModuleConfig {
             'prompt' => $this->_('Install Snipcart products package'),
             'description' => $this->_('This contains product templates, files, fields and some demo pages required by Snipcart. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled.'),
         );
+        $steps[] = array(
+            'type' => 'link',
+            'name' => 'rest_test',
+            'url' => '../setup/snipwire/test-snipcart-rest-connection/?ret=' . $redirectUrl,
+            'prompt' => $this->_('Snipcart REST connection test'),
+            'description' => $this->_('Follow this link to send a test request to the Snipcart REST API.'),
+        );
         
         $stepsCounter = count($steps);
         

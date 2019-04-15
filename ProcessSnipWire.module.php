@@ -119,6 +119,41 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * Test the connection to the Snipcart REST API.
+     * (Called when the URL is this module's page URL + "/test-snipcart-rest-connection/")
+     *
+     */
+    public function ___executeTestSnipcartRestConnection() {
+        $input = $this->wire('input');
+        $sanitizer = $this->wire('sanitizer');
+        $snipREST = $this->wire('snipREST');
+
+        $comeFromUrl = $sanitizer->url($input->get('ret'));
+
+        $this->browserTitle($this->_('SnipWire - Snipcart Connection Test'));
+        $this->headline($this->_('SnipWire - Snipcart Connection Test'));
+
+        if (($result = $snipREST->testConnection()) !== true) {                        
+            $this->warning($result . ' ' . $this->_('Snipcart REST API connection failed! Please check your secret API keys.'));
+        } else {
+            $this->message($this->_('Snipcart REST API connection successfull!'));
+        }
+        if ($comeFromUrl) $this->wire('session')->redirect($comeFromUrl);
+
+        $out = '';
+        
+        // Custom Wire notices output
+        foreach ($this->wire('notices') as $notice) {
+            if ($notice instanceof NoticeWarning) {
+                $out .= '<p style="color: red;">' . $notice->text . '</p>';
+            } elseif ($notice instanceof NoticeMessage) {
+                $out .= '<p style="color: green;">' . $notice->text . '</p>';
+            }
+        }
+        return $out;
+    }
+    
+    /**
      * Install product templates, fields and some demo pages required by Snipcart.
      * (Called when the URL is this module's page URL + "/install-product-package/")
      *
