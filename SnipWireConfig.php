@@ -104,7 +104,7 @@ class SnipWireConfig extends ModuleConfig {
             'single_page_shop_page' => 1,
             'credit_cards' => array('visa', 'mastercard', 'maestro'),
             'currencies' => SnipWireConfig::getDefaultCurrency(true),
-            'show_cart_automatically' => 0,
+            'show_cart_automatically' => 1,
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
