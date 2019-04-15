@@ -354,11 +354,17 @@
         $price = $product->snipcart_item_price;
         
         if ($formatted) {
-            $price = number_format(floatval($product->snipcart_item_price), $currencyDefinition['precision'], $currencyDefinition['decimalSeparator'], $currencyDefinition['thousandSeparator']);
-            $numberFormatString = (floatval($product->snipcart_item_price) < 0) ? $currencyDefinition['negativeNumberFormat'] : $currencyDefinition['numberFormat'];
+            $floatPrice = (float) $product->snipcart_item_price;
+            if ($floatPrice < 0) {
+                $numberFormatString = $currencyDefinition['negativeNumberFormat'];
+                $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
+            } else {
+                $numberFormatString = $currencyDefinition['numberFormat'];
+            }
+            $price = number_format($floatPrice, (integer) $currencyDefinition['precision'], (string) $currencyDefinition['decimalSeparator'], (string) $currencyDefinition['thousandSeparator']);
             $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
             $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
-            $price = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], abs($price)); // price needs to be unsingned ('-' sign position defined by $numberFormatString)
+            $price = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
         }
         return $price;
     }
