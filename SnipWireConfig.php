@@ -153,8 +153,8 @@ class SnipWireConfig extends ModuleConfig {
             'type' => 'link',
             'name' => 'rest_test',
             'url' => '../setup/snipwire/test-snipcart-rest-connection/?ret=' . $redirectUrl,
-            'prompt' => $this->_('Snipcart REST connection test'),
-            'description' => $this->_('Follow this link to send a test request to the Snipcart REST API.'),
+            'prompt' => $this->_('Snipcart REST API connection test'),
+            'description' => $this->_('Follow this link to send a test request to the Snipcart REST API (you first need to enter a valid API key in the settings below).'),
         );
         
         $stepsCounter = count($steps);
@@ -208,7 +208,8 @@ class SnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key_secret');
         $f->label = $this->_('Snipcart Secret API Key');
-        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account via REST API. This key should never be visible to anyone.');
+        $f->description = $this->_('The secret key is used to access all the data of your LIVE Snipcart environment via REST API.');
+        $f->notes = $this->_('This key should never be visible to anyone!');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
@@ -216,7 +217,8 @@ class SnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldText');
         $f->attr('name', 'api_key_secret_test');
         $f->label = $this->_('Snipcart Secret Test API Key');
-        $f->notes = $this->_('The secret key is used to access all the data of your Snipcart account via REST API. This key should never be visible to anyone.');
+        $f->description = $this->_('The secret test key is used to access all the data of your Snipcart TEST environment via REST API.');
+        $f->notes = $this->_('This key should never be visible to anyone!');
         $f->required = true;
         $f->columnWidth = 50;
         $fsAPI->add($f);
