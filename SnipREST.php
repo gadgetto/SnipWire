@@ -41,6 +41,7 @@ class SnipREST extends WireHttp {
      * 
      */
     public function __construct() {
+        parent::__construct();
         $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
         // Need to check if module configuration is available (if configuration form was never submitted, the necessary keys aren't available!)
         if ($moduleConfig && isset($moduleConfig['submit_save_module'])) {
@@ -55,7 +56,6 @@ class SnipREST extends WireHttp {
                 'Accept' => 'application/json',
             ));
         }
-        parent::__construct();
     }
 
 
