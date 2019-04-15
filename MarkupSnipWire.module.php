@@ -310,22 +310,57 @@
      *
      */
     public function getProductPrice(Page $product, $moduleConfig = array(), $formatted = false) {
-        // Check if $product (Page) is a Snipcart product
+        $snipREST = $this->wire('snipREST');
+
+        // If $product (Page) is not a Snipcart product do nothing
         if ($product->template != self::snipcartProductTemplate) return '';
 
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
-        if ($formatted) {
-            
-            
-            $priceFormatted = new \NumberFormatter('us_US', \NumberFormatter::CURRENCY);
-            $priceFormatted->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 0);
-            $productPrice = $priceFormatted->format($product->snipcart_item_price);
-            
-            
+        // $moduleConfig param not given
+        if (empty($moduleConfig) || !is_array($moduleConfig)) {
+            // Try to load currency from database (SnipWire config data)
+            if ($currencies = $this->wire('modules')->getConfig('SnipWire', 'currencies')) {
+                $currency = reset($currencies);
+            }
+        // Use currency from given $moduleConfig param
         } else {
-            $productPrice = $product->snipcart_item_price;
+            $currency = reset($moduleConfig['currencies']);
         }
-        return $productPrice;
+
+        /*
+        $currencyDefinition sample:
+        
+        array(
+            'currency' => 'eur',
+            'precision' => 2,
+            'decimalSeparator' => ',',
+            'thousandSeparator' => '.',
+            'negativeNumberFormat' => '- %s%v',
+            'numberFormat' => '%s%v',
+            'currencySymbol' => '€',
+        )
+        */
+        if (!$currencyDefinition = $snipREST->getSettings('currencies')) {
+            $currencyDefinition = SnipWireConfig::getDefaultCurrencyDefinition();
+        } else {
+            // This woodoo is from https://www.php.net/manual/de/function.array-search.php#120784 :-)
+            // Searches the $currencyDefinition array for $currency value and returns the first corresponding key 
+            $first = array_search($currency, array_column($currencyDefinition, 'currency'));
+            $currencyDefinition = $currencyDefinition[$first];
+        }
+
+        // Still no currency definition array? Return unformatted!
+        if (!is_array($currencyDefinition)) $formatted = false;
+        
+        $price = $product->snipcart_item_price;
+        
+        if ($formatted) {
+            $price = number_format(floatval($product->snipcart_item_price), $currencyDefinition['precision'], $currencyDefinition['decimalSeparator'], $currencyDefinition['thousandSeparator']);
+            $numberFormatString = (floatval($product->snipcart_item_price) < 0) ? $currencyDefinition['negativeNumberFormat'] : $currencyDefinition['numberFormat'];
+            $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
+            $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
+            $price = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], abs($price)); // price needs to be unsingned ('-' sign position defined by $numberFormatString)
+        }
+        return $price;
     }
     
     /**
