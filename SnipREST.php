@@ -76,15 +76,16 @@ class SnipREST extends WireHttp {
      * This method uses the WireCache to prevent reloading Snipcart data on each request.
      *
      * @var string $key Which settings key to return (fallback to full settings array if $key doesnt exist)
+     * @var mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @var boolean $forceRefresh Wether to refresh the settings cache
-     * @return boolean|array False if request failed or currencies array
+     * @return boolean|array False if request failed or settings array
      *
      */
-    public function getSettings($key = '', $forceRefresh = false) {
+    public function getSettings($key = '', $expires = WireCache::expireNever, $forceRefresh = false) {
         if (!$this->headers) return false;
-        if ($forceRefresh) $this->wire('cache')->delete(self::settingsCacheName);
+        if ($forceRefresh) $this->wire('cache')->deleteFor('SnipWire', self::settingsCacheName);
 
-        // Try to get settings array from cache first (re-fetch only every n seconds)
+        // Try to get settings array from cache first
         $response = $this->wire('cache')->getFor('SnipWire', self::settingsCacheName, self::settingsCacheExpires, function() {
             return $this->getJSON(self::apiEndpoint . self::resourcePathSettingsGeneral);
         });
