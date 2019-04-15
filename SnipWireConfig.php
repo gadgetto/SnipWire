@@ -133,16 +133,20 @@ class SnipWireConfig extends ModuleConfig {
         
         $inputfields = parent::getInputfields();
 
-        // Additional setup steps
+        // Additional steps
 
         $redirectUrl = urlencode($_SERVER['REQUEST_URI']);
 
         $steps = array();
         $steps[] = array(
+            'type' => 'checklist',
             'name' => 'product_package',
             'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
-            'uninstall_url' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
+            'url2' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
             'prompt' => $this->_('Install Snipcart products package'),
+            'prompt2' => $this->_('Uninstall package'),
+            'icon' => 'check-circle',
+            'icon2' => 'times-circle',
             'description' => $this->_('This contains product templates, files, fields and some demo pages required by Snipcart. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled.'),
         );
         $steps[] = array(
@@ -166,20 +170,10 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldMarkup');
             $f->attr('name', '_next_steps');
             $f->icon = 'cog';
-            $f->label = $this->_('Additional installation steps');
-            $f->description = $this->_('To finish setup, the following steps are needed:');
+            $f->label = $this->_('Additional steps');
             $f->value = '<ul class="uk-list uk-list-divider">';
             foreach ($steps as $step) {
-                $target = isset($step['target']) ? ' target="' . $step['target'] . '"' : '';
-                $f->value .= '<li>';
-                if (!$step['done']) {
-                    $f->value .= '<a' . $target .' href="' . $step['url'] . '">' . $step['prompt'] . '</a>';
-                } else {
-                    $f->value .= $step['prompt'] . ' <span style="color: green;">' . wireIconMarkup('check-circle') . ' ' . $this->_('Done') . '</span>';
-                    $f->value .= ' -- <a' . $target .' href="' . $step['uninstall_url'] . '">' . wireIconMarkup('times-circle') . ' ' . $this->_('Uninstall package') . '</a>';
-                }
-                $f->value .= '<br><small>' . $step['description'] . '</small>';
-                $f->value .= '</li>';
+                $f->value .= $this->renderStep($step);
             }
             $f->value .= '</ul>';
             
@@ -500,6 +494,48 @@ class SnipWireConfig extends ModuleConfig {
         $inputfields->add($fsSnipWire);
 
         return $inputfields;
+    }
+
+    /**
+     * Render an additional setup step.
+     * 
+     * @param array $step 
+     * @return string
+     * 
+     */
+    protected function renderStep(array $step) {
+        $out = '';
+
+        $target = isset($step['target']) ? ' target="' . $step['target'] . '"' : '';
+        
+        $out .= '<li>';
+        
+        // Render as kind of checklist
+        if ($step['type'] == 'checklist') {
+            if ($step['done']) {
+                $out .= $step['prompt'] . ' ';
+                $out .= '<span style="color: green;">';
+                if (isset($step['icon'])) $out .= wireIconMarkup($step['icon']) . ' ';
+                $out .= $this->_('Done');
+                $out .= '</span>';
+                if (isset($step['url2'])) {
+                    $out .= ' -- <a' . $target . ' href="' . $step['url2'] . '">';
+                    if (isset($step['icon2'])) $out .= wireIconMarkup($step['icon2']) . ' ';
+                    $out .= $step['prompt2'];
+                    $out .= '</a>';
+                }
+            } else {
+                $out .= '<a' . $target .' href="' . $step['url'] . '">' . $step['prompt'] . '</a>';
+            }
+        // Render as normal link
+        } else {
+            $out .= '<a' . $target .' href="' . $step['url'] . '">' . $step['prompt'] . '</a>';
+        }
+        if (isset($step['description'])) $out .= '<br><small>' . $step['description'] . '</small>';
+        
+        $out .= '</li>';
+    
+        return $out;
     }
 
     /**
