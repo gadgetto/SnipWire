@@ -60,23 +60,25 @@ class SnipWireConfig extends ModuleConfig {
     }
 
     /**
-     * Returns an array of currency labels, indexed by currency name
+     * Returns an array of worldwide supported currencies, as name => label
+     * (comes from static file Currencies.php which holds all currencies 
+     * supported by Snipcart -> copied from Snipcart dashboard)
      * 
      * @return array
      * 
      */
-    public static function getCurrencyLabels() {
+    public static function getSupportedCurrencies() {
         return require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Currencies.php';
     }
     
     /**
-     * Get the default currency setting.
+     * Get the default currency definition.
      *
      * @param boolean $json Wether to return as Json formatted string and not array
      * @return array|string (Json)
      * 
      */
-    public static function getDefaultCurrency($json = false) {
+    public static function getDefaultCurrencyDefinition($json = false) {
         $defaultCurrency = array(
             'currency' => 'eur',
             'precision' => 2,
@@ -103,7 +105,7 @@ class SnipWireConfig extends ModuleConfig {
             'single_page_shop' => 0,
             'single_page_shop_page' => 1,
             'credit_cards' => array('visa', 'mastercard', 'maestro'),
-            'currencies' => SnipWireConfig::getDefaultCurrency(true),
+            'currencies' => array('eur'),
             'show_cart_automatically' => 1,
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
@@ -268,14 +270,15 @@ class SnipWireConfig extends ModuleConfig {
         $f->label = $this->_('Set Currencies'); 
         $f->description = $this->_('Selected currency(s) will be used in your shop catalogue and in the SnipCart shopping-cart system during checkout. As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [SnipCart Dashboard - Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
         $f->notes = $this->_('The first currency in the list will be the default one used in your product catalogue and in Snipcart shopping-cart.');
-        $currencyLabels = self::getCurrencyLabels();
+
+        $supportedCurrencies = self::getSupportedCurrencies();
         $currencies = array();
-        if (!$currencies = $snipREST->getSettings('currencies')) $currencies[] = $this->getDefaultCurrency();
+        if (!$currencies = $snipREST->getSettings('currencies', WireCache::expireNever, true)) $currencies[] = $this->getDefaultCurrencyDefinition();
+
         foreach ($currencies as $currency) {
-            unset($currency['id']); // remove id key from fetched REST result as it is not needed
-            $currencyLabel = isset($currencyLabels[$currency['currency']]) ? $currencyLabels[$currency['currency']] : $currency['currency'];
-            $currencyJson = wireEncodeJSON($currency, true); // needs to be stored as Json string
-            $f->addOption($currencyJson, $currencyLabel);
+            $currencyName = $currency['currency'];
+            $currencyLabel = isset($supportedCurrencies[$currency['currency']]) ? $supportedCurrencies[$currency['currency']] : $currency['currency'];
+            $f->addOption($currencyName, $currencyLabel);
         }
         $f->required = true;
         $fsAPI->add($f);
