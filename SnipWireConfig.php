@@ -183,6 +183,7 @@ class SnipWireConfig extends ModuleConfig {
         // Snipcart API configuration
 
         $fsAPI = $this->wire('modules')->get('InputfieldFieldset');
+        $fsAPI->icon = 'plug';
         $fsAPI->label = $this->_('Snipcart API Configuration');
         $fsAPI->set('themeOffset', true);
 
@@ -332,6 +333,7 @@ class SnipWireConfig extends ModuleConfig {
         // Markup configuration
 
         $fsMarkup = $modules->get('InputfieldFieldset');
+        $fsMarkup->icon = 'html5';
         $fsMarkup->label = $this->_('Markup Output Configuration');
         $fsMarkup->set('themeOffset', true);
 
@@ -406,6 +408,7 @@ class SnipWireConfig extends ModuleConfig {
         // Cart image configuration
         
         $fsCartImage = $modules->get('InputfieldFieldset');
+        $fsCartImage->icon = 'picture-o';
         $fsCartImage->label = $this->_('Cart thumbnail sizing');
         $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled "snipcart_item_image" PageField as cart thumbnail. The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions. Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
         $fsCartImage->set('themeOffset', true);
@@ -457,6 +460,7 @@ class SnipWireConfig extends ModuleConfig {
         // SnipWire API configuration
         
         $fsSnipWire = $modules->get('InputfieldFieldset');
+        $fsSnipWire->icon = 'plug';
         $fsSnipWire->label = $this->_('SnipWire API Configuration');
         $fsSnipWire->set('themeOffset', true);
         
