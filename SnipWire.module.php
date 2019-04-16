@@ -39,6 +39,30 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
+     * Returns a template array for a currency specific price input field.
+     *
+     * Currency specific price input fields will be created on demand by selecting 
+     * currencies in SnipWireModuleConfig.
+     * 
+     * @return array
+     * 
+     */
+    public static function getCurrencyFieldTemplate() {
+        return array(
+            'name' => 'snipcart_item_price_',
+            'type' => 'FieldtypeText',
+            'label' => __('Product Price'),
+            'description' => __('The product price as decimal number.'),
+            'notes' => __('Do not format the number you provide. Use a simple decimal with a dot (.) as a separator.'),
+            'maxlength' => 20,
+            'required' => true,
+            'pattern' => '[-+]?[0-9]*[.]?[0-9]+',
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        );
+    }
+
+    /**
      * Initalize module config variables (properties)
      *
      */
@@ -61,8 +85,69 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     public function init() {
         /** @var SnipREST $snipREST Custom ProcessWire API variable */
         $this->wire('snipREST', new SnipREST());
+        $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
     }    
+
+    /**
+     * Manage currency specific price input fields based on module "currencies" property.
+     *
+     * - Fields will be created on demand and added to the products template automatically.
+     * - If Field to create already exists, it will be re-added to the products template.
+     *
+     */
+    public function manageCurrencyPriceFields(HookEvent $event) {
+        $currencies = isset($event->arguments[1]['currencies']) ? $event->arguments[1]['currencies'] : false;
+        if (empty($currencies) || !is_array($currencies)) return;
+
+        $fields = $this->wire('fields');
+        $fieldgroups = $this->wire('fieldgroups');
+        $templates = $this->wire('templates');
+        $modules = $this->wire('modules');
+        
+        $fieldTemplate = self::getCurrencyFieldTemplate();
+        $supportedCurrencies = SnipWireConfig::getSupportedCurrencies();
+        $fieldsToTemplate = array();
     
+        foreach ($currencies as $currency) {
+            $fieldName = $fieldTemplate['name'] . $currency;
+            $fieldsToTemplate[] = $fieldName;
+            if ($fields->get($fieldName)) continue; // No need to create - already exists!
+            $fieldLabelCurrencyAdd = isset($supportedCurrencies[$currency]) ? $supportedCurrencies[$currency] : $currency;
+
+            $f = new Field();
+            $f->type = $modules->get($fieldTemplate['type']);
+            $f->name = $fieldName;
+            $f->label = $fieldTemplate['label'] . ' (' . $fieldLabelCurrencyAdd . ')';
+            $f->description = $fieldTemplate['description'];
+            $f->notes = $fieldTemplate['notes'];
+            $f->maxlength = $fieldTemplate['maxlength'];
+            $f->required = $fieldTemplate['required'];
+            $f->pattern = $fieldTemplate['pattern'];
+            $f->tags = $fieldTemplate['tags'];
+            $f->save();
+            $this->message($this->_('Created currency specific field: ') . $fieldName);
+            $fieldsToTemplate[] = $fieldName;
+        }
+
+        // Add fields to template */
+        if (!empty($fieldsToTemplate)) {
+            foreach ($fieldsToTemplate as $name) {
+                foreach (explode(',', $fieldTemplate['_addToTemplates']) as $tn) {
+                    $fg = $templates->get($tn)->fieldgroup;
+                    if ($fg->hasField($name)) continue; // No need to add - already added!
+                    if ($fg->id) {
+                        $f = $fields->get($name);
+                        $fg->add($f);
+                        $fg->save();
+                    } else {
+                        $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template to be assigned does not exist!"), $name, $tn);
+                        $this->warning($out);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Called on module install
      *
