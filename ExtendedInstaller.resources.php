@@ -74,18 +74,6 @@ $resources = array(
     */
     
     'fields' => array(
-        'snipcart_item_price' => array(
-            'name' => 'snipcart_item_price',
-            'type' => 'FieldtypeText',
-            'label' => __('Product Price'),
-            'description' => __('The product price as decimal number.'),
-            'notes' => __('Do not format the number you provide. Use a simple decimal with a dot (.) as a separator. Simply define the price regardless of the currency you\'re using.'),
-            'maxlength' => 20,
-            //'columnWidth' => 50,
-            'required' => true,
-            'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
-        ),
         'snipcart_item_description' => array(
             'name' => 'snipcart_item_description',
             'type' => 'FieldtypeTextarea',
