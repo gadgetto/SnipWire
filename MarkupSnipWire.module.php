@@ -165,8 +165,14 @@
         
         $jsAPI = rtrim($jsAPI, PHP_EOL);
         $jsAPI .= ';' . PHP_EOL;
-        $jsAPI .= '</script>';
-        
+
+        // Prepare Snipcart JS cart currency API output (only rendered if needed)
+        if (count($moduleConfig['currencies']) > 1) {
+            $jsAPI .= 'Snipcart.api.cart.currency("' . reset($moduleConfig['currencies']) . '");'; // first key is default cart currency!
+        }
+
+        $jsAPI .= '</script>' . PHP_EOL;
+
         // Add Snipcart JS API config
         $jsResources[] = $jsAPI;
 
@@ -175,8 +181,8 @@
         $jsDebug .= 'document.addEventListener("snipcart.ready", function() {' . PHP_EOL;
         $jsDebug .= '    Snipcart.DEBUG = ' . ($moduleConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
         $jsDebug .= '});' . PHP_EOL;
-        $jsDebug .= '</script>';
-
+        $jsDebug .= '</script>' . PHP_EOL;
+        
         // Add Snipcart JS debugging switch
         $jsResources[] = $jsDebug;
         
