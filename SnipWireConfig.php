@@ -268,7 +268,11 @@ class SnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldAsmSelect');
         $f->attr('name', 'currencies'); 
         $f->label = $this->_('Set Currencies'); 
-        $f->description = $this->_('Selected currency(s) will be used in your shop catalogue and in the SnipCart shopping-cart system during checkout. As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [SnipCart Dashboard - Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
+        $f->description = $this->_('Selected currency(s) will be used in your shop catalogue and in the SnipCart shopping-cart system during checkout.');
+        $f->description .= ' ';
+        $f->description .= $this->_('As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [SnipCart Dashboard - Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
+        $f->description .= ' ';
+        $f->description .= $this->_('Selecting a currency will also create a corresponding currency specific price input field and add it to the products template automatically.');
         $f->notes = $this->_('Selecting more than one curency will enable Snipcart\'s multiple currencies payments feature. The first currency in the list will be the default one used in your product catalogue and in Snipcart shopping-cart.');
 
         $supportedCurrencies = self::getSupportedCurrencies();
