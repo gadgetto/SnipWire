@@ -144,7 +144,7 @@ class SnipWireConfig extends ModuleConfig {
             'type' => 'checklist',
             'name' => 'product_package',
             'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
-            'url2' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
+            //'url2' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl, // disabled uninstaller
             'prompt' => $this->_('Install Snipcart products package'),
             'prompt2' => $this->_('Uninstall package'),
             'icon' => 'check-circle',
@@ -527,7 +527,7 @@ class SnipWireConfig extends ModuleConfig {
                 if (isset($step['icon'])) $out .= wireIconMarkup($step['icon']) . ' ';
                 $out .= $this->_('Done');
                 $out .= '</span>';
-                if (isset($step['url2'])) {
+                if (isset($step['url2']) && isset($step['prompt2'])) {
                     $out .= ' -- <a' . $target . ' href="' . $step['url2'] . '">';
                     if (isset($step['icon2'])) $out .= wireIconMarkup($step['icon2']) . ' ';
                     $out .= $step['prompt2'];
