@@ -149,7 +149,7 @@ class SnipWireConfig extends ModuleConfig {
             'prompt2' => $this->_('Uninstall package'),
             'icon' => 'check-circle',
             'icon2' => 'times-circle',
-            'description' => $this->_('This contains product templates, files, fields and some demo pages required by Snipcart. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled.'),
+            'description' => $this->_('Contains product templates, files, fields and some demo pages required to build a Snipcart product catalogue. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled. These resources need to be removed manually!'),
         );
         $steps[] = array(
             'type' => 'link',
@@ -326,11 +326,10 @@ class SnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Other Configuration Parameters');
         $f->value = 
-        '<p>' .
-            $this->_('Other SnipCart settings needs to be configured through the Snipcart backend:') . ' ' .
+        '<p class="detail">' .
+            $this->_('Other SnipCart API settings can be configured through the Snipcart backend:') . ' ' .
             '<a href="https://app.snipcart.com/dashboard" target="_blank">https://app.snipcart.com/dashboard</a>' .
         '</p>';
-        $f->notes = $this->_('e.g. allowed shipping methods, excluded shipping methods, allowed countries, allowed provinces, provinces for country, ...');
         $fsAPI->add($f);
 
         $inputfields->add($fsAPI);
@@ -466,7 +465,7 @@ class SnipWireConfig extends ModuleConfig {
         
         $fsSnipWire = $modules->get('InputfieldFieldset');
         $fsSnipWire->icon = 'plug';
-        $fsSnipWire->label = $this->_('SnipWire API Configuration');
+        $fsSnipWire->label = $this->_('SnipWire Configuration');
         $fsSnipWire->set('themeOffset', true);
         
         $productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate);
@@ -540,7 +539,7 @@ class SnipWireConfig extends ModuleConfig {
         } else {
             $out .= '<a' . $target .' href="' . $step['url'] . '">' . $step['prompt'] . '</a>';
         }
-        if (isset($step['description'])) $out .= '<br><small>' . $step['description'] . '</small>';
+        if (isset($step['description'])) $out .= '<br><span class="detail">' . $step['description'] . '</span>';
         
         $out .= '</li>';
     
