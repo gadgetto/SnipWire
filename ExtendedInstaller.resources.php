@@ -42,9 +42,9 @@ $resources = array(
     ================
     
     data-item-id: integer (ProcessWire Page ID)
-    data-item-name: string (ProcessWire Page title)
-    data-item-price: decimal (For multi-currency feature read: https://docs.snipcart.com/configuration/multi-currency)
-    data-item-url: string (URL where Snipcart crawler will find the Buy button. For single-page websites, provide only the basic domain name, such as www.example.com, or a simple slash bar /.)
+    data-item-name: string (ProcessWire Page title by default - can be changed to any text field type)
+    data-item-price: decimal (Will be created by selecting the desired currency(s) in module config form)
+    data-item-url: string (URL where Snipcart crawler will find the Buy button)
     
     Optional fields:
     ================
@@ -98,10 +98,7 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
-        
-        
-        
-        
+
         
     ),
     
