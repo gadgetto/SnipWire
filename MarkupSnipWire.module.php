@@ -314,6 +314,11 @@
 
         // If $product (Page) is not a Snipcart product do nothing
         if ($product->template != self::snipcartProductTemplate) return '';
+        
+        $price = $product->snipcart_item_price;
+
+        // If unformatted return as early as possible
+        if (!$formatted) return $price;
 
         // $moduleConfig param not given
         if (empty($moduleConfig) || !is_array($moduleConfig)) {
@@ -350,11 +355,9 @@
 
         // Still no currency definition array? Return unformatted!
         if (!is_array($currencyDefinition)) $formatted = false;
-        
-        $price = $product->snipcart_item_price;
-        
+                
         if ($formatted) {
-            $floatPrice = (float) $product->snipcart_item_price;
+            $floatPrice = (float) $price;
             if ($floatPrice < 0) {
                 $numberFormatString = $currencyDefinition['negativeNumberFormat'];
                 $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)

@@ -185,13 +185,13 @@ class ExtendedInstaller extends Wire {
                         if ($fg->id) {
                             $f = $fields->get($item['name']);
                             $fg->add($f);
+                            $fg->save();
                         } else {
                             $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template to be assigned does not exist!"), $item['name'], $tn);
                             $this->warning($out);
                         }
                     }
                 }
-                $fg->save();
             }
         }
 
