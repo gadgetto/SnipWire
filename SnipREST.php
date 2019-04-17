@@ -91,4 +91,14 @@ class SnipREST extends WireHttp {
         return ($key && isset($response[$key])) ? $response[$key] : $response;
     }
 
+    /**
+     * Completely refresh Snipcart settings cache.
+     *
+     * @return boolean|array False if request failed or settings array
+     *
+     */
+    public function refreshSettings() {
+        return $this->getSettings('', WireCache::expireNever, true);
+    }
+
 }
