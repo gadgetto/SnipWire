@@ -166,7 +166,7 @@
         $jsAPI = rtrim($jsAPI, PHP_EOL);
         $jsAPI .= ';' . PHP_EOL;
 
-        // Prepare Snipcart JS cart currency API output (only rendered if needed)
+        // Prepare Snipcart JS cart currency API output (only rendered if multiple currencies defined)
         if (count($moduleConfig['currencies']) > 1) {
             $jsAPI .= 'Snipcart.api.cart.currency("' . reset($moduleConfig['currencies']) . '");'; // first key is default cart currency!
         }
