@@ -7,6 +7,7 @@
  */
 
 $resources = array(
+
     'templates' => array(
         'snipcart-shop' => array(
             'name' => 'snipcart-shop',
@@ -72,7 +73,7 @@ $resources = array(
     data-item-payment-trial: 
     data-item-recurring-shipping: boolean
     */
-    
+
     'fields' => array(
         'snipcart_item_description' => array(
             'name' => 'snipcart_item_description',
@@ -101,7 +102,7 @@ $resources = array(
 
         
     ),
-    
+
     'pages' => array(
         'snipcart-shop' => array(
             'name' => 'snipcart-shop',
@@ -110,9 +111,9 @@ $resources = array(
             'parent' => '/', // needs to be page path
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'lorem-ipsum-dolor' => array(
-            'name' => 'lorem-ipsum-dolor',
-            'title' => 'Lorem Ipsum Dolor',
+        'product-1' => array(
+            'name' => 'product-1',
+            'title' => 'Product 1',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
@@ -122,9 +123,9 @@ $resources = array(
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'ut-enim-ad-minim' => array(
-            'name' => 'ut-enim-ad-minim',
-            'title' => 'Ut Enim ad Minim',
+        'product-2' => array(
+            'name' => 'product-2',
+            'title' => 'Product 2',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
@@ -134,13 +135,13 @@ $resources = array(
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'duis-aute-irure-dolor' => array(
-            'name' => 'duis-aute-irure-dolor',
-            'title' => 'Duis Aute Irure Dolor',
+        'product-3' => array(
+            'name' => 'product-3',
+            'title' => 'Product 3',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
-                'snipcart_item_price' => '119',
+                'snipcart_item_price' => '1199',
                 'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
                 'snipcart_item_image' => 'sample_images/pastries.jpg', // source file from module directory
             ),
