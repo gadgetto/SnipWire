@@ -158,19 +158,17 @@
         $out = '<script>' . PHP_EOL;
         $out .= 'Snipcart.api';
         foreach ($snipcartAPI as $key => $value) {
-            if ($key == 'credit_cards') {
-                $value = $this->addCreditCardLabels($value);
-            }
+            if ($key == 'credit_cards') $value = $this->addCreditCardLabels($value);
             if (is_array($value)) {
                 $value = wireEncodeJSON($value, true);
             } else {
                 $value = $value ? 'true' : 'false';
             }
-            $out .= '.configure("' . $key . '", ' . $value . ')';
+            $out .= '.configure("' . $key . '",' . $value . ')';
         }
         $out .= ';' . PHP_EOL;
 
-        $out .= 'document.addEventListener("snipcart.ready", function() {' . PHP_EOL;
+        $out .= 'document.addEventListener("snipcart.ready",function() {' . PHP_EOL;
         if (count($moduleConfig['currencies']) > 1) {
             $currentCurrency = $this->currentCurrency ? $this->currentCurrency : reset($moduleConfig['currencies']);
             $out .= 'Snipcart.api.cart.currency("' . $currentCurrency . '");' . PHP_EOL;
