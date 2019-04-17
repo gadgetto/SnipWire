@@ -33,7 +33,6 @@ class SnipREST extends WireHttp {
     const resourcePathSettingsDomain = '/settings/domain';
     
     const settingsCacheName = 'SnipcartSettingsGeneral';
-    
 
     /**
      * Construct/initialize
@@ -41,6 +40,11 @@ class SnipREST extends WireHttp {
      */
     public function __construct() {
         parent::__construct();
+
+        $this->set('noticesText', array(
+            'error_no_headers' => $this->_('Missing request headers for Snipcart REST connection.'),
+        ));
+
         $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
         // Need to check if module configuration is available (if configuration form was never submitted, the necessary keys aren't available!)
         if ($moduleConfig && isset($moduleConfig['submit_save_module'])) {
@@ -57,19 +61,6 @@ class SnipREST extends WireHttp {
         }
     }
 
-
-    /**
-     * Snipcart REST API connection test.
-     * (uses resourcePathSettingsDomain for test request)
-     *
-     * @return mixed True on success or string of status code on error
-     * 
-     */
-    public function testConnection() {
-        if (!$this->headers) return $this->_('Missing request headers for Snipcart REST connection.');
-        return ($this->get(self::apiEndpoint . self::resourcePathSettingsDomain)) ? true : $this->getError();
-    }
-
     /**
      * Get the available settings from Snipcart dashboard as array.
      * This method uses the WireCache to prevent reloading Snipcart data on each request.
@@ -81,7 +72,10 @@ class SnipREST extends WireHttp {
      *
      */
     public function getSettings($key = '', $expires = WireCache::expireNever, $forceRefresh = false) {
-        if (!$this->headers) return false;
+        if (!$this->headers) {
+            $this->error($this->noticesText['error_no_headers']);
+            return false;
+        }
         if ($forceRefresh) $this->wire('cache')->deleteFor('SnipWire', self::settingsCacheName);
 
         // Try to get settings array from cache first
@@ -91,6 +85,22 @@ class SnipREST extends WireHttp {
         return ($key && isset($response[$key])) ? $response[$key] : $response;
     }
 
+    /**
+     * Snipcart REST API connection test.
+     * (uses resourcePathSettingsDomain for test request)
+     *
+     * @return mixed $status True on success or string of status code on error
+     * 
+     */
+    public function testConnection() {
+        if (!$this->headers) {
+            $status = $this->noticesText['error_no_headers'];
+            $this->error($status);
+            return $status;
+        }
+        return ($this->get(self::apiEndpoint . self::resourcePathSettingsDomain)) ? true : $this->getError();
+    }
+    
     /**
      * Completely refresh Snipcart settings cache.
      *
