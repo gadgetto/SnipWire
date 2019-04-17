@@ -154,10 +154,9 @@
             }
         }
 
-        // Prepare Snipcart JS config API output
-        $jsAPI = '<script>' . PHP_EOL;
-        $jsAPI .= 'Snipcart.api' . PHP_EOL;
-
+        // Add Snipcart JS API config
+        $out = '<script>' . PHP_EOL;
+        $out .= 'Snipcart.api';
         foreach ($snipcartAPI as $key => $value) {
             if ($key == 'credit_cards') {
                 $value = $this->addCreditCardLabels($value);
@@ -167,38 +166,26 @@
             } else {
                 $value = $value ? 'true' : 'false';
             }
-            $jsAPI .= '.configure("' . $key . '", ' . $value . ')' . PHP_EOL;
+            $out .= '.configure("' . $key . '", ' . $value . ')';
         }
-        
-        $jsAPI = rtrim($jsAPI, PHP_EOL);
-        $jsAPI .= ';' . PHP_EOL;
+        $out .= ';' . PHP_EOL;
 
-        // Prepare Snipcart JS cart currency API output (only rendered if multiple currencies defined)
+        $out .= 'document.addEventListener("snipcart.ready", function() {' . PHP_EOL;
         if (count($moduleConfig['currencies']) > 1) {
-            $jsAPI .= 'Snipcart.api.cart.currency("' . reset($moduleConfig['currencies']) . '");'; // first key is default cart currency!
+            $currentCurrency = $this->currentCurrency ? $this->currentCurrency : reset($moduleConfig['currencies']);
+            $out .= 'Snipcart.api.cart.currency("' . $currentCurrency . '");' . PHP_EOL;
         }
-
-        $jsAPI .= '</script>' . PHP_EOL;
-
-        // Add Snipcart JS API config
-        $jsResources[] = $jsAPI;
-
-        // Prepare Snipcart JS debugging switch
-        $jsDebug = '<script>' . PHP_EOL;
-        $jsDebug .= 'document.addEventListener("snipcart.ready", function() {' . PHP_EOL;
-        $jsDebug .= '    Snipcart.DEBUG = ' . ($moduleConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
-        $jsDebug .= '});' . PHP_EOL;
-        $jsDebug .= '</script>' . PHP_EOL;
+        $out .= 'Snipcart.DEBUG = ' . ($moduleConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
         
-        // Add Snipcart JS debugging switch
-        $jsResources[] = $jsDebug;
+        $out .= '});' . PHP_EOL;
+        $out .= '</script>' . PHP_EOL;
+        $jsResources[] = $out;
         
         // Output CSSJS
         reset($cssResources);
         foreach ($cssResources as $cssResource) {
             $event->return = str_replace('</head>', $cssResource . PHP_EOL . '</head>', $event->return);
         }
-        
         reset($jsResources);
         foreach ($jsResources as $jsResource) {
             $event->return = str_replace('</body>', $jsResource . PHP_EOL . '</body>', $event->return);
