@@ -134,13 +134,13 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             foreach ($fieldsToTemplate as $name) {
                 foreach (explode(',', $fieldTemplate['_addToTemplates']) as $tn) {
                     $fg = $templates->get($tn)->fieldgroup;
-                    if ($fg->hasField($name)) continue; // No need to add - already added!
                     if ($fg->id) {
+                        if ($fg->hasField($name)) continue; // No need to add - already added!
                         $f = $fields->get($name);
                         $fg->add($f);
                         $fg->save();
                     } else {
-                        $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template to be assigned does not exist!"), $name, $tn);
+                        $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist. Please install Snipcart products package first!"), $name, $tn);
                         $this->warning($out);
                     }
                 }
