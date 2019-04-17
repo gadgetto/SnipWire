@@ -88,7 +88,8 @@
     }
 
     /**
-     * Include JavaScript and CSS files in output
+     * Include JavaScript and CSS files in output.
+     * (Method triggered after every page render)
      *
      */
     public function renderCSSJS(HookEvent $event) {
