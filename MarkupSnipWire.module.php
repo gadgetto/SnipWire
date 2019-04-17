@@ -306,37 +306,46 @@
     }
 
     /**
-     * Returns the product price (optionally formatted by currency property from SnipWire module config).
+     * Returns the product price raw or formatted by currency property from SnipWire module config.
+     *
+     * - if formatted = false and multiple currencies are configured, this will return a JSON encoded array: {"usd":20,"cad":25}.
+     * - if formatted = true, this will return the price formatted by the selected (or first) currency: € 19,99
      *
      * @param Page $product The product page which holds Snipcart related product fields
      * @param array $moduleConfig The SnipWire module config
+     * @param string $currencySelected The currency code to select the price (eur, usd, cad, ...) -> only in use if formatted = true
      * @param boolean $formatted (unformatted or formatted)
      *
      * @return string $productPrice The product price (unformatted or formatted)
      *
      */
-    public function getProductPrice(Page $product, $moduleConfig = array(), $formatted = false) {
-        $snipREST = $this->wire('snipREST');
-
-        // If $product (Page) is not a Snipcart product do nothing
+    public function getProductPrice(Page $product, $moduleConfig = array(), $currencySelected = '', $formatted = false) {
         if ($product->template != self::snipcartProductTemplate) return '';
         
-        $price = $product->snipcart_item_price;
-
-        // If unformatted return as early as possible
-        if (!$formatted) return $price;
-
-        // $moduleConfig param not given
         if (empty($moduleConfig) || !is_array($moduleConfig)) {
-            // Try to load currency from database (SnipWire config data)
-            if ($currencies = $this->wire('modules')->getConfig('SnipWire', 'currencies')) {
-                $currency = reset($currencies);
-            }
-        // Use currency from given $moduleConfig param
+            $currencies = $this->wire('modules')->getConfig('SnipWire', 'currencies');
         } else {
-            $currency = reset($moduleConfig['currencies']);
+            $currencies = $moduleConfig['currencies'];
+        }
+        if (!is_array($currencies)) return ''; 
+
+        // Collect all price fields values
+        $prices = array();
+        foreach ($currencies as $currency) {
+            $prices[$currency] = (float) $product->get("snipcart_item_price_$currency");
         }
 
+        // ===== unformatted price(s) =====
+
+        // If unformatted return as early as possible
+        //  - sample for single currency: 19,99
+        //  - sample for multi currency: {"usd":20,"cad":25}
+        if (!$formatted) {
+            return (count($prices) > 1) ? wireEncodeJSON($prices, true) : reset($prices);
+        }
+
+        // ===== formatted price =====
+        
         /*
         $currencyDefinition sample:
         
@@ -350,43 +359,46 @@
             'currencySymbol' => '€',
         )
         */
-        if (!$currencyDefinition = $snipREST->getSettings('currencies')) {
+        $currencySelected = ($currencySelected && isset($currencies[$currencySelected])) ? $currencySelected : reset($currencies);
+        $price = $prices[$currencySelected];
+
+        if (!$currencyDefinition = $this->wire('snipREST')->getSettings('currencies')) {
             $currencyDefinition = SnipWireConfig::getDefaultCurrencyDefinition();
         } else {
-            // This woodoo is from https://www.php.net/manual/de/function.array-search.php#120784 :-)
-            // Searches the $currencyDefinition array for $currency value and returns the first corresponding key 
-            $first = array_search($currency, array_column($currencyDefinition, 'currency'));
-            $currencyDefinition = $currencyDefinition[$first];
+            // Searches the $currencyDefinition array for $currencySelected value and returns the corresponding key
+            $key = array_search($currencySelected, array_column($currencyDefinition, 'currency'));
+            $currencyDefinition = $currencyDefinition[$key];
         }
-
-        // Still no currency definition array? Return unformatted!
-        if (!is_array($currencyDefinition)) $formatted = false;
                 
-        if ($formatted) {
-            $floatPrice = (float) $price;
-            if ($floatPrice < 0) {
-                $numberFormatString = $currencyDefinition['negativeNumberFormat'];
-                $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
-            } else {
-                $numberFormatString = $currencyDefinition['numberFormat'];
-            }
-            $price = number_format($floatPrice, (integer) $currencyDefinition['precision'], (string) $currencyDefinition['decimalSeparator'], (string) $currencyDefinition['thousandSeparator']);
-            $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
-            $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
-            $price = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
+        $floatPrice = (float) $price;
+        if ($floatPrice < 0) {
+            $numberFormatString = $currencyDefinition['negativeNumberFormat'];
+            $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
+        } else {
+            $numberFormatString = $currencyDefinition['numberFormat'];
         }
+        $price = number_format($floatPrice, (integer) $currencyDefinition['precision'], (string) $currencyDefinition['decimalSeparator'], (string) $currencyDefinition['thousandSeparator']);
+        $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
+        $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
+        $price = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
+
         return $price;
     }
     
     /**
-     * Helper method to get the formatted product price.
+     * Returns the product price formatted by currency property from SnipWire module config.
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param array $moduleConfig The SnipWire module config
+     * @param string $currencySelected The currency code to select the price (eur, usd, cad, ...)
+     *
+     * @return string The formatted product price
      *
      * @see function getProductPrice
-     * @return string The formatted product price 
      *
      */
-    public function getProductPriceFormatted(Page $product, $moduleConfig = array()) {
-        return $this->getProductPrice($product, $moduleConfig, true);
+    public function getProductPriceFormatted(Page $product, $moduleConfig = array(), $currencySelected = '') {
+        return $this->getProductPrice($product, $moduleConfig, $currencySelected, true);
     }
 
     /**
