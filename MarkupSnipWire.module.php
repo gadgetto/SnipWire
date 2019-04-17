@@ -240,7 +240,7 @@
         $out .= ' data-item-id="' . $product->id . '"';
         $out .= ' data-item-name="' . $this->getProductName($product, $moduleConfig) . '"';
         $out .= ' data-item-url="' . $this->getProductUrl($product, $moduleConfig) . '"';
-        $out .= ' data-item-price="' . $this->getProductPrice($product, $moduleConfig) . '"';
+        $out .= " data-item-price='" . $this->getProductPrice($product, $moduleConfig) . "'";
         
         // Optional Snipcart data-item-* properties
 
