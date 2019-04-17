@@ -49,6 +49,12 @@
         'split_firstname_and_lastname',
     );
 
+    /**
+     * The current currency ('eur' or 'usd' or 'cad' ...)
+     * - will be set via GET, POST, SESSION or URL param
+     *
+     */
+    public $currentCurrency = null;
 
     /**
      * Initalize module config variables (properties)
