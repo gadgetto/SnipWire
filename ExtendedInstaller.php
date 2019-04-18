@@ -177,17 +177,18 @@ class ExtendedInstaller extends Wire {
                 $this->message('Created Field: '.$item['name']);
             }
 
-            // Add fields to their desired templates ====== */
+            // Add fields to their desired templates */
             foreach ($this->resources['fields'] as $item) {
                 if (!empty($item['_addToTemplates'])) {
                     foreach (explode(',', $item['_addToTemplates']) as $tn) {
                         $fg = $templates->get($tn)->fieldgroup;
                         if ($fg->id) {
+                            if ($fg->hasField($name)) continue; // No need to add - already added!
                             $f = $fields->get($item['name']);
                             $fg->add($f);
                             $fg->save();
                         } else {
-                            $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template to be assigned does not exist!"), $item['name'], $tn);
+                            $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist!"), $item['name'], $tn);
                             $this->warning($out);
                         }
                     }
