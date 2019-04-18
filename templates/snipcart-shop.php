@@ -9,6 +9,23 @@
 
 if (!defined('PROCESSWIRE')) die();
 ?>
+<!--
+This is the mini cart display which shows the "Items in cart" count and the total cart value.
+
+Notice that the container element has a "snipcart-summary" class. Add the markup you want within 
+this container, then add "snipcart-total-items" and "snipcart-total-price" to the elements that will 
+contain cart information.
+
+Wrap the container element with a link having the class "snipcart-checkout" and the cart will pop when your 
+visitors click on it.
+
+The complete markup is up to you - it just needs to have the described classes from above included!
+-->
+<p id="masthead-tagline" class="-uk-text-small -uk-text-muted uk-margin-remove uk-text-center snipcart-summary">
+    <a href="#" class="uk-link-reset snipcart-checkout">
+        <?=ukIcon('cart')?> <span class="uk-badge snipcart-total-items"></span> <span class="snipcart-total-price"></span>
+    </a>
+</p>
 
 <div id="content">
     <?php
