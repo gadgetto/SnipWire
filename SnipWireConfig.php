@@ -493,7 +493,7 @@ class SnipWireConfig extends ModuleConfig {
         $f = $modules->get('InputfieldSelect'); 
         $f->attr('name', 'data_item_name_field'); 
         $f->label = $this->_('Set Field for Snipcart Product Name'); 
-        $f->notes = 'Used as Snipcart anchor property "data-item-name"';
+        $f->notes = $this->_('Used as Snipcart anchor property "data-item-name"');
         $f->required = true;
 
         foreach ($productTemplateFields as $field) {
