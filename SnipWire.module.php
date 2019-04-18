@@ -147,14 +147,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
-     * Called on module install
-     *
-     */
-    public function ___install() {
-
-    }
-
-    /**
      * Called on module uninstall
      *
      */
