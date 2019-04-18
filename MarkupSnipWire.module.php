@@ -169,12 +169,9 @@
         $out .= ';' . PHP_EOL;
 
         $out .= 'document.addEventListener("snipcart.ready",function() {' . PHP_EOL;
-        if (count($moduleConfig['currencies']) > 1) {
-            $currentCurrency = $this->currentCurrency ? $this->currentCurrency : reset($moduleConfig['currencies']);
-            $out .= 'Snipcart.api.cart.currency("' . $currentCurrency . '");' . PHP_EOL;
-        }
+        $currentCurrency = $this->currentCurrency ? $this->currentCurrency : reset($moduleConfig['currencies']);
+        $out .= 'Snipcart.api.cart.currency("' . $currentCurrency . '");' . PHP_EOL;
         $out .= 'Snipcart.DEBUG = ' . ($moduleConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
-        
         $out .= '});' . PHP_EOL;
         $out .= '</script>' . PHP_EOL;
         $jsResources[] = $out;
