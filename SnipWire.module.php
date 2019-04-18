@@ -131,8 +131,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         if (!empty($fieldsToTemplate)) {
             foreach ($fieldsToTemplate as $name) {
                 foreach (explode(',', $fieldTemplate['_addToTemplates']) as $tn) {
-                    $fg = $templates->get($tn)->fieldgroup;
-                    if ($fg->id) {
+                    if ($t = $templates->get($tn)) {
+                        $fg = $t->fieldgroup;
                         if ($fg->hasField($name)) continue; // No need to add - already added!
                         $f = $fields->get($name);
                         $fg->add($f);
