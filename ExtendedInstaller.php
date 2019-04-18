@@ -172,6 +172,7 @@ class ExtendedInstaller extends Wire {
                 if (isset($item['columnWidth'])) { $f->columnWidth = $item['columnWidth']; }
                 if (isset($item['required'])) { $f->required = $item['required']; }
                 if (isset($item['extensions'])) { $f->extensions = $item['extensions']; } // for image and file fields
+                if (isset($item['pattern'])) { $f->pattern = $item['pattern']; }
                 if (isset($item['tags'])) { $f->tags = $item['tags']; }
                 $f->save();
                 $this->message('Created Field: '.$item['name']);
