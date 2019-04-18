@@ -75,6 +75,17 @@ $resources = array(
     */
 
     'fields' => array(
+        'snipcart_item_price_eur' => array(
+            'name' => 'snipcart_item_price_eur',
+            'type' => 'FieldtypeText',
+            'label' => __('Product Price (EUR)'),
+            'notes' => __('Decimal with a dot (.) as separator e.g. 19.99'),
+            'maxlength' => 20,
+            'required' => true,
+            'pattern' => '[-+]?[0-9]*[.]?[0-9]+',
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
         'snipcart_item_description' => array(
             'name' => 'snipcart_item_description',
             'type' => 'FieldtypeTextarea',
@@ -82,7 +93,6 @@ $resources = array(
             'description' => __('The product description that your customers will see on product pages in cart and during checkout.'),
             'notes' => __('Provide a short description of your product without HTML tags.'),
             'maxlength' => 400,
-            //'columnWidth' => 50,
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
@@ -93,7 +103,6 @@ $resources = array(
             'label' => __('Product Image(s)'),
             'description' => __('The product image(s) your customers will see on product pages in cart and during checkout.'),
             'notes' => __('The image on first position will be used as the Snipcart thumbnail image. Only this image will be used in cart and during checkout'),
-            //'columnWidth' => 50,
             'required' => false,
             'extensions' => 'gif jpg jpeg png',
             'tags' => 'Snipcart',
@@ -111,37 +120,37 @@ $resources = array(
             'parent' => '/', // needs to be page path
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'product-1' => array(
-            'name' => 'product-1',
-            'title' => 'Product 1',
+        'fuzzy-regalia' => array(
+            'name' => 'fuzzy-regalia',
+            'title' => 'Fuzzy Regalia',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
-                'snipcart_item_price' => '99.98',
+                'snipcart_item_price_eur' => '99.98',
                 'snipcart_item_description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'snipcart_item_image' => 'sample_images/cake.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'product-2' => array(
-            'name' => 'product-2',
-            'title' => 'Product 2',
+        'square-cream-hoax' => array(
+            'name' => 'square-cream-hoax',
+            'title' => 'Square Cream Hoax',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
-                'snipcart_item_price' => '23.90',
+                'snipcart_item_price_eur' => '19.90',
                 'snipcart_item_description' => 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 'snipcart_item_image' => 'sample_images/cookies.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
-        'product-3' => array(
-            'name' => 'product-3',
-            'title' => 'Product 3',
+        'axolotl-juicer' => array(
+            'name' => 'axolotl-juicer',
+            'title' => 'Axolotl Juicer',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
-                'snipcart_item_price' => '1199',
+                'snipcart_item_price_eur' => '1199',
                 'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
                 'snipcart_item_image' => 'sample_images/pastries.jpg', // source file from module directory
             ),
