@@ -27,6 +27,9 @@ The complete markup is up to you - it just needs to have the described classes f
     </a>
 </p>
 
+<!--
+The content element holds your products catalogue.
+-->
 <div id="content">
     <?php
     echo ukHeading1(page()->title, 'divider'); 
@@ -35,12 +38,10 @@ The complete markup is up to you - it just needs to have the described classes f
     ?>
 </div>
 
-<?php
-/* 
-    We hide the <aside> element which is not used in our shop sample.
-    (this is only needed to use our sample templates with the "site-regular" site-profile)
-*/
-?>
+<!--
+We hide the <aside> element which is not used in our shop sample.
+(this is only needed to use our sample templates with the "site-regular" site-profile)
+-->
 <aside id="sidebar" hidden></aside>
 
 <?php
