@@ -46,11 +46,8 @@ class ExtendedInstaller extends Wire {
     protected function getInstallResourcesExternal() {
         // Wire method
         $className = $this->className();
-        
-        // Try to get installation resources from PHP file
         $resources = $className . '.resources.php';
         $path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $resources;
-
         if (file_exists($path)) {
             include $path;
             if (!is_array($resources) || !count($resources)) {
@@ -61,14 +58,13 @@ class ExtendedInstaller extends Wire {
             $out = sprintf($this->_("Installation aborted. Missing [%s] file."), $resources);
             throw new WireException($out);
         }
-        
         $this->resources = $resources;
         return $this->resources;
     }
 
 
     /**
-     * Called when extended resources are installed.
+     * Installer for extended resources from [ClassName].resources.php.
      *
      * @param integer $mode
      * @return boolean true | false (if installations has errors or warnings)
@@ -85,41 +81,37 @@ class ExtendedInstaller extends Wire {
         
         $sourceDir = dirname(__FILE__) . '/';
         
-        /* ====== Pre installation checks ====== */
-
-        if (!$this->preInstallChecks($mode)) { return false; }
-
         /* ====== Install templates ====== */
         
         if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
             foreach ($this->resources['templates'] as $item) {
-                // Create new fieldgroup (same name as template)
-                $fg = new Fieldgroup();
-                $fg->name = $item['name'];
-                
-                // Add the title field (mandatory!)
-                $title = $fields->get('title');
-                $fg->add($title);
-                $fg->save();
-                
-                // Create new template (to use with the fieldgroup)
-                $t = new Template();
-                $t->name = $item['name'];
-                $t->fieldgroup = $fg; // add the fieldgroup
-                
-                // Additional template settings
-                $t->label = $item['label'];
-                if (isset($item['noChildren'])) { $t->noChildren = $item['noChildren']; }
-                if (isset($item['tags'])) { $t->tags = $item['tags']; }
-                
+                $new = false;
+                if ($t = $templates->get($item['name'])) {
+                    $fg = $t->fieldgroup;
+                } else {
+                    $fg = new Fieldgroup();
+                    $fg->name = $item['name'];
+                   
+                    $t = new Template();
+                    $t->name = $item['name'];
+                    $t->fieldgroup = $fg;
+                    $t->label = $item['label'];
+                    if (isset($item['noChildren'])) { $t->noChildren = $item['noChildren']; }
+                    if (isset($item['tags'])) { $t->tags = $item['tags']; }
+                    $new = true;
+                }
+                if (!$fg->hasField($item['name'])) {
+                    $title = $fields->get('title'); // mandatory!
+                    $fg->add($title);
+                }
+                $fg->save();             
                 $t->save();
-                $this->message('Created Template: '.$item['name']);
+                if ($new) $this->message($this->_('Created Template: ') . $item['name']);   
             }
             
             // Solve template dependencies (after installation of all templates!)
             foreach ($this->resources['templates'] as $item) {
-                $t = $templates->get($item['name']);
-                if ($t->id) {
+                if ($t = $templates->get($item['name'])) {
                     $pt = array();
                     if (!empty($item['_allowedParentTemplates'])) {
                         foreach (explode(',', $item['_allowedParentTemplates']) as $ptn) {
@@ -161,35 +153,37 @@ class ExtendedInstaller extends Wire {
         
         if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
             foreach ($this->resources['fields'] as $item) {
+                if ($fields->get($item['name'])) continue; // No need to create - already exists!
+
                 $f = new Field();
                 $f->type = $modules->get($item['type']);
                 $f->name = $item['name'];
                 $f->label = $item['label'];
-                if (isset($item['description'])) { $f->description = $item['description']; }
-                if (isset($item['notes'])) { $f->notes = $item['notes']; }
-                if (isset($item['collapsed'])) { $f->collapsed = $item['collapsed']; }
-                if (isset($item['maxlength'])) { $f->maxlength = $item['maxlength']; }
-                if (isset($item['columnWidth'])) { $f->columnWidth = $item['columnWidth']; }
-                if (isset($item['required'])) { $f->required = $item['required']; }
-                if (isset($item['extensions'])) { $f->extensions = $item['extensions']; } // for image and file fields
-                if (isset($item['pattern'])) { $f->pattern = $item['pattern']; }
-                if (isset($item['tags'])) { $f->tags = $item['tags']; }
+                if (isset($item['description'])) $f->description = $item['description'];
+                if (isset($item['notes'])) $f->notes = $item['notes'];
+                if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
+                if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
+                if (isset($item['columnWidth'])) $f->columnWidth = $item['columnWidth'];
+                if (isset($item['required'])) $f->required = $item['required'];
+                if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
+                if (isset($item['pattern'])) $f->pattern = $item['pattern'];
+                if (isset($item['tags'])) $f->tags = $item['tags'];
                 $f->save();
-                $this->message('Created Field: '.$item['name']);
+                $this->message($this->_('Created Field: ') . $item['name']);
             }
 
             // Add fields to their desired templates */
             foreach ($this->resources['fields'] as $item) {
                 if (!empty($item['_addToTemplates'])) {
                     foreach (explode(',', $item['_addToTemplates']) as $tn) {
-                        $fg = $templates->get($tn)->fieldgroup;
-                        if ($fg->id) {
-                            if ($fg->hasField($name)) continue; // No need to add - already added!
+                        if ($t = $templates->get($tn)) {
+                            $fg = $t->fieldgroup;
+                            if ($fg->hasField($item['name'])) continue; // No need to add - already added!
                             $f = $fields->get($item['name']);
                             $fg->add($f);
                             $fg->save();
                         } else {
-                            $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist!"), $item['name'], $tn);
+                            $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist!"), $name, $tn);
                             $this->warning($out);
                         }
                     }
@@ -201,20 +195,16 @@ class ExtendedInstaller extends Wire {
 
         if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
             foreach ($this->resources['pages'] as $item) {
-                // Check if template exists
-                if (!$this->existsTemplate($item['template'])) {
+                if (!$t = $templates->get($item['template'])) {
                     $out = sprintf($this->_("Installation of page [%s] aborted. The template [%s] to be assigned does not exist!"), $item['name'], $item['template']);
                     $this->warning($out);
                     continue;
                 }
-                // Check if parent exists
-                if (!$this->existsPage($item['parent'])) {
+                if (!$this->wire('pages')->get($item['parent'])) {
                     $out = sprintf($this->_("Installation of page [%s] aborted. The parent [%s] to be set does not exist!"), $item['name'], $item['parent']);
                     $this->warning($out);
                     continue;
                 }
-                
-                // Create new page
                 $page = new Page();
                 $page->name = $item['name'];
                 $page->template = $item['template'];
@@ -222,7 +212,7 @@ class ExtendedInstaller extends Wire {
                 $page->process = $this;
                 $page->title = $item['title'];
                 $page->save();
-                $this->message('Created Page: '.$page->path);
+                $this->message($this->_('Created Page: ') . $page->path);
                 
                 // Populate page-field values
                 if (!empty($item['fields']) && is_array($item['fields'])) {
@@ -246,14 +236,12 @@ class ExtendedInstaller extends Wire {
 
         if (!empty($this->resources['permissions']) && is_array($this->resources['permissions'])) {
             foreach ($this->resources['permissions'] as $item) {
-                // Only install permission if it does not already exist
-                $permission = $permissions->get('name='.$item['name']);
-                if (!$permission->id) {
+                if (!$permission = $permissions->get('name='.$item['name'])) {
                     $p = new Permission();
-                    $p->name  = $item['name'];
+                    $p->name = $item['name'];
                     $p->title = $item['title'];
                     $p->save();
-                    $this->message('Created Permission: '.$item['name']);
+                    $this->message($this->_('Created Permission: ') . $item['name']);
                 }
             }
         }
@@ -375,92 +363,6 @@ class ExtendedInstaller extends Wire {
         }
 
         return ($this->wire('notices')->hasWarnings() or $this->wire('notices')->hasErrors()) ? false : true;    
-    }
-
-
-    /**
-     * Pre-Installation checks for extended resources.
-     *
-     * @param integer $mode
-     * @return boolean true | false (if preInstallChecks has errors or warnings)
-     *
-     */
-    protected function preInstallChecks($mode = self::installerModeAll) {
-        $fields      = $this->wire('fields');
-        $fieldgroups = $this->wire('fieldgroups');
-        $templates   = $this->wire('templates');
-        $pages       = $this->wire('pages');
-        $permissions = $this->wire('permissions');
-        $modules     = $this->wire('modules');
-        
-        // Check if one of the templates to be installed already exists
-        if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
-            foreach ($this->resources['templates'] as $item) {
-                $t = $templates->get($item['name']);
-                if ($t) {
-                    $out = sprintf($this->_("Installation of extended resources aborted. The template to be installed already exists! Please be sure that you do not have a template with name [%s] before installing this package."), $item['name']);
-                    $this->warning($out);
-                }
-            }
-        }
-        
-        // Check if one of the fields to be installed already exists
-        if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
-            foreach ($this->resources['fields'] as $item) {
-                $f = $fields->get($item['name']);
-                if ($f) {
-                    $out = sprintf($this->_("Installation of extended resources aborted. The field to be installed already exists! Please be sure that you do not have a field with name [%s] before installing this package."), $item['name']);
-                    $this->warning($out);
-                }
-            }
-        }
-        
-        // Check if one of the pages to be installed already exists
-        if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
-            foreach ($this->resources['pages'] as $item) {
-                $p = $pages->get('template='.$item['template'].', name='.$item['name']);
-                if ($p->id) {
-                    $out = sprintf($this->_("Installation of extended resources aborted. The page to be installed already exists! Please be sure that you do not have a page with name [%s] before installing this package."), $item['name']);
-                    $this->warning($out);
-                }
-            }
-        }
-        
-        return ($this->wire('notices')->hasWarnings() or $this->wire('notices')->hasErrors()) ? false : true;
-    }
-
-    /**
-     * Checks if template exists.
-     *
-     * @param string $name
-     * @access protected
-     * @return boolean
-     *
-     */
-    protected function existsTemplate($name) {
-        $exists = false;
-        $t = $this->wire('templates')->get($name);; 
-        if ($t) {
-            $exists = true;
-        }
-        return $exists;
-    }
-    
-    /**
-     * Checks if page exists.
-     *
-     * @param string | array | Selectors | int $selector
-     * @access protected
-     * @return boolean
-     *
-     */
-    protected function existsPage($selector) {
-        $exists = false;
-        $p = $this->wire('pages')->get($selector); 
-        if ($p->id) {
-            $exists = true;
-        }
-        return $exists;
     }
 
 }
