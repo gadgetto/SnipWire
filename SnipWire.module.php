@@ -52,8 +52,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             'name' => 'snipcart_item_price_',
             'type' => 'FieldtypeText',
             'label' => __('Product Price'),
-            'description' => __('The product price as decimal number.'),
-            'notes' => __('Do not format the number you provide. Use a simple decimal with a dot (.) as a separator.'),
+            'notes' => __('Decimal with a dot (.) as separator e.g. 19.99'),
             'maxlength' => 20,
             'required' => true,
             'pattern' => '[-+]?[0-9]*[.]?[0-9]+',
@@ -118,7 +117,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $f->type = $modules->get($fieldTemplate['type']);
             $f->name = $fieldName;
             $f->label = $fieldTemplate['label'] . ' (' . $fieldLabelCurrencyAdd . ')';
-            $f->description = $fieldTemplate['description'];
             $f->notes = $fieldTemplate['notes'];
             $f->maxlength = $fieldTemplate['maxlength'];
             $f->required = $fieldTemplate['required'];
