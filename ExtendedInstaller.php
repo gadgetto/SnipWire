@@ -86,27 +86,22 @@ class ExtendedInstaller extends Wire {
         if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
             foreach ($this->resources['templates'] as $item) {
                 $new = false;
-                if ($t = $templates->get($item['name'])) {
-                    $fg = $t->fieldgroup;
-                } else {
+                if (!$templates->get($item['name'])) {
                     $fg = new Fieldgroup();
                     $fg->name = $item['name'];
+                    // Add title field (mandatory!)
+                    $fg->add($fields->get('title'));
+                    $fg->save();             
                    
                     $t = new Template();
                     $t->name = $item['name'];
                     $t->fieldgroup = $fg;
                     $t->label = $item['label'];
-                    if (isset($item['noChildren'])) { $t->noChildren = $item['noChildren']; }
-                    if (isset($item['tags'])) { $t->tags = $item['tags']; }
-                    $new = true;
+                    if (isset($item['noChildren'])) $t->noChildren = $item['noChildren'];
+                    if (isset($item['tags'])) $t->tags = $item['tags'];
+                    $t->save();
+                    $this->message($this->_('Created Template: ') . $item['name']);
                 }
-                if (!$fg->hasField($item['name'])) {
-                    $title = $fields->get('title'); // mandatory!
-                    $fg->add($title);
-                }
-                $fg->save();             
-                $t->save();
-                if ($new) $this->message($this->_('Created Template: ') . $item['name']);   
             }
             
             // Solve template dependencies (after installation of all templates!)
