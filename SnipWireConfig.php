@@ -472,8 +472,7 @@ class SnipWireConfig extends ModuleConfig {
         $fsSnipWire->label = $this->_('SnipWire Configuration');
         $fsSnipWire->set('themeOffset', true);
         
-        $productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate);
-        if ($productTemplate) {
+        if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {
             $productTemplateFields = $productTemplate->fields;
         } else {
             $productTemplateFields = new FieldsArray();
