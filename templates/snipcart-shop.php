@@ -46,10 +46,9 @@ The content element holds your products catalogue.
 </div>
 
 <!--
-We hide the <aside> element which is not used in our shop sample.
-(this is only needed to use our sample templates with the "site-regular" site-profile)
+We remove the <aside> element which is not used in our shop sample.
 -->
-<aside id="sidebar" hidden></aside>
+<aside id="sidebar" pw-remove></aside>
 
 <?php
 /**
