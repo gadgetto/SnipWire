@@ -12,6 +12,7 @@ $resources = array(
         'snipcart-shop' => array(
             'name' => 'snipcart-shop',
             'label' => 'Snipcart Shop',
+            'icon' => 'shopping-cart', 
             'noChildren' => 0,
             'tags' => 'Snipcart',
             '_allowedChildTemplates' => 'snipcart-product', // comma separated list of allowed child template names

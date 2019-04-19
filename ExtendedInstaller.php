@@ -97,6 +97,7 @@ class ExtendedInstaller extends Wire {
                     $t->name = $item['name'];
                     $t->fieldgroup = $fg;
                     $t->label = $item['label'];
+                    if (isset($item['icon'])) $t->setIcon($item['icon']);
                     if (isset($item['noChildren'])) $t->noChildren = $item['noChildren'];
                     if (isset($item['tags'])) $t->tags = $item['tags'];
                     $t->save();
