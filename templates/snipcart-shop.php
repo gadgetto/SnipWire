@@ -11,6 +11,15 @@
  */
 
 if (!defined('PROCESSWIRE')) die();
+
+if (!modules()->isInstalled('SnipWire')) {
+    ?>
+    <div id="content">
+        <strong>SnipWire</strong> module is not installed. Module is required to render this page!
+    </div>
+    <?php
+    return;
+}
 ?>
 <!--
 The mini cart display shows the "Items in cart" count and the "total" cart value.
