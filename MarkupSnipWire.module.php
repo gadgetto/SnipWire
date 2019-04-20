@@ -35,7 +35,10 @@
     const snicpartAnchorTypeLink = 2;
     const snipcartProductTemplate = 'snipcart-product';
 
-    /** @var array $snipcartAPIproperties All Snipcart configuration API properties (some are currently not in use here) */
+    /**
+     * Snipcart JS API configuration properties.
+     *
+     */
     protected $snipcartAPIproperties = array(
         'credit_cards',
         'allowed_shipping_methods',
