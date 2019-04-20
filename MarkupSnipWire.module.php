@@ -72,6 +72,16 @@
      */
     public function __construct() {
         $this->set('defaultAnchorPrompt', $this->_('Buy now'));
+
+        // Single point to query DB for SnipWire module config
+        $this->snipWireConfig = $this->wire('modules')->getConfig('SnipWire');
+        
+        // Initialize $currency with first currency from SnipWire module config
+        if (!$this->snipWireConfig || !isset($this->snipWireConfig['submit_save_module'])) {
+            $this->currency = 'eur';
+        } else {
+            $this->currency = reset($this->snipWireConfig['currencies']);
+        }
         parent::__construct();
     }
     
