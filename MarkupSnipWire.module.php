@@ -36,6 +36,20 @@
     const snipcartProductTemplate = 'snipcart-product';
 
     /**
+     * The module config of SnipWire module.
+     * (this is to only have to query the DB once)
+     *
+     */
+    protected $snipWireConfig = array();
+
+    /**
+     * Define the currency to be used in cart and catalogue.
+     * ('eur' or 'usd' or 'cad' ...)
+     *
+     */
+    private $currency = '';
+
+    /**
      * Snipcart JS API configuration properties.
      *
      */
@@ -51,13 +65,6 @@
         'show_continue_shopping',
         'split_firstname_and_lastname',
     );
-
-    /**
-     * The current currency ('eur' or 'usd' or 'cad' ...)
-     * - will be set via GET, POST, SESSION or URL param
-     *
-     */
-    public $currentCurrency = null;
 
     /**
      * Initalize module config variables (properties)
@@ -85,6 +92,32 @@
         // Add a hook after page is rendered and add Snipcart CSS/JS
         $this->addHookAfter('Page::render', $this, 'renderCSSJS');
     }
+
+    /**
+     * Setter for current cart and catalogue currency.
+     *
+     * @param $currency The desired cart and catalogue currency
+     *
+     */
+    public function setCurrency(string $currency) {
+        // Get allowed currencies from module config (set to 'eur' if no module config available)
+        $currencies = array();
+        if (!$currencies = $this->wire('modules')->getConfig('SnipWire', 'currencies')) $currencies[] = 'eur';
+
+        // Not a valid currency given? Fallback to first currency from module settings
+        if (!$currency || !in_array($currency, $currencies)) $currency = reset($currencies);
+        $this->currency = $currency;
+    }
+    
+    /**
+     * Getter for current cart and catalogue currency.
+     *
+     * @return string $currency
+     *
+     */
+    public function getCurrency($currency) {
+        return $this->currency;
+    }    
 
     /**
      * Getter for snipcartAPIproperties
