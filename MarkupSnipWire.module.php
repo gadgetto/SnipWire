@@ -61,7 +61,7 @@
      *
      */
     public function __construct() {
-        $this->set('defaultLinkPrompt', $this->_('Buy now'));
+        $this->set('defaultAnchorPrompt', $this->_('Buy now'));
         parent::__construct();
     }
     
@@ -206,7 +206,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return '';
                 
-        $prompt = empty($prompt) ? $this->defaultLinkPrompt : $prompt; // @todo: add sanitizer (could be also HTML content!)
+        $prompt = empty($prompt) ? $this->defaultAnchorPrompt : $prompt; // @todo: add sanitizer (could be also HTML content!)
         $class = empty($class) ? '' :  ' ' . $class;
         $id = empty($id) ? '' :  ' id="' . $id . '"';
         
