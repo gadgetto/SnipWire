@@ -153,19 +153,18 @@
         // Prevent adding to pages with system templates assigned
         if ($page->template->flags & Template::flagSystem) return;
         
-        // Get SnipWire module config
-        $moduleConfig = $modules->getConfig('SnipWire');
-        if (!$moduleConfig || !isset($moduleConfig['submit_save_module'])) return;
+        // Prevent rendering if no module config
+        if (!$this->snipWireConfig || !isset($this->snipWireConfig['submit_save_module'])) return;
 
         // Prevent adding to pages with excluded templates assigned
-        if (in_array($page->template->name, $moduleConfig['excluded_templates'])) return;
+        if (in_array($page->template->name, $this->snipWireConfig['excluded_templates'])) return;
         
         // Snipcart environment (TEST | LIVE?)
-        if ($moduleConfig['snipcart_environment'] == 1) {
-            $snipcartAPIKey = $moduleConfig['api_key'];
+        if ($this->snipWireConfig['snipcart_environment'] == 1) {
+            $snipcartAPIKey = $this->snipWireConfig['api_key'];
             $environmentStatus = '<!-- Snipcart LIVE mode -->';
         } else {
-            $snipcartAPIKey = $moduleConfig['api_key_test'];
+            $snipcartAPIKey = $this->snipWireConfig['api_key_test'];
             $environmentStatus = '<!-- Snipcart TEST mode -->';
         }
 
@@ -173,21 +172,21 @@
         $jsResources = array();
 
         // Add Snipcart CSS resource
-        $cssResources[] = '<link rel="stylesheet" href="' . $moduleConfig['snipcart_css_path'] . '"'
-            . (!empty($moduleConfig['snipcart_css_integrity']) ? ' integrity="' . $moduleConfig['snipcart_css_integrity'] . '"' : '')
+        $cssResources[] = '<link rel="stylesheet" href="' . $this->snipWireConfig['snipcart_css_path'] . '"'
+            . (!empty($this->snipWireConfig['snipcart_css_integrity']) ? ' integrity="' . $this->snipWireConfig['snipcart_css_integrity'] . '"' : '')
             . ' crossorigin="anonymous">';
         
         // Add jQuery JS resource
-        if ($moduleConfig['include_jquery']) {
-            $jsResources[] = '<script src="' . $moduleConfig['jquery_js_path'] . '"'
-            . (!empty($moduleConfig['jquery_js_integrity']) ? ' integrity="' . $moduleConfig['jquery_js_integrity'] . '"' : '')
+        if ($this->snipWireConfig['include_jquery']) {
+            $jsResources[] = '<script src="' . $this->snipWireConfig['jquery_js_path'] . '"'
+            . (!empty($this->snipWireConfig['jquery_js_integrity']) ? ' integrity="' . $this->snipWireConfig['jquery_js_integrity'] . '"' : '')
             . ' crossorigin="anonymous"></script>';
         }
         
         // Add Snipcart JS resource
         $jsResources[] = $environmentStatus;
-        $jsResources[] = '<script src="' . $moduleConfig['snipcart_js_path'] . '"'
-            . (!empty($moduleConfig['snipcart_js_integrity']) ? ' integrity="' . $moduleConfig['snipcart_js_integrity'] . '"' : '')
+        $jsResources[] = '<script src="' . $this->snipWireConfig['snipcart_js_path'] . '"'
+            . (!empty($this->snipWireConfig['snipcart_js_integrity']) ? ' integrity="' . $this->snipWireConfig['snipcart_js_integrity'] . '"' : '')
             . ' data-api-key="' . $snipcartAPIKey . '"'
             . ' id="snipcart"'
             . ' crossorigin="anonymous"></script>';
@@ -195,8 +194,8 @@
         // Pick available Snipcart JS API properties from module config for API output
         $snipcartAPI = array();
         foreach ($this->getSnipcartAPIproperties() as $key) {
-            if (isset($moduleConfig[$key])) {
-                $snipcartAPI[$key] = $moduleConfig[$key];
+            if (isset($this->snipWireConfig[$key])) {
+                $snipcartAPI[$key] = $this->snipWireConfig[$key];
             }
         }
 
@@ -215,9 +214,8 @@
         $out .= ';' . PHP_EOL;
 
         $out .= 'document.addEventListener("snipcart.ready",function() {' . PHP_EOL;
-        $currentCurrency = $this->currentCurrency ? $this->currentCurrency : reset($moduleConfig['currencies']);
-        $out .= 'Snipcart.api.cart.currency("' . $currentCurrency . '");' . PHP_EOL;
-        $out .= 'Snipcart.DEBUG = ' . ($moduleConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
+        $out .= 'Snipcart.api.cart.currency("' . $this->currency . '");' . PHP_EOL;
+        $out .= 'Snipcart.DEBUG = ' . ($this->snipWireConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
         $out .= '});' . PHP_EOL;
         $out .= '</script>' . PHP_EOL;
         $jsResources[] = $out;
@@ -268,21 +266,19 @@
         $out .= ' class="snipcart-add-item' . $class . '"';
         $out .= $id;
 
-        $moduleConfig = $modules->getConfig('SnipWire');
-
         // Required Snipcart data-item-* properties
         
         $out .= ' data-item-id="' . $product->id . '"';
-        $out .= ' data-item-name="' . $this->getProductName($product, $moduleConfig) . '"';
-        $out .= ' data-item-url="' . $this->getProductUrl($product, $moduleConfig) . '"';
-        $out .= " data-item-price='" . $this->getProductPrice($product, $moduleConfig) . "'";
+        $out .= ' data-item-name="' . $this->getProductName($product, $this->snipWireConfig) . '"';
+        $out .= ' data-item-url="' . $this->getProductUrl($product, $this->snipWireConfig) . '"';
+        $out .= " data-item-price='" . $this->getProductPrice($product, $this->snipWireConfig) . "'";
         
         // Optional Snipcart data-item-* properties
 
         if ($product->snipcart_item_description) {
             $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
         }
-        if ($productThumb = $this->getProductThumb($product, $moduleConfig)) {
+        if ($productThumb = $this->getProductThumb($product, $this->snipWireConfig)) {
             $out .= ' data-item-image="' . $productThumb->httpUrl . '"';
         }
         
@@ -309,7 +305,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return '';
         
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
+        if (empty($moduleConfig)) $moduleConfig = $this->snipWireConfig;
         if (!$product->hasField($moduleConfig['data_item_name_field']) || empty($product->{$moduleConfig['data_item_name_field']})) {
             $productName = $product->title;
         } else {
@@ -331,7 +327,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return '';
 
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
+        if (empty($moduleConfig)) $moduleConfig = $this->snipWireConfig;
         if ($moduleConfig['single_page_shop']) {
             $productUrl = $this->wire('pages')->get($moduleConfig['single_page_shop_page'])->httpUrl;
         } else {
@@ -341,7 +337,7 @@
     }
 
     /**
-     * Returns the product price raw or formatted by currency property from SnipWire module config.
+     * Returns the product price, raw or formatted by currency property from SnipWire module config.
      *
      * - if formatted = false and multiple currencies are configured, this will return a JSON encoded array: {"usd":20,"cad":25}.
      * - if formatted = true, this will return the price formatted by the selected (or first) currency: € 19,99
@@ -358,7 +354,7 @@
         if ($product->template != self::snipcartProductTemplate) return '';
         
         if (empty($moduleConfig) || !is_array($moduleConfig)) {
-            $currencies = $this->wire('modules')->getConfig('SnipWire', 'currencies');
+            $currencies = $this->snipWireConfig['currencies'];
         } else {
             $currencies = $moduleConfig['currencies'];
         }
@@ -394,9 +390,11 @@
             'currencySymbol' => '€',
         )
         */
-        $currencySelected = ($currencySelected && isset($currencies[$currencySelected])) ? $currencySelected : reset($currencies);
+        
+        // Get currency from method param or $snipwire->currency
+        if (!$currencySelected) $currencySelected = $this->currency;
         $price = $prices[$currencySelected];
-
+        
         if (!$currencyDefinition = $this->wire('snipREST')->getSettings('currencies')) {
             $currencyDefinition = SnipWireConfig::getDefaultCurrencyDefinition();
         } else {
@@ -449,7 +447,7 @@
         // Check if $product (Page) is a Snipcart product
         if ($product->template != self::snipcartProductTemplate) return null;
 
-        if (empty($moduleConfig)) $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
+        if (empty($moduleConfig)) $moduleConfig = $this->snipWireConfig;
         $productThumb = null;
         $image = $product->snipcart_item_image->first();
         if ($image) {
