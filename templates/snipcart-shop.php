@@ -97,7 +97,12 @@ function ukProductOverview(PageArray $products) {
                                 // with data-item-* attributes required by Snipcart.
                                 // The anchor method is provided by MarkupSnipWire module and can be called 
                                 // via custom API variable: $snipwire->anchor()
-        $out .= '               ' . wire('snipwire')->anchor($product, 'Buy now', 'uk-button uk-button-primary');
+                                $options = array(
+                                    'label' => ukIcon('cart'),
+                                    'class' => 'uk-button uk-button-primary',
+                                    'attr' => array('aria-label' => __('Add item to cart')),
+                                );
+        $out .= '               ' . wire('snipwire')->anchor($product, $options);
         
         $out .= '               <span class="uk-align-right uk-text-primary">';
         

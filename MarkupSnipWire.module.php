@@ -71,8 +71,6 @@
      *
      */
     public function __construct() {
-        $this->set('defaultAnchorPrompt', $this->_('Buy now'));
-
         // Single point to query DB for SnipWire module config
         $this->snipWireConfig = $this->wire('modules')->getConfig('SnipWire');
         
@@ -235,36 +233,50 @@
      * Renders a Snipcart anchor (buy button or link)
      *
      * @param Page $product The product page which holds Snipcart related product fields
-     * @param string $prompt The button or link label
-     * @param string $class Add class name to HTML tag (multiple class names separated by blank)
-     * @param string $id Add id to HTML tag
-     * @param integer $type The link type [default = snicpartAnchorTypeButton]
+     * @param string $prompt 
+     * @param array|string $options Options for the rendered html tag:
+     *  - `id` (string): Additional id name to add (default='').
+     *  - `class` (string): Any additional class names to add, separated by ' ' (default='').
+     *  - `attr` (array): Any additional tag attributes to add, as key => value (default: 'title' => 'Add to cart').
+     *  - `label` (string): The button or link label (default='Add to cart').
+     *  - `type` (integer) The anchor type - can be button or link [default=self::snicpartAnchorTypeButton]
      *
      * @return string $out The HTML for a snipcart buy button or link (HTML button | a tag)
      *
      */
-    public function anchor(Page $product, $prompt = '', $class = '', $id = '', $type = self::snicpartAnchorTypeButton) {
+    public function anchor(Page $product, $options = array()) {
+
+        // Return early if $product (Page) is not a Snipcart product
+        if ($product->template != self::snipcartProductTemplate) return '';
+
+        $defaults = array(
+            'type' => self::snicpartAnchorTypeButton,
+            'class' => 'snipcart-add-item',
+            'attr' => array('title' => $this->_('Add to cart')),
+            'label' => $this->_('Add to cart'),
+        );
+        $options = $this->_mergeOptions($defaults, $options);
+        bd($options);
+
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
-
-        // Check if $product (Page) is a Snipcart product
-        if ($product->template != self::snipcartProductTemplate) return '';
-                
-        $prompt = empty($prompt) ? $this->defaultAnchorPrompt : $prompt; // @todo: add sanitizer (could be also HTML content!)
-        $class = empty($class) ? '' :  ' ' . $class;
-        $id = empty($id) ? '' :  ' id="' . $id . '"';
         
-        if ($type == self::snicpartAnchorTypeButton) {
-            $open = '<button';
-            $close = '</button>';
-        } else { 
+        if ($options['type'] == self::snicpartAnchorTypeLink) {
             $open = '<a href="#"';
             $close = '</a>';
+        } else { 
+            $open = '<button';
+            $close = '</button>';
         }
 
         $out = $open;
-        $out .= ' class="snipcart-add-item' . $class . '"';
-        $out .= $id;
+        $out .= isset($options['id']) ? ' id="' . $options['id'] . '"' : '';
+        $out .= isset($options['class']) ? ' class="' . $options['class'] . '"' : '';
+        if (isset($options['attr']) && is_array($options['attr'])) {
+            foreach($options['attr'] as $attr => $value) {
+                $out .= ' ' . $attr . '="' . $value . '"';
+            }
+        }
 
         // Required Snipcart data-item-* properties
         
@@ -285,7 +297,7 @@
         // @todo: add more data-item-* properties
 
         $out .= '>';
-        $out .= $prompt;
+        $out .= $options['label'];
         $out .= $close;
 
         return $out;
@@ -461,7 +473,6 @@
         return $productThumb;
     }
 
-
     /**
      * Adds credit card labels to the given credit card keys and builds required array format for Snipcart
      *
@@ -485,6 +496,28 @@
         }
 
         return $cardsWithLabels;
+    }
+
+    /**
+     * Prepare and merge $options with $defaults arguments for markup methods.
+     *
+     * @param array $defaults
+     * @param array $options
+     * @return array
+     *
+     */
+    private function _mergeOptions(array $defaults, array $options) {
+        $defaultsClass = isset($defaults['class']) ? explode(' ', $defaults['class']) : array();
+        $optionsClass = isset($options['class']) ? explode(' ', $options['class']) : array();
+        $options['class'] = implode(' ', array_merge($defaultsClass, $optionsClass));
+
+        // Prepare tag attributes
+        $defaultsAttr = isset($defaults['attr']) && is_array($defaults['attr']) ? $defaults['attr'] : array();
+        $optionsAttr = isset($options['attr']) && is_array($options['attr']) ? $options['attr'] : array();
+        $options['attr'] = array_unique(array_merge($defaultsAttr, $optionsAttr));
+        unset($defaults['attr']);
+        
+        return array_merge($defaults, $options);
     }
 
 }
