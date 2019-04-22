@@ -70,21 +70,22 @@ The content element holds your product detail view.
     // via custom API variable: $snipwire->getProductPriceFormatted()
     $priceFormatted = wire('snipwire')->getProductPriceFormatted(page());
 
-    $out  = '<div class="uk-margin-medium-bottom" uk-grid>';
-    $out .= '    <div class="uk-width-2-5@s">';
-    $out .= '        <img src="' . $productImageLarge->url . '" alt="' . page()->title . '">';
-    $out .= '    </div>';
-    $out .= '    <div class="uk-width-3-5@s">';
-    $out .= '        <p>';
-    $out .= '            <span class="uk-text-primary uk-text-large">' . $priceFormatted . '</span>';
-    $out .= '        </p>';
-    $out .= '        <p>' . page()->snipcart_item_description . '</p>';
-    $out .=          $anchor;
-    $out .= '    </div>';
-    $out .= '</div>';
-    $out .= '<div>';
-    $out .= '    Detailed content...';
-    $out .= '</div>';
+    $out =
+    '<div class="uk-margin-medium-bottom" uk-grid>' .
+        '<div class="uk-width-2-5@s">' .
+            '<img src="' . $productImageLarge->url . '" alt="' . page()->title . '">' .
+        '</div>' .
+        '<div class="uk-width-3-5@s">' .
+            '<p>' .
+                '<span class="uk-text-primary uk-text-large">' . $priceFormatted . '</span>' .
+            '</p>' .
+            '<p>' . page()->snipcart_item_description . '</p>' .
+            $anchor .
+        '</div>' .
+    '</div>' .
+    '<div>' .
+        'Detailed content...' .
+    '</div>';
     
     echo $out;
     ?>

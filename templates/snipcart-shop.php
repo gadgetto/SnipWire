@@ -95,21 +95,22 @@ function ukProductOverview(PageArray $products) {
         // via custom API variable: $snipwire->getProductPriceFormatted()
         $priceFormatted = wire('snipwire')->getProductPriceFormatted($product);
 
-        $out .= '<a class="uk-link-reset" href="' . $product->url . '">';
-        $out .= '    <div class="uk-card uk-card-default uk-card-hover">';
-        $out .= '        <div class="uk-card-media-top">';
-        $out .= '            <img src="' . $productImageMedium->url . '" alt="' . $product->title . '">';
-        $out .= '        </div>';
-        $out .= '        <div class="uk-card-body">';
-        $out .= '            <h3 class="uk-card-title">' . $product->title . '</h3>';
-        $out .= '            <p>' . $product->snipcart_item_description . '</p>';
-        $out .= '        </div>';
-        $out .= '        <div class="uk-card-footer">';
-        $out .=              $anchor;
-        $out .= '            <span class="uk-align-right uk-text-primary">' . $priceFormatted . '</span>';
-        $out .= '        </div>';
-        $out .= '    </div>';
-        $out .= '</a>';
+        $out .=
+        '<a class="uk-link-reset" href="' . $product->url . '">' .
+            '<div class="uk-card uk-card-default uk-card-hover">' .
+                '<div class="uk-card-media-top">' .
+                    '<img src="' . $productImageMedium->url . '" alt="' . $product->title . '">' .
+                '</div>' .
+                '<div class="uk-card-body">' .
+                    '<h3 class="uk-card-title">' . $product->title . '</h3>' .
+                    '<p>' . $product->snipcart_item_description . '</p>' .
+                '</div>' .
+                '<div class="uk-card-footer">' .
+                    $anchor .
+                    '<span class="uk-align-right uk-text-primary">' . $priceFormatted . '</span>' .
+                '</div>' .
+            '</div>' .
+        '</a>';
     }
 
     $out .= '</div>';
