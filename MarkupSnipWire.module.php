@@ -24,7 +24,6 @@
             'singular' => true, 
             'autoload' => true, 
             'requires' => array(
-                'PHP>=5.6.0', 
                 'ProcessWire>=3.0.0',
                 'SnipWire',
              )

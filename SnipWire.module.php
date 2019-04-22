@@ -32,7 +32,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 'MarkupSnipWire',
             ),
             'requires' => array(
-                'PHP>=5.6.0', 
                 'ProcessWire>=3.0.0',
             ),
         );
