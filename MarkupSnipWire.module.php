@@ -237,7 +237,7 @@
      * @param array|string $options Options for the rendered html tag:
      *  - `id` (string): Additional id name to add (default='').
      *  - `class` (string): Any additional class names to add, separated by ' ' (default='').
-     *  - `attr` (array): Any additional tag attributes to add, as key => value (default: 'title' => 'Add to cart').
+     *  - `attr` (array): Any additional tag attributes to add, as attr => value (default: 'title' => 'Add to cart').
      *  - `label` (string): The button or link label (default='Add to cart').
      *  - `type` (integer) The anchor type - can be button or link [default=self::snicpartAnchorTypeButton]
      *
