@@ -45,7 +45,7 @@ class ProcessSnipWire extends Process implements Module {
             */
             'requires' => array(
                 'PHP>=5.6.0', 
-                'ProcessWire>=3.0.118',
+                'ProcessWire>=3.0.0',
                 'SnipWire',
             ),
         );
