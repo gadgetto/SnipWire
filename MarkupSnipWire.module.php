@@ -256,7 +256,6 @@
             'label' => $this->_('Add to cart'),
         );
         $options = $this->_mergeOptions($defaults, $options);
-        bd($options);
 
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
