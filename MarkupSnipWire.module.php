@@ -278,7 +278,7 @@
 
         // Required Snipcart data-item-* properties
         
-        $out .= ' data-item-id="' . $product->id . '"';
+        $out .= ' data-item-id="' . $product->snipcart_item_id . '"';
         $out .= ' data-item-name="' . $this->getProductName($product, $this->snipWireConfig) . '"';
         $out .= ' data-item-url="' . $this->getProductUrl($product, $this->snipWireConfig) . '"';
         $out .= " data-item-price='" . $this->getProductPrice($product, $this->snipWireConfig) . "'";
