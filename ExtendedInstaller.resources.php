@@ -43,9 +43,9 @@ $resources = array(
     Required fields:
     ================
     
-    data-item-id: integer (ProcessWire Page ID)
+    data-item-id: string Unique Stock Keeping Unit - SKU (will be prefilled with page ID) 
     data-item-name: string (ProcessWire Page title by default - can be changed to any text field type)
-    data-item-price: decimal (Will be created by selecting the desired currency(s) in module config form)
+    data-item-price: string (Will be created by selecting the desired currency(s) in module config form)
     data-item-url: string (URL where Snipcart crawler will find the Buy button)
     
     Optional fields:
@@ -76,6 +76,17 @@ $resources = array(
     */
 
     'fields' => array(
+        'snipcart_item_id' => array(
+            'name' => 'snipcart_item_id',
+            'type' => 'FieldtypeText',
+            'label' => __('SKU'),
+            'notes' => __('Individual ID for your product e.g. 1377 or NIKE_PEG-SW-43'),
+            'maxlength' => 100,
+            'required' => true,
+            'pattern' => '^[\w\-_*+.,]+$',
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
         'snipcart_item_price_eur' => array(
             'name' => 'snipcart_item_price_eur',
             'type' => 'FieldtypeText',
