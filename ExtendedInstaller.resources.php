@@ -120,6 +120,19 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
+        'snipcart_item_quantity' => array(
+            'name' => 'snipcart_item_quantity',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Default Quantity'),
+            'description' => __('The default quantity for the product that will be added to cart.'),
+            'notes' => __('Integer number (min value = 1).'),
+            'defaultValue' => 1,
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
 
         
     ),

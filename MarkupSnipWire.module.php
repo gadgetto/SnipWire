@@ -285,6 +285,8 @@
         
         // Optional Snipcart data-item-* properties
 
+        $defaultQuantity = $product->snipcart_item_quantity ? $product->snipcart_item_quantity : 1;
+        $out .= ' data-item-quantity="' . $defaultQuantity . '"';
         if ($product->snipcart_item_description) {
             $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
         }

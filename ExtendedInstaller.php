@@ -160,6 +160,9 @@ class ExtendedInstaller extends Wire {
                 if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
                 if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
                 if (isset($item['columnWidth'])) $f->columnWidth = $item['columnWidth'];
+                if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
+                if (isset($item['min'])) $f->min = $item['min'];
+                if (isset($item['inputType'])) $f->inputType = $item['inputType'];
                 if (isset($item['required'])) $f->required = $item['required'];
                 if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
                 if (isset($item['pattern'])) $f->pattern = $item['pattern'];
