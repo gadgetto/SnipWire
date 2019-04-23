@@ -84,7 +84,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         /** @var SnipREST $snipREST Custom ProcessWire API variable */
         $this->wire('snipREST', new SnipREST());
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
-    }    
+        $this->addHookBefore('Inputfield(name=snipcart_item_id)::render', $this, 'presetSKU');
+    }
 
     /**
      * Manage currency specific price input fields based on module "currencies" property.
@@ -146,6 +147,17 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         }
     }
 
+    /**
+     * Preset value of field snipcart_item_id (SKU) with page ID.
+     * (Method triggered before Inputfield render)
+     *
+     */
+    public function presetSKU(HookEvent $event) {
+        if ($event->object->name == 'snipcart_item_id' && $event->object->value == '') {
+            $event->object->set('value', $this->input->get->id);
+        }
+    }
+    
     /**
      * Called on module uninstall
      *
