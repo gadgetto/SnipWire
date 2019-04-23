@@ -88,6 +88,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
     /**
      * Manage currency specific price input fields based on module "currencies" property.
+     * (Method triggered after module config save)
      *
      * - Fields will be created on demand and added to the products template automatically.
      * - If Field to create already exists, it will be re-added to the products template.
