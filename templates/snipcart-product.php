@@ -59,7 +59,7 @@ The content element holds your product detail view.
     // The anchor method is provided by MarkupSnipWire module and can be called 
     // via custom API variable: $snipwire->anchor()
     $options = array(
-        'label' => ukIcon('cart'),
+        'label' => ukIcon('cart') . ' ' . __('Add to cart'),
         'class' => 'uk-button uk-button-primary',
         'attr' => array('aria-label' => __('Add item to cart')),
     );
@@ -76,15 +76,16 @@ The content element holds your product detail view.
             '<img src="' . $productImageLarge->url . '" alt="' . page()->title . '">' .
         '</div>' .
         '<div class="uk-width-3-5@s">' .
-            '<p>' .
-                '<span class="uk-text-primary uk-text-large">' . $priceFormatted . '</span>' .
-            '</p>' .
-            '<p>' . page()->snipcart_item_description . '</p>' .
+            '<dl class="uk-description-list uk-description-list-divider">' .
+                '<dt>Price</dt>' .
+                '<dd><span class="uk-text-primary uk-text-large">' . $priceFormatted . '</span></dd>' .
+                '<dt>Description</dt>' .
+                '<dd>' . page()->snipcart_item_description . '</dd>' .
+                '<dt>Product ID</dt>' .
+                '<dd>' . page()->snipcart_item_id . '</dd>' .
+            '</dl>' .
             $anchor .
         '</div>' .
-    '</div>' .
-    '<div>' .
-        'Detailed content...' .
     '</div>';
     
     echo $out;
