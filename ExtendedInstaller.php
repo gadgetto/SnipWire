@@ -85,7 +85,6 @@ class ExtendedInstaller extends Wire {
         
         if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
             foreach ($this->resources['templates'] as $item) {
-                $new = false;
                 if (!$templates->get($item['name'])) {
                     $fg = new Fieldgroup();
                     $fg->name = $item['name'];
@@ -101,7 +100,9 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['noChildren'])) $t->noChildren = $item['noChildren'];
                     if (isset($item['tags'])) $t->tags = $item['tags'];
                     $t->save();
-                    $this->message($this->_('Created Template: ') . $item['name']);
+                    $this->message($this->_('Installed Template: ') . $item['name']);
+                } else {
+                    $this->message(sprintf($this->_("Template [%s] already exists. Skipped installation."), $item['name']));
                 }
             }
             
@@ -135,11 +136,9 @@ class ExtendedInstaller extends Wire {
                 $destination = $config->paths->templates . $file['name'];
                 if (!file_exists($destination)) {
                     if ($this->wire('files')->copy($source, $destination)) {
-                        $out = sprintf($this->_("Copied file [%s] to [%s]."), $source, $destination);
-                        $this->message($out);
+                        $this->message(sprintf($this->_("Copied file [%s] to [%s]."), $source, $destination));
                     } else {
-                        $out = sprintf($this->_("Could not copy file [%s] to [%s]. Please copy this file manually."), $source, $destination);
-                        $this->warning($out);
+                        $this->warning(sprintf($this->_("Could not copy file [%s] to [%s]. Please copy this file manually."), $source, $destination));
                     }
                 }
             }
@@ -149,26 +148,29 @@ class ExtendedInstaller extends Wire {
         
         if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
             foreach ($this->resources['fields'] as $item) {
-                if ($fields->get($item['name'])) continue; // No need to create - already exists!
+                if (!$fields->get($item['name'])) {
+                    $f = new Field();
+                    $f->type = $modules->get($item['type']);
+                    $f->name = $item['name'];
+                    $f->label = $item['label'];
+                    if (isset($item['description'])) $f->description = $item['description'];
+                    if (isset($item['notes'])) $f->notes = $item['notes'];
+                    if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
+                    if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
+                    if (isset($item['columnWidth'])) $f->columnWidth = $item['columnWidth'];
+                    if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
+                    if (isset($item['min'])) $f->min = $item['min'];
+                    if (isset($item['inputType'])) $f->inputType = $item['inputType'];
+                    if (isset($item['required'])) $f->required = $item['required'];
+                    if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
+                    if (isset($item['pattern'])) $f->pattern = $item['pattern'];
+                    if (isset($item['tags'])) $f->tags = $item['tags'];
+                    $f->save();
+                    $this->message($this->_('Installed Field: ') . $item['name']);
+                } else {
+                    $this->message(sprintf($this->_("Field [%s] already exists. Skipped installation."), $item['name']));
+                }
 
-                $f = new Field();
-                $f->type = $modules->get($item['type']);
-                $f->name = $item['name'];
-                $f->label = $item['label'];
-                if (isset($item['description'])) $f->description = $item['description'];
-                if (isset($item['notes'])) $f->notes = $item['notes'];
-                if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
-                if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
-                if (isset($item['columnWidth'])) $f->columnWidth = $item['columnWidth'];
-                if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
-                if (isset($item['min'])) $f->min = $item['min'];
-                if (isset($item['inputType'])) $f->inputType = $item['inputType'];
-                if (isset($item['required'])) $f->required = $item['required'];
-                if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
-                if (isset($item['pattern'])) $f->pattern = $item['pattern'];
-                if (isset($item['tags'])) $f->tags = $item['tags'];
-                $f->save();
-                $this->message($this->_('Created Field: ') . $item['name']);
             }
 
             // Add fields to their desired templates */
@@ -194,40 +196,46 @@ class ExtendedInstaller extends Wire {
 
         if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
             foreach ($this->resources['pages'] as $item) {
+
                 if (!$t = $templates->get($item['template'])) {
-                    $out = sprintf($this->_("Installation of page [%s] aborted. The template [%s] to be assigned does not exist!"), $item['name'], $item['template']);
+                    $out = sprintf($this->_("Skipped installation of page [%s]. The template [%s] to be assigned does not exist!"), $item['name'], $item['template']);
                     $this->warning($out);
                     continue;
                 }
                 if (!$this->wire('pages')->get($item['parent'])) {
-                    $out = sprintf($this->_("Installation of page [%s] aborted. The parent [%s] to be set does not exist!"), $item['name'], $item['parent']);
+                    $out = sprintf($this->_("Skipped installation of page [%s]. The parent [%s] to be set does not exist!"), $item['name'], $item['parent']);
                     $this->warning($out);
                     continue;
                 }
-                $page = new Page();
-                $page->name = $item['name'];
-                $page->template = $item['template'];
-                $page->parent = $item['parent'];
-                $page->process = $this;
-                $page->title = $item['title'];
-                $page->save();
-                $this->message($this->_('Created Page: ') . $page->path);
                 
-                // Populate page-field values
-                if (!empty($item['fields']) && is_array($item['fields'])) {
-                    foreach ($item['fields'] as $fieldname => $value) {
-                        if ($page->hasField($fieldname)) {
-                            $type = $page->getField($fieldname)->type;
-                            if ($type == 'FieldtypeImage') {
-                                $source = $sourceDir . $value;
-                                $page->$fieldname->add($source);
-                            } else {
-                                $page->$fieldname = $value;
+                if (!$pages->findOne('name=' . $item['name'])) {
+                    $page = new Page();
+                    $page->name = $item['name'];
+                    $page->template = $item['template'];
+                    $page->parent = $item['parent'];
+                    $page->process = $this;
+                    $page->title = $item['title'];
+                    $page->save();
+                    $this->message($this->_('Installed Page: ') . $page->path);
+                    
+                    // Populate page-field values
+                    if (!empty($item['fields']) && is_array($item['fields'])) {
+                        foreach ($item['fields'] as $fieldname => $value) {
+                            if ($page->hasField($fieldname)) {
+                                $type = $page->getField($fieldname)->type;
+                                if ($type == 'FieldtypeImage') {
+                                    $source = $sourceDir . $value;
+                                    $page->$fieldname->add($source);
+                                } else {
+                                    $page->$fieldname = $value;
+                                }
                             }
                         }
                     }
+                    $page->save();
+                } else {
+                    $this->message(sprintf($this->_("Page [%s] already exists. Skipped installation."), $item['name']));
                 }
-                $page->save();
             }
         }
 
@@ -235,12 +243,14 @@ class ExtendedInstaller extends Wire {
 
         if (!empty($this->resources['permissions']) && is_array($this->resources['permissions'])) {
             foreach ($this->resources['permissions'] as $item) {
-                if (!$permission = $permissions->get('name='.$item['name'])) {
+                if (!$permission = $permissions->get('name=' . $item['name'])) {
                     $p = new Permission();
                     $p->name = $item['name'];
                     $p->title = $item['title'];
                     $p->save();
-                    $this->message($this->_('Created Permission: ') . $item['name']);
+                    $this->message($this->_('Installed Permission: ') . $item['name']);
+                } else {
+                    $this->message(sprintf($this->_("Permission [%s] already exists. Skipped installation."), $item['name']));
                 }
             }
         }
