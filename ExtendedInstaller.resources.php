@@ -54,7 +54,7 @@ $resources = array(
     - data-item-description: string (Short product description, visible in cart and during checkout)
     - data-item-image: string (Thumbnail of product in the cart. This must be an absolute URL.)
     data-item-categories: string (The categories this product belongs to. Example: data-item-categories="cat1, cat2, cat3")
-    data-item-weight: integer? (Required only if using shipping rates. Using grams as weight units.)
+    - data-item-weight: integer (Required only if using shipping rates. Using grams as weight units.)
     data-item-width: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     data-item-length: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     data-item-height: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
@@ -164,6 +164,18 @@ $resources = array(
             'label' => __('Minimum Quantity'),
             'description' => __('Set the minimum allowed quantity for this product.'),
             'notes' => __('Leave empty for no limit.'),
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_weight' => array(
+            'name' => 'snipcart_item_weight',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Product Weight'),
+            'description' => __('Set the weight for this product.'),
+            'notes' => __('Uses grams as weight unit.'),
             'min' => 1,
             'inputType' => 'number',
             'required' => false,

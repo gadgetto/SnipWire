@@ -308,6 +308,10 @@
             $out .= ' data-item-min-quantity="' . $product->snipcart_item_min_quantity . '"';
         }
 
+        if ($product->snipcart_item_weight) {
+            $out .= ' data-item-weight="' . $product->snipcart_item_weight . '"';
+        }
+
         // @todo: add more data-item-* properties
 
         $out .= '>';
