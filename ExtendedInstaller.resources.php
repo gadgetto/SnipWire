@@ -64,7 +64,7 @@ $resources = array(
     - data-item-quantity-step: integer (The quantity of a product will increment by this value.)
     - data-item-max-quantity: integer (Maximum allowed quantity of product)
     - data-item-min-quantity: integer (Minimum allowed quantity for product)
-    data-item-taxable: boolean
+    - data-item-taxable: boolean (Set to false to exclude item from the taxes calculation. Default value is true.)
     data-item-taxes: 
     data-item-has-taxes-included: boolean
     data-item-metadata: json-object (Example usage: data-item-metadata='{"key": "value"}')
@@ -182,8 +182,17 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
+        'snipcart_item_taxable' => array(
+            'name' => 'snipcart_item_not_taxable',
+            'type' => 'FieldtypeCheckbox',
+            'label' => __('Not Taxable'),
+            'label2' => __('Product is not taxable'),
+            'description' => __('Check if this product should be excluded from taxes calculation.'),
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
 
-        
     ),
 
     'pages' => array(
