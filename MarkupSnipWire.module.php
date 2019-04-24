@@ -285,15 +285,29 @@
         
         // Optional Snipcart data-item-* properties
 
-        $defaultQuantity = $product->snipcart_item_quantity ? $product->snipcart_item_quantity : 1;
-        $out .= ' data-item-quantity="' . $defaultQuantity . '"';
         if ($product->snipcart_item_description) {
             $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
         }
+        
         if ($productThumb = $this->getProductThumb($product, $this->snipWireConfig)) {
             $out .= ' data-item-image="' . $productThumb->httpUrl . '"';
         }
         
+        $defaultQuantity = $product->snipcart_item_quantity ? $product->snipcart_item_quantity : 1;
+        $out .= ' data-item-quantity="' . $defaultQuantity . '"';
+        
+        if ($product->snipcart_item_quantity_step) {
+            $out .= ' data-item-quantity-step="' . $product->snipcart_item_quantity_step . '"';
+        }
+
+        if ($product->snipcart_item_max_quantity) {
+            $out .= ' data-item-max-quantity="' . $product->snipcart_item_max_quantity . '"';
+        }
+
+        if ($product->snipcart_item_min_quantity) {
+            $out .= ' data-item-min-quantity="' . $product->snipcart_item_min_quantity . '"';
+        }
+
         // @todo: add more data-item-* properties
 
         $out .= '>';

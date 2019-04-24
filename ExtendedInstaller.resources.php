@@ -43,27 +43,27 @@ $resources = array(
     Required fields:
     ================
     
-    data-item-id: string Unique Stock Keeping Unit - SKU (will be prefilled with page ID) 
-    data-item-name: string (ProcessWire Page title by default - can be changed to any text field type)
-    data-item-price: string (Will be created by selecting the desired currency(s) in module config form)
-    data-item-url: string (URL where Snipcart crawler will find the Buy button)
+    - data-item-id: string Unique Stock Keeping Unit - SKU (will be prefilled with page ID) 
+    - data-item-name: string (ProcessWire Page title by default - can be changed to any text field type)
+    - data-item-price: string (Will be created by selecting the desired currency(s) in module config form)
+    - data-item-url: string (URL where Snipcart crawler will find the Buy button)
     
     Optional fields:
     ================
     
-    data-item-description: string
-    data-item-image: string (Thumbnail of product in the cart. This must be an absolute URL.)
+    - data-item-description: string (Short product description, visible in cart and during checkout)
+    - data-item-image: string (Thumbnail of product in the cart. This must be an absolute URL.)
     data-item-categories: string (The categories this product belongs to. Example: data-item-categories="cat1, cat2, cat3")
     data-item-weight: integer? (Required only if using shipping rates. Using grams as weight units.)
     data-item-width: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     data-item-length: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     data-item-height: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
-    data-item-max-quantity: integer (Maximum allowed quantity of product)
-    data-item-min-quantity: integer (Minimum allowed quantity for product)
     data-item-stackable:
-    data-item-quantity-step:
     data-item-shippable:
-    data-item-quantity: integer (Set a default quantity for the item that you are about to add.)
+    - data-item-quantity: integer (Set a default quantity for the item that you are about to add.)
+    - data-item-quantity-step: integer (The quantity of a product will increment by this value.)
+    - data-item-max-quantity: integer (Maximum allowed quantity of product)
+    - data-item-min-quantity: integer (Minimum allowed quantity for product)
     data-item-taxable: boolean
     data-item-taxes: 
     data-item-has-taxes-included: boolean
@@ -127,6 +127,43 @@ $resources = array(
             'description' => __('The default quantity for the product that will be added to cart.'),
             'notes' => __('Integer number (min value = 1).'),
             'defaultValue' => 1,
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_quantity_step' => array(
+            'name' => 'snipcart_item_quantity_step',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Quantity Step'),
+            'description' => __('The quantity of a product will increment by this value.'),
+            'notes' => __('Integer number (min value = 1).'),
+            'defaultValue' => 1,
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_max_quantity' => array(
+            'name' => 'snipcart_item_max_quantity',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Maximum Quantity'),
+            'description' => __('Set the maximum allowed quantity for this product.'),
+            'notes' => __('Leave empty for no limit.'),
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_min_quantity' => array(
+            'name' => 'snipcart_item_min_quantity',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Minimum Quantity'),
+            'description' => __('Set the minimum allowed quantity for this product.'),
+            'notes' => __('Leave empty for no limit.'),
             'min' => 1,
             'inputType' => 'number',
             'required' => false,
