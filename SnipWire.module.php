@@ -85,6 +85,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->wire('snipREST', new SnipREST());
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookBefore('Inputfield(name=snipcart_item_id)::render', $this, 'presetSKU');
+        $this->addHookAfter('Pages::added', $this, 'presetTaxable');
     }
 
     /**
@@ -156,6 +157,16 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         if ($event->object->name == 'snipcart_item_id' && $event->object->value == '') {
             $event->object->set('value', $this->input->get->id);
         }
+    }
+    
+    /**
+     * Preset value of checkbox field snipcart_item_taxable so it's checked by default.
+     * (Method triggered after Pagers added)
+     *
+     */
+    public function presetTaxable(HookEvent $event) {
+        $page = $event->arguments(0);
+        if ($page->template == MarkupSnipWire::snipcartProductTemplate) $page->setAndSave('snipcart_item_taxable', 1);
     }
     
     /**
