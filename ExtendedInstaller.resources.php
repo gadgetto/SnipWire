@@ -105,6 +105,7 @@ $resources = array(
             'description' => __('The product description that your customers will see on product pages in cart and during checkout.'),
             'notes' => __('Provide a short description of your product without HTML tags.'),
             'maxlength' => 300,
+            'rows' => 3,
             'showCount' => 1,
             'stripTags' => 1,
             'textformatters' => array('TextformatterEntities'),

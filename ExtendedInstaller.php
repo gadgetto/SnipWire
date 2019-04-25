@@ -160,6 +160,7 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['notes'])) $f->notes = $item['notes'];
                     if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
                     if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
+                    if (isset($item['rows'])) $f->rows = $item['rows'];
                     if (isset($item['columnWidth'])) $f->columnWidth = $item['columnWidth'];
                     if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
                     if (isset($item['min'])) $f->min = $item['min'];
