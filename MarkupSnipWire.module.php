@@ -486,8 +486,7 @@
 
         if (empty($moduleConfig)) $moduleConfig = $this->snipWireConfig;
         $productThumb = null;
-        $image = $product->snipcart_item_image->first();
-        if ($image) {
+        if ($image = $product->snipcart_item_image->first()) {
             $productThumb = $image->size($moduleConfig['cart_image_width'], $moduleConfig['cart_image_height'], [
                 'cropping' => $moduleConfig['cart_image_cropping'] ? true : false,
                 'quality' => $moduleConfig['cart_image_quality'],
