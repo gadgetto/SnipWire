@@ -312,8 +312,8 @@
             $out .= ' data-item-weight="' . $product->snipcart_item_weight . '"';
         }
 
-        if ($product->hasField('snipcart_item_not_taxable')) {
-            $taxable = $product->snipcart_item_not_taxable ? 'false' : 'true'; // reverse logic because of checkbox field behaviour
+        if ($product->hasField('snipcart_item_taxable')) {
+            $taxable = $product->snipcart_item_taxable ? 'true' : 'false';
         } else {
             $taxable = 'true';
         }
