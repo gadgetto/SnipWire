@@ -76,8 +76,12 @@ function ukProductOverview(PageArray $products) {
     foreach ($products as $product) {
         
         // We use the first image in snipcart_item_image field for demo
-        $image = $product->snipcart_item_image->first();
-        $productImageMedium = $image->size(600, 0, array('quality' => 70));
+        $imageMedia = '';
+        if ($image = $product->snipcart_item_image->first()) {
+            $productImageMedium = $image->size(600, 0, array('quality' => 70));
+            $imageDesc = $productImageMedium->description ? $productImageMedium->description : $product->title;
+            $imageMedia = '<div class="uk-card-media-top"><img src="' . $productImageMedium->url . '" alt="' . $imageDesc . '"></div>';
+        }
         
         // This is the part where we render the Snipcart anchor (buy button)
         // with all data-item-* attributes required by Snipcart.
@@ -98,9 +102,7 @@ function ukProductOverview(PageArray $products) {
         $out .=
         '<a class="uk-link-reset" href="' . $product->url . '">' .
             '<div class="uk-card uk-card-default uk-card-hover">' .
-                '<div class="uk-card-media-top">' .
-                    '<img src="' . $productImageMedium->url . '" alt="' . $product->title . '">' .
-                '</div>' .
+                $imageMedia .
                 '<div class="uk-card-body">' .
                     '<h3 class="uk-card-title">' . $product->title . '</h3>' .
                     '<p>' . $product->snipcart_item_description . '</p>' .
