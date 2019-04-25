@@ -162,6 +162,9 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
                     if (isset($item['min'])) $f->min = $item['min'];
                     if (isset($item['inputType'])) $f->inputType = $item['inputType'];
+                    if (isset($item['showCount'])) $f->showCount = $item['showCount'];
+                    if (isset($item['stripTags'])) $f->stripTags = $item['stripTags'];
+                    if (isset($item['textformatters']) && is_array($item['textformatters'])) $f->textformatters = $item['textformatters'];
                     if (isset($item['required'])) $f->required = $item['required'];
                     if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
                     if (isset($item['pattern'])) $f->pattern = $item['pattern'];
