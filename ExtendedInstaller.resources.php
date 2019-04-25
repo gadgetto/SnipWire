@@ -183,11 +183,11 @@ $resources = array(
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
         'snipcart_item_taxable' => array(
-            'name' => 'snipcart_item_not_taxable',
+            'name' => 'snipcart_item_taxable',
             'type' => 'FieldtypeCheckbox',
-            'label' => __('Not Taxable'),
-            'label2' => __('Product is not taxable'),
-            'description' => __('Check if this product should be excluded from taxes calculation.'),
+            'label' => __('Taxable'),
+            'label2' => __('Product is taxable'),
+            'description' => __('Uncheck if this product should be excluded from taxes calculation.'),
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
