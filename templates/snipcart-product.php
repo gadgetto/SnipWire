@@ -49,10 +49,20 @@ The content element holds your product detail view.
 <div id="content">
     <?php
     echo ukHeading1(page()->title, 'divider');
-    
+
     // We use the first image in snipcart_item_image field for demo
-    $image = page()->snipcart_item_image->first();
-    $productImageLarge = $image->size(800, 0, array('quality' => 70));
+    if ($image = page()->snipcart_item_image->first()) {
+        $productImageLarge = $image->size(800, 0, array('quality' => 70));
+        $imageDesc = $productImageLarge->description ? $productImageLarge->description : page()->title;
+        $imageMedia = '<img src="' . $productImageLarge->url . '" alt="' . $imageDesc . '">';
+    } else {
+        $imageMedia = 
+        '<div class="uk-width-1-1 uk-height-medium uk-background-muted uk-text-muted uk-flex uk-flex-center uk-flex-middle">' .
+            '<div title="' . __('No product image available') . '">' . 
+                ukIcon('image', array('ratio' => 5)) . 
+            '</div>' .
+        '</div>';
+    }
 
     // This is the part where we render the Snipcart anchor (buy button)
     // with all data-item-* attributes required by Snipcart.
@@ -73,7 +83,7 @@ The content element holds your product detail view.
     $out =
     '<div class="uk-margin-medium-bottom" uk-grid>' .
         '<div class="uk-width-2-5@s">' .
-            '<img src="' . $productImageLarge->url . '" alt="' . page()->title . '">' .
+            $imageMedia .
         '</div>' .
         '<div class="uk-width-3-5@s">' .
             '<dl class="uk-description-list uk-description-list-divider">' .
