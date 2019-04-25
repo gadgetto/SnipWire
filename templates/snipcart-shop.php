@@ -80,7 +80,15 @@ function ukProductOverview(PageArray $products) {
         if ($image = $product->snipcart_item_image->first()) {
             $productImageMedium = $image->size(600, 0, array('quality' => 70));
             $imageDesc = $productImageMedium->description ? $productImageMedium->description : $product->title;
-            $imageMedia = '<div class="uk-card-media-top"><img src="' . $productImageMedium->url . '" alt="' . $imageDesc . '"></div>';
+            $imageMedia = '<img src="' . $productImageMedium->url . '" alt="' . $imageDesc . '">';
+        } else {
+            $imageMedia = 
+            '<div class="uk-width-1-1 uk-height-small uk-background-muted uk-text-muted uk-flex uk-flex-center uk-flex-middle">' .
+                '<div title="' . __('No product image available') . '">' . 
+                    ukIcon('image', array('ratio' => 3)) . 
+                '</div>' .
+            '</div>';
+            
         }
         
         // This is the part where we render the Snipcart anchor (buy button)
@@ -101,8 +109,10 @@ function ukProductOverview(PageArray $products) {
 
         $out .=
         '<a class="uk-link-reset" href="' . $product->url . '">' .
-            '<div class="uk-card uk-card-default uk-card-hover">' .
-                $imageMedia .
+            '<div class="uk-card uk-card-small uk-card-default uk-card-hover">' .
+                '<div class="uk-card-media-top">' .
+                    $imageMedia .
+                '</div>' .
                 '<div class="uk-card-body">' .
                     '<h3 class="uk-card-title">' . $product->title . '</h3>' .
                     '<p>' . $product->snipcart_item_description . '</p>' .
