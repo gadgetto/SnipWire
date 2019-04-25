@@ -136,10 +136,12 @@ class ExtendedInstaller extends Wire {
                 $destination = $config->paths->templates . $file['name'];
                 if (!file_exists($destination)) {
                     if ($this->wire('files')->copy($source, $destination)) {
-                        $this->message(sprintf($this->_("Copied file [%s] to [%s]."), $source, $destination));
+                        $this->message(sprintf($this->_('Installed file [%1$s] to [%2$s].'), $source, $destination));
                     } else {
-                        $this->warning(sprintf($this->_("Could not copy file [%s] to [%s]. Please copy this file manually."), $source, $destination));
+                        $this->warning(sprintf($this->_('Could not copy file from [%1$s] to [%2$s]. Please copy manually.'), $source, $destination));
                     }
+                } else {
+                    $this->message(sprintf($this->_('File [%2$s] already exists. If necessary please copy manually from [%1$s]. Skipped installation.'), $source, $destination));
                 }
             }
         }
