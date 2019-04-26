@@ -361,7 +361,6 @@ class ExtendedInstaller extends Wire {
                     $fieldgroups->delete($t->fieldgroup); // delete the associated fieldgroup
                     $this->message('Deleted Template: ' . $item['name']);
                 }
-
             }
         }
 

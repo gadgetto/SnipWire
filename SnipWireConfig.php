@@ -278,11 +278,14 @@ class SnipWireConfig extends ModuleConfig {
 
         $supportedCurrencies = self::getSupportedCurrencies();
         $currencies = array();
-        if (!$currencies = $snipREST->getSettings('currencies', WireCache::expireNever, true)) $currencies[] = $this->getDefaultCurrencyDefinition();
-
+        if (!$currencies = $snipREST->getSettings('currencies', WireCache::expireNever, true)) {
+            $currencies[] = $this->getDefaultCurrencyDefinition();
+        }
         foreach ($currencies as $currency) {
             $currencyName = $currency['currency'];
-            $currencyLabel = isset($supportedCurrencies[$currency['currency']]) ? $supportedCurrencies[$currency['currency']] : $currency['currency'];
+            $currencyLabel = isset($supportedCurrencies[$currency['currency']])
+                ? $supportedCurrencies[$currency['currency']]
+                : $currency['currency'];
             $f->addOption($currencyName, $currencyLabel);
         }
         $f->required = true;

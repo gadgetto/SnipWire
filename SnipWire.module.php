@@ -113,7 +113,9 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $fieldName = $fieldTemplate['name'] . $currency;
             $fieldsToTemplate[] = $fieldName;
             if ($fields->get($fieldName)) continue; // No need to create - already exists!
-            $fieldLabelCurrencyAdd = isset($supportedCurrencies[$currency]) ? $supportedCurrencies[$currency] : $currency;
+            $fieldLabelCurrencyAdd = isset($supportedCurrencies[$currency])
+                ? $supportedCurrencies[$currency]
+                : $currency;
 
             $f = new Field();
             $f->type = $modules->get($fieldTemplate['type']);
@@ -166,7 +168,9 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      */
     public function presetTaxable(HookEvent $event) {
         $page = $event->arguments(0);
-        if ($page->template == MarkupSnipWire::snipcartProductTemplate) $page->setAndSave('snipcart_item_taxable', 1);
+        if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
+            $page->setAndSave('snipcart_item_taxable', 1);
+        }
     }
     
     /**

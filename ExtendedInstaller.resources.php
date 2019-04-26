@@ -38,7 +38,7 @@ $resources = array(
     ),
 
     /*
-    Snipcart fields: https://docs.snipcart.com/configuration/product-definition
+    Snipcart product fields: https://docs.snipcart.com/configuration/product-definition
     
     Required fields:
     ================

@@ -21,16 +21,16 @@
 
 class SnipREST extends WireHttp {
 
-    const apiEndpoint = 'https://app.snipcart.com/api';
-    const resourcePathOrders = '/orders';
-    const resourcePathSubscriptions = '/subscriptions';
-    const resourcePathCustomers = '/customers';
-    const resourcePathDiscounts = '/discounts';
-    const resourcePathProducts = '/products';
-    const resourcePathCartsAbandoned = '/carts/abandoned';
-    const resourcePathShippingMethods = '/shipping_methods';
-    const resourcePathSettingsGeneral = '/settings/general';
-    const resourcePathSettingsDomain = '/settings/domain';
+    const apiEndpoint = 'https://app.snipcart.com/api/';
+    const resourcePathOrders = 'orders';
+    const resourcePathSubscriptions = 'subscriptions';
+    const resourcePathCustomers = 'customers';
+    const resourcePathDiscounts = 'discounts';
+    const resourcePathProducts = 'products';
+    const resourcePathCartsAbandoned = 'carts/abandoned';
+    const resourcePathShippingMethods = 'shipping_methods';
+    const resourcePathSettingsGeneral = 'settings/general';
+    const resourcePathSettingsDomain = 'settings/domain';
     
     const settingsCacheName = 'SnipcartSettingsGeneral';
 
@@ -46,10 +46,13 @@ class SnipREST extends WireHttp {
         ));
 
         $moduleConfig = $this->wire('modules')->getConfig('SnipWire');
-        // Need to check if module configuration is available (if configuration form was never submitted, the necessary keys aren't available!)
+        // Need to check if module configuration is available (if configuration form was never submitted, 
+        // the necessary keys aren't available!)
         if ($moduleConfig && isset($moduleConfig['submit_save_module'])) {
             // Snipcart environment (TEST | LIVE?)
-            $snipcartAPIKey = ($moduleConfig['snipcart_environment'] == 1) ? $moduleConfig['api_key_secret'] : $moduleConfig['api_key_secret_test'];
+            $snipcartAPIKey = ($moduleConfig['snipcart_environment'] == 1)
+                ? $moduleConfig['api_key_secret'] : 
+                : $moduleConfig['api_key_secret_test'];
             
             // Set headers required by Snipcart
             // -> Authorization: Basic <credentials>, where credentials is the base64 encoding of the secret API key and empty(!) password joined by a colon
