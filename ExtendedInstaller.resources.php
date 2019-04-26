@@ -66,13 +66,16 @@ $resources = array(
     - data-item-min-quantity: integer (Minimum allowed quantity for product)
     - data-item-taxable: boolean (Set to false to exclude item from the taxes calculation. Default value is true.)
     data-item-taxes: 
-    data-item-has-taxes-included: boolean
     data-item-metadata: json-object (Example usage: data-item-metadata='{"key": "value"}')
     data-item-file-guid: 
     data-item-payment-interval: 
     data-item-payment-interval-count: 
     data-item-payment-trial: 
     data-item-recurring-shipping: boolean
+
+    Will be set via SnipCart setting (not as PW Field)
+    ==================================================
+    - data-item-has-taxes-included: boolean (Set to true if the taxes you defined are included in your product prices.)
     */
 
     'fields' => array(

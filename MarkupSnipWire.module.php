@@ -319,6 +319,10 @@
         }
         $out .= ' data-item-taxable="' . $taxable . '"';
 
+        if (isset($this->snipWireConfig['taxes_included']) && $this->snipWireConfig['taxes_included']) {
+            $out .= ' data-item-has-taxes-included="true"';
+        }
+
         // @todo: add more data-item-* properties
 
         $out .= '>';

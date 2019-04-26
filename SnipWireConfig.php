@@ -110,6 +110,7 @@ class SnipWireConfig extends ModuleConfig {
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
+            'taxes_included' => 1,
             'snipcart_debug' => 1,
             'snipcart_css_path' => 'https://cdn.snipcart.com/themes/2.0/base/snipcart.min.css',
             'snipcart_css_integrity' => '',
@@ -320,11 +321,20 @@ class SnipWireConfig extends ModuleConfig {
         $fsAPI->add($f);
 
         $f = $modules->get('InputfieldCheckbox');
+        $f->attr('name', 'taxes_included'); 
+        $f->label = $this->_('Taxes Included in Prices');
+        $f->label2 = $this->_('Taxes are included in product prices');
+        $f->description = $this->_('Use this setting if the taxes you defined are included in your product prices');
+        $f->columnWidth = 50;
+        $fsAPI->add($f);
+        
+        $f = $modules->get('InputfieldCheckbox');
         $f->attr('name', 'snipcart_debug'); 
         $f->label = $this->_('Snipcart JavaScript Debug Mode');
         $f->label2 = $this->_('Enable Snipcart JavaScript debug mode');
         $f->description = $this->_('This will allow you to see JavaScript errors on your site, failing requests and logs from the services you use in your browsers developer console.');
         $f->notes = $this->_('All logs from the Snipcart script will be prefixed with Snipcart:');
+        $f->columnWidth = 50;
         $fsAPI->add($f);
 
         $f = $modules->get('InputfieldMarkup');
