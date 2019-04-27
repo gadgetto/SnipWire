@@ -191,7 +191,7 @@ class SnipWireConfig extends ModuleConfig {
         $fsAPI->set('themeOffset', true);
 
         $f = $modules->get('InputfieldMarkup');
-        $f->description = $this->_('To get your public JavaScript - and secret REST API keys, you will need a Snipcart account. To register, go to [https://app.snipcart.com/account/register](https://app.snipcart.com/account/register). Once you’ve signed up and confirmed your account, log in and head to the [Account > API Keys section](https://app.snipcart.com/dashboard/account/credentials). There you’ll find your public API keys and also need to create your secret API keys for live and test environment.');
+        $f->description = $this->_('To get your public JavaScript - and secret REST API keys, you will need a Snipcart account. To register, go to [Snipcart > Account > Register](https://app.snipcart.com/account/register). Once you’ve signed up and confirmed your account, log in and head to the [Account > API Keys section](https://app.snipcart.com/dashboard/account/credentials). There you’ll find your public API keys and also need to create your secret API keys for live and test environment.');
         $fsAPI->add($f);
         
         $f = $modules->get('InputfieldText');
@@ -271,7 +271,7 @@ class SnipWireConfig extends ModuleConfig {
         $f->label = $this->_('Set Currencies'); 
         $f->description = $this->_('Selected currency(s) will be used in your shop catalogue and in the SnipCart shopping-cart system during checkout.');
         $f->description .= ' ';
-        $f->description .= $this->_('As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [SnipCart Dashboard - Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
+        $f->description .= $this->_('As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [SnipCart Dashboard > Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
         $f->description .= ' ';
         $f->description .= $this->_('Selecting a currency will also create a corresponding currency specific price input field and add it to the products template automatically.');
         $f->notes = $this->_('Selecting more than one curency will enable Snipcart\'s multiple currencies payments feature. The first currency in the list will be the default one used in your product catalogue and in Snipcart shopping-cart.');
