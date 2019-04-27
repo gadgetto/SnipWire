@@ -51,7 +51,7 @@ class SnipREST extends WireHttp {
         if ($moduleConfig && isset($moduleConfig['submit_save_module'])) {
             // Snipcart environment (TEST | LIVE?)
             $snipcartAPIKey = ($moduleConfig['snipcart_environment'] == 1)
-                ? $moduleConfig['api_key_secret'] : 
+                ? $moduleConfig['api_key_secret']
                 : $moduleConfig['api_key_secret_test'];
             
             // Set headers required by Snipcart
