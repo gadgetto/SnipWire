@@ -491,6 +491,7 @@ class SnipWireConfig extends ModuleConfig {
         $f->label = $this->_('SnipWire Webhooks Endpoint');
         $f->description = $this->_('To allow Snipcart to send webhooks POST requests to SnipWire, you must define the URL where your webhooks will be reachable. After that, enter the URL in your Snipcart Dashboard under [Account > Webhooks section](https://app.snipcart.com/dashboard/webhooks).');
         $f->notes = $this->_('The URL you provide must be an absolute URL, e.g. https://mysite.com/webhooks/snipcart');
+        $f->pattern = 'https?://.+';
         $fsSnipWire->add($f);
 
         if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {
