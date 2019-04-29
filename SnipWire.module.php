@@ -71,14 +71,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
-     * Initialize the module
+     * Initialize the module and set required hooks.
      * 
-     * This is an optional initialization function called before any execute functions.
-     * ProcessWire calls this when the module is loaded. For 'autoload' modules, this will be called
-     * when ProcessWire's API is ready. As a result, this is a good place to attach hooks.
-     *
-     * @access public
-     *
      */
     public function init() {
         /** @var SnipREST $snipREST Custom ProcessWire API variable */
