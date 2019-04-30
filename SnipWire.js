@@ -38,8 +38,8 @@ var WebhooksEndpointUrl = {
         // Remove ugly combinations next to each other
         path = path.replace(/(\.-|-\.)/g, '-'); 
     
-        // Remove leading or trailing slashes, dashes, underscores and dots
-        path = path.replace(/(^[-_.\/]+|[-_.\/]+$)/g, ''); 
+        // Remove leading or trailing dashes, underscores and dots
+        path = path.replace(/(^[-_.]+|[-_.]+$)/g, ''); 
 
         // Make sure it's not too long
         if (path.length > 128) path = $.trim(path).substring(0, 128).split('-').slice(0, -1).join(' '); // @adrian
