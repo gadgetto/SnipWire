@@ -24,23 +24,26 @@ var WebhooksEndpointUrl = {
         path = path.replace(/[^\/-_.a-z0-9 ]/g, '-');
     
         // Convert whitespace to dash
-        path = path.replace(/\s+/g, '-') 
+        path = path.replace(/\s+/g, '-');
     
         // Convert multiple dashes or dots to single
-        path = path.replace(/--+/g, '-'); 
+        path = path.replace(/--+/g, '-');
     
         // Convert multiple dots to single
-        path = path.replace(/\.\.+/g, '.'); 
+        path = path.replace(/\.\.+/g, '.');
     
         // Convert multiple slashes to single
-        path = path.replace(/\/\/+/g, '\/'); 
+        path = path.replace(/\/\/+/g, '\/');
     
         // Remove ugly combinations next to each other
-        path = path.replace(/(\.-|-\.)/g, '-'); 
+        path = path.replace(/(\.-|-\.)/g, '-');
     
         // Remove leading or trailing dashes, underscores and dots
-        path = path.replace(/(^[-_.]+|[-_.]+$)/g, ''); 
+        path = path.replace(/(^[-_.]+|[-_.]+$)/g, '');
 
+        // Check if path starts with / (and add if not)
+        if(path.lastIndexOf('/', 0) !== 0) path = '/' + path;
+        
         // Make sure it's not too long
         if (path.length > 128) path = $.trim(path).substring(0, 128).split('-').slice(0, -1).join(' '); // @adrian
     
