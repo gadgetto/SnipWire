@@ -126,13 +126,14 @@ class SnipWireConfig extends ModuleConfig {
             'cart_image_quality' => 70,
             'cart_image_hidpi' => 1,
             'cart_image_hidpiQuality' => 50,
-            'webhooks_endpoint' => $this->wire('config')->urls->httpRoot . 'webhooks/snipcart',
+            'webhooks_endpoint' =>  'webhooks/snipcart',
             'data_item_name_field' => 'title',
         );
     }
 
     public function getInputfields() {
         $modules = $this->wire('modules');
+        $config = $this->wire('config');
         $snipREST = $this->wire('snipREST');
         
         $inputfields = parent::getInputfields();
@@ -485,13 +486,33 @@ class SnipWireConfig extends ModuleConfig {
         $fsSnipWire->icon = 'plug';
         $fsSnipWire->label = $this->_('SnipWire Configuration');
         $fsSnipWire->set('themeOffset', true);
+
+        // Set httpRoot as JavaScript property
+        $config->js('SnipWire', array(
+            'httpRoot' => $config->urls->httpRoot,
+        ));
         
+        $webhooksEndpointUrlValue = $config->urls->httpRoot . (isset($data['webhooks_endpoint']) ? trim($data['webhooks_endpoint']) : '');
+        
+        $webhooksEndpointUrlMarkup = 
+        '<div class="input-group">' .
+            '<input type="text" class="uk-input" id="webhooks_endpoint_url" aria-label="' . $this->_('Absolute URL for SnipWire webhooks endpoint') .'" value="' . $webhooksEndpointUrlValue . '" disabled="disabled">' .
+            '<div class="input-group-append">' .
+                '<button id="webhooks_endpoint_url_copy" class="ui-button ui-widget ui-corner-all ui-state-default" type="button">' .
+                    '<span class="ui-button-text" title="' . $this->_('Copy absolute URL to clipboard') . '">' . wireIconMarkup('copy') . '</span>' .
+                '</button>' .
+            '</div>' .
+        '</div>';        
+
         $f = $modules->get('InputfieldText');
         $f->attr('id+name', 'webhooks_endpoint');
         $f->label = $this->_('SnipWire Webhooks Endpoint');
-        $f->description = $this->_('To allow Snipcart to send webhooks POST requests to SnipWire, you must define the URL where your webhooks will be reachable. After that, enter the URL in your Snipcart Dashboard under [Account > Webhooks section](https://app.snipcart.com/dashboard/webhooks).');
-        $f->notes = $this->_('The URL you provide must be an absolute URL, e.g. https://mysite.com/webhooks/snipcart');
-        $f->pattern = 'https?://.+';
+        $f->maxlength = 128;
+        $f->required = true;
+        $f->description = $this->_('To allow Snipcart to send webhooks POST requests to SnipWire, you must define the endpoint where your webhooks will be reachable. After that, enter the absolute URL from the second field below in your Snipcart Dashboard under [Account > Webhooks section](https://app.snipcart.com/dashboard/webhooks).');
+        $f->notes = $this->_('The endpoint you provide must be a relative URL without leading slash, e.g. webhooks/snipcart');
+        $f->appendMarkup = $webhooksEndpointUrlMarkup;
+        $f->pattern = '^(?!\/)(?!.*\/\/)([a-zA-Z-\/]+)$';
         $fsSnipWire->add($f);
 
         if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {

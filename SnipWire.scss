@@ -1,0 +1,69 @@
+/**
+ * SnipWire - stylesheet for config editor.
+ * 
+ * Licensed under MPL 2.0 (see LICENSE file provided with this package)
+ * Copyright 2019 by Martin Gartner
+ *
+ * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
+ * https://processwire.com
+ *
+ */
+
+.input-group {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    
+    > input {
+        position: relative;
+        display: block;
+        flex: 1 1 auto;
+        width: 1%;
+        margin-bottom: 0;
+    }
+}
+.input-group-append,
+.input-group-prepend {
+    display: flex;
+}
+.input-group-append {
+    .ui-button,
+    .ui-button.ui-state-default,
+    .ui-button.ui-state-hover {
+        position: relative;
+        z-index: 2;
+        margin-left: -1px;
+        margin-right: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}
+.input-group-prepend {
+    .ui-button,
+    .ui-button.ui-state-default,
+    .ui-button.ui-state-hover {
+        position: relative;
+        z-index: 2;
+        margin-left: 0;
+        margin-right: -1px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+}
+
+// Theme dependant styles
+
+.AdminThemeUikit {
+}
+.AdminThemeDefault {
+    .Inputfield p.notes + .input-group {
+        margin-top: 1em;
+    }
+}
+.AdminThemeReno {
+    .Inputfield p.notes + .input-group {
+        margin-top: 1em;
+    }
+}
