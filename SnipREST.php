@@ -68,9 +68,9 @@ class SnipREST extends WireHttp {
      * Get the available settings from Snipcart dashboard as array.
      * This method uses the WireCache to prevent reloading Snipcart data on each request.
      *
-     * @var string $key Which settings key to return (fallback to full settings array if $key doesnt exist)
-     * @var mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
-     * @var boolean $forceRefresh Wether to refresh the settings cache
+     * @param string $key Which settings key to return (fallback to full settings array if $key doesnt exist)
+     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return boolean|array False if request failed or settings array
      *
      */
