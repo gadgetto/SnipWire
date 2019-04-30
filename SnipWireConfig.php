@@ -512,7 +512,7 @@ class SnipWireConfig extends ModuleConfig {
         $f->maxlength = 128;
         $f->required = true;
         $f->description = $this->_('To allow Snipcart to send webhooks POST requests to SnipWire, you must define the endpoint where your webhooks will be reachable. After that, enter the absolute URL from the second field below in your Snipcart Dashboard under [Account > Webhooks section](https://app.snipcart.com/dashboard/webhooks).');
-        $f->notes = $this->_('The endpoint you provide must be relative to your site root, e.g. /webhooks/snipcart');
+        $f->notes = $this->_('The endpoint you provide must be relative to your site root with leading slash, e.g. /webhooks/snipcart');
         $f->appendMarkup = $webhooksEndpointUrlMarkup;
         $f->pattern = '^\/(?!.*\/\/)([a-zA-Z-\/]+)$';
         $fsSnipWire->add($f);
