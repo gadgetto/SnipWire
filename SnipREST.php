@@ -76,7 +76,7 @@ class SnipREST extends WireHttp {
      *
      */
     public function getSettings($key = '', $expires = WireCache::expireNever, $forceRefresh = false) {
-        if (!$this->headers) {
+        if (!$this->getHeaders()) {
             $this->error($this->noticesText['error_no_headers']);
             return false;
         }
@@ -97,7 +97,7 @@ class SnipREST extends WireHttp {
      * 
      */
     public function testConnection() {
-        if (!$this->headers) {
+        if (!$this->getHeaders()) {
             $status = $this->noticesText['error_no_headers'];
             $this->error($status);
             return $status;
@@ -113,6 +113,16 @@ class SnipREST extends WireHttp {
      */
     public function refreshSettings() {
         return $this->getSettings('', WireCache::expireNever, true);
+    }
+    
+    /**
+     * Getter for $headers from WireHttp.
+     *
+     * @return array $headers (may be empty)
+     *
+     */
+    public function getHeaders() {
+        return $this->headers;
     }
 
 }
