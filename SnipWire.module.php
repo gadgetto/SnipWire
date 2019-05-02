@@ -37,6 +37,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         );
     }
 
+    const snipWireLogName = 'snipwire';
+
     /**
      * Returns a template array for a currency specific price input field.
      *
@@ -68,6 +70,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         parent::__construct();
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'ExtendedInstaller.php';
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SnipREST.php';
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Webhooks.php';
     }
 
     /**
@@ -80,6 +83,18 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookBefore('Inputfield(name=snipcart_item_id)::render', $this, 'presetSKU');
         $this->addHookAfter('Pages::added', $this, 'presetTaxable');
+        $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
+    }
+
+    /**
+     * Load module related CSS and JS files for module config editor.
+     *
+     */
+    public function ready() {
+        // (needs to be done manually because this is not a Process module)
+        if ($this->wire('input')->get['name'] === $this->className()) {
+            $this->wire('modules')->loadModuleFileAssets($this->className()); 
+        }
     }
 
     /**
@@ -140,6 +155,23 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                         $this->warning($out);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Check for webohook request and process them.
+     * (Method triggered before ProcessPageView execute)
+     *
+     */
+    public function checkWebhookRequest(HookEvent $event) {
+        if ($webhooksEndpoint = $this->get('webhooks_endpoint')) {
+            if ($this->sanitizer->url($this->input->url) == $webhooksEndpoint) {
+                /** @var Webhooks $webhooks Custom ProcessWire API variable */
+                $this->wire('webhooks', new Webhooks());
+                $this->wire('webhooks')->process();
+                $event->replace = true;
+                // @note: Tracy Debug won't work from here on as normal page rendering is omitted!
             }
         }
     }
