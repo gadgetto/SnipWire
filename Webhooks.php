@@ -56,7 +56,7 @@ class Webhooks extends WireData {
     }
 
     /**
-     * Secure the webhook endpoint by validating a Snipcart request based on request token (= handshake).
+     * Secure the webhook endpoint by validating a Snipcart request by checking the request token (= handshake).
      *
      * @return boolean
      *
