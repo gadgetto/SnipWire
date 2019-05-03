@@ -5,7 +5,7 @@
  * (This file is part of the SnipWire package)
  *
  * Replaces the ProcessWire page rendering as a whole. It will only accept 
- * POST request from Snipcart and the response will always be Json. 
+ * POST request from Snipcart. 
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2019 by Martin Gartner
