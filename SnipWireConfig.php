@@ -159,7 +159,7 @@ class SnipWireConfig extends ModuleConfig {
             'name' => 'rest_test',
             'url' => '../setup/snipwire/test-snipcart-rest-connection/?ret=' . $redirectUrl,
             'prompt' => $this->_('Snipcart REST API connection test'),
-            'description' => $this->_('Follow this link to send a test request to the Snipcart REST API (you first need to enter a valid API key in the settings below).'),
+            'description' => $this->_('Follow this link to send a test request to the Snipcart REST API (you first need to enter a valid Secret API key in the settings below).'),
         );
         
         $stepsCounter = count($steps);
