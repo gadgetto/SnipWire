@@ -205,6 +205,9 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     public function ___uninstall() {
         // Remove all caches created by SnipWire (SnipWire namespace)
         $this->wire('cache')->deleteFor('SnipWire');
+        // Remove all logs created by SnipWire
+        $this->wire('log')->delete(self::snipWireLogName);
+        $this->wire('log')->delete(Webhooks::snipWireWebhooksLogName);
     }
 
 }
