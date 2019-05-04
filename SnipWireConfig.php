@@ -178,9 +178,9 @@ class SnipWireConfig extends ModuleConfig {
         
         if ($stepsCounter) {
             // Check which steps are already done and add flag
-            $data = $modules->getConfig('SnipWire');
+            $snipwireConfig = $modules->getConfig('SnipWire');
             for ($i = 0; $i < count($steps); $i++) {
-                $steps[$i]['done'] = (isset($data[$steps[$i]['name']]) && $data[$steps[$i]['name']]) ? true : false;;
+                $steps[$i]['done'] = (isset($snipwireConfig[$steps[$i]['name']]) && $snipwireConfig[$steps[$i]['name']]) ? true : false;;
             }
 
             // Render steps
@@ -500,7 +500,7 @@ class SnipWireConfig extends ModuleConfig {
         $fsSnipWire->set('themeOffset', true);
 
         $httpRootUrl = rtrim($config->urls->httpRoot, '/');
-        $webhooksEndpoint = isset($data['webhooks_endpoint']) ? $data['webhooks_endpoint'] : '';
+        $webhooksEndpoint = isset($snipwireConfig['webhooks_endpoint']) ? $snipwireConfig['webhooks_endpoint'] : '';
         $webhooksEndpointFullUrl = $httpRootUrl . $webhooksEndpoint;
         
         $webhooksEndpointUrlMarkup = 

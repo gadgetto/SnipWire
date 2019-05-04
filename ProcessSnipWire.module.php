@@ -103,10 +103,10 @@ class ProcessSnipWire extends Process implements Module {
         $out = '<pre>' . $test . '</pre>';
         
         /*
-        $moduleConfig = $modules->getConfig('SnipWire');
-        $out = '<pre>' . print_r($moduleConfig['currencies'], true) . '</pre>';
-        $out .= '<pre>' . print_r(wireDecodeJSON($moduleConfig['currencies'][0]), true) . '</pre>';
-        $out .= '<pre>' . print_r(wireDecodeJSON($moduleConfig['currencies'][1]), true) . '</pre>';
+        $snipwireConfig = $modules->getConfig('SnipWire');
+        $out = '<pre>' . print_r($snipwireConfig['currencies'], true) . '</pre>';
+        $out .= '<pre>' . print_r(wireDecodeJSON($snipwireConfig['currencies'][0]), true) . '</pre>';
+        $out .= '<pre>' . print_r(wireDecodeJSON($snipwireConfig['currencies'][1]), true) . '</pre>';
         */
         
         
@@ -176,10 +176,10 @@ class ProcessSnipWire extends Process implements Module {
         $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
         $form->attr('method', 'post');
 
-        $moduleconfig = $modules->getConfig('SnipWire');
+        $snipwireConfig = $modules->getConfig('SnipWire');
         
         // Prevent installation when already installed
-        if (isset($moduleconfig['product_package']) && $moduleconfig['product_package']) {
+        if (isset($snipwireConfig['product_package']) && $snipwireConfig['product_package']) {
             
             $this->warning($this->_('SnipWire product package is already installed!'));
             $this->wire('session')->redirect($comeFromUrl);
@@ -210,8 +210,8 @@ class ProcessSnipWire extends Process implements Module {
                     $this->warning($this->_('Installation of SnipWire product package not completet. Please check the warnings...'));
                 } else {
                     // Update SnipWire module config to tell system that product package is installed
-                    $moduleconfig['product_package'] = true;
-                    $modules->saveConfig('SnipWire', $moduleconfig);            
+                    $snipwireConfig['product_package'] = true;
+                    $modules->saveConfig('SnipWire', $snipwireConfig);            
                     $this->message($this->_('Installation of SnipWire product package completet!'));
                 }
                 $this->wire('session')->redirect($comeFromUrl);
@@ -246,10 +246,10 @@ class ProcessSnipWire extends Process implements Module {
         $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
         $form->attr('method', 'post');
         
-        $moduleconfig = $modules->getConfig('SnipWire');
+        $snipwireConfig = $modules->getConfig('SnipWire');
         
         // Prevent uninstallation when already uninstalled
-        if (!isset($moduleconfig['product_package']) || !$moduleconfig['product_package']) {
+        if (!isset($snipwireConfig['product_package']) || !$snipwireConfig['product_package']) {
 
             $this->warning($this->_('SnipWire product package is not installed!'));
             $this->wire('session')->redirect($comeFromUrl);
@@ -286,8 +286,8 @@ class ProcessSnipWire extends Process implements Module {
                         $this->warning($this->_('Uninstallation of SnipWire product package not completet. Please check the warnings...'));
                     } else {
                         // Update SnipWire module config to tell system that product package is not installed
-                        $moduleconfig['product_package'] = false;
-                        $modules->saveConfig('SnipWire', $moduleconfig);            
+                        $snipwireConfig['product_package'] = false;
+                        $modules->saveConfig('SnipWire', $snipwireConfig);            
                         $this->message($this->_('Uninstallation of SnipWire product package completet!'));
                     }
                     
