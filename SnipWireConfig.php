@@ -500,7 +500,9 @@ class SnipWireConfig extends ModuleConfig {
         $fsSnipWire->set('themeOffset', true);
 
         $httpRootUrl = rtrim($config->urls->httpRoot, '/');
-        $webhooksEndpoint = isset($snipwireConfig['webhooks_endpoint']) ? $snipwireConfig['webhooks_endpoint'] : '';
+        $webhooksEndpoint = isset($snipwireConfig['webhooks_endpoint'])
+            ? $snipwireConfig['webhooks_endpoint'] // from db
+            : $this->webhooks_endpoint; // from getDefaults
         $webhooksEndpointFullUrl = $httpRootUrl . $webhooksEndpoint;
         
         $webhooksEndpointUrlMarkup = 
