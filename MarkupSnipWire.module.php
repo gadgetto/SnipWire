@@ -16,8 +16,8 @@
     
     public static function getModuleInfo() {
         return array(
-            'title' => 'SnipWire Markup', 
-            'summary' => 'Snipcart markup output for SnipWire.', 
+            'title' => __('SnipWire Markup'), 
+            'summary' => __('Snipcart markup output for SnipWire.'), 
             'version' => 1, 
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
