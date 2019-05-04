@@ -169,24 +169,27 @@
         $jsResources = array();
 
         // Add Snipcart CSS resource
-        $cssResources[] = '<link rel="stylesheet" href="' . $this->snipwireConfig['snipcart_css_path'] . '"'
+        $cssResources[] = 
+              '<link rel="stylesheet" href="' . $this->snipwireConfig['snipcart_css_path'] . '"'
             . (!empty($this->snipwireConfig['snipcart_css_integrity']) ? ' integrity="' . $this->snipwireConfig['snipcart_css_integrity'] . '"' : '')
-            . ' crossorigin="anonymous">';
+            . '>';
         
         // Add jQuery JS resource
         if ($this->snipwireConfig['include_jquery']) {
-            $jsResources[] = '<script src="' . $this->snipwireConfig['jquery_js_path'] . '"'
+            $jsResources[] = 
+              '<script src="' . $this->snipwireConfig['jquery_js_path'] . '"'
             . (!empty($this->snipwireConfig['jquery_js_integrity']) ? ' integrity="' . $this->snipwireConfig['jquery_js_integrity'] . '"' : '')
-            . ' crossorigin="anonymous"></script>';
+            . '></script>';
         }
         
         // Add Snipcart JS resource
         $jsResources[] = $environmentStatus;
-        $jsResources[] = '<script src="' . $this->snipwireConfig['snipcart_js_path'] . '"'
+        $jsResources[] = 
+              '<script src="' . $this->snipwireConfig['snipcart_js_path'] . '"'
             . (!empty($this->snipwireConfig['snipcart_js_integrity']) ? ' integrity="' . $this->snipwireConfig['snipcart_js_integrity'] . '"' : '')
             . ' data-api-key="' . $snipcartAPIKey . '"'
             . ' id="snipcart"'
-            . ' crossorigin="anonymous"></script>';
+            . '></script>';
 
         // Pick available Snipcart JS API properties from module config for API output
         $snipcartAPI = array();
