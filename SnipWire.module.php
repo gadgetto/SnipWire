@@ -68,7 +68,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      */
     public function __construct() {
         parent::__construct();
-        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'ExtendedInstaller.php';
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SnipREST.php';
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Webhooks.php';
     }
