@@ -17,92 +17,308 @@
 
 class Webhooks extends WireData {
 
-    const snipWireWebhooksLogName = 'snipwire_webhooks';
-    const snipcartRequestTokenServerVar = 'HTTP_X_SNIPCART_REQUESTTOKEN';
-    
-    protected $serverProtocol = '';
-    
-    /**
-     * Set custom error and exception handlers.
-     *
-     */
-    public function __construct() {
-        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-        header('Cache-Control: post-check=0, pre-check=0', false);
-        header('Pragma: no-cache');
-        
-        $this->serverProtocol = $_SERVER['SERVER_PROTOCOL']; 
-    }
+	const snipWireWebhooksLogName = 'snipwire-webhooks';
+	const snipcartRequestTokenServerVar = 'HTTP_X_SNIPCART_REQUESTTOKEN';
+	
+	// Snipcart webhook events
+	const webhookOrderCompleted = 'order.completed';
+	const webhookOrderStatusChanged = 'order.status.changed';
+	const webhookOrderPaymentStatusChanged = 'order.paymentStatus.changed';
+	const webhookOrderTrackingNumberChanged = 'order.trackingNumber.changed';
+	const webhookSubscriptionCreated = 'subscription.created';
+	const webhookSubscriptionCancelled = 'subscription.cancelled';
+	const webhookSubscriptionPaused = 'subscription.paused';
+	const webhookSubscriptionResumed = 'subscription.resumed';
+	const webhookSubscriptionInvoiceCreated = 'subscription.invoice.created';
+	const webhookShippingratesFetch = 'shippingrates.fetch';
+	const webhookTaxesCalculate = 'taxes.calculate';
+	const webhookCustomerUpdated = 'customauth:customer_updated'; // not documented
+	
+	const webhookModeLive = 'Live';
+	const webhookModeTest = 'Test';
 
-    /**
-     * Process all webhooks requests.
-     *
-     */
-    public function process() {
-        if (!$this->validateRequest()) {
-            // When something goes wrong, force a 404 Not Found!
-            header($this->serverProtocol . ' ' . $this->wire('snipREST')->getHttpStatusCodeString(404));
-            return;
-        }
-        header('Content-type: application/json');
+	/** @var string $serverProtocol The server protocol (e.g. HTTP/1.1) */
+	protected $serverProtocol = '';
+	
+	/** @var array $webhookEventsIndex All available webhook events */
+	protected $webhookEventsIndex = array();
+	
+	/** @var string $event The current Snipcart event */
+	protected $event = '';
+	
+	/** @var array $body The current Json decoded POST input */
+	protected $body = null;
+	
+	/** @var string (Json) $response The Json response for Snipcart */
+	protected $response = '';
+	
+	/**
+	 * Set custom error and exception handlers.
+	 *
+	 */
+	public function __construct() {
+		$this->serverProtocol = $_SERVER['SERVER_PROTOCOL'];
+		
+		$this->webhookEventsIndex = array(
+			self::webhookOrderCompleted => '_handleOrderCompleted',
+			self::webhookOrderStatusChanged => '_handleOrderStatusChanged',
+			self::webhookOrderPaymentStatusChanged => '_handleOrderPaymentStatusChanged',
+			self::webhookOrderTrackingNumberChanged => '_handleOrderTrackingNumberChanged',
+			self::webhookSubscriptionCreated => '_handleSubscriptionCreated',
+			self::webhookSubscriptionCancelled => '_handleSubscriptionCancelled',
+			self::webhookSubscriptionPaused => '_handleSubscriptionPaused',
+			self::webhookSubscriptionResumed => '_handleSubscriptionResumed',
+			self::webhookSubscriptionInvoiceCreated => '_handleSubscriptionInvoiceCreated',
+			self::webhookShippingratesFetch => '_handleShippingratesFetch',
+			self::webhookTaxesCalculate => '_handleTaxesCalculate',
+			self::webhookCustomerUpdated => '_handleCustomerUpdated',
+		);
+		
+		header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+		header('Cache-Control: post-check=0, pre-check=0', false);
+		header('Pragma: no-cache');
+	}
 
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Valid webhooks request from Snipcart');
-        echo '{"foo":"bar"}';
+	/**
+	 * Process webhooks requests.
+	 *
+	 * @return void
+	 *
+	 */
+	public function process() {
+		$snipREST = $this->wire('snipREST');
 
-        // handle all webhooks here...
-        
-        
-        
-    }
+		if (!$this->_isValidRequest()) {
+			// 404 Not Found
+			header($this->serverProtocol . ' ' . $snipREST->getHttpStatusCodeString(404));
+			return;
+		}
+		if (!$this->_hasValidRequestData()) {
+			// 400 Bad Request 
+			header($this->serverProtocol . ' ' . $snipREST->getHttpStatusCodeString(400));
+			return;
+		}
+		$responseCode = $this->_handleWebhookData();
+		header($this->serverProtocol . ' ' . $snipREST->getHttpStatusCodeString($responseCode));
+		
+		// debug
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request success: responseCode = ' . $responseCode);
+	}
 
-    /**
-     * Secure the webhook endpoint by validating a Snipcart request by checking the request token (= handshake).
-     *
-     * @return boolean
-     *
-     */
-    public function validateRequest() {
-        $snipREST = $this->wire('snipREST');
-        $log = $this->wire('log');
-        
-        if (!$snipREST->getHeaders()) return false;
-        
-        if (($requestToken = $this->getServerVar(self::snipcartRequestTokenServerVar)) === false) {
-            $log->save(self::snipWireWebhooksLogName, 'Invalid webhooks request: no request token');
-            return false;
-        }
-        $handshakeUrl = $snipREST::apiEndpoint . $snipREST::resourcePathRequestValidation . DIRECTORY_SEPARATOR . $requestToken;
-        if (($handshake = $snipREST->get($handshakeUrl)) === false) {
-            $log->save('Snipcart REST connection for checking request token failed: ' . $snipREST->getError());
-            return false;
-        }
-        if (empty($handshake) || $snipREST->getHttpCode != 200) {
-            $log->save('Invalid webhooks request: no response');
-            return false;
-        }
-        $json = @json_decode($handshake);
-        if ($json) {
-            $log->save('Invalid webhooks request: response not json');
-            return false;
-        }
-        if ($json->token !== $requestToken) {
-            $log->save('Invalid webhooks request: invalid token');
-            return false;
-        }
-        return true;  
-    }
+	/**
+	 * Validate a Snipcart webhook endpoint request.
+	 * - check request method and content type
+	 * - check the request token (= handshake)
+	 *
+	 * @return boolean
+	 *
+	 */
+	private function _isValidRequest() {
+		$snipREST = $this->wire('snipREST');
+		$log = $this->wire('log');
 
-    /**
-     * Get PHP server and execution environment information from superglobal $_SERVER
-     *
-     * @param string $var The required key
-     * @return string|boolean Returns value of $_SEREVER key or false if not exists
-     *
-     * (This could return an empty string so needs to checked with === false)
-     *
-     */
-    public function getServerVar($var) {
-        return isset($_SERVER[$var]) ? $_SERVER[$var] : false;
-    }
-    
+		// Perform multiple checks for valid request
+		if (
+		    $this->getServerVar('REQUEST_METHOD') != 'POST' || 
+		    stripos($this->getServerVar('CONTENT_TYPE'), 'application/json') === false
+        ) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Invalid webhooks request: no POST data or content not json'
+            );
+			return false;
+		}
+		if (($requestToken = $this->getServerVar(self::snipcartRequestTokenServerVar)) === false) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Invalid webhooks request: no request token'
+            );
+			return false;
+		}
+		$handshakeUrl = $snipREST::apiEndpoint . $snipREST::resourcePathRequestValidation . DIRECTORY_SEPARATOR . $requestToken;
+		if (($handshake = $snipREST->get($handshakeUrl)) === false) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Snipcart REST connection for checking request token failed: ' . $snipREST->getError()
+            );
+            return false;
+		}
+		if (empty($handshake) || $snipREST->getHttpCode(false) != 200) {
+			$log->save(
+			    self::snipWireWebhooksLogName,
+			    'Invalid webhooks request: no response'
+            );
+			return false;
+		}
+		$json = json_decode($handshake, true);
+		if (!$json) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Invalid webhooks request: response not json'
+            );
+            return false;
+		}
+		if (!isset($json['token']) || $json['token'] !== $requestToken) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Invalid webhooks request: invalid token'
+            );
+            return false;
+		}
+		return true;  
+	}
+
+	/**
+	 * Check if request has valid data and set $body and $event class properties if OK.
+	 *
+	 * @return boolean
+	 *
+	 */
+	private function _hasValidRequestData() {
+		$log = $this->wire('log');
+		$rawBody = file_get_contents('php://input');
+		$body = json_decode($rawBody, true);
+		
+		// Perform multiple checks for valid request data
+		$check = false;
+		if (is_null($body) || !is_array($body)) {
+            $log->save(
+                self::snipWireWebhooksLogName, 
+			    'Webhooks request: invalid request data - not an array'
+            );
+        
+		} elseif (!isset($body['eventName'])) {
+			$log->save(
+                self::snipWireWebhooksLogName,
+                'Webhooks request: invalid request data - key eventName missing'
+            );
+            
+		} elseif (!array_key_exists($body['eventName'], $this->webhookEventsIndex)) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Webhooks request: invalid request data - unknown event'
+            );
+            
+		} elseif (!isset($body['mode']) || !in_array($body['mode'], array(self::webhookModeLive, self::webhookModeTest))) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Webhooks request: invalid request data - wrong or missing mode'
+            );
+            
+		} elseif (!isset($body['content'])) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Webhooks request: invalid request data - missing content'
+            );
+            
+		} else {
+    		$this->event = $body['eventName'];
+    		$this->body = $body;
+    		$check = true;
+		}
+		return $check;
+	}
+
+	/**
+	 * Process the post body (send it to the appropriate handler method).
+	 *
+	 * @return int HTTP response code
+	 *
+	 */
+	private function _handleWebhookData() {
+		$log = $this->wire('log');
+		
+		if (empty($this->event)) {
+		    $log->save(
+		        self::snipWireWebhooksLogName,
+		        '_handleWebhookData: $this->event not set'
+            );
+    		return 500; // Internal Server Error
+        }
+		$methodName = $this->webhookEventsIndex[$this->event];
+		if (!method_exists($this, $methodName)) {
+		    $log->save(
+		        self::snipWireWebhooksLogName,
+		        '_handleWebhookData: method does not exist ' . $methodName
+            );
+    		return 500; // Internal Server Error
+        }
+		
+		// Call the appropriate handler
+		return $this->{$methodName}();
+	}
+
+	private function _handleOrderCompleted() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderCompleted');
+		return 200; // OK
+	}
+
+	private function _handleOrderStatusChanged() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderStatusChanged');
+		return 200; // OK
+	}
+
+	private function _handleOrderPaymentStatusChanged() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderPaymentStatusChanged');
+		return 200; // OK
+	}
+
+	private function _handleOrderTrackingNumberChanged() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderTrackingNumberChanged');
+		return 200; // OK
+	}
+
+	private function _handleSubscriptionCreated() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionCreated');
+		return 200; // OK
+	}
+
+	private function _handleSubscriptionCancelled() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionCancelled');
+		return 200; // OK
+	}
+
+	private function _handleSubscriptionPaused() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionPaused');
+		return 200; // OK
+	}
+
+	private function _handleSubscriptionResumed() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionResumed');
+		return 200; // OK
+	}
+
+	private function _handleSubscriptionInvoiceCreated() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionInvoiceCreated');
+		return 200; // OK
+	}
+
+	private function _handleShippingratesFetch() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleShippingratesFetch');
+		return 200; // OK
+	}
+
+	private function _handleTaxesCalculate() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleTaxesCalculate');
+		return 200; // OK
+	}
+
+	private function _handleCustomerUpdated() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleCustomerUpdated');
+		return 200; // OK
+	}
+
+	/**
+	 * Get PHP server and execution environment information from superglobal $_SERVER
+	 *
+	 * @param string $var The required key
+	 * @return string|boolean Returns value of $_SEREVER key or false if not exists
+	 *
+	 * (This could return an empty string so needs to checked with === false)
+	 *
+	 */
+	public function getServerVar($var) {
+		return isset($_SERVER[$var]) ? $_SERVER[$var] : false;
+	}
+	
 }
