@@ -60,18 +60,18 @@ class Webhooks extends WireData {
 		$this->serverProtocol = $_SERVER['SERVER_PROTOCOL'];
 		
 		$this->webhookEventsIndex = array(
-			self::webhookOrderCompleted => '_handleOrderCompleted',
-			self::webhookOrderStatusChanged => '_handleOrderStatusChanged',
-			self::webhookOrderPaymentStatusChanged => '_handleOrderPaymentStatusChanged',
-			self::webhookOrderTrackingNumberChanged => '_handleOrderTrackingNumberChanged',
-			self::webhookSubscriptionCreated => '_handleSubscriptionCreated',
-			self::webhookSubscriptionCancelled => '_handleSubscriptionCancelled',
-			self::webhookSubscriptionPaused => '_handleSubscriptionPaused',
-			self::webhookSubscriptionResumed => '_handleSubscriptionResumed',
-			self::webhookSubscriptionInvoiceCreated => '_handleSubscriptionInvoiceCreated',
-			self::webhookShippingratesFetch => '_handleShippingratesFetch',
-			self::webhookTaxesCalculate => '_handleTaxesCalculate',
-			self::webhookCustomerUpdated => '_handleCustomerUpdated',
+			self::webhookOrderCompleted => 'handleOrderCompleted',
+			self::webhookOrderStatusChanged => 'handleOrderStatusChanged',
+			self::webhookOrderPaymentStatusChanged => 'handleOrderPaymentStatusChanged',
+			self::webhookOrderTrackingNumberChanged => 'handleOrderTrackingNumberChanged',
+			self::webhookSubscriptionCreated => 'handleSubscriptionCreated',
+			self::webhookSubscriptionCancelled => 'handleSubscriptionCancelled',
+			self::webhookSubscriptionPaused => 'handleSubscriptionPaused',
+			self::webhookSubscriptionResumed => 'handleSubscriptionResumed',
+			self::webhookSubscriptionInvoiceCreated => 'handleSubscriptionInvoiceCreated',
+			self::webhookShippingratesFetch => 'handleShippingratesFetch',
+			self::webhookTaxesCalculate => 'handleTaxesCalculate',
+			self::webhookCustomerUpdated => 'handleCustomerUpdated',
 		);
 		
 		header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -236,7 +236,7 @@ class Webhooks extends WireData {
     		return 500; // Internal Server Error
         }
 		$methodName = $this->webhookEventsIndex[$this->event];
-		if (!method_exists($this, $methodName)) {
+		if (!method_exists($this, '___' . $methodName)) {
 		    $log->save(
 		        self::snipWireWebhooksLogName,
 		        '_handleWebhookData: method does not exist ' . $methodName
@@ -248,63 +248,63 @@ class Webhooks extends WireData {
 		return $this->{$methodName}();
 	}
 
-	private function _handleOrderCompleted() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderCompleted');
+	public function ___handleOrderCompleted() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderCompleted');
 		return 200; // OK
 	}
 
-	private function _handleOrderStatusChanged() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderStatusChanged');
+	public function ___handleOrderStatusChanged() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderStatusChanged');
 		return 200; // OK
 	}
 
-	private function _handleOrderPaymentStatusChanged() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderPaymentStatusChanged');
+	public function ___handleOrderPaymentStatusChanged() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderPaymentStatusChanged');
 		return 200; // OK
 	}
 
-	private function _handleOrderTrackingNumberChanged() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleOrderTrackingNumberChanged');
+	public function ___handleOrderTrackingNumberChanged() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderTrackingNumberChanged');
 		return 200; // OK
 	}
 
-	private function _handleSubscriptionCreated() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionCreated');
+	public function ___handleSubscriptionCreated() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionCreated');
 		return 200; // OK
 	}
 
-	private function _handleSubscriptionCancelled() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionCancelled');
+	public function ___handleSubscriptionCancelled() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionCancelled');
 		return 200; // OK
 	}
 
-	private function _handleSubscriptionPaused() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionPaused');
+	public function ___handleSubscriptionPaused() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionPaused');
 		return 200; // OK
 	}
 
-	private function _handleSubscriptionResumed() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionResumed');
+	public function ___handleSubscriptionResumed() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionResumed');
 		return 200; // OK
 	}
 
-	private function _handleSubscriptionInvoiceCreated() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleSubscriptionInvoiceCreated');
+	public function ___handleSubscriptionInvoiceCreated() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionInvoiceCreated');
 		return 200; // OK
 	}
 
-	private function _handleShippingratesFetch() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleShippingratesFetch');
+	public function ___handleShippingratesFetch() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleShippingratesFetch');
 		return 200; // OK
 	}
 
-	private function _handleTaxesCalculate() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleTaxesCalculate');
+	public function ___handleTaxesCalculate() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleTaxesCalculate');
 		return 200; // OK
 	}
 
-	private function _handleCustomerUpdated() {
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: _handleCustomerUpdated');
+	public function ___handleCustomerUpdated() {
+		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleCustomerUpdated');
 		return 200; // OK
 	}
 
