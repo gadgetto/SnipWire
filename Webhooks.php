@@ -220,7 +220,7 @@ class Webhooks extends WireData {
 	}
 
 	/**
-	 * Process the post body (send it to the appropriate handler method).
+	 * Route the request to the appropriate handler method.
 	 *
 	 * @return int HTTP response code
 	 *
