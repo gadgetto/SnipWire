@@ -33,7 +33,7 @@ class SnipREST extends WireHttp {
     const resourcePathSettingsDomain = 'settings/domain';
     const resourcePathRequestValidation = 'requestvalidation'; // + HTTP_X_SNIPCART_REQUESTTOKEN
     
-    const settingsCacheName = 'SnipcartSettingsGeneral';
+    const cacheNameSettings = 'SnipcartSettingsGeneral';
 
     /**
      * Construct/initialize
@@ -80,10 +80,10 @@ class SnipREST extends WireHttp {
             $this->error($this->noticesText['error_no_headers']);
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor('SnipWire', self::settingsCacheName);
+        if ($forceRefresh) $this->wire('cache')->deleteFor('SnipWire', self::cacheNameSettings);
 
         // Try to get settings array from cache first
-        $response = $this->wire('cache')->getFor('SnipWire', self::settingsCacheName, $expires, function() {
+        $response = $this->wire('cache')->getFor('SnipWire', self::cacheNameSettings, $expires, function() {
             return $this->getJSON(self::apiEndpoint . self::resourcePathSettingsGeneral);
         });
         return ($key && isset($response[$key])) ? $response[$key] : $response;
