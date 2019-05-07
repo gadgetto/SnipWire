@@ -413,8 +413,8 @@
         // ===== unformatted price(s) =====
 
         // If unformatted return as early as possible
-        //  - sample for single currency: 19,99
-        //  - sample for multi currency: {"usd":20,"cad":25}
+        //  - sample for single currency: 19.99
+        //  - sample for multi currency: {"usd":20,"cad":25.90}
         if (!$formatted) {
             return (count($prices) > 1) ? wireEncodeJSON($prices, true) : reset($prices);
         }
