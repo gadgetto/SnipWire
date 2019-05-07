@@ -199,7 +199,7 @@ class SnipWireConfig extends ModuleConfig {
 
         // Snipcart API configuration
 
-        $fsAPI = $this->wire('modules')->get('InputfieldFieldset');
+        $fsAPI = $modules->get('InputfieldFieldset');
         $fsAPI->icon = 'plug';
         $fsAPI->label = $this->_('Snipcart API Configuration');
         $fsAPI->set('themeOffset', true);
