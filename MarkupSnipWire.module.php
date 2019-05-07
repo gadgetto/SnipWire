@@ -70,6 +70,8 @@
      *
      */
     public function __construct() {
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
+
         // Single point to query DB for SnipWire module config
         $this->snipwireConfig = $this->wire('modules')->getConfig('SnipWire');
         
@@ -421,50 +423,11 @@
 
         // ===== formatted price =====
         
-        /*
-        $currencyDefinition sample:
-        
-        array(
-            'currency' => 'eur',
-            'precision' => 2,
-            'decimalSeparator' => ',',
-            'thousandSeparator' => '.',
-            'negativeNumberFormat' => '- %s%v',
-            'numberFormat' => '%s%v',
-            'currencySymbol' => '€',
-        )
-        */
-        
         // Get currency from method param or $snipwire->currency
         if (!$currencySelected) $currencySelected = $this->currency;
         $price = $prices[$currencySelected];
         
-        if (!$currencyDefinition = $this->wire('snipREST')->getSettings('currencies')) {
-            $currencyDefinition = SnipWireConfig::getDefaultCurrencyDefinition();
-        } else {
-            // Searches the $currencyDefinition array for $currencySelected value and returns the corresponding key
-            $key = array_search($currencySelected, array_column($currencyDefinition, 'currency'));
-            $currencyDefinition = $currencyDefinition[$key];
-        }
-                
-        $floatPrice = (float) $price;
-        if ($floatPrice < 0) {
-            $numberFormatString = $currencyDefinition['negativeNumberFormat'];
-            $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
-        } else {
-            $numberFormatString = $currencyDefinition['numberFormat'];
-        }
-        $price = number_format(
-            $floatPrice,
-            (integer) $currencyDefinition['precision'],
-            (string) $currencyDefinition['decimalSeparator'],
-            (string) $currencyDefinition['thousandSeparator']
-        );
-        $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
-        $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
-        $price = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
-
-        return $price;
+        return CurrencyFormat::format($price, $currencySelected);
     }
     
     /**

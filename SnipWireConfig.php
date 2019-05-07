@@ -35,6 +35,7 @@ class SnipWireConfig extends ModuleConfig {
      */
     public function __construct() {
         parent::__construct();
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
     }
 
     /**
@@ -57,38 +58,6 @@ class SnipWireConfig extends ModuleConfig {
             'cartasi' => __('CartaSi'),
             'postepay' => __('Postepay'),
         );
-    }
-
-    /**
-     * Returns an array of worldwide supported currencies, as name => label
-     * (comes from static file Currencies.php which holds all currencies 
-     * supported by Snipcart -> copied from Snipcart dashboard)
-     * 
-     * @return array
-     * 
-     */
-    public static function getSupportedCurrencies() {
-        return require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Currencies.php';
-    }
-    
-    /**
-     * Get the default currency definition.
-     *
-     * @param boolean $json Wether to return as Json formatted string and not array
-     * @return array|string (Json)
-     * 
-     */
-    public static function getDefaultCurrencyDefinition($json = false) {
-        $defaultCurrency = array(
-            'currency' => 'eur',
-            'precision' => 2,
-            'decimalSeparator' => ',',
-            'thousandSeparator' => '.',
-            'negativeNumberFormat' => '- %s%v',
-            'numberFormat' => '%s%v',
-            'currencySymbol' => '€',
-        );
-        return ($json) ? wireEncodeJSON($defaultCurrency, true) : $defaultCurrency;
     }
 
     /**
@@ -290,10 +259,10 @@ class SnipWireConfig extends ModuleConfig {
         $f->description .= $this->_('Selecting a currency will also create a corresponding currency specific price input field and add it to the products template automatically.');
         $f->notes = $this->_('Selecting more than one curency will enable Snipcart\'s multiple currencies payments feature. The first currency in the list will be the default one used in your product catalogue and in Snipcart shopping-cart.');
 
-        $supportedCurrencies = self::getSupportedCurrencies();
+        $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
         $currencies = array();
         if (!$currencies = $snipREST->getSettings('currencies', WireCache::expireNever, true)) {
-            $currencies[] = $this->getDefaultCurrencyDefinition();
+            $currencies[] = CurrencyFormat::getDefaultCurrencyDefinition();
         }
         foreach ($currencies as $currency) {
             $currencyName = $currency['currency'];

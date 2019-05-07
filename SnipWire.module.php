@@ -114,7 +114,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $modules = $this->wire('modules');
         
         $fieldTemplate = self::getCurrencyFieldTemplate();
-        $supportedCurrencies = SnipWireConfig::getSupportedCurrencies();
+        $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
         $fieldsToTemplate = array();
     
         foreach ($currencies as $currency) {
