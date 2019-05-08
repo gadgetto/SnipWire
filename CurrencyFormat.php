@@ -13,6 +13,23 @@
  */
 
 class CurrencyFormat extends WireData {
+    
+    /** @var array $currenciesCache An array of available currency formats (currency formats memory cache) */
+    public static $currenciesCache = null;
+
+    /**
+     * Set the static curencies definition cache.
+     *
+     * @return void
+     * 
+     */
+    public static function setStaticCurrenciesCache() {
+        if (!$currencies = wire('snipREST')->getSettings('currencies')) {
+            $currencies = self::getDefaultCurrencyDefinition();
+        }
+        // Cache currency definitons in static property (DB is queried only once!)
+        self::$currenciesCache = $currencies;
+    }
 
     /**
      * Returns an array of worldwide supported currencies, as name => label
@@ -57,14 +74,14 @@ class CurrencyFormat extends WireData {
      */
     public static function format($price, $currency = 'eur') {
         if (empty($price) && !is_numeric($price)) return '';
+        if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
         
-        if (!$currencyDefinition = wire('snipREST')->getSettings('currencies')) {
-            $currencyDefinition = self::getDefaultCurrencyDefinition();
-        } else {
-            // Searches the $currencyDefinition array for $currency tag and returns the corresponding key
-            $key = array_search($currency, array_column($currencyDefinition, 'currency'));
-            $currencyDefinition = $currencyDefinition[$key];
-        }
+        // Searches the static $currencys array for $currency tag and returns the corresponding key
+        $key = array_search(
+            $currency,
+            array_column(self::$currenciesCache, 'currency')
+        );
+        $currencyDefinition = self::$currenciesCache[$key];
         
         $floatPrice = (float) $price;
         if ($floatPrice < 0) {
