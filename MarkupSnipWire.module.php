@@ -423,6 +423,18 @@
 
         // ===== formatted price =====
         
+        // sample format:
+        // 
+        // array(
+        //     'currency' => 'eur',
+        //     'precision' => 2,
+        //     'decimalSeparator' => ',',
+        //     'thousandSeparator' => '.',
+        //     'negativeNumberFormat' => '- %s%v',
+        //     'numberFormat' => '%s%v',
+        //     'currencySymbol' => '€',
+        // )
+        
         // Get currency from method param or $snipwire->currency
         if (!$currencySelected) $currencySelected = $this->currency;
         $price = $prices[$currencySelected];
