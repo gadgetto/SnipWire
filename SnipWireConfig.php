@@ -435,7 +435,7 @@ class SnipWireConfig extends ModuleConfig {
         $f->attr('name', 'cart_image_quality');
         $f->label = $this->_('Quality in %');
         $f->required = true;
-        $f->columnWidth = 33;
+        $f->columnWidth = 34;
         $fsCartImage->add($f);
 
         $f = $modules->get('InputfieldCheckbox');
@@ -456,7 +456,7 @@ class SnipWireConfig extends ModuleConfig {
         $f->attr('name', 'cart_image_cropping'); 
         $f->label = $this->_('Crop');
         $f->label2 = $this->_('Crop thumbnail');
-        $f->columnWidth = 33;
+        $f->columnWidth = 34;
         $fsCartImage->add($f);
 
         $inputfields->add($fsCartImage);
