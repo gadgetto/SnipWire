@@ -1,0 +1,127 @@
+/**
+ * ProcessSnipWire - stylesheet.
+ * 
+ * Licensed under MPL 2.0 (see LICENSE file provided with this package)
+ * Copyright 2019 by Martin Gartner
+ *
+ * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
+ * https://processwire.com
+ *
+ */
+
+.period-picker-container {
+    text-align: center;
+    font-size: 1.2rem;
+    
+    .period-label {
+        margin-right: .5rem;
+    }
+}
+#period-picker {
+    display: inline-block;
+    margin: -.25rem 0;
+    padding: .25rem .5rem;
+}
+#period-picker:hover {
+    background: #f5f5f5;
+    border-radius: .25rem;
+    cursor: default;
+}
+#period-display {
+    margin: 0 .5rem;
+}
+
+.snipwire-perf-boxes-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    box-sizing: border-box;
+    
+    .snipwire-perf-box {
+        flex-basis: 100%;
+        box-sizing: border-box;
+        padding: 0 .5rem;
+        background-color: #f0f3f7;
+        border-radius: .5rem;
+        margin-bottom: 1.2rem;
+        
+        .snipwire-perf-box-header {
+            padding: 2rem .25rem .25rem .25rem;
+            color: #6c8dae;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .snipwire-perf-box-body {
+            padding: .25rem .25rem 2rem .25rem;
+            background: transparent;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+    }
+    
+    .customers-multivalue {
+        display: flex;
+
+        div {
+            flex-basis: 50%;
+            text-align: center;
+            border-right: 1px solid #d9e1ea;
+            
+            span {
+                display: block;
+            }
+            small {
+                display: block;
+                color: #6c8dae;
+                font-size: .75rem;
+                text-transform: uppercase;
+            }
+        }
+        div:last-child {
+            padding-right: 0;
+            border-right: none;
+        }
+    }
+}
+
+.snipwire-no-items {
+    display: flex;
+    width: 100%;
+    height: 8rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #bfbfbf;
+}
+
+@media screen and (min-width: 768px) {
+    .snipwire-perf-boxes-container {
+        
+        .snipwire-perf-box {
+            flex-basis: calc((100% + 1.2rem) / 2 - 1.2rem); // 2 boxes in row
+        }
+    }
+}
+@media screen and (min-width: 960px) {
+    .snipwire-perf-boxes-container {
+
+        .snipwire-perf-box {
+            flex-basis: calc((100% + 1.2rem) / 4 - 1.2rem); // 4 boxes in row
+        }
+    }
+}
+
+// Theme dependant style overrides (base styles are for AdminThemeUikit)
+
+.AdminThemeDefault {
+    .snipwire-perf-box {
+        background-color: rgba(228,235,238,.8);
+    }
+}
+.AdminThemeReno {
+
+}
+
