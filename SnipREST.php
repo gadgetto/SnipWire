@@ -23,6 +23,9 @@ class SnipREST extends WireHttp {
 
     const apiEndpoint = 'https://app.snipcart.com/api/';
     const resourcePathOrders = 'orders';
+    const resourcePathDataOrdersSales = 'data/orders/sales';
+    const resourcePathDataOrdersCount = 'data/orders/count';
+    const resourcePathDataPerformance = 'data/performance';
     const resourcePathSubscriptions = 'subscriptions';
     const resourcePathCustomers = 'customers';
     const resourcePathDiscounts = 'discounts';
