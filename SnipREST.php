@@ -45,10 +45,6 @@ class SnipREST extends WireHttp {
     public function __construct() {
         parent::__construct();
 
-        $this->set('noticesText', array(
-            'error_no_headers' => $this->_('Missing request headers for Snipcart REST connection.'),
-        ));
-
         $snipwireConfig = $this->wire('modules')->getConfig('SnipWire');
         // Need to check if module configuration is available (if configuration form was never submitted, 
         // the necessary keys aren't available!)
@@ -69,6 +65,20 @@ class SnipREST extends WireHttp {
     }
 
     /**
+     * Returns messages texts (message, warning, error) based on given key.
+     *
+     * @return string (will be empty if key not found)
+     *
+     */
+    public static function getMessagesText($key) {
+        $texts = array(
+            'no_headers' => __('Missing request headers for Snipcart REST connection.'),
+            'connection_failed' => __('Connection to Snipcart failed'),
+        );
+        return array_key_exists($key, $texts) ? $texts[$key] : '';
+    }
+
+    /**
      * Get the available settings from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
@@ -81,7 +91,7 @@ class SnipREST extends WireHttp {
      */
     public function getSettings($key = '', $expires = WireCache::expireNever, $forceRefresh = false) {
         if (!$this->getHeaders()) {
-            $this->error($this->noticesText['error_no_headers']);
+            $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         if ($forceRefresh) $this->wire('cache')->deleteFor('SnipWire', self::cacheNameSettings);
@@ -102,7 +112,7 @@ class SnipREST extends WireHttp {
      */
     public function testConnection() {
         if (!$this->getHeaders()) {
-            $status = $this->noticesText['error_no_headers'];
+            $this->error(self::getMessagesText('no_headers'));
             $this->error($status);
             return $status;
         }
