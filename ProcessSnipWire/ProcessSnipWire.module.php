@@ -87,7 +87,7 @@ class ProcessSnipWire extends Process implements Module {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
-        $snipREST = $this->wire('snipREST');
+        $sniprest = $this->wire('sniprest');
         
         $this->browserTitle($this->_('SnipWire Dashboard'));
         $this->headline($this->_('SnipWire Dashboard'));
@@ -263,14 +263,14 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     private function _renderStorePerformanceBoxes($start, $end) {
-        $snipREST = $this->wire('snipREST');
+        $sniprest = $this->wire('sniprest');
 
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamps required
             'to' => $end ? strtotime($end) : '', // UNIX timestamps required
         );
 
-        $result = $snipREST->getPerformance($selector, 300);
+        $result = $sniprest->getPerformance($selector, 300);
         if ($result === false) {
             $this->error(SnipREST::getMessagesText('connection_failed'));
             return '';
@@ -369,7 +369,7 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _renderTableOrders($start, $end) {
         $modules = $this->wire('modules');
-        $snipREST = $this->wire('snipREST');
+        $sniprest = $this->wire('sniprest');
 
         $selector = array(
             'limit' => 10,
@@ -377,7 +377,7 @@ class ProcessSnipWire extends Process implements Module {
             'to' => $end,
         );
 
-        $orders = $snipREST->getOrdersItems($selector, 300);
+        $orders = $sniprest->getOrdersItems($selector, 300);
         
         if ($orders === false) {
             
@@ -425,7 +425,7 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _renderTableCustomers($start, $end) {
         $modules = $this->wire('modules');
-        $snipREST = $this->wire('snipREST');
+        $sniprest = $this->wire('sniprest');
 
         $selector = array(
             'limit' => 10,
@@ -433,7 +433,7 @@ class ProcessSnipWire extends Process implements Module {
             'to' => $end,
         );
 
-        $customers = $snipREST->getCustomersItems($selector, 300);
+        $customers = $sniprest->getCustomersItems($selector, 300);
         
         if ($customers === false) {
             
@@ -522,14 +522,14 @@ class ProcessSnipWire extends Process implements Module {
     public function ___executeTestSnipcartRestConnection() {
         $input = $this->wire('input');
         $sanitizer = $this->wire('sanitizer');
-        $snipREST = $this->wire('snipREST');
+        $sniprest = $this->wire('sniprest');
 
         $comeFromUrl = $sanitizer->url($input->get('ret'));
 
         $this->browserTitle($this->_('SnipWire - Snipcart Connection Test'));
         $this->headline($this->_('SnipWire - Snipcart Connection Test'));
 
-        if (($result = $snipREST->testConnection()) !== true) {                        
+        if (($result = $sniprest->testConnection()) !== true) {                        
             $this->warning($result . ' ' . $this->_('Snipcart REST API connection failed! Please check your secret API keys.'));
         } else {
             $this->message($this->_('Snipcart REST API connection successfull!'));

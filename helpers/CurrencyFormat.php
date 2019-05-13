@@ -24,7 +24,7 @@ class CurrencyFormat extends WireData {
      * 
      */
     public static function setStaticCurrenciesCache() {
-        if (!$currencies = wire('snipREST')->getSettings('currencies')) {
+        if (!$currencies = wire('sniprest')->getSettings('currencies')) {
             $currencies = self::getDefaultCurrencyDefinition();
         }
         // Cache currency definitons in static property (DB is queried only once!)

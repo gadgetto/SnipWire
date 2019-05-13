@@ -115,7 +115,7 @@ class SnipWireConfig extends ModuleConfig {
     public function getInputfields() {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
-        $snipREST = $this->wire('snipREST');
+        $sniprest = $this->wire('sniprest');
         
         $inputfields = parent::getInputfields();
 
@@ -261,7 +261,7 @@ class SnipWireConfig extends ModuleConfig {
 
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
         $currencies = array();
-        if (!$currencies = $snipREST->getSettings('currencies', WireCache::expireNever, true)) {
+        if (!$currencies = $sniprest->getSettings('currencies', WireCache::expireNever, true)) {
             $currencies[] = CurrencyFormat::getDefaultCurrencyDefinition();
         }
         foreach ($currencies as $currency) {
