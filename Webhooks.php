@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * Webhooks - helper class for SnipWire to provide webhooks for Snipcart.
+ * Webhooks - service class for SnipWire to provide webhooks for Snipcart.
  * (This file is part of the SnipWire package)
  *
  * Replaces the ProcessWire page rendering as a whole. It will only accept 
