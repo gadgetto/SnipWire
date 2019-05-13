@@ -89,33 +89,432 @@ class ProcessSnipWire extends Process implements Module {
         $pages = $this->wire('pages');
         $user = $this->wire('user');
         $config = $this->wire('config');
-        $ajax = $config->ajax;
+        $input = $this->wire('input');
         $snipREST = $this->wire('snipREST');
+        
+        $this->browserTitle($this->_('SnipWire Dashboard'));
+        $this->headline($this->_('SnipWire Dashboard'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
+        
+        $this->_includeAssets();
 
-        $this->browserTitle($this->_('SnipWireDashboard'));
-        $this->headline($this->_('SnipWire Dashboard'));
+        $startDate = $this->_getInputStartDate();
+        $startDateSelector = $startDate ? $startDate . ' 00:00:00' : '';
+        
+        $endDate = $this->_getInputEndDate();
+        $endDateSelector = $endDate ? $endDate . ' 23:59:59' : '';
+                
+        $out =  $this->_buildDateRangeFilter($startDate, $endDate);
+        $out .= $this->_renderStorePerformanceBoxes($startDateSelector, $endDateSelector);
+        
+        /** @var InputfieldMarkup $f */
+        $f = $this->modules->get('InputfieldMarkup');
+        $f->label = $this->_('Performance Chart');
+        $f->value = $this->_renderChartOrders();
+        $f->columnWidth = 100;
+        $f->collapsed = Inputfield::collapsedNever;
 
-        $test = $snipREST->testConnection();
-        $out = '<pre>' . $test . '</pre>';
+        $out .= $f->render();
+
+        $fsOrdersCustomers = $modules->get('InputfieldFieldset');
         
-        /*
-        $snipwireConfig = $modules->getConfig('SnipWire');
-        $out = '<pre>' . print_r($snipwireConfig['currencies'], true) . '</pre>';
-        $out .= '<pre>' . print_r(wireDecodeJSON($snipwireConfig['currencies'][0]), true) . '</pre>';
-        $out .= '<pre>' . print_r(wireDecodeJSON($snipwireConfig['currencies'][1]), true) . '</pre>';
-        */
-        
-        
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Recent Orders');
+            $f->value = $this->_renderTableOrders($startDateSelector, $endDateSelector);
+            $f->columnWidth = 50;
+            $f->collapsed = Inputfield::collapsedNever;
+            
+        $fsOrdersCustomers->add($f);
+                
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Top Customers');
+            $f->value = $this->_renderTableCustomers($startDateSelector, $endDateSelector);
+            $f->columnWidth = 50;
+            $f->collapsed = Inputfield::collapsedNever;
+            
+        $fsOrdersCustomers->add($f);
+
+        $out .= $fsOrdersCustomers->render();
 
         // Dashboard markup wrapper
-        $out = '<div id="snipwire-dashboard">'.$out.'</div>';
+        return '<div id="snipwire-dashboard">' . $out . '</div>';
+    }
 
+    /**
+     * Build the period date range filter form.
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return markup InputfieldForm
+     *
+     */
+    private function _buildDateRangeFilter($start = '', $end = '') {
+        $modules = $this->wire('modules');
+        $config = $this->wire('config');
+
+        // Define "Last 30 days" if no $startDate and/or $endDate properties provided
+        if (!$start || !$end) {
+            $start = date('Y-m-d', strtotime('-29 days'));
+            $end = date('Y-m-d');
+        }
+
+        $pickerSettings = array(
+            'form' => '#StorePerformanceFilterForm',
+            'element' => '#period-picker',
+            'display' => '#period-display',
+            'fieldFrom' => '#period-from',
+            'fieldTo' => '#period-to',
+            'startDate' => $start,
+            'endDate' => $end,
+        );
+
+        $pickerLocale = array(
+            'format' => $this->_('YYYY-MM-DD'), // display format (based on `moment.js`)
+            'separator' => '&nbsp;&nbsp;' . wireIconMarkup('arrows-h') .'&nbsp;&nbsp;',
+            'applyLabel' => $this->_('Apply'),
+            'cancelLabel' => $this->_('Chancel'),
+            'fromLabel' => $this->_('From'),
+            'toLabel' => $this->_('To'),
+            'customRangeLabel' => $this->_('Custom Range'),
+            'weekLabel' => $this->_('W'),
+            'daysOfWeek' => array(
+                $this->_('Su'),
+                $this->_('Mo'),
+                $this->_('Tu'),
+                $this->_('We'),
+                $this->_('Th'),
+                $this->_('Fr'),
+                $this->_('Sa'),
+            ),
+            'monthNames' => array(
+                $this->_('January'),
+                $this->_('February'),
+                $this->_('March'),
+                $this->_('April'),
+                $this->_('Mai'),
+                $this->_('June'),
+                $this->_('July'),
+                $this->_('August'),
+                $this->_('September'),
+                $this->_('October'),
+                $this->_('November'),
+                $this->_('December'),
+            ),
+        );
+
+        $pickerRangeLabels = array(
+            'today' => $this->_('Today'),
+            'yesterday' => $this->_('Yesterday'),
+            'last7days' => $this->_('Last 7 Days'),
+            'last30days' => $this->_('Last 30 Days'),
+            'thismonth' => $this->_('This Month'),
+            'lastmonth' => $this->_('Last Month'),
+        );
+        
+        // Hand over daterangepicker configuration to JS
+        $config->js('pickerSettings', $pickerSettings);
+        $config->js('pickerLocale', $pickerLocale);
+        $config->js('pickerRangeLabels', $pickerRangeLabels);
+        
+        /** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm'); 
+        $form->attr('id', 'StorePerformanceFilterForm');
+        $form->method = 'get';
+        $form->action = './';
+
+            /** @var InputfieldFieldset $fsFilters */
+            $fsFilters = $modules->get('InputfieldFieldset');
+            $fsFilters->icon = 'line-chart';
+            $fsFilters->label = $this->_('Store Performance');
+
+                // Period date range picker with hidden form fields
+                $markup =
+                '<input type="hidden" id="period-from" name="periodFrom" value="' . $start . '">' .
+                '<input type="hidden" id="period-to" name="periodTo" value="' . $end . '">' .
+                '<div class="period-picker-container">' .
+                    '<div id="period-picker" aria-label="' . $this->_('Store performance date range selector') .'">' .
+                        wireIconMarkup('calendar') . ' <span id="period-display"></span> ' . wireIconMarkup('caret-down') .
+                    '</div>' .
+                '</div>';
+
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Period Range Picker');
+                $f->skipLabel = Inputfield::skipLabelHeader;
+                $f->value = $markup;
+                $f->collapsed = Inputfield::collapsedNever;
+
+            $fsFilters->add($f);            
+
+        $form->add($fsFilters);        
+
+        return $form->render(); 
+    }
+
+    /**
+     * Render the store performance boxes.
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return markup Custom HTML
+     *
+     */
+    private function _renderStorePerformanceBoxes($start, $end) {
+        $snipREST = $this->wire('snipREST');
+
+        $selector = array(
+            'from' => $start ? strtotime($start) : '', // UNIX timestamps required
+            'to' => $end ? strtotime($end) : '', // UNIX timestamps required
+        );
+
+        $result = $snipREST->getPerformance($selector, 300);
+        if ($result === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            return '';
+        }
+        
+        $values = array(
+            'orders' => $result['ordersCount'],
+            'sales' => CurrencyFormat::format($result['ordersSales'], 'usd'), // @todo: handle currency(s)!
+            'average' => CurrencyFormat::format($result['averageOrdersValue'], 'usd'), // @todo: handle currency(s)!
+            'customers' => array(
+                'new' => $result['customers']['newCustomers'],
+                'returning' => $result['customers']['returningCustomers'],
+            )
+        );
+
+        $boxes = array(
+            'orders' => $this->_('Orders'),
+            'sales' => $this->_('Sales'),
+            'average' => $this->_('Average Order'),
+            'customers' => $this->_('Customers'),
+        );
+        
+        $out = '';
+        
+        foreach ($boxes as $box => $label) {
+            $out .= 
+            '<div class="snipwire-perf-box">' .
+                '<div class="snipwire-perf-box-header">' .
+                    $label .
+                '</div>' .
+                '<div class="snipwire-perf-box-body">';
+            
+            if ($box == 'customers' && is_array($values[$box])) {
+                $out .=
+                '<div class="customers-multivalue">' .
+                    '<div>' .
+                        '<span>' . $values[$box]['new'] . '</span>' .
+                        '<small>' . $this->_('New') . '</small>' .
+                    '</div>' .
+                    '<div>' .
+                        '<span>' . $values[$box]['returning'] . '</span>' .
+                        '<small>' . $this->_('Returning') . '</small>' .
+                    '</div>' .
+                '</div>';
+            } else {
+                $out .=
+                '<small>' . $values[$box] . '</small>';
+            }
+            
+            $out .=
+                '</div>' .
+            '</div>';
+        }
+        return '<div class="snipwire-perf-boxes-container">' . $out . '</div>';
+    }
+
+    /**
+     * Render the orders chart for a period.
+     *
+     * @param array $orders
+     * @return markup Chart
+     *
+     */
+    private function _renderChartOrders() {
+        $modules = $this->wire('modules');
+        $config = $this->wire('config');
+
+        $out =
+        '<canvas id="snipwire-chart-recentorders"' .
+        ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
+        ' role="img">' .
+            $this->_('The Snipcart Performance Chart can not be rendered. Your browser does not support the canvas element.') .
+        '</canvas>';
+        
+        /*
+        // get number of skyscrapers
+        $counts = [];
+        $counts[] = $this->pages->count('template=skyscraper,height<=50');
+        $counts[] = $this->pages->count('template=skyscraper,height>50,height<=150');
+        $counts[] = $this->pages->count('template=skyscraper,height>150');
+        $counts = implode(',', $counts);
+        
+        $out = "<canvas id='chart' data-counts='$counts'></canvas>";
+        */
+        
         return $out;
+    }
+
+    /**
+     * Render the orders table for a period.
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
+     *
+     */
+    private function _renderTableOrders($start, $end) {
+        $modules = $this->wire('modules');
+        $snipREST = $this->wire('snipREST');
+
+        $selector = array(
+            'limit' => 10,
+            'from' => $start,
+            'to' => $end,
+        );
+
+        $orders = $snipREST->getOrdersItems($selector, 300);
+        
+        if ($orders === false) {
+            
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            return '';
+            
+        } elseif ($orders) {
+            
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->id = 'snipwire-orders-recent-table';
+            $table->setSortable(false);
+            $table->headerRow(array(
+                $this->_('Invoice'),
+                $this->_('Placed'),
+                $this->_('Total'),
+            ));
+            foreach ($orders as $order) {
+                $table->row(array(
+                    $order['invoiceNumber'] => '#',
+                    wireDate('relative', $order['creationDate']),
+                    CurrencyFormat::format($order['total'], $order['currency']),
+                ));
+            }
+            return $table->render();
+            
+        } else {
+            
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No orders in selected period') .
+            '</div>';
+            return $out;
+        }
+    }
+
+    /**
+     * Render the customers table for a period.
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return markup MarkupAdminDataTable | custom html with `no customers` display 
+     *
+     */
+    private function _renderTableCustomers($start, $end) {
+        $modules = $this->wire('modules');
+        $snipREST = $this->wire('snipREST');
+
+        $selector = array(
+            'limit' => 10,
+            'from' => $start,
+            'to' => $end,
+        );
+
+        $customers = $snipREST->getCustomersItems($selector, 300);
+        
+        if ($customers === false) {
+            
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            return '';
+            
+        } elseif ($customers) {
+            
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->id = 'snipwire-customers-recent-table';
+            $table->setSortable(false);
+            $table->headerRow(array(
+                $this->_('Name'),
+                $this->_('Orders'),
+                $this->_('Total Spent'),
+            ));
+            foreach ($customers as $customer) {
+                $table->row(array(
+                    $customer['billingAddress']['fullName'] => '#',
+                    $customer['statistics']['ordersCount'],
+                    CurrencyFormat::format($customer['statistics']['ordersAmount'], 'usd'), // @todo: handle currency!
+                ));
+            }
+            return $table->render();
+            
+        } else {
+            
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No customers in selected period') .
+            '</div>';
+            return $out;
+        }
+    }
+
+    /**
+     * Get the start date for date range filter from input.
+     *
+     * @return string Sanitized ISO 8601 or null
+     * 
+     */
+    private function _getInputStartDate() {
+        return $this->wire('input')->get->date('periodFrom', 'Y-m-d', array('strict' => true));
+    }
+
+    /**
+     * Get the end date for date range filter from input.
+     *
+     * @return string Sanitized ISO 8601 or null
+     * 
+     */
+    private function _getInputEndDate() {
+        return $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
+    }
+
+    /**
+     * Include asset files for SnipWire Dashboard.
+     *
+     */
+    private function _includeAssets() {
+        $config = $this->wire('config');
+
+        $info = $this->getModuleInfo();
+        $version = (int) isset($info['version']) ? $info['version'] : 0;
+        $versionAdd = "?v=$version";
+
+        // Include assets
+        $config->styles->add($this->config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
+        $config->styles->add($this->config->urls->SnipWire . 'assets/styles/daterangepicker-custom.css' . $versionAdd);
+        $config->styles->add($this->config->urls->SnipWire . 'vendor/chart.js/Chart.min.css?v=2.8.0');
+        
+        $config->scripts->add($this->config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
+        $config->scripts->add($this->config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
+        $config->scripts->add($this->config->urls->SnipWire . 'assets/scripts/PerformanceRangePicker.min.js' . $versionAdd);
+        $config->scripts->add($this->config->urls->SnipWire . 'vendor/chart.js/Chart.min.js?v=2.8.0');
+        $config->scripts->add($this->config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
     }
 
     /**
@@ -152,7 +551,7 @@ class ProcessSnipWire extends Process implements Module {
         }
         return $out;
     }
-    
+
     /**
      * Install product templates, fields and some demo pages required by Snipcart.
      * (Called when the URL is this module's page URL + "/install-product-package/")
