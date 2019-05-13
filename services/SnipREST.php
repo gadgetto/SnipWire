@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * SnipREST - helper class for Snipcart REST API that lets you manage your data remotely.
+ * SnipREST - service class for Snipcart REST API that lets you manage your data remotely.
  * (This file is part of the SnipWire package)
  *
  * Only accepts application/json content type -> always specify "Accept: application/json" header 
