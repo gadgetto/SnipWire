@@ -57,7 +57,6 @@ class ProcessSnipWire extends Process implements Module {
     public function __construct() {
         require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'installer/ExtendedInstaller.php';
         require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/CurrencyFormat.php';
-        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'services/SnipREST.php';
         parent::__construct();
     }
 
@@ -72,8 +71,6 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     public function init() {
-        /** @var SnipREST $snipREST Custom ProcessWire API variable */
-        $this->wire('snipREST', new SnipREST());
         parent::init();
     }    
 
