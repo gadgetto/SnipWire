@@ -86,20 +86,20 @@ class Webhooks extends WireData {
 	 *
 	 */
 	public function process() {
-		$snipREST = $this->wire('snipREST');
+		$sniprest = $this->wire('sniprest');
 
 		if (!$this->_isValidRequest()) {
 			// 404 Not Found
-			header($this->serverProtocol . ' ' . $snipREST->getHttpStatusCodeString(404));
+			header($this->serverProtocol . ' ' . $sniprest->getHttpStatusCodeString(404));
 			return;
 		}
 		if (!$this->_hasValidRequestData()) {
 			// 400 Bad Request 
-			header($this->serverProtocol . ' ' . $snipREST->getHttpStatusCodeString(400));
+			header($this->serverProtocol . ' ' . $sniprest->getHttpStatusCodeString(400));
 			return;
 		}
 		$responseCode = $this->_handleWebhookData();
-		header($this->serverProtocol . ' ' . $snipREST->getHttpStatusCodeString($responseCode));
+		header($this->serverProtocol . ' ' . $sniprest->getHttpStatusCodeString($responseCode));
 		
 		// debug
 		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request success: responseCode = ' . $responseCode);
@@ -114,7 +114,7 @@ class Webhooks extends WireData {
 	 *
 	 */
 	private function _isValidRequest() {
-		$snipREST = $this->wire('snipREST');
+		$sniprest = $this->wire('sniprest');
 		$log = $this->wire('log');
 
 		// Perform multiple checks for valid request
@@ -135,15 +135,15 @@ class Webhooks extends WireData {
             );
 			return false;
 		}
-		$handshakeUrl = $snipREST::apiEndpoint . $snipREST::resourcePathRequestValidation . DIRECTORY_SEPARATOR . $requestToken;
-		if (($handshake = $snipREST->get($handshakeUrl)) === false) {
+		$handshakeUrl = $sniprest::apiEndpoint . $sniprest::resourcePathRequestValidation . DIRECTORY_SEPARATOR . $requestToken;
+		if (($handshake = $sniprest->get($handshakeUrl)) === false) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Snipcart REST connection for checking request token failed: ' . $snipREST->getError()
+                'Snipcart REST connection for checking request token failed: ' . $sniprest->getError()
             );
             return false;
 		}
-		if (empty($handshake) || $snipREST->getHttpCode(false) != 200) {
+		if (empty($handshake) || $sniprest->getHttpCode(false) != 200) {
 			$log->save(
 			    self::snipWireWebhooksLogName,
 			    'Invalid webhooks request: no response'
