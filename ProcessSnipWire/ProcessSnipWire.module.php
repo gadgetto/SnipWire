@@ -344,7 +344,7 @@ class ProcessSnipWire extends Process implements Module {
      * @return markup Chart
      *
      */
-    private function _renderChartOrders($start, $end) {
+    private function _renderChartOrders() {
         $modules = $this->wire('modules');
         $sniprest = $this->wire('sniprest');
 
@@ -541,6 +541,7 @@ class ProcessSnipWire extends Process implements Module {
         $config->styles->add($this->config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
         $config->styles->add($this->config->urls->SnipWire . 'assets/styles/daterangepicker-custom.css' . $versionAdd);
         $config->styles->add($this->config->urls->SnipWire . 'vendor/chart.js/Chart.min.css?v=2.8.0');
+        $config->styles->add($this->config->urls->SnipWire . 'assets/styles/performancechart-custom.css' . $versionAdd);
         
         $config->scripts->add($this->config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
         $config->scripts->add($this->config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
