@@ -117,17 +117,8 @@ class ProcessSnipWire extends Process implements Module {
 
         $out .= $f->render();
 
-        $fsOrdersCustomers = $modules->get('InputfieldFieldset');
+        $fsTables = $modules->get('InputfieldFieldset');
         
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Recent Orders');
-            $f->value = $this->_renderTableOrders($startDateSelector, $endDateSelector);
-            $f->columnWidth = 50;
-            $f->collapsed = Inputfield::collapsedNever;
-            
-        $fsOrdersCustomers->add($f);
-                
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Customers');
@@ -135,9 +126,27 @@ class ProcessSnipWire extends Process implements Module {
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
             
-        $fsOrdersCustomers->add($f);
-
-        $out .= $fsOrdersCustomers->render();
+        $fsTables->add($f);
+        
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Top Products');
+            $f->value = $this->_renderTableProducts($startDateSelector, $endDateSelector);
+            $f->columnWidth = 50;
+            $f->collapsed = Inputfield::collapsedNever;
+            
+        $fsTables->add($f);
+        
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Recent Orders');
+            $f->value = $this->_renderTableOrders($startDateSelector, $endDateSelector);
+            $f->columnWidth = 100;
+            $f->collapsed = Inputfield::collapsedNever;
+            
+        $fsTables->add($f);
+                
+        $out .= $fsTables->render();
 
         // Dashboard markup wrapper
         return '<div id="snipwire-dashboard">' . $out . '</div>';
@@ -330,14 +339,19 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Render the orders chart for a period.
      *
-     * @param array $orders
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
      * @return markup Chart
      *
      */
-    private function _renderChartOrders() {
+    private function _renderChartOrders($start, $end) {
         $modules = $this->wire('modules');
-        $config = $this->wire('config');
+        $sniprest = $this->wire('sniprest');
 
+
+
+
+        
         $out =
         '<canvas id="snipwire-chart-recentorders"' .
         ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
@@ -357,62 +371,6 @@ class ProcessSnipWire extends Process implements Module {
         */
         
         return $out;
-    }
-
-    /**
-     * Render the orders table for a period.
-     *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
-     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
-     *
-     */
-    private function _renderTableOrders($start, $end) {
-        $modules = $this->wire('modules');
-        $sniprest = $this->wire('sniprest');
-
-        $selector = array(
-            'limit' => 10,
-            'from' => $start,
-            'to' => $end,
-        );
-
-        $orders = $sniprest->getOrdersItems($selector, 300);
-        
-        if ($orders === false) {
-            
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            return '';
-            
-        } elseif ($orders) {
-            
-            /** @var MarkupAdminDataTable $table */
-            $table = $modules->get('MarkupAdminDataTable');
-            $table->setEncodeEntities(false);
-            $table->id = 'snipwire-orders-recent-table';
-            $table->setSortable(false);
-            $table->headerRow(array(
-                $this->_('Invoice'),
-                $this->_('Placed'),
-                $this->_('Total'),
-            ));
-            foreach ($orders as $order) {
-                $table->row(array(
-                    $order['invoiceNumber'] => '#',
-                    wireDate('relative', $order['creationDate']),
-                    CurrencyFormat::format($order['total'], $order['currency']),
-                ));
-            }
-            return $table->render();
-            
-        } else {
-            
-            $out =
-            '<div class="snipwire-no-items">' . 
-                $this->_('No orders in selected period') .
-            '</div>';
-            return $out;
-        }
     }
 
     /**
@@ -466,6 +424,83 @@ class ProcessSnipWire extends Process implements Module {
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No customers in selected period') .
+            '</div>';
+            return $out;
+        }
+    }
+
+    /**
+     * Render the products table for a period.
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return markup MarkupAdminDataTable | custom html with `no products` display 
+     *
+     */
+    private function _renderTableProducts($start, $end) {
+        
+        $out = '-- Products --';
+        
+        return $out;
+    }
+
+    /**
+     * Render the orders table for a period.
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
+     *
+     */
+    private function _renderTableOrders($start, $end) {
+        $modules = $this->wire('modules');
+        $sniprest = $this->wire('sniprest');
+
+        $selector = array(
+            'limit' => 10,
+            'from' => $start,
+            'to' => $end,
+        );
+
+        $orders = $sniprest->getOrdersItems($selector, 300);
+        
+        if ($orders === false) {
+            
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            return '';
+            
+        } elseif ($orders) {
+            
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->id = 'snipwire-orders-recent-table';
+            $table->setSortable(false);
+            $table->headerRow(array(
+                $this->_('Invoice #'),
+                $this->_('Placed on'),
+                $this->_('Placed by'),
+                $this->_('Countrty'),
+                $this->_('Payment Status'),
+                $this->_('Total'),
+            ));
+            foreach ($orders as $order) {
+                $table->row(array(
+                    $order['invoiceNumber'] => '#',
+                    wireDate('relative', $order['creationDate']),
+                    $order['user']['billingAddress']['fullName'],
+                    $order['billingAddressCountry'],
+                    $order['paymentStatus'],
+                    CurrencyFormat::format($order['total'], $order['currency']),
+                ));
+            }
+            return $table->render();
+            
+        } else {
+            
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No orders in selected period') .
             '</div>';
             return $out;
         }
