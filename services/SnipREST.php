@@ -38,6 +38,7 @@ class SnipREST extends WireHttp {
     
     const cacheNamespace = 'SnipWire';
     const cacheNamePrefixSettings = 'Settings';
+    const cacheNamePrefixProducts = 'Products';
     const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixCustomers = 'Customers';
     const cacheNamePrefixPerformance = 'Performance';
@@ -109,7 +110,7 @@ class SnipREST extends WireHttp {
     }
 
     /**
-     * Get the all orders from Snipcart dashboard as array.
+     * Get all orders from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
@@ -176,6 +177,80 @@ class SnipREST extends WireHttp {
      */
     public function getOrdersItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
         return $this->getOrders('items', $options, $expires, $forceRefresh);
+    }
+
+    /**
+     * Get all products from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $key The array key to be returned
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `offset` (int) Number of results to skip. [default = 0] #required
+     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `userDefinedId` string The custom product ID
+     *  - `archived` boolean (as string) "true" or "false" (undocumented!)
+     *  - `excludeZeroSales`  boolean (as string) "true" or "false"  (undocumented!)
+     *  - `orderBy` string The order by key (undocumented!)
+     *  - `from` (datetime) Will return only the customers created after this date
+     *  - '`to` (datetime) Will return only the customers created before this date
+     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @return mixed False if request failed or products array or string or integer
+     *
+     */
+    public function getProducts($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixProducts);
+
+        $allowedOptions = array('offset', 'limit', 'userDefinedId', 'archived', 'excludeZeroSales', 'orderBy', 'from', 'to');
+        $defaultOptions = array(
+            'offset' => 0,
+            'limit' => 20,
+            'orderBy' => 'SalesValue',
+        );
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        $query = '';
+        if (!empty($options)) $query = '?' . http_build_query($options);
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixProducts . '.' . md5($query);
+        
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathProducts . $query);
+        });
+        return ($key && isset($response[$key])) ? $response[$key] : $response;
+    }
+
+    /**
+     * Get products items from Snipcart dashboard.
+     *
+     * @param string $key The array key to be returned
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `offset` (int) Number of results to skip. [default = 0] #required
+     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `userDefinedId` string The custom product ID
+     *  - `archived` boolean (as string) "true" or "false" (undocumented!)
+     *  - `excludeZeroSales`  boolean (as string) "true" or "false"  (undocumented!)
+     *  - `orderBy` string The order by key (undocumented!)
+     *  - `from` (datetime) Will return only the customers created after this date
+     *  - '`to` (datetime) Will return only the customers created before this date
+     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @return mixed False if request failed or products array or string or integer
+     * 
+     */
+    public function getProductsItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+        return $this->getProducts('items', $options, $expires, $forceRefresh);
     }
 
     /**
