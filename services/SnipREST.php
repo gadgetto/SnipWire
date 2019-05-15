@@ -39,8 +39,9 @@ class SnipREST extends WireHttp {
     const cacheNamespace = 'SnipWire';
     const cacheNamePrefixSettings = 'Settings';
     const cacheNamePrefixOrders = 'Orders';
-    const cacheNamePrefixPerformance = 'Performance';
     const cacheNamePrefixCustomers = 'Customers';
+    const cacheNamePrefixPerformance = 'Performance';
+    const cacheNamePrefixOrdersCount = 'OrdersCount';
 
     /**
      * Construct/initialize
@@ -284,6 +285,47 @@ class SnipREST extends WireHttp {
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDataPerformance . $query);
+        });
+        return $response;
+    }
+
+    /**
+     * Get the number of orders from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `from` (datetime) Will return only the performance after this date
+     *  - '`to` (datetime) Will return only the performance before this date
+     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @return mixed False if request failed or performance array
+     *
+     */
+    public function getOrdersCount($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrdersCount);
+
+        $allowedOptions = array('from', 'to');
+        $defaultOptions = array();
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        $query = '';
+        if (!empty($options)) $query = '?' . http_build_query($options);
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixOrdersCount . '.' . md5($query);
+        
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
         });
         return $response;
     }
