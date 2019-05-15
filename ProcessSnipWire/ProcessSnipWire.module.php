@@ -426,7 +426,7 @@ class ProcessSnipWire extends Process implements Module {
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
-            $table->id = 'snipwire-customers-recent-table';
+            $table->id = 'snipwire-top-customers-table';
             $table->setSortable(false);
             $table->headerRow(array(
                 $this->_('Name'),
@@ -461,10 +461,59 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     private function _renderTableProducts($start, $end) {
+        $modules = $this->wire('modules');
+        $sniprest = $this->wire('sniprest');
+
+        $selector = array(
+            'offset' => 0,
+            'limit' => 10,
+            'archived' => 'false',
+            'excludeZeroSales' => 'true',
+            'orderBy' => 'SalesValue',
+            'from' => $start,
+            'to' => $end,
+        );
+
+        $result = $sniprest->getProductsItems($selector, 300);
         
-        $out = '-- Products --';
+        bd($result);
         
-        return $out;
+        if ($result === false) {
+            
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            return '';
+            
+        } elseif ($result) {
+        
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->id = 'snipwire-top-products-table';
+            $table->setSortable(false);
+            $table->headerRow(array(
+                $this->_('Name'),
+                $this->_('Price'),
+                $this->_('# Sales'),
+                $this->_('Sales'),
+            ));
+            foreach ($result as $item) {
+                $table->row(array(
+                    $item['name'] . '<br><small>(' . $item['userDefinedId'] . ')</small>' => '#',
+                    CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
+                    $item['statistics']['numberOfSales'],
+                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
+                ));
+            }
+            return $table->render();
+            
+        } else {
+            
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No products in selected period') .
+            '</div>';
+            return $out;
+        }
     }
 
     /**
@@ -497,7 +546,7 @@ class ProcessSnipWire extends Process implements Module {
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
-            $table->id = 'snipwire-orders-recent-table';
+            $table->id = 'snipwire-recent-orders-table';
             $table->setSortable(false);
             $table->headerRow(array(
                 $this->_('Invoice #'),
