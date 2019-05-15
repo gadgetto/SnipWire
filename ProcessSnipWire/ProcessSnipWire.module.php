@@ -537,17 +537,22 @@ class ProcessSnipWire extends Process implements Module {
         $version = (int) isset($info['version']) ? $info['version'] : 0;
         $versionAdd = "?v=$version";
 
-        // Include assets
-        $config->styles->add($this->config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
-        $config->styles->add($this->config->urls->SnipWire . 'assets/styles/daterangepicker-custom.css' . $versionAdd);
-        $config->styles->add($this->config->urls->SnipWire . 'vendor/chart.js/Chart.min.css?v=2.8.0');
-        $config->styles->add($this->config->urls->SnipWire . 'assets/styles/performancechart-custom.css' . $versionAdd);
-        
-        $config->scripts->add($this->config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
-        $config->scripts->add($this->config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
-        $config->scripts->add($this->config->urls->SnipWire . 'assets/scripts/PerformanceRangePicker.min.js' . $versionAdd);
-        $config->scripts->add($this->config->urls->SnipWire . 'vendor/chart.js/Chart.min.js?v=2.8.0');
-        $config->scripts->add($this->config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
+        // Include vendor CSS assets
+        $config->styles->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
+        //$config->styles->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.css?v=3.6.9');
+
+        // Include vendor JS assets
+        $config->scripts->add($config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
+        $config->scripts->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
+        $config->scripts->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.min.js?v=3.6.9');
+
+        // Include module CSS assets
+        $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceRangePicker.css' . $versionAdd);
+        $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceChart.css' . $versionAdd);
+
+        // Include module JS assets
+        $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceRangePicker.min.js' . $versionAdd);
+        $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
     }
 
     /**
