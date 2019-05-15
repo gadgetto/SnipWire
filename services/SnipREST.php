@@ -158,35 +158,6 @@ class SnipREST extends WireHttp {
     }
 
     /**
-     * Get total orders from Snipcart dashboard.
-     *
-     * @param array $options An array of filter options that will be sent as URL params:
-     *  - `status` (string) A status criteria for your order collection. (Possible values: InProgress, Processed, Disputed, Shipped, Delivered, Pending, Cancelled)
-     *  - `placedBy` (string) The name of the person who made the purchase
-     *  - `from` (datetime) Will return only the orders placed after this date
-     *  - '`to` (datetime) Will return only the orders placed before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
-     * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return boolean|integer False if request failed or total orders as integer
-     * 
-     */
-    public function getOrdersTotal($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
-        $allowedOptions = array('status', 'placedBy', 'from', 'to');
-        // default options can't be overwritten because they are not in allowedOptions!
-        $defaultOptions = array(
-            'offset' => 0,
-            'limit' => 1,
-        );        
-        $options = array_merge(
-            $defaultOptions,
-            array_intersect_key(
-                $options, array_flip($allowedOptions)
-            )
-        );
-        return $this->getOrders('totalItems', $options, $expires = WireCache::expireNever, $forceRefresh = false);
-    }
-
-    /**
      * Get orders items from Snipcart dashboard.
      *
      * @param array $options An array of filter options that will be sent as URL params:
@@ -254,36 +225,6 @@ class SnipREST extends WireHttp {
             return $this->getJSON(self::apiEndpoint . self::resourcePathCustomers . $query);
         });
         return ($key && isset($response[$key])) ? $response[$key] : $response;
-    }
-
-    /**
-     * Get total customers from Snipcart dashboard.
-     *
-     * @param array $options An array of filter options that will be sent as URL params:
-     *  - `status` (string) A status criteria for your customers collection. (Possible values: Confirmed = created an account, Unconfirmed = checked out as guests)
-     *  - `email` (string) The email of the customer who placed the order
-     *  - `name` (string) The name of the customer who placed the order
-     *  - `from` (datetime) Will return only the customers created after this date
-     *  - '`to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
-     * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return boolean|integer False if request failed or total customers as integer
-     * 
-     */
-    public function getCustomersTotal($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
-        $allowedOptions = array('status', 'email', 'name', 'from', 'to');
-        // default options can't be overwritten because they are not in allowedOptions!
-        $defaultOptions = array(
-            'offset' => 0,
-            'limit' => 1,
-        );        
-        $options = array_merge(
-            $defaultOptions,
-            array_intersect_key(
-                $options, array_flip($allowedOptions)
-            )
-        );
-        return $this->getCustomers('totalItems', $options, $expires = WireCache::expireNever, $forceRefresh = false);
     }
 
     /**
