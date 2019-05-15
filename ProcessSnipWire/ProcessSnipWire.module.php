@@ -111,7 +111,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldMarkup $f */
         $f = $this->modules->get('InputfieldMarkup');
         $f->label = $this->_('Performance Chart');
-        $f->value = $this->_renderChartOrders();
+        $f->value = $this->_renderChartOrders($startDateSelector, $endDateSelector);
         $f->columnWidth = 100;
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -275,8 +275,8 @@ class ProcessSnipWire extends Process implements Module {
         $sniprest = $this->wire('sniprest');
 
         $selector = array(
-            'from' => $start ? strtotime($start) : '', // UNIX timestamps required
-            'to' => $end ? strtotime($end) : '', // UNIX timestamps required
+            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
+            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
 
         $result = $sniprest->getPerformance($selector, 300);
@@ -344,14 +344,38 @@ class ProcessSnipWire extends Process implements Module {
      * @return markup Chart
      *
      */
-    private function _renderChartOrders() {
+    private function _renderChartOrders($start, $end) {
         $modules = $this->wire('modules');
         $sniprest = $this->wire('sniprest');
+        $config = $this->wire('config');
 
+        $selector = array(
+            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
+            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
+        );
 
-
-
+        $result = $sniprest->getOrdersCount($selector, 300);
+        if ($result === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            return '';
+        }
         
+        bd($result['data']);
+        
+        // Split result in categories & data (prepare for ApexCharts)
+        $categories = array();
+        $values = array();
+        foreach ($result['data'] as $item) {
+            $categories[] = $item['name'];
+            $values[] = $item['value'];
+        }
+        
+        // Hand over chartData to JS
+        $config->js('chartData', array(
+            'categories' => $categories,
+            'data' => $values,
+        ));
+
         $out =
         '<div id="snipwire-chart-performance"' .
         ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
