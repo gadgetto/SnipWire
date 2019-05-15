@@ -538,7 +538,6 @@ class ProcessSnipWire extends Process implements Module {
 
         // Include vendor CSS assets
         $config->styles->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
-        //$config->styles->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.css?v=3.6.9');
 
         // Include vendor JS assets
         $config->scripts->add($config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
