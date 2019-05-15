@@ -23,16 +23,16 @@ class SnipREST extends WireHttp {
 
     const apiEndpoint = 'https://app.snipcart.com/api/';
     const resourcePathOrders = 'orders';
-    const resourcePathDataOrdersSales = 'data/orders/sales';
-    const resourcePathDataOrdersCount = 'data/orders/count';
-    const resourcePathDataPerformance = 'data/performance';
+    const resourcePathDataOrdersSales = 'data/orders/sales'; // undocumented
+    const resourcePathDataOrdersCount = 'data/orders/count'; // undocumented
+    const resourcePathDataPerformance = 'data/performance'; // undocumented
     const resourcePathSubscriptions = 'subscriptions';
     const resourcePathCustomers = 'customers';
     const resourcePathDiscounts = 'discounts';
     const resourcePathProducts = 'products';
     const resourcePathCartsAbandoned = 'carts/abandoned';
     const resourcePathShippingMethods = 'shipping_methods';
-    const resourcePathSettingsGeneral = 'settings/general';
+    const resourcePathSettingsGeneral = 'settings/general'; // undocumented
     const resourcePathSettingsDomain = 'settings/domain';
     const resourcePathRequestValidation = 'requestvalidation'; // + HTTP_X_SNIPCART_REQUESTTOKEN
     
