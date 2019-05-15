@@ -353,11 +353,10 @@ class ProcessSnipWire extends Process implements Module {
 
         
         $out =
-        '<canvas id="snipwire-chart-recentorders"' .
+        '<div id="snipwire-chart-performance"' .
         ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
         ' role="img">' .
-            $this->_('The Snipcart Performance Chart can not be rendered. Your browser does not support the canvas element.') .
-        '</canvas>';
+        '</div>';
         
         /*
         // get number of skyscrapers
