@@ -106,51 +106,80 @@ class ProcessSnipWire extends Process implements Module {
         $endDate = $this->_getInputEndDate();
         $endDateSelector = $endDate ? $endDate . ' 23:59:59' : '';
                 
-        $out =  $this->_buildDateRangeFilter($startDate, $endDate);
-        $out .= $this->_renderStorePerformanceBoxes($startDateSelector, $endDateSelector);
+        $out  = $this->_buildDateRangeFilter($startDate, $endDate);
+        $out .= $this->_renderPerformanceBoxes($startDateSelector, $endDateSelector);
+        $out .= $this->_renderChartOrders($startDateSelector, $endDateSelector);
         
-        /** @var InputfieldMarkup $f */
-        $f = $this->modules->get('InputfieldMarkup');
-        $f->label = $this->_('Performance Chart');
-        $f->value = $this->_renderChartOrders($startDateSelector, $endDateSelector);
-        $f->columnWidth = 100;
-        $f->collapsed = Inputfield::collapsedNever;
+        /** @var InputfieldWrapper $wrapper */
+        $wrapper = new InputfieldWrapper();
 
-        $out .= $f->render();
-
-        $fsTables = $modules->get('InputfieldFieldset');
-        
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Top Customers');
-            $f->value = $this->_renderTableCustomers($startDateSelector, $endDateSelector);
-            $f->columnWidth = 50;
-            $f->collapsed = Inputfield::collapsedNever;
-            
-        $fsTables->add($f);
-        
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Top Products');
-            $f->value = $this->_renderTableProducts($startDateSelector, $endDateSelector);
-            $f->columnWidth = 50;
-            $f->collapsed = Inputfield::collapsedNever;
-            
-        $fsTables->add($f);
-        
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Recent Orders');
-            $f->value = $this->_renderTableOrders($startDateSelector, $endDateSelector);
-            $f->columnWidth = 100;
-            $f->collapsed = Inputfield::collapsedNever;
-            
-        $fsTables->add($f);
+            /** @var InputfieldFieldset $fsTop */
+            $fsTop = $modules->get('InputfieldFieldset');
+            $fsTop->icon = 'bar-chart';
+            $fsTop->label = $this->_('Top Store Actions');
+            $fsTop->wrapClass = 'bottomSpace';
+    
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Top Customers');
+                $f->value = $this->_renderTableCustomers($startDateSelector, $endDateSelector);
+                $f->columnWidth = 50;
+                $f->collapsed = Inputfield::collapsedNever;
                 
-        $out .= $fsTables->render();
+            $fsTop->add($f);
+            
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Top Products');
+                $f->value = $this->_renderTableProducts($startDateSelector, $endDateSelector);
+                $f->columnWidth = 50;
+                $f->collapsed = Inputfield::collapsedNever;
+                
+            $fsTop->add($f);
+            
+        $wrapper->add($fsTop);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldWrapper $wrapper */
+        $wrapper = new InputfieldWrapper();
+            
+            /** @var InputfieldFieldset $fsOrders */
+            $fsOrders = $modules->get('InputfieldFieldset');
+            $fsOrders->icon = 'list-alt';
+            $fsOrders->label = $this->_('Recent Orders');
+            $fsOrders->wrapClass = 'bottomSpace';
+
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->value = $this->_renderTableOrders($startDateSelector, $endDateSelector);
+                $f->columnWidth = 100;
+                $f->skipLabel = Inputfield::skipLabelHeader;
+                $f->collapsed = Inputfield::collapsedNever;
+                
+            $fsOrders->add($f);
+        
+        $wrapper->add($fsOrders);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldWrapper $wrapper */
+        $wrapper = new InputfieldWrapper();
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->id = 'refresh-data';
+            $btn->href = './?action=refresh';
+            $btn->value = $this->_('Refresh');
+            $btn->icon = 'refresh';
+            $btn->showInHeader();
+        
+        $wrapper->add($btn);
+
+        $out .= $wrapper->render();
 
         // Dashboard markup wrapper
-        return '<div id="snipwire-dashboard">' . $out . '</div>';
+        return '<div id="SnipwireDashboard">' . $out . '</div>';
     }
 
     /**
@@ -239,12 +268,13 @@ class ProcessSnipWire extends Process implements Module {
             $fsFilters = $modules->get('InputfieldFieldset');
             $fsFilters->icon = 'line-chart';
             $fsFilters->label = $this->_('Store Performance');
+            $fsFilters->wrapClass = 'bottomSpace';
 
                 // Period date range picker with hidden form fields
                 $markup =
                 '<input type="hidden" id="period-from" name="periodFrom" value="' . $start . '">' .
                 '<input type="hidden" id="period-to" name="periodTo" value="' . $end . '">' .
-                '<div class="period-picker-container">' .
+                '<div id="PeriodPickerContainer">' .
                     '<div id="period-picker" aria-label="' . $this->_('Store performance date range selector') .'">' .
                         wireIconMarkup('calendar') . ' <span id="period-display"></span> ' . wireIconMarkup('caret-down') .
                     '</div>' .
@@ -272,7 +302,7 @@ class ProcessSnipWire extends Process implements Module {
      * @return markup Custom HTML
      *
      */
-    private function _renderStorePerformanceBoxes($start, $end) {
+    private function _renderPerformanceBoxes($start, $end) {
         $sniprest = $this->wire('sniprest');
 
         $selector = array(
@@ -334,7 +364,7 @@ class ProcessSnipWire extends Process implements Module {
                 '</div>' .
             '</div>';
         }
-        return '<div class="snipwire-perf-boxes-container">' . $out . '</div>';
+        return '<div id="PerformanceBoxesContainer" class="bottomSpace">' . $out . '</div>';
     }
 
     /**
@@ -378,21 +408,11 @@ class ProcessSnipWire extends Process implements Module {
         ));
 
         $out =
-        '<div id="snipwire-chart-performance"' .
+        '<div id="PerformanceChart"' .
+        ' class="bottomSpace"' .
         ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
         ' role="img">' .
         '</div>';
-        
-        /*
-        // get number of skyscrapers
-        $counts = [];
-        $counts[] = $this->pages->count('template=skyscraper,height<=50');
-        $counts[] = $this->pages->count('template=skyscraper,height>50,height<=150');
-        $counts[] = $this->pages->count('template=skyscraper,height>150');
-        $counts = implode(',', $counts);
-        
-        $out = "<canvas id='chart' data-counts='$counts'></canvas>";
-        */
         
         return $out;
     }
@@ -429,6 +449,7 @@ class ProcessSnipWire extends Process implements Module {
             $table->setEncodeEntities(false);
             $table->id = 'snipwire-top-customers-table';
             $table->setSortable(false);
+            $table->setResizable(false);
             $table->headerRow(array(
                 $this->_('Name'),
                 $this->_('Orders'),
@@ -491,6 +512,7 @@ class ProcessSnipWire extends Process implements Module {
             $table->setEncodeEntities(false);
             $table->id = 'snipwire-top-products-table';
             $table->setSortable(false);
+            $table->setResizable(false);
             $table->headerRow(array(
                 $this->_('Name'),
                 $this->_('Price'),
@@ -499,7 +521,7 @@ class ProcessSnipWire extends Process implements Module {
             ));
             foreach ($result as $item) {
                 $table->row(array(
-                    $item['name'] . '<br><small>(' . $item['userDefinedId'] . ')</small>' => '#',
+                    $item['name'] => '#',
                     CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
                     $item['statistics']['numberOfSales'],
                     CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
@@ -549,6 +571,7 @@ class ProcessSnipWire extends Process implements Module {
             $table->setEncodeEntities(false);
             $table->id = 'snipwire-recent-orders-table';
             $table->setSortable(false);
+            $table->setResizable(false);
             $table->headerRow(array(
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
@@ -580,7 +603,7 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get the start date for date range filter from input.
+     * Get the sanitized start date for date range filter from input.
      *
      * @return string Sanitized ISO 8601 or null
      * 
@@ -590,7 +613,7 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get the end date for date range filter from input.
+     * Get the sanitized end date for date range filter from input.
      *
      * @return string Sanitized ISO 8601 or null
      * 

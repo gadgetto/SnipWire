@@ -14,8 +14,8 @@ jQuery(document).ready(function($) {
 
     var options = {
         chart: {
-            height: 350,
-            type: 'line',
+            height: 300,
+            type: 'area',
             zoom: {
                 enabled: false
             }
@@ -43,7 +43,7 @@ jQuery(document).ready(function($) {
     }
     
     var chart = new ApexCharts(
-        document.querySelector('#snipwire-chart-performance'),
+        document.querySelector('#PerformanceChart'),
         options
     );
     

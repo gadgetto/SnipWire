@@ -9,7 +9,18 @@
  *
  */
 
-.period-picker-container {
+#SnipwireDashboard {
+    clear: both;
+    
+    .InputfieldHeader {
+        font-size: 1.3rem;
+    }
+    .bottomSpace {
+        margin-bottom: 1.5rem;
+    }
+}
+
+#PeriodPickerContainer {
     text-align: center;
     font-size: 1.2rem;
     
@@ -31,7 +42,7 @@
     margin: 0 .5rem;
 }
 
-.snipwire-perf-boxes-container {
+#PerformanceBoxesContainer {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
@@ -98,7 +109,7 @@
 }
 
 @media screen and (min-width: 768px) {
-    .snipwire-perf-boxes-container {
+    #PerformanceBoxesContainer {
         
         .snipwire-perf-box {
             flex-basis: calc((100% + 1.2rem) / 2 - 1.2rem); // 2 boxes in row
@@ -106,7 +117,7 @@
     }
 }
 @media screen and (min-width: 960px) {
-    .snipwire-perf-boxes-container {
+    #PerformanceBoxesContainer {
 
         .snipwire-perf-box {
             flex-basis: calc((100% + 1.2rem) / 4 - 1.2rem); // 4 boxes in row
@@ -117,6 +128,10 @@
 // Theme dependant style overrides (base styles are for AdminThemeUikit)
 
 .AdminThemeDefault {
+    #SnipwireDashboard {
+        overflow: hidden;
+    }
+        
     .snipwire-perf-box {
         background-color: rgba(228,235,238,.8);
     }
