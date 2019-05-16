@@ -99,6 +99,7 @@ class ProcessSnipWire extends Process implements Module {
         
         $this->_includeAssets();
 
+        if ($this->_getInputAction() == 'refresh') bd('refresh');
         $startDate = $this->_getInputStartDate();
         $startDateSelector = $startDate ? $startDate . ' 00:00:00' : '';
         
@@ -596,6 +597,16 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _getInputEndDate() {
         return $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
+    }
+
+    /**
+     * Get the sanitized action URL param from input.
+     *
+     * @return string Action URL param
+     * 
+     */
+    private function _getInputAction() {
+        return $this->wire('input')->get->entities('action');
     }
 
     /**
