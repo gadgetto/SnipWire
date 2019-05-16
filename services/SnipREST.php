@@ -415,8 +415,7 @@ class SnipREST extends WireHttp {
     public function testConnection() {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
-            $this->error($status);
-            return $status;
+            return false;
         }
         return ($this->get(self::apiEndpoint . self::resourcePathSettingsDomain)) ? true : $this->getError();
     }
