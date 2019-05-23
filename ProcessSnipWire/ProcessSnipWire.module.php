@@ -372,15 +372,32 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _renderPerformanceBoxes($results) {
         
-        $values = array(
-            'orders' => $results['ordersCount'],
-            'sales' => CurrencyFormat::format($results['ordersSales'], 'usd'), // @todo: handle currency(s)!
-            'average' => CurrencyFormat::format($results['averageOrdersValue'], 'usd'), // @todo: handle currency(s)!
-            'customers' => array(
-                'new' => $results['customers']['newCustomers'],
-                'returning' => $results['customers']['returningCustomers'],
-            )
-        );
+        if (!empty($results) && is_array($results)) {
+            
+            $values = array(
+                'orders' => $results['ordersCount'],
+                'sales' => CurrencyFormat::format($results['ordersSales'], 'usd'), // @todo: handle currency(s)!
+                'average' => CurrencyFormat::format($results['averageOrdersValue'], 'usd'), // @todo: handle currency(s)!
+                'customers' => array(
+                    'new' => $results['customers']['newCustomers'],
+                    'returning' => $results['customers']['returningCustomers'],
+                )
+            );
+            
+        } else {
+            
+            $this->error($this->_('Values for store performance boxes could not be fetched'));
+            $values = array(
+                'orders' => wireIconMarkup('exclamation-triangle'),
+                'sales' => wireIconMarkup('exclamation-triangle'), 
+                'average' => wireIconMarkup('exclamation-triangle'),
+                'customers' => array(
+                    'new' => wireIconMarkup('exclamation-triangle'),
+                    'returning' => wireIconMarkup('exclamation-triangle'),
+                )
+            );
+            
+        }
 
         $boxes = array(
             'orders' => $this->_('Orders'),
