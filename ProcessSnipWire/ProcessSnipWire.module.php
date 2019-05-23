@@ -206,25 +206,34 @@ class ProcessSnipWire extends Process implements Module {
         $dashboard = array();
         foreach ($packages as $key => $package) {
             if (strpos($key, SnipRest::resourcePathDataPerformance)) {
-                $dashboard[SnipRest::resourcePathDataPerformance] 
-                    = $package[CurlMulti::resultKeyContent];
+                
+                $dashboard[SnipRest::resourcePathDataPerformance] = isset($package[CurlMulti::resultKeyContent])
+                    ? $package[CurlMulti::resultKeyContent]
+                    : false;
                 
             } elseif (strpos($key, SnipRest::resourcePathDataOrdersCount)) {
-                $dashboard[SnipRest::resourcePathDataOrdersCount]
-                    = $package[CurlMulti::resultKeyContent];
+                
+                $dashboard[SnipRest::resourcePathDataOrdersCount] = isset($package[CurlMulti::resultKeyContent])
+                    ? $package[CurlMulti::resultKeyContent]
+                    : false;
                 
             } elseif (strpos($key, SnipRest::resourcePathCustomers)) {
-                $dashboard[SnipRest::resourcePathCustomers]
-                    = $package[CurlMulti::resultKeyContent]['items'];
+                
+                $dashboard[SnipRest::resourcePathCustomers] = isset($package[CurlMulti::resultKeyContent]['items'])
+                    ? $package[CurlMulti::resultKeyContent]['items']
+                    : false;
                 
             } elseif (strpos($key, SnipRest::resourcePathProducts)) {
-                $dashboard[SnipRest::resourcePathProducts]
-                    = $package[CurlMulti::resultKeyContent]['items'];
-                $products = $package[CurlMulti::resultKeyContent];
+                
+                $dashboard[SnipRest::resourcePathProducts] = isset($package[CurlMulti::resultKeyContent]['items'])
+                    ? $package[CurlMulti::resultKeyContent]['items']
+                    : false;
                 
             } elseif (strpos($key, SnipRest::resourcePathOrders)) {
-                $dashboard[SnipRest::resourcePathOrders]
-                    = $package[CurlMulti::resultKeyContent]['items'];
+                
+                $dashboard[SnipRest::resourcePathOrders] = isset($package[CurlMulti::resultKeyContent]['items'])
+                    ? $package[CurlMulti::resultKeyContent]['items']
+                    : false;
             }
         }
         unset($packages, $key, $package); // free space
