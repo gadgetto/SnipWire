@@ -429,29 +429,5 @@ class SnipREST extends WireHttp {
     public function refreshSettings() {
         return $this->getSettings('', WireCache::expireNever, true);
     }
-    
-    /**
-     * Getter for $headers from WireHttp.
-     *
-     * @return array $headers (may be empty)
-     *
-     */
-    public function getHeaders() {
-        return $this->headers;
-    }
-
-    /**
-     * Get a full http status code string from WireHttp $httpCodes.
-     *
-     * @param int $code Specify the HTTP code number
-     * @return string (empty string if $code doesn't exist)
-     *
-     */
-    public function getHttpStatusCodeString($code) {
-        if (isset($this->httpCodes[$code])) {
-            return $code . ' ' . $this->httpCodes[$code];
-        }
-        return '';
-    }
 
 }
