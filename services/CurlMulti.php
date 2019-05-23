@@ -184,8 +184,21 @@ class CurlMulti extends WireHttp {
     /**
      * Process multi cURL and get results.
      *
-     * @return array The cURL multi result
+     * @return array The cURL multi result:
      * @throws WireException
+     *
+     * Sample result:
+     *
+     *    array(
+     *        'https://app.domain.com/api/orders' => array(
+     *            'content' => 'The response content...',
+     *            'http_code' => 200
+     *        ),
+     *        'https://app.domain.com/api/wrongurl' => array(
+     *            'content' => '',
+     *            'http_code' => 404
+     *        )
+     *    )
      *
      */
     public function sendMultiCURL() {
