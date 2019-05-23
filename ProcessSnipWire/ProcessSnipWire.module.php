@@ -106,9 +106,21 @@ class ProcessSnipWire extends Process implements Module {
         $endDate = $this->_getInputEndDate();
         $endDateSelector = $endDate ? $endDate . ' 23:59:59' : '';
                 
-        $out  = $this->_buildDateRangeFilter($startDate, $endDate);
-        $out .= $this->_renderPerformanceBoxes($startDateSelector, $endDateSelector);
-        $out .= $this->_renderChartOrders($startDateSelector, $endDateSelector);
+        $out = $this->_buildDateRangeFilter($startDate, $endDate);
+
+        $packages = $sniprest->getDashboardData($startDateSelector, $endDateSelector);
+        $dashboard = $this->_extractDataPackages($packages);
+
+        if (!$dashboard) {
+            $out .=
+            '<div class="dashboard-empty">' .
+                $this->_('Dashboard data could not be fetched') .
+            '</div>';
+            return $this->_wrapDashboardOutput($out);
+        }
+
+        $out .= $this->_renderPerformanceBoxes($dashboard[SnipRest::resourcePathDataPerformance]);
+        $out .= $this->_renderChartOrders($dashboard[SnipRest::resourcePathDataOrdersCount]);
         
         /** @var InputfieldWrapper $wrapper */
         $wrapper = new InputfieldWrapper();
@@ -122,7 +134,7 @@ class ProcessSnipWire extends Process implements Module {
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
                 $f->label = $this->_('Top Customers');
-                $f->value = $this->_renderTableCustomers($startDateSelector, $endDateSelector);
+                $f->value = $this->_renderTableCustomers($dashboard[SnipRest::resourcePathCustomers]);
                 $f->columnWidth = 50;
                 $f->collapsed = Inputfield::collapsedNever;
                 
@@ -131,7 +143,7 @@ class ProcessSnipWire extends Process implements Module {
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
                 $f->label = $this->_('Top Products');
-                $f->value = $this->_renderTableProducts($startDateSelector, $endDateSelector);
+                $f->value = $this->_renderTableProducts($dashboard[SnipRest::resourcePathProducts]);
                 $f->columnWidth = 50;
                 $f->collapsed = Inputfield::collapsedNever;
                 
@@ -152,7 +164,7 @@ class ProcessSnipWire extends Process implements Module {
 
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
-                $f->value = $this->_renderTableOrders($startDateSelector, $endDateSelector);
+                $f->value = $this->_renderTableOrders($dashboard[SnipRest::resourcePathOrders]);
                 $f->columnWidth = 100;
                 $f->skipLabel = Inputfield::skipLabelHeader;
                 $f->collapsed = Inputfield::collapsedNever;
@@ -178,7 +190,55 @@ class ProcessSnipWire extends Process implements Module {
 
         $out .= $wrapper->render();
 
-        // Dashboard markup wrapper
+        return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
+     * Extract data packages from Snipcart API results and create new sanitized array ready for rendering.
+     *
+     * @param array $packages The raw data array returned by Snipcart API
+     * @return mixed The sanitized array ready for rendering or false
+     *
+     */
+    private function _extractDataPackages($packages) {
+        if (empty($packages) || !is_array($packages)) return false;
+        
+        $dashboard = array();
+        foreach ($packages as $key => $package) {
+            if (strpos($key, SnipRest::resourcePathDataPerformance)) {
+                $dashboard[SnipRest::resourcePathDataPerformance] 
+                    = $package[CurlMulti::resultKeyContent];
+                
+            } elseif (strpos($key, SnipRest::resourcePathDataOrdersCount)) {
+                $dashboard[SnipRest::resourcePathDataOrdersCount]
+                    = $package[CurlMulti::resultKeyContent];
+                
+            } elseif (strpos($key, SnipRest::resourcePathCustomers)) {
+                $dashboard[SnipRest::resourcePathCustomers]
+                    = $package[CurlMulti::resultKeyContent]['items'];
+                
+            } elseif (strpos($key, SnipRest::resourcePathProducts)) {
+                $dashboard[SnipRest::resourcePathProducts]
+                    = $package[CurlMulti::resultKeyContent]['items'];
+                $products = $package[CurlMulti::resultKeyContent];
+                
+            } elseif (strpos($key, SnipRest::resourcePathOrders)) {
+                $dashboard[SnipRest::resourcePathOrders]
+                    = $package[CurlMulti::resultKeyContent]['items'];
+            }
+        }
+        unset($packages, $key, $package); // free space
+        
+        return $dashboard;
+    }
+
+    /**
+     * SnipWire dashboard output wrapper.
+     *
+     * @return markup
+     *
+     */
+    private function _wrapDashboardOutput($out) {
         return '<div id="SnipwireDashboard">' . $out . '</div>';
     }
 
@@ -297,32 +357,19 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Render the store performance boxes.
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
+     * @param array $results
      * @return markup Custom HTML
      *
      */
-    private function _renderPerformanceBoxes($start, $end) {
-        $sniprest = $this->wire('sniprest');
-
-        $selector = array(
-            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
-            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
-        );
-
-        $result = $sniprest->getPerformance($selector, 300);
-        if ($result === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            return '';
-        }
+    private function _renderPerformanceBoxes($results) {
         
         $values = array(
-            'orders' => $result['ordersCount'],
-            'sales' => CurrencyFormat::format($result['ordersSales'], 'usd'), // @todo: handle currency(s)!
-            'average' => CurrencyFormat::format($result['averageOrdersValue'], 'usd'), // @todo: handle currency(s)!
+            'orders' => $results['ordersCount'],
+            'sales' => CurrencyFormat::format($results['ordersSales'], 'usd'), // @todo: handle currency(s)!
+            'average' => CurrencyFormat::format($results['averageOrdersValue'], 'usd'), // @todo: handle currency(s)!
             'customers' => array(
-                'new' => $result['customers']['newCustomers'],
-                'returning' => $result['customers']['returningCustomers'],
+                'new' => $results['customers']['newCustomers'],
+                'returning' => $results['customers']['returningCustomers'],
             )
         );
 
@@ -368,35 +415,19 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the orders chart for a period.
+     * Render the orders chart.
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
+     * @param array $results
      * @return markup Chart
      *
      */
-    private function _renderChartOrders($start, $end) {
-        $modules = $this->wire('modules');
-        $sniprest = $this->wire('sniprest');
+    private function _renderChartOrders($results) {
         $config = $this->wire('config');
-
-        $selector = array(
-            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
-            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
-        );
-
-        $result = $sniprest->getOrdersCount($selector, 300);
-        if ($result === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            return '';
-        }
-        
-        bd($result['data']);
         
         // Split result in categories & data (prepare for ApexCharts)
         $categories = array();
         $values = array();
-        foreach ($result['data'] as $item) {
+        foreach ($results['data'] as $item) {
             $categories[] = $item['name'];
             $values[] = $item['value'];
         }
@@ -418,31 +449,16 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the customers table for a period.
+     * Render the customers table.
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
+     * @param array $items
      * @return markup MarkupAdminDataTable | custom html with `no customers` display 
      *
      */
-    private function _renderTableCustomers($start, $end) {
+    private function _renderTableCustomers($items) {
         $modules = $this->wire('modules');
-        $sniprest = $this->wire('sniprest');
-
-        $selector = array(
-            'limit' => 10,
-            'from' => $start,
-            'to' => $end,
-        );
-
-        $customers = $sniprest->getCustomersItems($selector, 300);
-        
-        if ($customers === false) {
-            
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            return '';
-            
-        } elseif ($customers) {
+                    
+        if (!empty($items)) {
             
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -455,11 +471,11 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Orders'),
                 $this->_('Total Spent'),
             ));
-            foreach ($customers as $customer) {
+            foreach ($items as $item) {
                 $table->row(array(
-                    $customer['billingAddress']['fullName'] => '#',
-                    $customer['statistics']['ordersCount'],
-                    CurrencyFormat::format($customer['statistics']['ordersAmount'], 'usd'), // @todo: handle currency!
+                    $item['billingAddress']['fullName'] => '#',
+                    $item['statistics']['ordersCount'],
+                    CurrencyFormat::format($item['statistics']['ordersAmount'], 'usd'), // @todo: handle currency!
                 ));
             }
             return $table->render();
@@ -475,37 +491,16 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the products table for a period.
+     * Render the products table.
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
+     * @param array $items
      * @return markup MarkupAdminDataTable | custom html with `no products` display 
      *
      */
-    private function _renderTableProducts($start, $end) {
+    private function _renderTableProducts($items) {
         $modules = $this->wire('modules');
-        $sniprest = $this->wire('sniprest');
 
-        $selector = array(
-            'offset' => 0,
-            'limit' => 10,
-            'archived' => 'false',
-            'excludeZeroSales' => 'true',
-            'orderBy' => 'SalesValue',
-            'from' => $start,
-            'to' => $end,
-        );
-
-        $result = $sniprest->getProductsItems($selector, 300);
-        
-        bd($result);
-        
-        if ($result === false) {
-            
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            return '';
-            
-        } elseif ($result) {
+        if (!empty($items)) {
         
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -519,7 +514,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('# Sales'),
                 $this->_('Sales'),
             ));
-            foreach ($result as $item) {
+            foreach ($items as $item) {
                 $table->row(array(
                     $item['name'] => '#',
                     CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
@@ -540,31 +535,16 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the orders table for a period.
+     * Render the orders table.
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
+     * @param array $items
      * @return markup MarkupAdminDataTable | custom html with `no orders` display 
      *
      */
-    private function _renderTableOrders($start, $end) {
+    private function _renderTableOrders($items) {
         $modules = $this->wire('modules');
-        $sniprest = $this->wire('sniprest');
 
-        $selector = array(
-            'limit' => 10,
-            'from' => $start,
-            'to' => $end,
-        );
-
-        $orders = $sniprest->getOrdersItems($selector, 300);
-        
-        if ($orders === false) {
-            
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            return '';
-            
-        } elseif ($orders) {
+        if (!empty($items)) {
             
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -580,14 +560,14 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Payment Status'),
                 $this->_('Total'),
             ));
-            foreach ($orders as $order) {
+            foreach ($items as $item) {
                 $table->row(array(
-                    $order['invoiceNumber'] => '#',
-                    wireDate('relative', $order['creationDate']),
-                    $order['user']['billingAddress']['fullName'],
-                    $order['billingAddressCountry'],
-                    $order['paymentStatus'],
-                    CurrencyFormat::format($order['total'], $order['currency']),
+                    $item['invoiceNumber'] => '#',
+                    wireDate('relative', $item['creationDate']),
+                    $item['user']['billingAddress']['fullName'],
+                    $item['billingAddressCountry'],
+                    $item['paymentStatus'],
+                    CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
             return $table->render();

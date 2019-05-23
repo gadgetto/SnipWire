@@ -19,7 +19,9 @@
  *
  */
 
-class SnipREST extends WireHttp {
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CurlMulti.php';
+
+class SnipREST extends CurlMulti {
 
     const apiEndpoint = 'https://app.snipcart.com/api/';
     const resourcePathOrders = 'orders';
@@ -80,6 +82,7 @@ class SnipREST extends WireHttp {
         $texts = array(
             'no_headers' => __('Missing request headers for Snipcart REST connection.'),
             'connection_failed' => __('Connection to Snipcart failed'),
+            'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
@@ -107,6 +110,174 @@ class SnipREST extends WireHttp {
             return $this->getJSON(self::apiEndpoint . self::resourcePathSettingsGeneral);
         });
         return ($key && isset($response[$key])) ? $response[$key] : $response;
+    }
+
+
+    /**
+     * Get all dashboard results using cURL multi (fallback to single requests if cURL not available)
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return mixed Dashboard data as array (each package indexed by full URL) or false if something went wrong
+     *
+     */
+    public function getDashboardData($start, $end) {
+
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$this->hasCURL) {
+            $this->warning(self::getMessagesText('dashboard_no_curl'));
+            // Get data without cURL multi
+            return $this->getDashboardDataSingle($start, $end);
+        }
+        
+        // ---- Performance boxes data ----
+        
+        $selector = array(
+            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
+            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
+        );
+        $query = !empty($selector) ? '?' . http_build_query($selector) : '';
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataPerformance . $query);
+
+        // ---- Performance chart data ----
+
+        $selector = array(
+            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
+            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
+        );
+        $query = !empty($selector) ? '?' . http_build_query($selector) : '';
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
+
+        // ---- Top 10 customers ----
+        
+        $selector = array(
+            'limit' => 10,
+            'from' => $start,
+            'to' => $end,
+        );
+        $query = !empty($selector) ? '?' . http_build_query($selector) : '';
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathCustomers . $query);
+
+        // ---- Top 10 products ----
+
+        $selector = array(
+            'offset' => 0,
+            'limit' => 10,
+            'archived' => 'false',
+            'excludeZeroSales' => 'true',
+            'orderBy' => 'SalesValue',
+            'from' => $start,
+            'to' => $end,
+        );
+        $query = !empty($selector) ? '?' . http_build_query($selector) : '';
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathProducts . $query);
+
+        // ---- Latest 10 orders ----
+
+        $selector = array(
+            'limit' => 10,
+            'from' => $start,
+            'to' => $end,
+        );
+        $query = !empty($selector) ? '?' . http_build_query($selector) : '';
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathOrders . $query);
+
+        return $this->getMultiJSON();
+    }
+
+    /**
+     * Get all dashboard results using single requests (cURL multi not available)
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @return mixed Dashboard data as array (indexed by `resourcePath...`) or false if something went wrong
+     *
+     */
+    public function getDashboardDataSingle($start, $end) {
+
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+
+        $data = array();
+        
+        // ---- Performance boxes data ----
+        
+        $selector = array(
+            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
+            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
+        );
+        $performance = $this->getPerformance($selector, 300);
+        if ($performance === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            $performance = array();
+        }
+        $data[self::resourcePathDataPerformance] = array(CurlMulti::resultKeyContent => $performance);
+
+        // ---- Performance chart data ----
+
+        $selector = array(
+            'from' => $start ? strtotime($start) : '', // UNIX timestamp required
+            'to' => $end ? strtotime($end) : '', // UNIX timestamp required
+        );
+        $chart = $this->getOrdersCount($selector, 300);
+        if ($chart === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            $chart = array();
+        }
+        $data[self::resourcePathDataOrdersCount] = array(CurlMulti::resultKeyContent => $chart);
+        
+        // ---- Top 10 customers ----
+        
+        $selector = array(
+            'limit' => 10,
+            'from' => $start,
+            'to' => $end,
+        );
+        $customers = $this->getCustomersItems($selector, 300);
+        if ($customers === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            $customers = array();
+        }
+        $data[self::resourcePathCustomers] = array(CurlMulti::resultKeyContent => $customers);
+
+        // ---- Top 10 products ----
+
+        $selector = array(
+            'offset' => 0,
+            'limit' => 10,
+            'archived' => 'false',
+            'excludeZeroSales' => 'true',
+            'orderBy' => 'SalesValue',
+            'from' => $start,
+            'to' => $end,
+        );
+        $products = $sniprest->getProductsItems($selector, 300);
+        if ($products === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            $products = array();
+        }
+        $data[self::resourcePathProducts] = array(CurlMulti::resultKeyContent => $products);
+
+        // ---- Latest 10 orders ----
+
+        $selector = array(
+            'limit' => 10,
+            'from' => $start,
+            'to' => $end,
+        );
+        $orders = $sniprest->getOrdersItems($selector, 300);
+        if ($orders === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            $orders = array();
+        }
+        $data[self::resourcePathOrders] = array(CurlMulti::resultKeyContent => $orders);
+        
+        return $data;
     }
 
     /**
