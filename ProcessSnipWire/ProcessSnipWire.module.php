@@ -50,6 +50,10 @@ class ProcessSnipWire extends Process implements Module {
         );
     }
 
+    const assetsIncludeDaterangePicker = 1;
+    const assetsIncludeApexCharts = 2;
+    const assetsIncludeAll = 3;
+
     /**
      * Initalize module config variables (properties)
      *
@@ -672,29 +676,33 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Include asset files for SnipWire Dashboard.
      *
+     * @param integer $mode
+     *
      */
-    private function _includeAssets() {
+    private function _includeAssets($mode = self::assetsIncludeAll) {
         $config = $this->wire('config');
 
         $info = $this->getModuleInfo();
         $version = (int) isset($info['version']) ? $info['version'] : 0;
         $versionAdd = "?v=$version";
 
-        // Include vendor CSS assets
-        $config->styles->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
-
-        // Include vendor JS assets
-        $config->scripts->add($config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
-        $config->scripts->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
-        $config->scripts->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.min.js?v=3.6.9');
-
-        // Include module CSS assets
-        $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceRangePicker.css' . $versionAdd);
-        $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceChart.css' . $versionAdd);
-
-        // Include module JS assets
-        $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceRangePicker.min.js' . $versionAdd);
-        $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
+        if ($mode & self::assetsIncludeAll || $mode & self::assetsIncludeDaterangePicker || $mode & self::assetsIncludeApexCharts) {
+            // Include moment.js JS assets
+            $config->scripts->add($config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
+        }
+        if ($mode & self::assetsIncludeDaterangePicker) {
+            // Include daterangepicker CSS/JS assets
+            $config->styles->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
+            $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceRangePicker.css' . $versionAdd);
+            $config->scripts->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
+            $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceRangePicker.min.js' . $versionAdd);
+        }
+        if ($mode & self::assetsIncludeApexCharts) {
+            // Include ApexCharts CSS/JS assets
+            $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceChart.css' . $versionAdd);
+            $config->scripts->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.min.js?v=3.6.9');
+            $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
+        }
     }
 
     /**
