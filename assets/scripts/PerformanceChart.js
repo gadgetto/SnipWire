@@ -14,32 +14,76 @@ jQuery(document).ready(function($) {
 
     var options = {
         chart: {
-            height: 300,
-            type: 'area',
+            height: 320,
             zoom: {
-                enabled: false
+                enabled: true
             }
         },
         dataLabels: {
             enabled: false
         },
-        stroke: {
-            curve: 'straight'
-        },
         grid: {
             row: {
-                colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-                opacity: 0.5
+                colors: ['#f0f3f7', 'transparent'],
+                opacity: 0.3
             }
+        },
+        stroke: {
+            width: [0, 4],
+            //colors: ['', '#3eb998'],
+            curve: 'smooth'
         },
         xaxis: {
             type: 'datetime',
             categories: chartData['categories']
         },
-        series: [{
-            name: 'Orders',
-            data: chartData['data']
-        }]
+        yaxis: [
+            {
+                title: {
+                    text: chartData['salesLabel']
+                },
+                decimalsInFloat: 2
+            },
+            {
+                opposite: true,
+                title: {
+                    text: chartData['ordersLabel']
+                },
+                decimalsInFloat: 0
+            }
+        ],
+        series: [
+            {
+                type: 'column',
+                name: chartData['salesLabel'],
+                data: chartData['sales']
+            },
+            {
+                type: 'line',
+                name: chartData['ordersLabel'],
+                data: chartData['orders']
+            }
+        ],
+        legend: {
+            position: 'top',
+            horizontalAlign: 'center',
+            itemMargin: {
+                horizontal: 10,
+                vertical: 15
+            }
+        },
+        noData: {
+            text: chartData['noDataText'],
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                //color: undefined,
+                fontSize: '16px'
+                //fontFamily: undefined
+            }
+        }
     }
     
     var chart = new ApexCharts(

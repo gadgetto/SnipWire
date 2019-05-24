@@ -149,6 +149,7 @@ class SnipREST extends CurlMulti {
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataOrdersSales . $query);
         $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
 
         // ---- Top 10 customers ----
@@ -224,12 +225,19 @@ class SnipREST extends CurlMulti {
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
-        $chart = $this->getOrdersCount($selector, 300);
-        if ($chart === false) {
+        $chartSalesCount = $this->getSalesCount($selector, 300);
+        if ($chartSalesCount === false) {
             $this->error(SnipREST::getMessagesText('connection_failed'));
-            $chart = array();
+            $chartSalesCount = array();
         }
-        $data[self::resourcePathDataOrdersCount] = array(CurlMulti::resultKeyContent => $chart);
+        $data[self::resourcePathDataOrdersSales] = array(CurlMulti::resultKeyContent => $chartSalesCount);
+
+        $chartOrdersCount = $this->getOrdersCount($selector, 300);
+        if ($chartOrdersCount === false) {
+            $this->error(SnipREST::getMessagesText('connection_failed'));
+            $chartOrdersCount = array();
+        }
+        $data[self::resourcePathDataOrdersCount] = array(CurlMulti::resultKeyContent => $chartOrdersCount);
         
         // ---- Top 10 customers ----
         
@@ -296,7 +304,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the orders placed before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or orders array or string or integer
+     * @return mixed False if request failed or array
      *
      */
     public function getOrders($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -343,7 +351,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the orders placed before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return boolean|integer False if request failed or orders items as array
+     * @return boolean|integer False if request failed or items as array
      * 
      */
     public function getOrdersItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -367,7 +375,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or products array or string or integer
+     * @return mixed False if request failed or array
      *
      */
     public function getProducts($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -417,7 +425,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or products array or string or integer
+     * @return mixed False if request failed or items as array
      * 
      */
     public function getProductsItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -440,7 +448,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or customers array or string or integer
+     * @return mixed False if request failed or array
      *
      */
     public function getCustomers($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -487,7 +495,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or customers items as array
+     * @return mixed False if request failed or items as array
      * 
      */
     public function getCustomersItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -504,7 +512,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the performance before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or performance array
+     * @return mixed False if request failed or array
      *
      */
     public function getPerformance($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -536,6 +544,47 @@ class SnipREST extends CurlMulti {
     }
 
     /**
+     * Get the amount of sales from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `from` (datetime) Will return only the performance after this date
+     *  - '`to` (datetime) Will return only the performance before this date
+     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @return mixed False if request failed or array
+     *
+     */
+    public function getSalesCount($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::resourcePathDataOrdersSales);
+
+        $allowedOptions = array('from', 'to');
+        $defaultOptions = array();
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        $query = '';
+        if (!empty($options)) $query = '?' . http_build_query($options);
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::resourcePathDataOrdersSales . '.' . md5($query);
+        
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersSales . $query);
+        });
+        return $response;
+    }
+
+    /**
      * Get the number of orders from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
@@ -545,7 +594,7 @@ class SnipREST extends CurlMulti {
      *  - '`to` (datetime) Will return only the performance before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or performance array
+     * @return mixed False if request failed or array
      *
      */
     public function getOrdersCount($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {

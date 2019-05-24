@@ -120,7 +120,7 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         $out .= $this->_renderPerformanceBoxes($dashboard[SnipRest::resourcePathDataPerformance]);
-        $out .= $this->_renderChartOrders($dashboard[SnipRest::resourcePathDataOrdersCount]);
+        $out .= $this->_renderChart($dashboard[SnipRest::resourcePathDataOrdersSales], $dashboard[SnipRest::resourcePathDataOrdersCount]);
         
         /** @var InputfieldWrapper $wrapper */
         $wrapper = new InputfieldWrapper();
@@ -208,6 +208,12 @@ class ProcessSnipWire extends Process implements Module {
             if (strpos($key, SnipRest::resourcePathDataPerformance)) {
                 
                 $dashboard[SnipRest::resourcePathDataPerformance] = isset($package[CurlMulti::resultKeyContent])
+                    ? $package[CurlMulti::resultKeyContent]
+                    : false;
+                
+            } elseif (strpos($key, SnipRest::resourcePathDataOrdersSales)) {
+                
+                $dashboard[SnipRest::resourcePathDataOrdersSales] = isset($package[CurlMulti::resultKeyContent])
                     ? $package[CurlMulti::resultKeyContent]
                     : false;
                 
@@ -441,27 +447,52 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the orders chart.
+     * Render the chart.
      *
-     * @param array $results
+     * @param array $salesData
+     * @param array $ordersData
      * @return markup Chart
      *
      */
-    private function _renderChartOrders($results) {
+    private function _renderChart($salesData, $ordersData) {
         $config = $this->wire('config');
-        
-        // Split result in categories & data (prepare for ApexCharts)
-        $categories = array();
-        $values = array();
-        foreach ($results['data'] as $item) {
-            $categories[] = $item['name'];
-            $values[] = $item['value'];
+
+        $salesCategories = array();
+        $ordersCategories = array();
+        $sales = array();
+        $orders = array();
+
+        // Split results in categories & data (prepare for ApexCharts)
+        if (!empty($salesData['data']) && is_array($salesData['data'])) {
+            foreach ($salesData['data'] as $item) {
+                $salesCategories[] = $item['name'];
+                $sales[] = $item['value'];
+            }
+        }
+        if (!empty($ordersData['data']) && is_array($ordersData['data'])) {
+            foreach ($ordersData['data'] as $item) {
+                $ordersCategories[] = $item['name'];
+                $orders[] = intval($item['value']);
+            }
+        }
+
+        // Take categories either from sales or from orders (both are same)
+        if ($salesCategories) {
+            $categories = $salesCategories;
+        } elseif ($ordersCategories) {
+            $categories = $ordersCategories;
+        } else {
+            $categories = array();
         }
         
         // Hand over chartData to JS
         $config->js('chartData', array(
             'categories' => $categories,
-            'data' => $values,
+            'sales' => $sales,
+            'orders' => $orders,
+            'salesLabel' => $this->_('Sales'),
+            'ordersLabel' => $this->_('Orders'),
+            'noDataText' => $this->_('No Chart data available'),
         ));
 
         $out =
