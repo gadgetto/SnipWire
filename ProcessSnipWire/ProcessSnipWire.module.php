@@ -103,7 +103,7 @@ class ProcessSnipWire extends Process implements Module {
         
         $this->_includeAssets();
 
-        if ($this->_getInputAction() == 'refresh') bd('refresh');
+        //if ($this->_getInputAction() == 'refresh') bd('refresh');
         $startDate = $this->_getInputStartDate();
         $startDateSelector = $startDate ? $startDate . ' 00:00:00' : '';
         
