@@ -67,10 +67,18 @@ jQuery(document).ready(function($) {
         legend: {
             position: 'top',
             horizontalAlign: 'center',
+            fontSize: '14px',
+            offsetY: -10,
             itemMargin: {
                 horizontal: 10,
                 vertical: 15
-            }
+            },
+            markers: {
+                width: 14,
+                height: 14,
+                strokeWidth: 0,
+                radius: 0
+            },
         },
         noData: {
             text: chartData['noDataText'],

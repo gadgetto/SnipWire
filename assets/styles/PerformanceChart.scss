@@ -9,6 +9,13 @@
  *
  */
 
+#PerformanceChart {
+    .apexcharts-toolbar {
+        svg {
+            max-width: none;
+        }
+    }
+}
 
 // Theme dependant style overrides (base styles are for AdminThemeUikit)
 
