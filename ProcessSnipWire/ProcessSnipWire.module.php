@@ -663,7 +663,7 @@ class ProcessSnipWire extends Process implements Module {
             $btn = $modules->get('InputfieldButton');
             $btn->href = './orders';
             $btn->value = $this->_('All Orders');
-            $btn->icon = 'shopping-cart';
+            $btn->icon = 'list-alt';
             $btn->setSecondary(true);
             $btn->set('small', true);
 
