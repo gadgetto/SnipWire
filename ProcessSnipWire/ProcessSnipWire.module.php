@@ -34,15 +34,23 @@ class ProcessSnipWire extends Process implements Module {
                 'title' => 'SnipWire',
                 'parent' => 'setup',
             ),
-            /*
             'nav' => array(
                 array(
-                    'url' => 'path/', 
-                    'label' => 'Label', 
-                    'icon' => 'icon', 
+                    'url' => 'orders/', 
+                    'label' => __('Orders'), 
+                    'icon' => 'list-alt', 
+                ),
+                array(
+                    'url' => 'customers/', 
+                    'label' => __('Customers'), 
+                    'icon' => 'user', 
+                ),
+                array(
+                    'url' => 'products/', 
+                    'label' => __('Products'), 
+                    'icon' => 'cube', 
                 ),
             ),
-            */
             'requires' => array(
                 'ProcessWire>=3.0.0',
                 'SnipWire',
@@ -87,7 +95,6 @@ class ProcessSnipWire extends Process implements Module {
      */
     public function ___execute() {
         $modules = $this->wire('modules');
-        $pages = $this->wire('pages');
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
@@ -195,6 +202,78 @@ class ProcessSnipWire extends Process implements Module {
         $out .= $wrapper->render();
 
         return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
+     * The SnipWire Snipcart Orders page.
+     *
+     * @access public
+     * @return page markup
+     *
+     */
+    public function ___executeOrders() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sniprest = $this->wire('sniprest');
+        
+        $this->browserTitle($this->_('Snipcart Orders'));
+        $this->headline($this->_('Snipcart Orders'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+
+    }
+
+    /**
+     * The SnipWire Snipcart Customers page.
+     *
+     * @access public
+     * @return page markup
+     *
+     */
+    public function ___executeCustomers() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sniprest = $this->wire('sniprest');
+        
+        $this->browserTitle($this->_('Snipcart Customers'));
+        $this->headline($this->_('Snipcart Customers'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+
+    }
+
+    /**
+     * The SnipWire Snipcart Products page.
+     *
+     * @access public
+     * @return page markup
+     *
+     */
+    public function ___executeProducts() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sniprest = $this->wire('sniprest');
+        
+        $this->browserTitle($this->_('Snipcart Products'));
+        $this->headline($this->_('Snipcart Products'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+
     }
 
     /**
