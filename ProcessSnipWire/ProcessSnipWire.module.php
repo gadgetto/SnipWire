@@ -520,7 +520,8 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
                     
         if (!empty($items)) {
-            
+
+            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -539,7 +540,18 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['statistics']['ordersAmount'], 'usd'), // @todo: handle currency!
                 ));
             }
-            return $table->render();
+            $out .= $table->render();
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = './customers';
+            $btn->value = $this->_('All Customers');
+            $btn->icon = 'user';
+            $btn->setSecondary(true);
+            $btn->set('small', true);
+
+            $out .= $btn->render();
+            return $out;
             
         } else {
             
@@ -562,7 +574,8 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
-        
+
+            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -583,7 +596,18 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
                 ));
             }
-            return $table->render();
+            $out .= $table->render();
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = './products';
+            $btn->value = $this->_('All Products');
+            $btn->icon = 'cube';
+            $btn->setSecondary(true);
+            $btn->set('small', true);
+
+            $out .= $btn->render();
+            return $out;
             
         } else {
             
@@ -607,6 +631,7 @@ class ProcessSnipWire extends Process implements Module {
 
         if (!empty($items)) {
             
+            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -631,7 +656,18 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
-            return $table->render();
+            $out .= $table->render();
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = './orders';
+            $btn->value = $this->_('All Orders');
+            $btn->icon = 'shopping-cart';
+            $btn->setSecondary(true);
+            $btn->set('small', true);
+
+            $out .= $btn->render();
+            return $out;
             
         } else {
             
