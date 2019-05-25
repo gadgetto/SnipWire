@@ -189,15 +189,26 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldWrapper $wrapper */
         $wrapper = new InputfieldWrapper();
 
-            /** @var InputfieldSubmit $btn */
+            /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
             $btn->id = 'refresh-data';
             $btn->href = './?action=refresh';
             $btn->value = $this->_('Refresh');
             $btn->icon = 'refresh';
             $btn->showInHeader();
-        
+
         $wrapper->add($btn);
+
+        if ($user->isSuperuser()) {
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = 'settings/';
+            $btn->value = $this->_('Settings');
+            $btn->icon = 'gear';
+            $btn->setSecondary(true);
+        
+            $wrapper->add($btn);
+        }
 
         $out .= $wrapper->render();
 
@@ -274,6 +285,29 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
+    }
+
+    /**
+     * Redirect to SniWire module settings.
+     *
+     * @access public
+     * @return page Markup
+     *
+     */
+    public function ___executeSettings() {
+        $redirectTo = $this->wire('config')->urls->admin . 'module/edit?name=SnipWire&collapse_info=1';
+        $this->wire('session')->redirect($redirectTo);
+        
+        // Should never be rendered ... (just to be sure)
+        
+        /** @var InputfieldButton $btn */
+        $btn = $this->wire('modules')->get('InputfieldButton');
+        $btn->href = $redirectTo;
+        $btn->value = $this->_('Settings');
+        $btn->icon = 'gear';
+        
+        $out = $btn->render();
+        return $out;
     }
 
     /**
@@ -622,7 +656,7 @@ class ProcessSnipWire extends Process implements Module {
             }
             $out .= $table->render();
 
-            /** @var InputfieldSubmit $btn */
+            /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
             $btn->href = './customers';
             $btn->value = $this->_('All Customers');
@@ -678,7 +712,7 @@ class ProcessSnipWire extends Process implements Module {
             }
             $out .= $table->render();
 
-            /** @var InputfieldSubmit $btn */
+            /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
             $btn->href = './products';
             $btn->value = $this->_('All Products');
@@ -738,7 +772,7 @@ class ProcessSnipWire extends Process implements Module {
             }
             $out .= $table->render();
 
-            /** @var InputfieldSubmit $btn */
+            /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
             $btn->href = './orders';
             $btn->value = $this->_('All Orders');
