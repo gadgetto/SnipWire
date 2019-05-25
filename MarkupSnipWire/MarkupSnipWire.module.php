@@ -171,10 +171,12 @@
         $jsResources = array();
 
         // Add Snipcart CSS resource
-        $cssResources[] = 
+        if ($this->snipwireConfig['include_snipcart_css']) {
+            $cssResources[] = 
               '<link rel="stylesheet" href="' . $this->snipwireConfig['snipcart_css_path'] . '"'
             . (!empty($this->snipwireConfig['snipcart_css_integrity']) ? ' integrity="' . $this->snipwireConfig['snipcart_css_integrity'] . '"' : '')
             . '>';
+        }
         
         // Add jQuery JS resource
         if ($this->snipwireConfig['include_jquery']) {
