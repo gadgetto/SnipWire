@@ -16,6 +16,7 @@ class CurlMulti extends WireHttp {
 
     const resultKeyContent = 'content';
     const resultKeyHttpCode = 'http_code';
+    const resultKeyCurlError = 'curl_error';
 
     /** @var array $_curlMultiOptions cURL options used for all sessions */
     private $_curlMultiOptions = array();
@@ -175,7 +176,8 @@ class CurlMulti extends WireHttp {
             $decodedContent = json_decode($result[self::resultKeyContent], true); // assoc!
     	    $decoded[$key] = array(
     	        self::resultKeyContent => json_last_error() === JSON_ERROR_NONE ? $decodedContent : array(),
-    	        self::resultKeyHttpCode => $result[self::resultKeyHttpCode]
+    	        self::resultKeyHttpCode => $result[self::resultKeyHttpCode],
+    	        self::resultKeyCurlError => $result[self::resultKeyCurlError],
             );
     	}
 		return $decoded; 
@@ -192,11 +194,13 @@ class CurlMulti extends WireHttp {
      *    array(
      *        'https://app.domain.com/api/orders' => array(
      *            'content' => 'The response content...',
-     *            'http_code' => 200
+     *            'http_code' => 200,
+     *            'curl_error' => ''
      *        ),
      *        'https://app.domain.com/api/wrongurl' => array(
      *            'content' => '',
      *            'http_code' => 404
+     *            'curl_error' => 'String containing the last error for the current session'
      *        )
      *    )
      *
@@ -243,9 +247,11 @@ class CurlMulti extends WireHttp {
             // Get the content of that cURL handle as string
             $content = !curl_error($curl) ? curl_multi_getcontent($curl) : '';
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($curl);
             $this->resultsMulti[$key] = array(
                 self::resultKeyContent => $content,
                 self::resultKeyHttpCode => $httpCode,
+                self::resultKeyCurlError => $curlError,
             );
             
             curl_multi_remove_handle($this->_multiHandle, $curl);
