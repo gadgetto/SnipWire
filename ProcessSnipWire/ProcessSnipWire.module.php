@@ -397,13 +397,14 @@ class ProcessSnipWire extends Process implements Module {
         } else {
             
             $this->error($this->_('Values for store performance boxes could not be fetched'));
+            $errorIcon = wireIconMarkup('exclamation-triangle');
             $values = array(
-                'orders' => wireIconMarkup('exclamation-triangle'),
-                'sales' => wireIconMarkup('exclamation-triangle'), 
-                'average' => wireIconMarkup('exclamation-triangle'),
+                'orders' => $errorIcon,
+                'sales' => $errorIcon, 
+                'average' => $errorIcon,
                 'customers' => array(
-                    'new' => wireIconMarkup('exclamation-triangle'),
-                    'returning' => wireIconMarkup('exclamation-triangle'),
+                    'new' => $errorIcon,
+                    'returning' => $errorIcon,
                 )
             );
             
