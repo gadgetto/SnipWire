@@ -79,7 +79,7 @@ class ProcessSnipWire extends Process implements Module {
     }    
 
     /**
-     * The GroupMailer dashboard page.
+     * The SnipWire dashboard page.
      *
      * @access public
      * @return page markup
