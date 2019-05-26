@@ -64,7 +64,7 @@ class SnipWireConfig extends ModuleConfig {
      * Default config
      * (overriding the method from parent class)
      *
-	 * @return array of 'fieldName' => 'default value'
+     * @return array of 'fieldName' => 'default value'
      *
      */
     public function getDefaults() {
@@ -104,15 +104,15 @@ class SnipWireConfig extends ModuleConfig {
         );
     }
 
-	/**
-	 * Return an InputfieldWrapper of Inputfields necessary to configure this module
-	 * 
-	 * Values will be populated to the Inputfields automatically. However, you may also retrieve
-	 * any of the values from $this->[property]; as needed. 
-	 * 
-	 * @return InputfieldWrapper
-	 * 
-	 */
+    /**
+     * Return an InputfieldWrapper of Inputfields necessary to configure this module
+     * 
+     * Values will be populated to the Inputfields automatically. However, you may also retrieve
+     * any of the values from $this->[property]; as needed. 
+     * 
+     * @return InputfieldWrapper
+     * 
+     */
     public function getInputfields() {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
