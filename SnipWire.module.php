@@ -88,17 +88,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
-     * Load module related CSS and JS files for module config editor.
-     *
-     */
-    public function ready() {
-        // (needs to be done manually because this is not a Process module)
-        if ($this->wire('input')->get['name'] === $this->className()) {
-            $this->wire('modules')->loadModuleFileAssets($this->className()); 
-        }
-    }
-
-    /**
      * Manage currency specific price input fields based on module "currencies" property.
      * (Method triggered after module config save)
      *
