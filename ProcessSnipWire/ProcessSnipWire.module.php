@@ -73,14 +73,9 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Initialize the module
+     * Initialize the module.
+     * (Called before any execute functions)
      * 
-     * This is an optional initialization function called before any execute functions.
-     * ProcessWire calls this when the module is loaded. For 'autoload' modules, this will be called
-     * when ProcessWire's API is ready. As a result, this is a good place to attach hooks.
-     *
-     * @access public
-     *
      */
     public function init() {
         parent::init();
@@ -89,7 +84,6 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * The SnipWire dashboard page.
      *
-     * @access public
      * @return page markup
      *
      */
@@ -218,7 +212,6 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * The SnipWire Snipcart Orders page.
      *
-     * @access public
      * @return page markup
      *
      */
@@ -242,7 +235,6 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * The SnipWire Snipcart Customers page.
      *
-     * @access public
      * @return page markup
      *
      */
@@ -266,7 +258,6 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * The SnipWire Snipcart Products page.
      *
-     * @access public
      * @return page markup
      *
      */
@@ -290,7 +281,6 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Redirect to SniWire module settings.
      *
-     * @access public
      * @return page Markup
      *
      */
