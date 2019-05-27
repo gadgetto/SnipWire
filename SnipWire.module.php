@@ -63,7 +63,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
-     * Initalize module config variables (properties)
+     * Initalize module config variables (properties).
+     * (Called before module config is populated)
      *
      */
     public function __construct() {
@@ -74,6 +75,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
     /**
      * Initialize the module and set required hooks.
+     * (Called after module config is populated)
      * 
      */
     public function init() {
