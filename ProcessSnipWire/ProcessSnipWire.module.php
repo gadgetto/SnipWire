@@ -295,7 +295,7 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     public function ___executeSettings() {
-        $redirectTo = $this->wire('config')->urls->admin . 'module/edit?name=SnipWire&collapse_info=1';
+        $redirectTo = $this->wire('modules')->getModuleEditUrl('SnipWire');
         $this->wire('session')->redirect($redirectTo);
         
         // Should never be rendered ... (just to be sure)
