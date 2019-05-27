@@ -118,6 +118,7 @@ class SnipWireConfig extends ModuleConfig {
         $config = $this->wire('config');
         $sniprest = $this->wire('sniprest');
         
+        $this->_includeAssets();
         $inputfields = parent::getInputfields();
 
         // ---- Additional steps ----
@@ -659,6 +660,22 @@ class SnipWireConfig extends ModuleConfig {
         }
     
         return $templates;
+    }
+
+    /**
+     * Include asset files for SnipWire config editor.
+     *
+     */
+    private function _includeAssets() {
+        $config = $this->wire('config');
+
+        $info = SnipWire::getModuleInfo();
+        $version = (int) isset($info['version']) ? $info['version'] : 0;
+        $versionAdd = "?v=$version";
+
+        $config->styles->add($config->urls->SnipWire . 'assets/styles/SnipWireConfig.css' . $versionAdd);
+        $config->scripts->add($config->urls->SnipWire . 'vendor/jquery.form-repeater/jquery.form-repeater.min.js?v=0.1.0');
+        $config->scripts->add($config->urls->SnipWire . 'assets/scripts/SnipWireConfig.min.js' . $versionAdd);
     }
 
 }
