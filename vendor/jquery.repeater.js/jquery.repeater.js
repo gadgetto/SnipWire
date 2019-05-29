@@ -1,7 +1,14 @@
-// jquery.repeater version 1.2.1
-// https://github.com/DubFriend/jquery.repeater
-// (MIT) 09-10-2016
-// Brian Detering <BDeterin@gmail.com> (http://www.briandetering.net/)
+/**
+ * jquery.repeater version 1.2.1
+ * https://github.com/DubFriend/jquery.repeater
+ * (MIT) 09-10-2016
+ * Brian Detering <BDeterin@gmail.com> (http://www.briandetering.net/)
+ * Enhancments and fixes by
+ *  - @gadgetto (Martin Gartner) 2019
+ *
+ * @preserve
+ */
+
 (function ($) {
 'use strict';
 
