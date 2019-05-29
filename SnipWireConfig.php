@@ -674,7 +674,7 @@ class SnipWireConfig extends ModuleConfig {
         $versionAdd = "?v=$version";
 
         $config->styles->add($config->urls->SnipWire . 'assets/styles/SnipWireConfig.css' . $versionAdd);
-        $config->scripts->add($config->urls->SnipWire . 'vendor/jquery.repeater.js/jquery.repeater.min.js?v=1.2.1');
+        $config->scripts->add($config->urls->SnipWire . 'vendor/jquery.repeater.js/jquery.repeater.full.min.js?v=1.3.1');
         $config->scripts->add($config->urls->SnipWire . 'assets/scripts/SnipWireConfig.min.js' . $versionAdd);
     }
 
