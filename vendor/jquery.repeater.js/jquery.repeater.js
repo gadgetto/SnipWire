@@ -837,7 +837,7 @@ $.fn.repeater = function (fig) {
         };
 
         var $itemTemplate = $list.find('[data-repeater-item]')
-                                 .first().clone().hide();
+            .first().clone().hide();
 
         var $firstDeleteButton = $filterNested(
             $filterNested($(this).find('[data-repeater-item]'), fig.repeaters)
