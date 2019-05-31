@@ -341,7 +341,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'taxes_included'); 
             $f->label = $this->_('Taxes Included in Prices');
             $f->label2 = $this->_('Taxes are included in product prices');
-            $f->description = $this->_('Use this setting if the taxes you defined are included in your product prices');
+            $f->description = $this->_('Use this setting if the taxes you defined are included in your product prices.');
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
