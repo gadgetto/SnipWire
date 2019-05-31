@@ -29,6 +29,15 @@ class SnipWireConfig extends ModuleConfig {
         'postepay',
     );
 
+    /** @var array $defaultTaxes Default taxes setting (as an array of arrays) */
+    protected $defaultTaxes = array(
+        array(
+            'name' => 'vat_20',
+            'numberForInvoice' => '20% VAT',
+            'rate' => '0.20',
+        )
+    );
+
     /**
      * Construct/initialize
      * 
@@ -82,6 +91,7 @@ class SnipWireConfig extends ModuleConfig {
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
+            'taxes' => json_encode($this->defaultTaxes),
             'taxes_included' => 1,
             'snipcart_debug' => 1,
             'include_snipcart_css' => 1,
@@ -293,6 +303,75 @@ class SnipWireConfig extends ModuleConfig {
                 $f->addOption($currencyName, $currencyLabel);
             }
             $f->required = true;
+
+        $fsAPI->add($f);
+
+            // This hidden field will be filled with jSON formatted taxes array provided by jquery.repeater.
+            // onLoad jquery.repeater will use the stored array to pre-build the repeater fields.
+            
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->attr('id+name', 'taxes');
+
+        $fsAPI->add($f);
+            
+            $languageStrings = array(
+                'tax_name' => $this->_('Tax Name'),
+                'number_for_invoice' => $this->_('Number for Invoice'),
+                'rate' => $this->_('Rate'),
+                'tax_name_ph' => $this->_('e.g. vat_20'),
+                'number_for_invoice_ph' => $this->_('e.g. 20% VAT'),
+                'rate_ph' => $this->_('e.g. 0.20'),
+                'remove_tax_setting' => $this->_('Remove tax setting'),
+                'add_tax_setting' => $this->_('Add tax setting'),
+                'js' => array(
+                    'confirm_delete' => $this->_('Are you sure you want to delete this element?'),
+                ),
+            );
+            $config->js('languageStrings', $languageStrings['js']);
+
+            $taxesRepeaterMarkup =
+            '<table id="TaxesRepeater">' .
+                '<thead>' .
+                    '<tr>' .
+                        '<th>' . $languageStrings['tax_name'] . '</th>' .
+                        '<th>' . $languageStrings['number_for_invoice'] . '</th>' .
+                        '<th>' . $languageStrings['rate'] . '</td>' .
+                        '<th class="col-btn"></th>' .
+                    '</tr>' .
+                '</thead>' .
+                '<tfoot>' .
+                    '<tr>' .
+                        '<td colspan="4">' .
+                            '<a class="RepeaterAddItem" data-repeater-create>' . $languageStrings['add_tax_setting'] . '</a>' .
+                        '</td>' .
+                    '</tr>' .
+                '</tfoot>' .
+                '<tbody data-repeater-list="taxesgroup">' .
+                    '<tr data-repeater-item>' .
+                        '<td>' .
+                            '<input type="text" class="uk-input InputfieldMaxWidth" name="name" placeholder="' . $languageStrings['tax_name_ph'] . '">' .
+                        '</td>' .
+                        '<td>' .
+                            '<input type="text" class="uk-input InputfieldMaxWidth" name="numberForInvoice" placeholder="' . $languageStrings['number_for_invoice_ph'] . '">' .
+                        '</td>' .
+                        '<td>' .
+                            '<input type="text" class="uk-input InputfieldMaxWidth" name="rate" pattern="[-+]?[0-9]*[.]?[0-9]+" placeholder="' . $languageStrings['rate_ph'] . '">' .
+                        '</td>' .
+                        '<td class="col-btn">' .
+                            '<a class="RepeaterRemoveItem" role="button" title="' . $languageStrings['remove_tax_setting'] . '" data-repeater-delete>' . wireIconMarkup('trash-o', 'lg') . '</a>' .
+                        '</td>' .
+                    '</tr>' .
+                '</tbody>' .
+            '</table>';
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Taxes Configuration');
+            $f->description = $this->_('Define the tax rates to be used by the Snipcart shop-system. While processing an order, Snipcart will send a Webhook request to your server and SnipWire will return the applicable taxes.');
+            $f->notes = $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed.');
+            $f->value = $taxesRepeaterMarkup;
+            $f->columnWidth = 100;
 
         $fsAPI->add($f);
 

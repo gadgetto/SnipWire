@@ -75,7 +75,86 @@ var ClipboardHelper = {
     }
 };
 
+var languageStrings = config.languageStrings;
+
 jQuery(document).ready(function($) {
+    
+    var $taxesRepeater = $('#TaxesRepeater').repeater({
+        // (Optional)
+        // start with an empty list of repeaters. Set your first (and only)
+        // "data-repeater-item" with style="display:none;" and pass the
+        // following configuration flag.
+        // defaults to true.
+        /*
+        initEmpty: true,
+        */
+        
+        // (Optional)
+        // "defaultValues" sets the values of added items.  The keys of
+        // defaultValues refer to the value of the input's name attribute.
+        // If a default value is not specified for an input, then it will
+        // have its value cleared.
+        /*
+        defaultValues: {
+            'text-input': 'foo'
+        },
+        */
+        
+        // (Optional)
+        // "show" is called just after an item is added.  The item is hidden
+        // at this point.  If a show callback is not given the item will
+        // have $(this).show() called on it.
+        /*
+        show: function () {
+            $(this).slideDown();
+        },
+        */
+        
+        // (Optional)
+        // "hide" is called when a user clicks on a data-repeater-delete
+        // element.  The item is still visible.  "hide" is passed a function
+        // as its first argument which will properly remove the item.
+        // "hide" allows for a confirmation step, to send a delete request
+        // to the server, etc.  If a hide callback is not given the item
+        // will be deleted.
+        hide: function (deleteElement) {
+            if (confirm(languageStrings.confirm_delete)) {
+                $(this).slideUp(deleteElement);
+            }
+        },
+        
+        // (Optional)
+        // You can use this if you need to manually re-index the list
+        // for example if you are using a drag and drop library to reorder
+        // list items.
+        /*
+        ready: function (setIndexes) {
+            $dragAndDrop.on('drop', setIndexes);
+        },
+        */
+        
+        // (Optional)
+        // Removes the delete button from the last available list item,
+        // defaults to false.
+        singleItemUndeletable: true
+    });
+
+    // `taxes` form field
+    var $taxesField = $('#taxes'),
+        taxesgroup;
+
+    // Get taxes from form field (jSON formatted string)
+    try {
+        taxesgroup = JSON.parse($taxesField.val());
+    } catch(e) {
+        taxesgroup = [];
+    }
+    $taxesRepeater.setList(taxesgroup);
+    
+    // Set taxes to form field (as jSON formatted string)
+    $('#ModuleEditForm').on('submit', function() {
+        $taxesField.val(JSON.stringify($taxesRepeater.repeaterVal().taxesgroup));
+    });
 
     $('#webhooks_endpoint').on('input', function() {
         var value = WebhooksEndpointUrl.sanitize($(this).val());
