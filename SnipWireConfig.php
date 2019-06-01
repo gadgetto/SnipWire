@@ -35,7 +35,8 @@ class SnipWireConfig extends ModuleConfig {
      */
     public function __construct() {
         parent::__construct();
-        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers/CurrencyFormat.php';
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
     }
 
     /**

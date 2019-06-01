@@ -70,7 +70,7 @@
      *
      */
     public function __construct() {
-        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/CurrencyFormat.php';
+        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 
         // Single point to query DB for SnipWire module config
         $this->snipwireConfig = $this->wire('modules')->getConfig('SnipWire');
