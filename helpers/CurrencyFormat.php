@@ -46,8 +46,8 @@ class CurrencyFormat extends WireData {
     /**
      * Get the default currency definition.
      *
-     * @param boolean $json Wether to return as Json formatted string and not array
-     * @return array|string (Json)
+     * @param boolean $json Wether to return as JSON formatted string and not array
+     * @return array|string String of JSON data
      * 
      */
     public static function getDefaultCurrencyDefinition($json = false) {
