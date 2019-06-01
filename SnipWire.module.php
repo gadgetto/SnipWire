@@ -14,10 +14,6 @@
 
 class SnipWire extends WireData implements Module, ConfigurableModule {
 
-    /**
-     * Returns information for SnipWire module.
-     *
-     */
     public static function getModuleInfo() {
         return array(
             'title' => __('SnipWire'),
