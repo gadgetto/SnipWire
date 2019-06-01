@@ -29,15 +29,6 @@ class SnipWireConfig extends ModuleConfig {
         'postepay',
     );
 
-    /** @var array $defaultTaxes Default taxes setting (as an array of arrays) */
-    protected $defaultTaxes = array(
-        array(
-            'name' => 'vat_20',
-            'numberForInvoice' => '20% VAT',
-            'rate' => '0.20',
-        )
-    );
-
     /**
      * Construct/initialize
      * 
@@ -91,7 +82,7 @@ class SnipWireConfig extends ModuleConfig {
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
-            'taxes' => json_encode($this->defaultTaxes),
+            'taxes' => Taxes::getDefaultTaxesConfig(true),
             'taxes_included' => 1,
             'snipcart_debug' => 1,
             'include_snipcart_css' => 1,
