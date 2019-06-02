@@ -25,6 +25,7 @@
  *  - 2019-05-29 removed support for nested repeaters
  *  - 2019-05-31 changed method to prevent deletion of last available item
  *  - 2019-05-31 added Support for input type="number"
+ *  - 2019-06-02 added support for sorting repeater items via drag & drop (requires jQueryUI)
  *
  * @preserve
  */
@@ -846,6 +847,10 @@ $.fn.repeater = function (fig) {
 
     var setList;
 
+    var isjQueryUI = function () {
+        return (typeof(jQuery.ui) !== 'undefined') ? true : false;
+    };
+
     $(this).each(function () {
 
         var $self = $(this);
@@ -913,6 +918,7 @@ $.fn.repeater = function (fig) {
         };
 
         setIndexes($items(), getGroupName());
+        
         if(fig.initEmpty) {
             $items().remove();
         }
@@ -920,6 +926,25 @@ $.fn.repeater = function (fig) {
         if(fig.ready) {
             fig.ready(function () {
                 setIndexes($items(), getGroupName());
+            });
+        }
+
+        var sortableHelper = function (e, ui) {
+            ui.children().each(function () {
+                $(this).width($(this).width());
+            });
+            return ui;
+        };
+
+        if(fig.sortable) {
+            if (isjQueryUI) $list.sortable({
+                axis: 'y',
+                cursor: 'move',
+                opacity: 0.7,
+                helper: sortableHelper,
+                stop: function (event, ui) {
+                    setIndexes($items(), getGroupName());
+                }
             });
         }
 
