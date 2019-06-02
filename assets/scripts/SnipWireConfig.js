@@ -132,7 +132,12 @@ jQuery(document).ready(function($) {
             $dragAndDrop.on('drop', setIndexes);
         },
         */
-        
+
+        // (Optional)
+        // Make repeater sortable via drag & drop (requires jQueryUI),
+        // defaults to false.
+        sortable: true,
+
         // (Optional)
         // Removes the delete button from the last available list item,
         // defaults to false.
@@ -150,7 +155,7 @@ jQuery(document).ready(function($) {
         taxesgroup = [];
     }
     $taxesRepeater.setList(taxesgroup);
-    
+
     // Set taxes to form field (as jSON formatted string)
     $('#ModuleEditForm').on('submit', function() {
         $taxesField.val(JSON.stringify($taxesRepeater.repeaterVal().taxesgroup));
