@@ -57,7 +57,7 @@ class Taxes {
     public static function getFirstTax($json = false) {
         $taxes = self::getTaxesConfig($json);
         $firstTax = $taxes[0];
-        return ($json) ? $firstTax : wireDecodeJSON($firstTax);
+        return ($json) ? wireEncodeJSON($firstTax, true) : $firstTax;
     }
 
     /**
