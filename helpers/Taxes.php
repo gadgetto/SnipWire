@@ -1,7 +1,9 @@
 <?php namespace ProcessWire;
 
 /**
- * Taxes - helper class to fetch taxes definition from SnipWire module config.
+ * Taxes - helper class
+ *  - to fetch taxes definition from SnipWire module config
+ *  - and to calculate taxes
  * (This file is part of the SnipWire package)
  *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
