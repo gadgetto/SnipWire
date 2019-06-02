@@ -23,7 +23,7 @@ table#TaxesRepeater {
     th:last-child, td:last-child {
         padding-right: 0;
     }
-    .col-btn, .col-btn:empty {
+    .col-btn, .col-btn:empty, .col-sortable, .col-sortable:empty {
         width: 1.5em;
     }
     .col-sortable, .col-sortable:empty {
