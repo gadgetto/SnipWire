@@ -308,8 +308,8 @@ class SnipWireConfig extends ModuleConfig {
         $fsAPI->add($f);
             
             $languageStrings = array(
-                'tax_name' => $this->_('Tax Name'),
-                'number_for_invoice' => $this->_('Number for Invoice'),
+                'tax_name' => $this->_('Tax name (ID)'),
+                'number_for_invoice' => $this->_('Name for Invoice'),
                 'rate' => $this->_('Rate'),
                 'tax_name_ph' => $this->_('e.g. vat_20'),
                 'number_for_invoice_ph' => $this->_('e.g. 20% VAT'),
@@ -365,7 +365,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Taxes Configuration');
             $f->description = $this->_('Define the tax rates to be used by the Snipcart shop-system. While processing an order, Snipcart will send a Webhook request to your server and SnipWire will return the applicable taxes.');
-            $f->notes = $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed.');
+            $f->notes = $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed. The first set in the list will be used by all products as default tax.');
             $f->value = $taxesRepeaterMarkup;
             $f->columnWidth = 100;
 

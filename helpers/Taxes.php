@@ -46,7 +46,20 @@ class Taxes {
         if (!$taxes) $taxes = self::getDefaultTaxesConfig(true); // JSON string
         return ($json) ? $taxes : wireDecodeJSON($taxes);
     }
-    
+
+    /**
+     * Get the first tax definition from module config.
+     *
+     * @param boolean $json Wether to return as JSON formatted string and not array
+     * @return array|string String of JSON data
+     * 
+     */
+    public static function getFirstTax($json = false) {
+        $taxes = self::getTaxesConfig($json);
+        $firstTax = $taxes[0];
+        return ($json) ? $firstTax : wireDecodeJSON($firstTax);
+    }
+
     /**
      * Calculate the tax on a given product price.
      *
