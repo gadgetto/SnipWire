@@ -67,6 +67,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         parent::__construct();
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'SnipREST.php';
         require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'Webhooks.php';
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
     }
 
     /**
@@ -79,6 +80,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->wire('sniprest', new SnipREST());
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookBefore('Inputfield(name=snipcart_item_id)::render', $this, 'presetSKU');
+        $this->addHookBefore('Inputfield(name=snipcart_item_taxes)::render', $this, 'presetTax');
         $this->addHookAfter('Pages::added', $this, 'presetTaxable');
         $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
     }
@@ -170,6 +172,18 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     public function presetSKU(HookEvent $event) {
         if ($event->object->name == 'snipcart_item_id' && $event->object->value == '') {
             $event->object->set('value', $this->input->get->id);
+        }
+    }
+    
+    /**
+     * Preset value of field snipcart_item_taxes (VAT) with first element of taxes config.
+     * (Method triggered before Inputfield render)
+     *
+     */
+    public function presetTax(HookEvent $event) {
+        if ($event->object->name == 'snipcart_item_taxes' && $event->object->value == '') {
+            $defaultTax = Taxes::getFirstTax();
+            $event->object->set('value', $defaultTax['name']);
         }
     }
     
