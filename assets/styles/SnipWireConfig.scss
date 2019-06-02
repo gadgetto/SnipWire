@@ -26,6 +26,10 @@ table#TaxesRepeater {
     .col-btn, .col-btn:empty {
         width: 1.5em;
     }
+    .col-sortable, .col-sortable:empty {
+        width: 1.5em;
+        color: #afafaf;
+    }
     .repeater-group {
         margin-bottom: 10px;
     }

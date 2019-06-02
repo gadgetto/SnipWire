@@ -326,6 +326,7 @@ class SnipWireConfig extends ModuleConfig {
             '<table id="TaxesRepeater">' .
                 '<thead>' .
                     '<tr>' .
+                        '<th class="col-sortable"></th>' .
                         '<th>' . $languageStrings['tax_name'] . '</th>' .
                         '<th>' . $languageStrings['number_for_invoice'] . '</th>' .
                         '<th>' . $languageStrings['rate'] . '</td>' .
@@ -334,13 +335,16 @@ class SnipWireConfig extends ModuleConfig {
                 '</thead>' .
                 '<tfoot>' .
                     '<tr>' .
-                        '<td colspan="4">' .
+                        '<td colspan="5">' .
                             '<a class="RepeaterAddItem" data-repeater-create>' . $languageStrings['add_tax_setting'] . '</a>' .
                         '</td>' .
                     '</tr>' .
                 '</tfoot>' .
                 '<tbody data-repeater-list="taxesgroup">' .
                     '<tr data-repeater-item>' .
+                        '<td class="col-sortable">' .
+                             wireIconMarkup('arrows') .
+                        '</td>' .
                         '<td>' .
                             '<input type="text" class="uk-input InputfieldMaxWidth" name="name" placeholder="' . $languageStrings['tax_name_ph'] . '">' .
                         '</td>' .
