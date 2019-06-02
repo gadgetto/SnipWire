@@ -342,7 +342,7 @@ class SnipWireConfig extends ModuleConfig {
                 '</tfoot>' .
                 '<tbody data-repeater-list="taxesgroup">' .
                     '<tr data-repeater-item>' .
-                        '<td class="col-sortable">' .
+                        '<td class="col-sortable sortableIndicator">' .
                              wireIconMarkup('arrows') .
                         '</td>' .
                         '<td>' .

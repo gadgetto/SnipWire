@@ -30,6 +30,9 @@ table#TaxesRepeater {
         width: 1.5em;
         color: #afafaf;
     }
+    .sortableIndicator {
+        cursor: move;
+    }
     .repeater-group {
         margin-bottom: 10px;
     }
