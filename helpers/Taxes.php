@@ -46,5 +46,28 @@ class Taxes {
         if (!$taxes) $taxes = self::getDefaultTaxesConfig(true); // JSON string
         return ($json) ? $taxes : wireDecodeJSON($taxes);
     }
+    
+    /**
+     * Calculate the tax on a given product price.
+     *
+     * @param float $value The value the tax has to be calculated from
+     * @param float $rate The tax rate as decimal: percentage/100 (e.g. 0.20)
+     * @param boolean $includedInPrice If the tax is included in price or excluded:
+     *  - true: taxes won't be added on top of cart total
+     *  - false: taxes will be added on top of cart total
+     * @param integer $digits The number of decimal places the value will be rounded
+     * @return string The calulated tax value
+     * 
+     */
+    public static function calculateTax($value, $rate, $includedInPrice = true, $digits = 2) {
+        if ($includedInPrice) {
+            $divisor = 1 + $rate;
+            $valueBeforeVat = $value / $divisor;
+            $tax = $value - $valueBeforeVat;
+        } else {
+            $tax = $value * $rate;
+        }
+        return number_format($tax, $digits, '.', '');
+    }
 
 }
