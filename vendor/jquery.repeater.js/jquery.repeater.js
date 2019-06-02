@@ -858,7 +858,7 @@ $.fn.repeater = function (fig) {
             removeElement();
         };
 
-        var $list = $self.find('[data-repeater-list]').first();
+        var $list = $self.find('[data-repeater-list]');
 
         var $items = function () {
             return $list.find('[data-repeater-item]');
