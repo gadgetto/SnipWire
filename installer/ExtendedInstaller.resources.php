@@ -199,6 +199,15 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
+        'snipcart_item_taxes' => array(
+            'name' => 'snipcart_item_taxes',
+            'type' => 'FieldtypeSnipWireTaxSelector',
+            'label' => __('VAT'),
+            'description' => __('Select the tax which should be applied.'),
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
 
     ),
 
