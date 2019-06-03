@@ -191,7 +191,7 @@ class ExtendedInstaller extends Wire {
                             $fg->add($f);
                             $fg->save();
                         } else {
-                            $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist!"), $name, $tn);
+                            $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist!"), $item['name'], $tn);
                             $this->warning($out);
                         }
                     }
