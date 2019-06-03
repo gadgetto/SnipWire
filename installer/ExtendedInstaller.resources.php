@@ -79,6 +79,17 @@ $resources = array(
     */
 
     'fields' => array(
+        // `title` is an alredy available field which only needs to be configured in template context
+        'title' => array(
+            'name' => 'title',
+            '_templateFieldOptions' => array(
+                'snipcart-product' => array(
+                    'label' => __('Product Name (Title)'),
+                    'notes' => __('Name of the product to be used in catalogue and cart.'),
+                    'columnWidth' => 70,
+                ),
+            ),
+        ),
         'snipcart_item_id' => array(
             'name' => 'snipcart_item_id',
             'type' => 'FieldtypeText',
@@ -89,6 +100,11 @@ $resources = array(
             'pattern' => '^[\w\-_*+.,]+$',
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_templateFieldOptions' => array(
+                'snipcart-product' => array(
+                    'columnWidth' => 30,
+                ),
+            ),
         ),
         'snipcart_item_price_eur' => array(
             'name' => 'snipcart_item_price_eur',
