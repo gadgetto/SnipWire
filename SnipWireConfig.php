@@ -373,6 +373,16 @@ class SnipWireConfig extends ModuleConfig {
 
             /** @var InputfieldCheckbox $f */
             $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'taxes_included'); 
+            $f->label = $this->_('Taxes Included in Prices');
+            $f->label2 = $this->_('Taxes are included in product prices');
+            $f->description = $this->_('Use this setting if the taxes are included in your product prices.');
+            $f->columnWidth = 100;
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
             $f->attr('name', 'show_cart_automatically'); 
             $f->label = $this->_('Show Shopping Cart Automatically');
             $f->label2 = $this->_('Show cart automatically');
@@ -410,16 +420,6 @@ class SnipWireConfig extends ModuleConfig {
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
-
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'taxes_included'); 
-            $f->label = $this->_('Taxes Included in Prices');
-            $f->label2 = $this->_('Taxes are included in product prices');
-            $f->description = $this->_('Use this setting if the taxes you defined are included in your product prices.');
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
         
             /** @var InputfieldCheckbox $f */
             $f = $modules->get('InputfieldCheckbox');
@@ -428,7 +428,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label2 = $this->_('Enable Snipcart JavaScript debug mode');
             $f->description = $this->_('This will allow you to see JavaScript errors on your site, failing requests and logs from the services you use in your browsers developer console.');
             $f->notes = $this->_('All logs from the Snipcart script will be prefixed with Snipcart:');
-            $f->columnWidth = 50;
+            $f->columnWidth = 100;
 
         $fsAPI->add($f);
 
