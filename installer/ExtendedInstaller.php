@@ -197,6 +197,30 @@ class ExtendedInstaller extends Wire {
                     }
                 }
             }
+            
+            // Configure fields in their templates context (overriding field options per template) */
+            foreach ($this->resources['fields'] as $item) {
+                if (!empty($item['_templateFieldOptions'])) {
+                    foreach ($item['_templateFieldOptions'] as $tn => $options) {
+                        if ($t = $templates->get($tn)) {
+                            $fg = $t->fieldgroup;
+                            if ($fg->hasField($item['name'])) {
+                                $f = $fg->getField($item['name'], true);
+                                if (isset($options['label'])) $f->label = $options['label'];
+                                if (isset($options['notes'])) $f->notes = $options['notes'];
+                                if (isset($options['columnWidth'])) $f->columnWidth = $options['columnWidth'];
+                                $fields->saveFieldgroupContext($f, $fg);
+                            } else {
+                                $out = sprintf($this->_("Could not configure options of field [%s] in template context [%s]. The field is not assigned to template!"), $item['name'], $tn);
+                                $this->warning($out);
+                            }
+                        } else {
+                            $out = sprintf($this->_("Could not configure options of field [%s] in template context [%s]. The template does not exist!"), $item['name'], $tn);
+                            $this->warning($out);
+                        }
+                    }
+                }
+            }            
         }
 
         /* ====== Install pages ====== */
