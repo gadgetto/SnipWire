@@ -53,23 +53,23 @@ class SnipREST extends CurlMulti {
     public function __construct() {
         parent::__construct();
 
-        $snipwireConfig = $this->wire('modules')->getConfig('SnipWire');
-        // Need to check if module configuration is available (if configuration form was never submitted, 
-        // the necessary keys aren't available!)
-        if ($snipwireConfig && isset($snipwireConfig['submit_save_module'])) {
-            // Snipcart environment (TEST | LIVE?)
-            $snipcartAPIKey = ($snipwireConfig['snipcart_environment'] == 1)
-                ? $snipwireConfig['api_key_secret']
-                : $snipwireConfig['api_key_secret_test'];
-            
-            // Set headers required by Snipcart
-            // -> Authorization: Basic <credentials>, where credentials is the base64 encoding of the secret API key and empty(!) password joined by a colon
-            $this->setHeaders(array(
-                'cache-control' => 'no-cache',
-                'Authorization' => 'Basic ' . base64_encode($snipcartAPIKey . ':'),
-                'Accept' => 'application/json',
-            ));
-        }
+        // Get SnipWire module config.
+        // (Holds merged data from DB and default config. 
+        // This works because of using the ModuleConfig class)
+        $snipwireConfig = $this->wire('modules')->get('SnipWire');
+        
+        // Snipcart environment (TEST | LIVE?)
+        $snipcartAPIKey = ($snipwireConfig->snipcart_environment == 1)
+            ? $snipwireConfig->api_key_secret
+            : $snipwireConfig->api_key_secret_test;
+        
+        // Set headers required by Snipcart
+        // -> Authorization: Basic <credentials>, where credentials is the base64 encoding of the secret API key and empty(!) password joined by a colon
+        $this->setHeaders(array(
+            'cache-control' => 'no-cache',
+            'Authorization' => 'Basic ' . base64_encode($snipcartAPIKey . ':'),
+            'Accept' => 'application/json',
+        ));
     }
 
     /**
