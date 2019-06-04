@@ -36,7 +36,6 @@
 
     /**
      * The module config of SnipWire module.
-     * (this is to only have to query the DB once)
      *
      */
     protected $snipwireConfig = array();
@@ -71,16 +70,6 @@
      */
     public function __construct() {
         require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
-
-        // Single point to query DB for SnipWire module config
-        $this->snipwireConfig = $this->wire('modules')->getConfig('SnipWire');
-        
-        // Initialize $currency with first currency from SnipWire module config
-        if (!$this->snipwireConfig || !isset($this->snipwireConfig['submit_save_module'])) {
-            $this->currency = 'eur';
-        } else {
-            $this->currency = reset($this->snipwireConfig['currencies']);
-        }
         parent::__construct();
     }
     
@@ -91,6 +80,14 @@
     public function init() {
         /** @var MarkupSnipWire $snipwire Custom ProcessWire API variable */
         $this->wire('snipwire', $this);
+        
+        // Get SnipWire module config.
+        // (Holds merged data from DB and default config. 
+        // This works because of using the ModuleConfig class)
+        $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
+
+        // Init $currency with first currency from SnipWire module config
+        $this->currency = $this->snipwireConfig->currencies[0];
     }
 
     /**
@@ -152,18 +149,18 @@
         // Prevent adding to pages with system templates assigned
         if ($page->template->flags & Template::flagSystem) return;
         
-        // Prevent rendering if no module config
-        if (!$this->snipwireConfig || !isset($this->snipwireConfig['submit_save_module'])) return;
+        // Prevent rendering if module config was never saved
+        if (!$this->snipwireConfig->submit_save_module) return;
 
         // Prevent adding to pages with excluded templates assigned
-        if (in_array($page->template->name, $this->snipwireConfig['excluded_templates'])) return;
+        if (in_array($page->template->name, $this->snipwireConfig->excluded_templates)) return;
         
         // Snipcart environment (TEST | LIVE?)
-        if ($this->snipwireConfig['snipcart_environment'] == 1) {
-            $snipcartAPIKey = $this->snipwireConfig['api_key'];
+        if ($this->snipwireConfig->snipcart_environment == 1) {
+            $snipcartAPIKey = $this->snipwireConfig->api_key;
             $environmentStatus = '<!-- Snipcart LIVE mode -->';
         } else {
-            $snipcartAPIKey = $this->snipwireConfig['api_key_test'];
+            $snipcartAPIKey = $this->snipwireConfig->api_key_test;
             $environmentStatus = '<!-- Snipcart TEST mode -->';
         }
 
@@ -171,26 +168,26 @@
         $jsResources = array();
 
         // Add Snipcart CSS resource
-        if ($this->snipwireConfig['include_snipcart_css']) {
+        if ($this->snipwireConfig->include_snipcart_css) {
             $cssResources[] = 
-              '<link rel="stylesheet" href="' . $this->snipwireConfig['snipcart_css_path'] . '"'
-            . (!empty($this->snipwireConfig['snipcart_css_integrity']) ? ' integrity="' . $this->snipwireConfig['snipcart_css_integrity'] . '"' : '')
+              '<link rel="stylesheet" href="' . $this->snipwireConfig->snipcart_css_path . '"'
+            . (!empty($this->snipwireConfig->snipcart_css_integrity) ? ' integrity="' . $this->snipwireConfig->snipcart_css_integrity . '"' : '')
             . '>';
         }
         
         // Add jQuery JS resource
-        if ($this->snipwireConfig['include_jquery']) {
+        if ($this->snipwireConfig->include_jquery) {
             $jsResources[] = 
-              '<script src="' . $this->snipwireConfig['jquery_js_path'] . '"'
-            . (!empty($this->snipwireConfig['jquery_js_integrity']) ? ' integrity="' . $this->snipwireConfig['jquery_js_integrity'] . '"' : '')
+              '<script src="' . $this->snipwireConfig->jquery_js_path . '"'
+            . (!empty($this->snipwireConfig->jquery_js_integrity) ? ' integrity="' . $this->snipwireConfig->jquery_js_integrity . '"' : '')
             . '></script>';
         }
         
         // Add Snipcart JS resource
         $jsResources[] = $environmentStatus;
         $jsResources[] = 
-              '<script src="' . $this->snipwireConfig['snipcart_js_path'] . '"'
-            . (!empty($this->snipwireConfig['snipcart_js_integrity']) ? ' integrity="' . $this->snipwireConfig['snipcart_js_integrity'] . '"' : '')
+              '<script src="' . $this->snipwireConfig->snipcart_js_path . '"'
+            . (!empty($this->snipwireConfig->snipcart_js_integrity) ? ' integrity="' . $this->snipwireConfig->snipcart_js_integrity . '"' : '')
             . ' data-api-key="' . $snipcartAPIKey . '"'
             . ' id="snipcart"'
             . '></script>';
@@ -198,8 +195,8 @@
         // Pick available Snipcart JS API properties from module config for API output
         $snipcartAPI = array();
         foreach ($this->getSnipcartAPIproperties() as $key) {
-            if (isset($this->snipwireConfig[$key])) {
-                $snipcartAPI[$key] = $this->snipwireConfig[$key];
+            if (isset($this->snipwireConfig->$key)) {
+                $snipcartAPI[$key] = $this->snipwireConfig->$key;
             }
         }
 
@@ -219,7 +216,7 @@
 
         $out .= 'document.addEventListener("snipcart.ready",function() {' . PHP_EOL;
         $out .= 'Snipcart.api.cart.currency("' . $this->currency . '");' . PHP_EOL;
-        $out .= 'Snipcart.DEBUG = ' . ($this->snipwireConfig['snipcart_debug'] ? 'true' : 'false') . ';' . PHP_EOL;
+        $out .= 'Snipcart.DEBUG = ' . ($this->snipwireConfig->snipcart_debug ? 'true' : 'false') . ';' . PHP_EOL;
         $out .= '});' . PHP_EOL;
         $out .= '</script>' . PHP_EOL;
         $jsResources[] = $out;
@@ -326,7 +323,7 @@
         }
         $out .= ' data-item-taxable="' . $taxable . '"';
 
-        if (isset($this->snipwireConfig['taxes_included']) && $this->snipwireConfig['taxes_included']) {
+        if ($this->snipwireConfig->taxes_included) {
             $out .= ' data-item-has-taxes-included="true"';
         }
 
@@ -354,10 +351,10 @@
         if ($product->template != self::snipcartProductTemplate) return '';
         
         if (empty($snipwireConfig)) $snipwireConfig = $this->snipwireConfig;
-        if (!$product->hasField($snipwireConfig['data_item_name_field']) || empty($product->{$snipwireConfig['data_item_name_field']})) {
+        if (!$product->hasField($snipwireConfig->data_item_name_field) || empty($product->{$snipwireConfig->data_item_name_field})) {
             $productName = $product->title;
         } else {
-            $productName = $product->{$snipwireConfig['data_item_name_field']};
+            $productName = $product->{$snipwireConfig->data_item_name_field};
         }
         return $productName;
     }
@@ -376,8 +373,8 @@
         if ($product->template != self::snipcartProductTemplate) return '';
 
         if (empty($snipwireConfig)) $snipwireConfig = $this->snipwireConfig;
-        if ($snipwireConfig['single_page_shop']) {
-            $productUrl = $this->wire('pages')->get($snipwireConfig['single_page_shop_page'])->httpUrl;
+        if ($snipwireConfig->single_page_shop) {
+            $productUrl = $this->wire('pages')->get($snipwireConfig->single_page_shop_page)->httpUrl;
         } else {
             $productUrl = $product->httpUrl;
         }
@@ -402,7 +399,7 @@
         if ($product->template != self::snipcartProductTemplate) return '';
         
         if (empty($snipwireConfig) || !is_array($snipwireConfig)) {
-            $currencies = $this->snipwireConfig['currencies'];
+            $currencies = $this->snipwireConfig->currencies;
         } else {
             $currencies = $snipwireConfig['currencies'];
         }
