@@ -141,12 +141,14 @@ class SnipWireConfig extends ModuleConfig {
         );
         
         $stepsCounter = count($steps);
+        $doneCounter = 0;
         
         if ($stepsCounter) {
             // Check which steps are already done and add flag
             $snipwireConfig = $modules->getConfig('SnipWire');
             for ($i = 0; $i < count($steps); $i++) {
-                $steps[$i]['done'] = (isset($snipwireConfig[$steps[$i]['name']]) && $snipwireConfig[$steps[$i]['name']]) ? true : false;;
+                $steps[$i]['done'] = (isset($snipwireConfig[$steps[$i]['name']]) && $snipwireConfig[$steps[$i]['name']]) ? true : false;
+                if ($steps[$i]['done']) $doneCounter += 1;
             }
 
             /** @var InputfieldMarkup $f */
@@ -159,6 +161,7 @@ class SnipWireConfig extends ModuleConfig {
                 $f->value .= $this->renderStep($step);
             }
             $f->value .= '</ul>';
+            $f->collapsed = $stepsCounter == $doneCounter ? Inputfield::collapsedYes : Inputfield::collapsedNo;
             
             $inputfields->add($f);
         }
