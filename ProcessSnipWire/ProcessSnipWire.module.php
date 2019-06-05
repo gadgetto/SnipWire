@@ -193,17 +193,6 @@ class ProcessSnipWire extends Process implements Module {
 
         $wrapper->add($btn);
 
-        if ($user->isSuperuser()) {
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = 'settings/';
-            $btn->value = $this->_('Settings');
-            $btn->icon = 'gear';
-            $btn->setSecondary(true);
-        
-            $wrapper->add($btn);
-        }
-
         $out .= $wrapper->render();
 
         return $this->_wrapDashboardOutput($out);
