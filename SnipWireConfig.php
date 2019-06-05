@@ -232,14 +232,6 @@ class SnipWireConfig extends ModuleConfig {
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
-
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'single_page_shop'); 
-            $f->label = $this->_('Single-Page Shop');
-            $f->label2 = $this->_('This Snipcart shop runs on a single-page website');
-            $f->description = $this->_('For single-page shops, the data-item-url field of each product will be filled with the full URL to the selected page.');
-            $f->notes = $this->_('This tells the Snipcart crawler where to find your products to validate an order\'s integrity.');
             
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
@@ -683,6 +675,17 @@ class SnipWireConfig extends ModuleConfig {
                     $f->addOption($field->name, $field->name, array());
                 }
             }
+
+        $fsSnipWire->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'single_page_shop'); 
+            $f->label = $this->_('Single-Page Shop');
+            $f->label2 = $this->_('This Snipcart shop runs on a single-page website');
+            $f->description = $this->_('For single-page shops, the data-item-url field of each product will be filled with the full URL to the selected page.');
+            $f->notes = $this->_('This tells the Snipcart crawler where to find your products to validate an order\'s integrity.');
+            $f->columnWidth = 100;
 
         $fsSnipWire->add($f);
 
