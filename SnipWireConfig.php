@@ -139,13 +139,6 @@ class SnipWireConfig extends ModuleConfig {
             'icon2' => 'times-circle',
             'description' => $this->_('Contains product templates, files, fields and some demo pages required to build a Snipcart product catalogue. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled. These resources need to be removed manually!'),
         );
-        $steps[] = array(
-            'type' => 'link',
-            'name' => 'rest_test',
-            'url' => '../setup/snipwire/test-snipcart-rest-connection/?ret=' . $redirectUrl,
-            'prompt' => $this->_('Snipcart REST API connection test'),
-            'description' => $this->_('Follow this link to send a test request to the Snipcart REST API (you first need to enter a valid Secret API key in the settings below).'),
-        );
         
         $stepsCounter = count($steps);
         
@@ -244,6 +237,24 @@ class SnipWireConfig extends ModuleConfig {
             $f->label2 = $this->_('This Snipcart shop runs on a single-page website');
             $f->description = $this->_('For single-page shops, the data-item-url field of each product will be filled with the full URL to the selected page.');
             $f->notes = $this->_('This tells the Snipcart crawler where to find your products to validate an order\'s integrity.');
+            
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->id = 'rest_test';
+            $btn->href = '../setup/snipwire/test-snipcart-rest-connection/?ret=' . $redirectUrl;
+            $btn->value = $this->_('Connection Test');
+            $btn->icon = 'plug';
+            $btn->setSecondary(true);
+            $btn->set('small', true);
+
+            $connectionTestMarkup = $btn->render();
+            
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Snipcart REST API Connection Test');
+            $f->description = $this->_('SnipWire will send a test request to the Snipcart REST API. You can check if your secret API key for the selected environment is correct.');
+            $f->notes = $this->_('You first need to enter valid Secret API keys in the corresponding fields.');
+            $f->value = $connectionTestMarkup;
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
