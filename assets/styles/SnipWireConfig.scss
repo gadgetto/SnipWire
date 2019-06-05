@@ -9,6 +9,16 @@
  *
  */
 
+#pw-content-head {
+    
+    h1 {
+        display: inline-block;
+        background: url(../images/snipcart_processwire.svg) no-repeat left center;
+        background-size: auto 1.15em;
+        padding-left: 3.4em;
+    }
+}
+
 table#TaxesRepeater {
     width: 100%;
     border-collapse: collapse;
@@ -110,16 +120,24 @@ table#TaxesRepeater {
     border: 0;
 }
 
-// Theme dependant styles
+// Theme dependant style overrides (base styles are for AdminThemeUikit)
 
-.AdminThemeUikit {
-}
 .AdminThemeDefault {
     .Inputfield p.notes + .input-group {
         margin-top: 1em;
     }
 }
 .AdminThemeReno {
+    #headline {
+        
+        #title {
+            display: inline-block;
+            background: url(../images/snipcart_processwire.svg) no-repeat left center;
+            background-size: auto 1em;
+            padding-left: 3em;
+        }
+    }
+
     .Inputfield p.notes + .input-group {
         margin-top: 1em;
     }

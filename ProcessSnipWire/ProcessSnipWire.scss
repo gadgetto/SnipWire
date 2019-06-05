@@ -9,6 +9,16 @@
  *
  */
 
+#pw-content-head {
+    
+    h1 {
+        display: inline-block;
+        background: url(../assets/images/snipcart_processwire.svg) no-repeat left center;
+        background-size: auto 1.15em;
+        padding-left: 3.4em;
+    }
+}
+
 #SnipwireDashboard {
     clear: both;
     
@@ -137,6 +147,15 @@
     }
 }
 .AdminThemeReno {
+    #headline {
+        
+        #title {
+            display: inline-block;
+            background: url(../assets/images/snipcart_processwire.svg) no-repeat left center;
+            background-size: auto 1em;
+            padding-left: 3em;
+        }
+    }
 
 }
 
