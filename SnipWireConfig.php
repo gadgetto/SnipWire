@@ -224,8 +224,8 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldRadios');
             $f->attr('name', 'snipcart_environment');
             $f->label = $this->_('Snipcart Environment');
-            $f->description = $this->_('Snipcart offers two separate and totally isolated environments to allow a secure staging without affecting the live environment.');
-            $f->notes = $this->_('This changes the environment API key when including the Snipcart JS file in your template.');
+            $f->description = $this->_('Snipcart offers two separate isolated environments to allow a secure staging without affecting the live environment.');
+            $f->notes = $this->_('Changes the environment API key when including the Snipcart JS file in templates.');
             $f->optionColumns = 1;
             $f->addOption(0, 'TEST mode'); 
             $f->addOption(1, 'LIVE mode');
@@ -451,7 +451,7 @@ class SnipWireConfig extends ModuleConfig {
             /** @var InputfieldCheckbox $f */
             $f = $modules->get('InputfieldCheckbox');
             $f->attr('name', 'include_snipcart_css'); 
-            $f->label = $this->_('Include Snipcart CSS in Your Output');
+            $f->label = $this->_('Include Snipcart CSS');
             $f->label2 = $this->_('Include Snipcart CSS');
             $f->description = $this->_('Whether SnipWire should add the defined Snipcart stylesheet from the field below to your output or not. To change the Cart theme, you can also include your own stylesheet using one of your preferred methods. Check the [Snipcart Theme Repository](https://github.com/snipcart/snipcart-theme) on GitHub for more info.');
 
@@ -497,10 +497,10 @@ class SnipWireConfig extends ModuleConfig {
             /** @var InputfieldCheckbox $f */
             $f = $modules->get('InputfieldCheckbox');
             $f->attr('name', 'include_jquery'); 
-            $f->label = $this->_('Include jQuery in Your Output');
+            $f->label = $this->_('Include jQuery');
             $f->label2 = $this->_('Include jQuery');
             $f->description = $this->_('Whether SnipWire should add the jQuery library to your output or not. If jQuery is already included in your template, you should not include it twice, so you can uncheck this option.');
-            $f->notes = $this->_('Snipcart uses [jQuery](https://jquery.com/), so we need to make sure it is included in your output!');
+            $f->notes = $this->_('Snipcart uses [jQuery](https://jquery.com/), so you need to make sure it is included in your output!');
 
         $fsMarkup->add($f);
 
