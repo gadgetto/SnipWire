@@ -62,8 +62,15 @@ class Taxes {
      * 
      */
     public static function getFirstTax($json = false) {
-        $taxes = self::getTaxesConfig($json);
-        $firstTax = $taxes[0];
+        $taxes = self::getTaxesConfig();
+        foreach ($taxes as $tax) {
+            bd($tax);
+            // Exclude shipping taxes
+            if (!$tax['appliesOnShipping'][0]) {
+                $firstTax = $tax;
+                break;
+            }
+        }
         return ($json) ? wireEncodeJSON($firstTax, true) : $firstTax;
     }
 

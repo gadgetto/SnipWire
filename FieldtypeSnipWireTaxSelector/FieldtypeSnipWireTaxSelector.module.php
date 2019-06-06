@@ -95,11 +95,13 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
             'appliesOnShipping' => array(1),
         ),            
         */
-        //bd($taxes);
         foreach ($taxes as $tax) {
             $tax['attributes'] = array();
-            if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], array('selected'));
-            $inputfield->addOption($tax['name'], $tax['numberForInvoice'], $tax['attributes']);
+            // Exclude shipping taxes
+            if (!$tax['appliesOnShipping'][0]) {
+                if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], array('selected'));
+                $inputfield->addOption($tax['name'], $tax['numberForInvoice'], $tax['attributes']);
+            }
         }
         return $inputfield; 
     }
