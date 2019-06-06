@@ -333,7 +333,7 @@ class SnipWireConfig extends ModuleConfig {
             '<table id="TaxesRepeater">' .
                 '<thead>' .
                     '<tr>' .
-                        '<th class="col-sortable"></th>' .
+                        '<th></th>' .
                         '<th>' . $languageStrings['tax_name'] . '</th>' .
                         '<th>' . $languageStrings['number_for_invoice'] . '</th>' .
                         '<th>' . $languageStrings['rate'] . '</td>' .
@@ -350,25 +350,25 @@ class SnipWireConfig extends ModuleConfig {
                 '</tfoot>' .
                 '<tbody data-repeater-list="taxesgroup">' .
                     '<tr data-repeater-item>' .
-                        '<td class="col-sortable sortableIndicator">' .
-                             wireIconMarkup('arrows') .
+                        '<td class="col-action">' .
+                             '<span class="RepeaterSortableIndicator">' . wireIconMarkup('arrows') . '</span>' .
                         '</td>' .
-                        '<td>' .
+                        '<td class="col-data">' .
                             '<input type="text" class="uk-input InputfieldMaxWidth" name="name" placeholder="' . $languageStrings['tax_name_ph'] . '">' .
                         '</td>' .
-                        '<td>' .
+                        '<td class="col-data">' .
                             '<input type="text" class="uk-input InputfieldMaxWidth" name="numberForInvoice" placeholder="' . $languageStrings['number_for_invoice_ph'] . '">' .
                         '</td>' .
-                        '<td>' .
+                        '<td class="col-data">' .
                             '<input type="text" class="uk-input InputfieldMaxWidth" name="rate" pattern="[-+]?[0-9]*[.]?[0-9]+" placeholder="' . $languageStrings['rate_ph'] . '">' .
                         '</td>' .
-                        '<td class="col-btn">' .
-                            '<a class="RepeaterRemoveItem" role="button" title="' . $languageStrings['remove_tax_setting'] . '" data-repeater-delete>' . wireIconMarkup('trash-o', 'lg') . '</a>' .
                         '<td class="col-data">' .
                             '<label class="inline-checkbox">' .
                                 '<input type="checkbox" class="uk-checkbox" name="appliesOnShipping" value="1">' .
                             '</label>' .
                         '</td>' .
+                        '<td class="col-action">' .
+                            '<a class="RepeaterRemoveItem" role="button" title="' . $languageStrings['remove_tax_setting'] . '" data-repeater-delete>' . wireIconMarkup('trash-o') . '</a>' .
                         '</td>' .
                     '</tr>' .
                 '</tbody>' .

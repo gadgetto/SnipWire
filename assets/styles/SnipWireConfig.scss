@@ -25,26 +25,58 @@ table#TaxesRepeater {
     border-spacing: 0;
     border: none;
     
-    th, td {
-        padding-right: 10px;
-        padding-bottom: 10px;
+    th, th:empty {
+        padding: 0 10px 10px 0;
         border: none;
+        font-weight: bold;
+    }
+    td {
+        padding: 0;
     }
     th:last-child, td:last-child {
         padding-right: 0;
     }
-    .col-btn, .col-btn:empty {
-        width: 1.5em;
+    .col-action, .col-action:empty {
+        width: 1.6em;
     }
-    .col-sortable, .col-sortable:empty {
-        width: 1.5em;
-        color: #afafaf;
+    .col-action:first-child {
+        text-align: left;
     }
-    .sortableIndicator {
+    .col-action:last-child {
+        text-align: right;
+    }
+    .col-data {
+        border: 1px solid #cbd7e3;
+        background: #f0f3f7;
+    }
+    tfoot td {
+        padding-top: 10px;
+    }
+    td input[type=text] {
+        border: none;
+        height: 40px;
+        
+        &:focus {
+            background-color: #f8f9fc;
+        }
+    }
+    label.inline-checkbox {
+        display: block;
+        vertical-align: middle;
+        line-height: 40px;
+        padding: 0 10px;
+        font-size: .875rem;
+        
+        .uk-checkbox {
+            margin-right: 0.5em;
+        }
+        .uk-checkbox:not(:checked) {
+            background-color: #fff;
+        }
+    }
+    .RepeaterSortableIndicator {
         cursor: move;
-    }
-    .repeater-group {
-        margin-bottom: 10px;
+        color: #bbbbbb;
     }
     .RepeaterAddItem {
         padding: 1px 3px;
@@ -60,6 +92,9 @@ table#TaxesRepeater {
     }
     .RepeaterRemoveItem {
         cursor: pointer;
+    }
+    .fa {
+        font-size: 1.1em !important;
     }
 }
 
@@ -123,6 +158,13 @@ table#TaxesRepeater {
 // Theme dependant style overrides (base styles are for AdminThemeUikit)
 
 .AdminThemeDefault {
+    table#TaxesRepeater {
+
+        .col-data {
+            background: #f7f9fa;
+        }
+    }
+    
     .Inputfield p.notes + .input-group {
         margin-top: 1em;
     }
