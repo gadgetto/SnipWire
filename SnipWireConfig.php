@@ -317,6 +317,7 @@ class SnipWireConfig extends ModuleConfig {
                 'tax_name' => $this->_('Tax name (ID)'),
                 'number_for_invoice' => $this->_('Name for Invoice'),
                 'rate' => $this->_('Rate'),
+                'applies_on_shipping' => $this->_('Shipping'),
                 'tax_name_ph' => $this->_('e.g. vat_20'),
                 'number_for_invoice_ph' => $this->_('e.g. 20% VAT'),
                 'rate_ph' => $this->_('e.g. 0.20'),
@@ -336,12 +337,13 @@ class SnipWireConfig extends ModuleConfig {
                         '<th>' . $languageStrings['tax_name'] . '</th>' .
                         '<th>' . $languageStrings['number_for_invoice'] . '</th>' .
                         '<th>' . $languageStrings['rate'] . '</td>' .
-                        '<th class="col-btn"></th>' .
+                        '<th>' .$languageStrings['applies_on_shipping'] .'</td>' .
+                        '<th></th>' .
                     '</tr>' .
                 '</thead>' .
                 '<tfoot>' .
                     '<tr>' .
-                        '<td colspan="5">' .
+                        '<td colspan="6">' .
                             '<a class="RepeaterAddItem" data-repeater-create>' . $languageStrings['add_tax_setting'] . '</a>' .
                         '</td>' .
                     '</tr>' .
@@ -362,6 +364,11 @@ class SnipWireConfig extends ModuleConfig {
                         '</td>' .
                         '<td class="col-btn">' .
                             '<a class="RepeaterRemoveItem" role="button" title="' . $languageStrings['remove_tax_setting'] . '" data-repeater-delete>' . wireIconMarkup('trash-o', 'lg') . '</a>' .
+                        '<td class="col-data">' .
+                            '<label class="inline-checkbox">' .
+                                '<input type="checkbox" class="uk-checkbox" name="appliesOnShipping" value="1">' .
+                            '</label>' .
+                        '</td>' .
                         '</td>' .
                     '</tr>' .
                 '</tbody>' .

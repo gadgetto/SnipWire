@@ -29,6 +29,7 @@ class Taxes {
                 'name' => 'vat_20',
                 'numberForInvoice' => '20% VAT',
                 'rate' => '0.20',
+                'appliesOnShipping' => false,
             )
         );
         return ($json) ? wireEncodeJSON($defaultTaxes, true) : $defaultTaxes;
