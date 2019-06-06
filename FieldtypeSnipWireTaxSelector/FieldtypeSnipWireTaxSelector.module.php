@@ -83,17 +83,17 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         Sample array:
         
         array(
-            array(
-                'name' => 'vat_20',
-                'numberForInvoice' => '20% VAT',
-                'rate' => '0.20',
-            ),
-            array(
-                'name' => 'vat_10',
-                'numberForInvoice' => '10% VAT',
-                'rate' => '0.10',
-            ),
-        );
+            'name' => 'vat_20',
+            'numberForInvoice' => '20% VAT',
+            'rate' => '0.20',
+            'appliesOnShipping' => array(0),
+        ),
+        array(
+            'name' => 'shipping_10',
+            'numberForInvoice' => '10% VAT (Shipping)',
+            'rate' => '0.10',
+            'appliesOnShipping' => array(1),
+        ),            
         */
         //bd($taxes);
         foreach ($taxes as $tax) {
