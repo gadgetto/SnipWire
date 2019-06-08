@@ -15,6 +15,10 @@
  */
 
 class Taxes {
+    
+    const taxesTypeProducts = 1;
+    const taxesTypeShipping = 2;
+    const taxesTypeAll = 3;
 
     /**
      * Get the default taxes definition.
@@ -29,13 +33,13 @@ class Taxes {
                 'name' => 'vat_20',
                 'numberForInvoice' => '20% VAT',
                 'rate' => '0.20',
-                'appliesOnShipping' => array(0),
+                'appliesOnShipping' => array(), // empty array --> taxesTypeProducts
             ),
              array(
                 'name' => 'shipping_10',
                 'numberForInvoice' => '10% VAT (Shipping)',
                 'rate' => '0.10',
-                'appliesOnShipping' => array(1),
+                'appliesOnShipping' => array(1) // array value = 1 --> taxesTypeShipping
             ),            
        );
         return ($json) ? wireEncodeJSON($defaultTaxes, true) : $defaultTaxes;
@@ -45,31 +49,44 @@ class Taxes {
      * Get the taxes definition from module config.
      *
      * @param boolean $json Wether to return as JSON formatted string and not array
+     * @param integer $type The taxes type (product = 1, shipping = 2, all = 3) [default: taxesTypeAll]
      * @return array|string String of JSON data
      * 
      */
-    public static function getTaxesConfig($json = false) {
+    public static function getTaxesConfig($json = false, $type = self::taxesTypeAll) {
         $taxes = wire('modules')->getConfig('SnipWire', 'taxes'); // JSON string
-        if (!$taxes) $taxes = self::getDefaultTaxesConfig(true); // JSON string
-        return ($json) ? $taxes : wireDecodeJSON($taxes);
+        $taxes = wireDecodeJSON($taxes);
+        if (!$taxes) $taxes = self::getDefaultTaxesConfig();
+        
+        $selectedTaxes = array();
+        // Filter taxes based on type if necessary
+        if ($type == self::taxesTypeProducts) {
+            foreach ($taxes as $tax) {
+                if (empty($tax['appliesOnShipping'])) $selectedTaxes[] = $tax;
+            }
+        } elseif ($type == self::taxesTypeShipping) {
+            foreach ($taxes as $tax) {
+                if (isset($tax['appliesOnShipping'][0])) $selectedTaxes[] = $tax;
+            }
+        } else {
+            $selectedTaxes = $taxes;
+        }
+        return ($json) ? wireEncodeJSON($selectedTaxes, true) : $selectedTaxes;
     }
 
     /**
      * Get the first tax definition from module config.
      *
      * @param boolean $json Wether to return as JSON formatted string and not array
+     * @param integer $type The taxes type (product = 1, shipping = 2, all = 3) [default: taxesTypeAll]
      * @return array|string String of JSON data
      * 
      */
-    public static function getFirstTax($json = false) {
-        $taxes = self::getTaxesConfig();
+    public static function getFirstTax($json = false, $type = self::taxesTypeAll) {
+        $taxes = self::getTaxesConfig(false, $type);
         foreach ($taxes as $tax) {
-            bd($tax);
-            // Exclude shipping taxes
-            if (!$tax['appliesOnShipping'][0]) {
-                $firstTax = $tax;
-                break;
-            }
+            $firstTax = $tax;
+            break;
         }
         return ($json) ? wireEncodeJSON($firstTax, true) : $firstTax;
     }
