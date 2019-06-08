@@ -1,8 +1,8 @@
 <?php  namespace ProcessWire;
 
 /**
- * FieldtypeSnipWireTaxSelector - Special Fieldtype which fetches available taxes setting 
- * from SnipWire module config and builds a dropdown list.
+ * FieldtypeSnipWireTaxSelector - Special (internal SnipWire) Fieldtype which fetches 
+ * available taxes setting from SnipWire module config and builds a dropdown list.
  * (This file is part of the SnipWire package)
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
