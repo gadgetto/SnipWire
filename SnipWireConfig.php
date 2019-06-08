@@ -83,7 +83,7 @@ class SnipWireConfig extends ModuleConfig {
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
-            'taxes' => Taxes::getDefaultTaxesConfig(true),
+            'taxes' => Taxes::getDefaultTaxesConfig(true), // JSON
             'taxes_included' => 1,
             'snipcart_debug' => 1,
             'include_snipcart_css' => 1,
