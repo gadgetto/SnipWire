@@ -182,7 +182,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      */
     public function presetTax(HookEvent $event) {
         if ($event->object->name == 'snipcart_item_taxes' && $event->object->value == '') {
-            $defaultTax = Taxes::getFirstTax();
+            $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
             $event->object->set('value', $defaultTax['name']);
         }
     }
