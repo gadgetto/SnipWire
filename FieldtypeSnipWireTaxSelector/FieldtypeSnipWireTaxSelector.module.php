@@ -73,11 +73,14 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
     public function getInputfield(Page $page, Field $field) {
         $inputfieldClass = $field->get('inputfieldClass'); 
         if (!$inputfieldClass) $inputfieldClass = 'InputfieldSelect';
-        
+
+        $taxesType = $field->get('taxesType');
+        if (!$taxesType) $taxesType = Taxes::taxesTypeAll;
+
         $inputfield = $this->wire('modules')->get($inputfieldClass);
         if (!$inputfield) $inputfield = $this->wire('modules')->get('InputfieldSelect'); 
         
-        $taxes = Taxes::getTaxesConfig();
+        $taxes = Taxes::getTaxesConfig(false, $taxesType);
 
         /*
         Sample array:
@@ -97,11 +100,8 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         */
         foreach ($taxes as $tax) {
             $tax['attributes'] = array();
-            // Exclude shipping taxes
-            if (!$tax['appliesOnShipping'][0]) {
-                if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], array('selected'));
-                $inputfield->addOption($tax['name'], $tax['numberForInvoice'], $tax['attributes']);
-            }
+            if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], array('selected'));
+            $inputfield->addOption($tax['name'], $tax['numberForInvoice'], $tax['attributes']);
         }
         return $inputfield; 
     }
@@ -141,7 +141,20 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         $f->attr('value', $value);
         
         $inputfields->add($f);
+        
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->attr('name', 'taxesType');
+        $f->label = $this->_('Which type of taxes should be listed as options?');
+        $f->addOption(Taxes::taxesTypeProducts, $this->_('Product taxes'));
+        $f->addOption(Taxes::taxesTypeShipping, $this->_('Shipping taxes'));
+        $f->addOption(Taxes::taxesTypeAll, $this->_('All types'));
+        $value = $field->get('taxesType');
+        if (!$value) $value = Taxes::taxesTypeProducts;
+        $f->attr('value', $value);
 
+        $inputfields->add($f);
+        
         return $inputfields;
     }
 }
