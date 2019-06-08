@@ -115,6 +115,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
 
         $modules = $this->wire('modules');
         
+        /** @var InputfieldSelect $f */
         $f = $modules->get('InputfieldSelect');
         $f->attr('name', 'inputfieldClass');
         $f->label = $this->_('What should be used for input?');
