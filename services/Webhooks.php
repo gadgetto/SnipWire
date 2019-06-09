@@ -100,7 +100,7 @@ class Webhooks extends WireData {
 		header($this->serverProtocol . ' ' . $sniprest->getHttpStatusCodeString($responseCode));
 		
 		// debug
-		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request success: responseCode = ' . $responseCode);
+		$this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: response = ' . print_r($response, true));
 	}
 
 	/**
