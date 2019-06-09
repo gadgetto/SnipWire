@@ -49,9 +49,6 @@ class Webhooks extends WireData {
 	/** @var array $payload The current JSON decoded POST input */
 	protected $payload = null;
 	
-	/** @var string (Json) $response The Json response for Snipcart */
-	protected $response = '';
-	
 	/**
 	 * Set custom error and exception handlers.
 	 *
