@@ -46,8 +46,8 @@ class Webhooks extends WireData {
 	/** @var string $event The current Snipcart event */
 	protected $event = '';
 	
-	/** @var array $body The current Json decoded POST input */
-	protected $body = null;
+	/** @var array $payload The current JSON decoded POST input */
+	protected $payload = null;
 	
 	/** @var string (Json) $response The Json response for Snipcart */
 	protected $response = '';
@@ -169,51 +169,51 @@ class Webhooks extends WireData {
 	}
 
 	/**
-	 * Check if request has valid data and set $body and $event class properties if OK.
+	 * Check if request has valid data and set $payload and $event class properties if OK.
 	 *
 	 * @return boolean
 	 *
 	 */
 	private function _hasValidRequestData() {
 		$log = $this->wire('log');
-		$rawBody = file_get_contents('php://input');
-		$body = json_decode($rawBody, true);
+		$rawPayload = file_get_contents('php://input');
+		$payload = json_decode($rawPayload, true);
 		
 		// Perform multiple checks for valid request data
 		$check = false;
-		if (is_null($body) || !is_array($body)) {
+		if (is_null($payload) || !is_array($payload)) {
             $log->save(
                 self::snipWireWebhooksLogName, 
 			    'Webhooks request: invalid request data - not an array'
             );
         
-		} elseif (!isset($body['eventName'])) {
+		} elseif (!isset($payload['eventName'])) {
 			$log->save(
                 self::snipWireWebhooksLogName,
                 'Webhooks request: invalid request data - key eventName missing'
             );
             
-		} elseif (!array_key_exists($body['eventName'], $this->webhookEventsIndex)) {
+		} elseif (!array_key_exists($payload['eventName'], $this->webhookEventsIndex)) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 'Webhooks request: invalid request data - unknown event'
             );
             
-		} elseif (!isset($body['mode']) || !in_array($body['mode'], array(self::webhookModeLive, self::webhookModeTest))) {
+		} elseif (!isset($payload['mode']) || !in_array($payload['mode'], array(self::webhookModeLive, self::webhookModeTest))) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 'Webhooks request: invalid request data - wrong or missing mode'
             );
             
-		} elseif (!isset($body['content'])) {
+		} elseif (!isset($payload['content'])) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 'Webhooks request: invalid request data - missing content'
             );
             
 		} else {
-    		$this->event = $body['eventName'];
-    		$this->body = $body;
+    		$this->event = $payload['eventName'];
+    		$this->payload = $payload;
     		$check = true;
 		}
 		return $check;
