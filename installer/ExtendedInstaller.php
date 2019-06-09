@@ -172,6 +172,7 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
                     if (isset($item['pattern'])) $f->pattern = $item['pattern'];
                     if (isset($item['tags'])) $f->tags = $item['tags'];
+                    if (isset($item['taxesType'])) $f->taxesType = $item['taxesType'];
                     $f->save();
                     $this->message($this->_('Installed Field: ') . $item['name']);
                 } else {
