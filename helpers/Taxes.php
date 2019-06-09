@@ -60,13 +60,14 @@ class Taxes {
         
         $selectedTaxes = array();
         // Filter taxes based on type if necessary
+        // (Special handling is required because jquery.repeater checkbox values are always arrays)
         if ($type == self::taxesTypeProducts) {
             foreach ($taxes as $tax) {
-                if (empty($tax['appliesOnShipping'])) $selectedTaxes[] = $tax;
+                if (empty($tax['appliesOnShipping'][0])) $selectedTaxes[] = $tax;
             }
         } elseif ($type == self::taxesTypeShipping) {
             foreach ($taxes as $tax) {
-                if (isset($tax['appliesOnShipping'][0])) $selectedTaxes[] = $tax;
+                if (!empty($tax['appliesOnShipping'][0])) $selectedTaxes[] = $tax;
             }
         } else {
             $selectedTaxes = $taxes;
