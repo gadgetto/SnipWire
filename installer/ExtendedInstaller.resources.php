@@ -65,7 +65,7 @@ $resources = array(
     - data-item-max-quantity: integer (Maximum allowed quantity of product)
     - data-item-min-quantity: integer (Minimum allowed quantity for product)
     - data-item-taxable: boolean (Set to false to exclude item from the taxes calculation. Default value is true.)
-    data-item-taxes: 
+    - data-item-taxes: string (Using this option, you can define which tax will be applied on this product)
     data-item-metadata: json-object (Example usage: data-item-metadata='{"key": "value"}')
     data-item-file-guid: 
     data-item-payment-interval: 

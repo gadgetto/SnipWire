@@ -328,6 +328,11 @@
             $out .= ' data-item-has-taxes-included="true"';
         }
 
+        // Only a single tax per product for now (Snipcart supports multiple taxes per product)
+        if ($product->snipcart_item_taxes) {
+            $out .= ' data-item-taxes="' . $product->snipcart_item_taxes . '"';
+        }
+
         // @todo: add more data-item-* properties
 
         $out .= '>';
