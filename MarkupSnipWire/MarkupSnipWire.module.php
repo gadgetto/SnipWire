@@ -323,6 +323,7 @@
         }
         $out .= ' data-item-taxable="' . $taxable . '"';
 
+        // This is a global property and is set for all products in SnipWire config editor
         if ($this->snipwireConfig->taxes_included) {
             $out .= ' data-item-has-taxes-included="true"';
         }
