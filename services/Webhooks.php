@@ -314,18 +314,18 @@ class Webhooks extends WireData {
         $responseBody = array(
             'taxes' => array(
                 array(
-                    'name' => 'vat_20',
+                    'name' => '20% VAT',
                     'amount' => 29.50,
                     'rate' => 0.20,
-                    'numberForInvoice' => '20% VAT',
+                    'numberForInvoice' => '',
                     'includedInPrice' => true,
                     'appliesOnShipping' => false,
                 ),
                 array(
-                    'name' => 'shipping_10',
+                    'name' => '10% VAT (Shipping)',
                     'amount' => 7.00,
                     'rate' => 0.10,
-                    'numberForInvoice' => '10% VAT (Shipping)',
+                    'numberForInvoice' => '',
                     'includedInPrice' => true,
                     'appliesOnShipping' => true,
                 ),
