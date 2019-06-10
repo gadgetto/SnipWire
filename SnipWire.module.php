@@ -79,9 +79,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         /** @var SnipREST $sniprest Custom ProcessWire API variable */
         $this->wire('sniprest', new SnipREST());
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
-        $this->addHookBefore('Inputfield(name=snipcart_item_id)::render', $this, 'presetSKU');
-        $this->addHookBefore('Inputfield(name=snipcart_item_taxes)::render', $this, 'presetTax');
-        $this->addHookAfter('Pages::added', $this, 'presetTaxable');
+        $this->addHookAfter('Pages::added', $this, 'presetProductFields');
         $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
     }
 
@@ -166,40 +164,21 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
     /**
      * Preset value of field snipcart_item_id (SKU) with page ID.
-     * (Method triggered before Inputfield render)
-     *
-     */
-    public function presetSKU(HookEvent $event) {
-        if ($event->object->name == 'snipcart_item_id' && $event->object->value == '') {
-            $event->object->set('value', $this->input->get->id);
-        }
-    }
-    
-    /**
      * Preset value of field snipcart_item_taxes (VAT) with first element of taxes config.
-     * (Method triggered before Inputfield render)
-     *
-     */
-    public function presetTax(HookEvent $event) {
-        $field = $event->object;
-        if ($field->name == 'snipcart_item_taxes' && $field->value == '') {
-            $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
-            $field->set('value', $defaultTax['name']);
-        }
-    }
-    
-    /**
      * Preset value of checkbox field snipcart_item_taxable so it's checked by default.
-     * (Method triggered after Pagers added)
+     * (Method triggered after Pages added)
      *
      */
-    public function presetTaxable(HookEvent $event) {
+    public function presetProductFields(HookEvent $event) {
         $page = $event->arguments(0);
         if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
+            $page->setAndSave('snipcart_item_id', $page->id);
+            $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
+            $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
             $page->setAndSave('snipcart_item_taxable', 1);
         }
     }
-    
+
     /**
      * Called on module uninstall
      *
