@@ -152,7 +152,10 @@ class ExtendedInstaller extends Wire {
             foreach ($this->resources['fields'] as $item) {
                 if (!$fields->get($item['name'])) {
                     $f = new Field();
-                    $f->type = $modules->get($item['type']);
+                    if (!$f->type = $modules->get($item['type'])) {
+                        $this->message(sprintf($this->_("Field [%s] could not be installed. Fieldtype [%s] not available. Skipped installation."), $item['name'], $item['type']));
+                        continue;
+                    }
                     $f->name = $item['name'];
                     $f->label = $item['label'];
                     if (isset($item['label2'])) $f->label2 = $item['label2'];
