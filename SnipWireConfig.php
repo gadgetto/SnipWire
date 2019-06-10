@@ -368,7 +368,7 @@ class SnipWireConfig extends ModuleConfig {
                             '</label>' .
                         '</td>' .
                         '<td class="col-action">' .
-                            '<a class="RepeaterRemoveItem" role="button" title="' . $languageStrings['remove_tax_setting'] . '" data-repeater-delete>' . wireIconMarkup('trash-o') . '</a>' .
+                            '<button type="button" class="RepeaterRemoveItem" title="' . $languageStrings['remove_tax_setting'] . '" data-repeater-delete>' . wireIconMarkup('trash-o') . '</button>' .
                         '</td>' .
                     '</tr>' .
                 '</tbody>' .
