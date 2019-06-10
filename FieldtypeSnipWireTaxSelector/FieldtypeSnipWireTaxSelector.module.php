@@ -85,23 +85,23 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         /*
         Sample array:
         
-		array(
-			'name' => 'vat_20',
-			'numberForInvoice' => '20% VAT',
-			'rate' => '0.20',
-			'appliesOnShipping' => array(), // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
-		),
-		 array(
-			'name' => 'shipping_10',
-			'numberForInvoice' => '10% VAT (Shipping)',
-			'rate' => '0.10',
-			'appliesOnShipping' => array(1) // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
-		),			  
+        array(
+            'name' => '20% VAT',
+            'numberForInvoice' => '',
+            'rate' => '0.20',
+            'appliesOnShipping' => array(), // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
+        ),
+         array(
+            'name' => '10% VAT (Shipping)',
+            'numberForInvoice' => '',
+            'rate' => '0.10',
+            'appliesOnShipping' => array(1) // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
+        ),            
         */
         foreach ($taxes as $tax) {
             $tax['attributes'] = array();
             if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], array('selected'));
-            $inputfield->addOption($tax['name'], $tax['numberForInvoice'], $tax['attributes']);
+            $inputfield->addOption($tax['name'], $tax['name'], $tax['attributes']);
         }
         return $inputfield; 
     }

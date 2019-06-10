@@ -30,14 +30,14 @@ class Taxes {
     public static function getDefaultTaxesConfig($json = false) {
         $defaultTaxes = array(
             array(
-                'name' => 'vat_20',
-                'numberForInvoice' => '20% VAT',
+                'name' => '20% VAT',
+                'numberForInvoice' => '',
                 'rate' => '0.20',
                 'appliesOnShipping' => array(), // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
             ),
              array(
-                'name' => 'shipping_10',
-                'numberForInvoice' => '10% VAT (Shipping)',
+                'name' => '10% VAT (Shipping)',
+                'numberForInvoice' => '',
                 'rate' => '0.10',
                 'appliesOnShipping' => array(1) // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
             ),            

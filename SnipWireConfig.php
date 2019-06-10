@@ -314,12 +314,12 @@ class SnipWireConfig extends ModuleConfig {
         $fsAPI->add($f);
             
             $languageStrings = array(
-                'tax_name' => $this->_('Tax name (ID)'),
-                'number_for_invoice' => $this->_('Name for Invoice'),
+                'tax_name' => $this->_('Tax name'),
+                'number_for_invoice' => $this->_('Number for Invoice'),
                 'rate' => $this->_('Rate'),
                 'applies_on_shipping' => $this->_('Shipping'),
-                'tax_name_ph' => $this->_('e.g. vat_20'),
-                'number_for_invoice_ph' => $this->_('e.g. 20% VAT'),
+                'tax_name_ph' => $this->_('e.g. 20% VAT'),
+                'number_for_invoice_ph' => $this->_('Opt. tax  number'),
                 'rate_ph' => $this->_('e.g. 0.20'),
                 'remove_tax_setting' => $this->_('Remove tax setting'),
                 'add_tax_setting' => $this->_('Add tax setting'),
