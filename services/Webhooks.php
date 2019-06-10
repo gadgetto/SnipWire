@@ -38,7 +38,7 @@ class Webhooks extends WireData {
     const webhookModeTest = 'Test';
 
     /** @var boolean Turn on/off debug mode for Webhooks class */
-    private $debug = false;
+    private $debug = true;
     
     /** @var string $serverProtocol The server protocol (e.g. HTTP/1.1) */
     protected $serverProtocol = '';
