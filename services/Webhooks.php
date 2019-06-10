@@ -37,6 +37,9 @@ class Webhooks extends WireData {
     const webhookModeLive = 'Live';
     const webhookModeTest = 'Test';
 
+    /** @var boolean Turn on/off debug mode for Webhooks class */
+    private $debug = false;
+    
     /** @var string $serverProtocol The server protocol (e.g. HTTP/1.1) */
     protected $serverProtocol = '';
     
@@ -108,9 +111,10 @@ class Webhooks extends WireData {
             echo $this->responseBody;
         }
         
-        // debug
-        $this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: responseCode = ' . $this->responseStatus);
-        $this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: responseBody = ' . $this->responseBody);
+        if ($this->debug) {
+            $this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: responseCode = ' . $this->responseStatus);
+            $this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: responseBody = ' . $this->responseBody);
+        }
     }
 
     /**
