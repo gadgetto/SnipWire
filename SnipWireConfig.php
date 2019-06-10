@@ -378,7 +378,7 @@ class SnipWireConfig extends ModuleConfig {
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Taxes Configuration');
-            $f->description = $this->_('Define the tax rates to be used by the Snipcart shop-system. While processing an order, Snipcart will send a Webhook request to your server and SnipWire will return the applicable taxes.');
+            $f->description = $this->_('SnipWire provides it\'s own taxes provider. You first need to configure the taxes provider webhook in [Snipcart Dashboard > Taxes](https://app.snipcart.com/dashboard/taxes). After that, define the tax rates here to be used by the Snipcart shop-system. While processing an order, Snipcart will send a Webhook request to your server and SnipWire will return the applicable taxes.');
             $f->notes = $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed. The first set in the list will be used by all products as default tax.');
             $f->value = $taxesRepeaterMarkup;
             $f->columnWidth = 100;
