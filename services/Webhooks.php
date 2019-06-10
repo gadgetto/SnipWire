@@ -101,7 +101,6 @@ class Webhooks extends WireData {
             header($this->serverProtocol . ' ' . $sniprest->getHttpStatusCodeString(400));
             return;
         }
-        // The response array for Snipcart (sample: 'code'=> 202, 'body' => '{...JSON...}')
         $response = $this->_handleWebhookData();
         header($this->serverProtocol . ' ' . $sniprest->getHttpStatusCodeString($this->responseStatus));
         if (!empty($this->responseBody)) {
