@@ -297,7 +297,31 @@ class Webhooks extends WireData {
 
 	public function ___handleTaxesCalculate() {
 		$this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleTaxesCalculate');
-		return 200; // OK
+        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+        
+        $responseBody = array(
+            'taxes' => array(
+                array(
+                    'name' => 'vat_20',
+                    'amount' => 29.50,
+                    'rate' => 0.20,
+                    'numberForInvoice' => '20% VAT',
+                    'includedInPrice' => true,
+                    'appliesOnShipping' => false,
+                ),
+                array(
+                    'name' => 'shipping_10',
+                    'amount' => 7.00,
+                    'rate' => 0.10,
+                    'numberForInvoice' => '10% VAT (Shipping)',
+                    'includedInPrice' => true,
+                    'appliesOnShipping' => true,
+                ),
+            ),
+        );
+        
+        $this->responseCode = 202; // Accepted
+        $this->responseBody = wireEncodeJSON($responseBody, true);
 	}
 
 	public function ___handleCustomerUpdated() {
