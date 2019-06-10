@@ -351,7 +351,7 @@ class SnipWireConfig extends ModuleConfig {
                 '</tfoot>' .
                 '<tbody data-repeater-list="taxesgroup">' .
                     '<tr data-repeater-item>' .
-                        '<td class="col-action">' .
+                        '<td class="col-action">' . // @todo make drag&drop accessible!
                              '<span role="button" aria-label="' . $languageStrings['sort_drag_drop'] . '" class="RepeaterSortableIndicator">' . wireIconMarkup('arrows') . '</span>' .
                         '</td>' .
                         '<td class="col-data">' .
