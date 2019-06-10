@@ -321,6 +321,7 @@ class SnipWireConfig extends ModuleConfig {
                 'tax_name_ph' => $this->_('e.g. 20% VAT'),
                 'number_for_invoice_ph' => $this->_('Opt. tax  number'),
                 'rate_ph' => $this->_('e.g. 0.20'),
+                'sort_drag_drop' => $this->_('Sort by dragging and dropping'),
                 'remove_tax_setting' => $this->_('Remove tax setting'),
                 'add_tax_setting' => $this->_('Add tax setting'),
                 'js' => array(
@@ -351,20 +352,20 @@ class SnipWireConfig extends ModuleConfig {
                 '<tbody data-repeater-list="taxesgroup">' .
                     '<tr data-repeater-item>' .
                         '<td class="col-action">' .
-                             '<span class="RepeaterSortableIndicator">' . wireIconMarkup('arrows') . '</span>' .
+                             '<span role="button" aria-label="' . $languageStrings['sort_drag_drop'] . '" class="RepeaterSortableIndicator">' . wireIconMarkup('arrows') . '</span>' .
                         '</td>' .
                         '<td class="col-data">' .
-                            '<input type="text" class="uk-input InputfieldMaxWidth" name="name" placeholder="' . $languageStrings['tax_name_ph'] . '">' .
+                            '<input type="text" aria-label="' . $languageStrings['tax_name'] . '" class="uk-input InputfieldMaxWidth" name="name" placeholder="' . $languageStrings['tax_name_ph'] . '">' .
                         '</td>' .
                         '<td class="col-data">' .
-                            '<input type="text" class="uk-input InputfieldMaxWidth" name="numberForInvoice" placeholder="' . $languageStrings['number_for_invoice_ph'] . '">' .
+                            '<input type="text" aria-label="' . $languageStrings['number_for_invoice'] . '" class="uk-input InputfieldMaxWidth" name="numberForInvoice" placeholder="' . $languageStrings['number_for_invoice_ph'] . '">' .
                         '</td>' .
                         '<td class="col-data">' .
-                            '<input type="text" class="uk-input InputfieldMaxWidth" name="rate" pattern="[-+]?[0-9]*[.]?[0-9]+" placeholder="' . $languageStrings['rate_ph'] . '">' .
+                            '<input type="text" aria-label="' . $languageStrings['rate'] . '" class="uk-input InputfieldMaxWidth" name="rate" pattern="[-+]?[0-9]*[.]?[0-9]+" placeholder="' . $languageStrings['rate_ph'] . '">' .
                         '</td>' .
                         '<td class="col-data">' .
                             '<label class="inline-checkbox">' .
-                                '<input type="checkbox" class="uk-checkbox" name="appliesOnShipping" value="1">' .
+                                '<input type="checkbox" aria-label="' . $languageStrings['applies_on_shipping'] . '" class="uk-checkbox" name="appliesOnShipping" value="1">' .
                             '</label>' .
                         '</td>' .
                         '<td class="col-action">' .
