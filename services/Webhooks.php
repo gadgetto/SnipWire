@@ -114,6 +114,26 @@ class Webhooks extends WireData {
     }
 
     /**
+     * Getter for responseStatus.
+     *
+     * @return integer The current response status code
+     *
+     */
+    public function getResponseStatus() {
+        return $this->responseStatus;
+    }
+
+    /**
+     * Getter for responseBody.
+     *
+     * @return string The current response body (JSON formatted)
+     *
+     */
+    public function getResponseBody() {
+        return $this->responseBody;
+    }
+
+    /**
      * Validate a Snipcart webhook endpoint request.
      * - check request method and content type
      * - check the request token (= handshake)
