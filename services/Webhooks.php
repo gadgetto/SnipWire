@@ -50,7 +50,7 @@ class Webhooks extends WireData {
 	protected $payload = null;
 	
 	/**
-	 * Set custom error and exception handlers.
+	 * Set class properties and default header.
 	 *
 	 */
 	public function __construct() {
