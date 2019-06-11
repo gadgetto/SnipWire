@@ -281,57 +281,90 @@ class Webhooks extends WireData {
     }
 
     public function ___handleOrderCompleted() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderCompleted');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleOrderCompleted'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleOrderStatusChanged() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderStatusChanged');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleOrderStatusChanged'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleOrderPaymentStatusChanged() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderPaymentStatusChanged');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleOrderPaymentStatusChanged'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleOrderTrackingNumberChanged() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleOrderTrackingNumberChanged');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleOrderTrackingNumberChanged'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleSubscriptionCreated() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionCreated');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleSubscriptionCreated'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleSubscriptionCancelled() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionCancelled');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleSubscriptionCancelled'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleSubscriptionPaused() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionPaused');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleSubscriptionPaused'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleSubscriptionResumed() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionResumed');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleSubscriptionResumed'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleSubscriptionInvoiceCreated() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleSubscriptionInvoiceCreated');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleSubscriptionInvoiceCreated'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleShippingratesFetch() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleShippingratesFetch');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleShippingratesFetch'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
     public function ___handleTaxesCalculate() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleTaxesCalculate');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleTaxesCalculate'
+        );
         require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
         
         $responseBody = array(
@@ -360,7 +393,10 @@ class Webhooks extends WireData {
     }
 
     public function ___handleCustomerUpdated() {
-        $this->wire('log')->save(self::snipWireWebhooksLogName, 'Webhooks request: handleCustomerUpdated');
+        if ($this->debug) $this->wire('log')->save(
+            self::snipWireWebhooksLogName,
+            'Webhooks request: handleCustomerUpdated'
+        );
         $this->responseStatus = 202; // Accepted
     }
 
