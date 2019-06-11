@@ -50,10 +50,11 @@ class Taxes {
      *
      * @param boolean $json Wether to return as JSON formatted string and not array
      * @param integer $type The taxes type (product = 1, shipping = 2, all = 3) [default: taxesTypeAll]
+     * @param string $name The name of the tax (optional to get a specific taxes definition)
      * @return array|string String of JSON data
      * 
      */
-    public static function getTaxesConfig($json = false, $type = self::taxesTypeAll) {
+    public static function getTaxesConfig($json = false, $type = self::taxesTypeAll, $name = '') {
         $taxes = wire('modules')->getConfig('SnipWire', 'taxes'); // JSON string
         $taxes = wireDecodeJSON($taxes);
         if (!$taxes) $taxes = self::getDefaultTaxesConfig();
@@ -71,6 +72,18 @@ class Taxes {
             }
         } else {
             $selectedTaxes = $taxes;
+        }
+
+        // Get a single tax definition by tax name
+        if ($name) {
+            $singleSelected = array();
+            foreach ($selectedTaxes as $tax) {
+                if ($tax['name'] == $name) {
+                    $singleSelected = $tax;
+                    break;
+                }
+            }
+            $selectedTaxes = $singleSelected;
         }
         return ($json) ? wireEncodeJSON($selectedTaxes, true) : $selectedTaxes;
     }
