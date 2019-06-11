@@ -93,6 +93,19 @@ class Taxes {
     }
 
     /**
+     * Get the taxes_included (= hasTaxesIncluded) setting from module config.
+     *
+     * @return boolean
+     * 
+     */
+    public static function getTaxesIncludedConfig() {
+        $taxesIncluded = wire('modules')->getConfig('SnipWire', 'taxes_included');
+        if (is_null($taxesIncluded)) $taxesIncluded = 1; // default
+        return $taxesIncluded ? true : false;
+    }
+
+
+    /**
      * Calculate the tax on a given product price.
      *
      * @param float $value The value the tax has to be calculated from
