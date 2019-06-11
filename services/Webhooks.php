@@ -112,7 +112,7 @@ class Webhooks extends WireData {
         }
         
         if ($this->debug) {
-            $this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: responseCode = ' . $this->responseStatus);
+            $this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: responseStatus = ' . $this->responseStatus);
             $this->wire('log')->save(self::snipWireWebhooksLogName, '[DEBUG] Webhooks request success: responseBody = ' . $this->responseBody);
         }
     }
