@@ -367,26 +367,6 @@ class Webhooks extends WireData {
         );
         require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
         
-        $responseBody = array(
-            'taxes' => array(
-                array(
-                    'name' => '20% VAT',
-                    'amount' => 29.50,
-                    'rate' => 0.20,
-                    'numberForInvoice' => '',
-                    'includedInPrice' => true,
-                    'appliesOnShipping' => false,
-                ),
-                array(
-                    'name' => '10% VAT (Shipping)',
-                    'amount' => 7.00,
-                    'rate' => 0.10,
-                    'numberForInvoice' => '',
-                    'includedInPrice' => true,
-                    'appliesOnShipping' => true,
-                ),
-            ),
-        );
         
         $this->responseStatus = 202; // Accepted
         $this->responseBody = wireEncodeJSON($responseBody, true);
