@@ -388,7 +388,7 @@ class Webhooks extends WireData {
             ),
         );
         
-        $this->responseCode = 202; // Accepted
+        $this->responseStatus = 202; // Accepted
         $this->responseBody = wireEncodeJSON($responseBody, true);
     }
 
