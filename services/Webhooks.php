@@ -280,6 +280,10 @@ class Webhooks extends WireData {
         $this->{$methodName}();
     }
 
+    /**
+     * Webhook handler for order completed.
+     *
+     */
     public function ___handleOrderCompleted() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -288,6 +292,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for order status changed.
+     *
+     */
     public function ___handleOrderStatusChanged() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -296,6 +304,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for payment status changed.
+     *
+     */
     public function ___handleOrderPaymentStatusChanged() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -304,6 +316,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for tracking number changed.
+     *
+     */
     public function ___handleOrderTrackingNumberChanged() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -312,6 +328,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for subscription created.
+     *
+     */
     public function ___handleSubscriptionCreated() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -320,6 +340,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for subscription cancelled.
+     *
+     */
     public function ___handleSubscriptionCancelled() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -328,6 +352,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for subscription paused.
+     *
+     */
     public function ___handleSubscriptionPaused() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -336,6 +364,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for subscription resumed.
+     *
+     */
     public function ___handleSubscriptionResumed() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -344,6 +376,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for subscription invoice created.
+     *
+     */
     public function ___handleSubscriptionInvoiceCreated() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -352,6 +388,10 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for shipping rates fetching.
+     *
+     */
     public function ___handleShippingratesFetch() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
@@ -420,6 +460,10 @@ class Webhooks extends WireData {
         $this->responseBody = wireEncodeJSON($taxes, true);
     }
 
+    /**
+     * Webhook handler for customer updated.
+     *
+     */
     public function ___handleCustomerUpdated() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
