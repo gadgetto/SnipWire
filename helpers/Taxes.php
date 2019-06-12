@@ -119,7 +119,7 @@ class Taxes {
 
 
     /**
-     * Calculate the tax on a given product price.
+     * Calculate the tax on a given price.
      *
      * @param float $value The value the tax has to be calculated from
      * @param float $rate The tax rate as decimal: percentage/100 (e.g. 0.20)
