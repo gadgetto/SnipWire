@@ -360,16 +360,64 @@ class Webhooks extends WireData {
         $this->responseStatus = 202; // Accepted
     }
 
+    /**
+     * Webhook handler for taxes calculation.
+     *
+     */
     public function ___handleTaxesCalculate() {
-        if ($this->debug) $this->wire('log')->save(
+        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+        
+        $log = $this->wire('log');
+        
+        if ($this->debug) $log->save(
             self::snipWireWebhooksLogName,
             'Webhooks request: handleTaxesCalculate'
         );
-        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
         
+        // Sample payload array: https://docs.snipcart.com/webhooks/taxes
+        
+        $payload = $this->payload;
+        $content = $payload['content'];
+        $items = isset($content['items']) ? $content['items'] : null;
+        
+        if (!$items) {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                'Webhooks request: invalid request data for taxes calculation - missing items'
+            );
+            $this->responseStatus = 400; // 400 Bad Request
+            return;
+        }
+
+        // Collect all taxes and calculate total prices from payload
+        $taxesCollection = array();
+        foreach ($items as $item) {
+            $taxName = $item['taxes'][0]; // we currently only support a single tax per product!
+            if (!isset($taxesCollection[$taxName])) {
+                $taxesCollection[$taxName] = $item['totalPriceWithoutTaxes'];
+            } else {
+                $taxesCollection[$taxName] += $item['totalPriceWithoutTaxes'];
+            }
+        }
+        
+        $hasTaxesIncluded = Taxes::getTaxesIncludedConfig();
+
+        // Generate response array for Snipcart
+        $taxesHelper = array();
+        foreach ($taxesCollection as $name => $value) {
+            $taxesConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeProducts, $name);
+            $taxesHelper[] = array(
+                'name' => $name,
+                'amount' => Taxes::calculateTax($value, $taxesConfig['rate'], $hasTaxesIncluded, 2),
+                'rate' => $taxesConfig['rate'],
+                'numberForInvoice' => $taxesConfig['numberForInvoice'],
+                'includedInPrice' => $hasTaxesIncluded,
+            );
+        }
+        $taxes = array('taxes' => $taxesHelper);
         
         $this->responseStatus = 202; // Accepted
-        $this->responseBody = wireEncodeJSON($responseBody, true);
+        $this->responseBody = wireEncodeJSON($taxes, true);
     }
 
     public function ___handleCustomerUpdated() {
