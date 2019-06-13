@@ -78,10 +78,52 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     public function init() {
         /** @var SnipREST $sniprest Custom ProcessWire API variable */
         $this->wire('sniprest', new SnipREST());
+        $this->addHookBefore('Modules::saveConfig', $this, 'validateTaxesRepeater');
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookAfter('Pages::added', $this, 'presetProductFields');
         $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
     }
+
+    /**
+     * Validate and sanitize taxes repeater input fields.
+     * (Method triggered before module config save)
+     *
+     */
+    public function validateTaxesRepeater(HookEvent $event) {
+        $class = $event->arguments(0);
+        if (is_object($class)) $class = $class->className();
+        // Get class name without namespace
+        $className = wireClassName($class);
+        if ($className != 'SnipWire') return;
+
+        $fields = $this->wire('modules')->getModuleConfigInputfields($className);
+        $taxesField = $fields->get('taxes');
+
+        $config = $event->arguments(1);
+        $taxes = wireDecodeJSON($config['taxes']);
+
+        foreach ($taxes as $key => $tax) {
+            if (empty($tax['name']) || empty($tax['rate'])) {
+                $taxesField->error(sprintf($this->_('Taxes repeater row [%s]: "Tax name" and "Rate" may not be empty'), $key + 1));
+            }
+            if (!$this->checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
+                $taxesField->error(sprintf($this->_('Taxes repeater row [%s]: "Rate" value needs to be float'), $key + 1));
+            }
+        }
+    }
+
+    /**
+     * Check a value against a given regex pattern.
+     *
+     * @param mixed $value The value to check
+     * @param string $pattern The regex pattern
+     * @param boolean
+     *
+     */
+	public function checkPattern($value, $pattern) {
+		$regex = '#' . str_replace('#', '\#', $pattern) . '#';
+		return preg_match($regex, $value) ? true : false;
+	}
 
     /**
      * Manage currency specific price input fields based on module "currencies" property.
