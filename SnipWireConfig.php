@@ -368,7 +368,7 @@ class SnipWireConfig extends ModuleConfig {
             
             $notes =
             '<p class="notes">' .
-                $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed. The first set in the list will be used as default tax by all products.') .
+                $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed. The first set in the list will be used as default tax when creating a new product.') .
             '</p>';
 
             // This text field (HTML input hidden by CSS) will be filled with jSON formatted taxes array provided by jquery.repeater.
