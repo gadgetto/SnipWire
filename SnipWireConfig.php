@@ -303,15 +303,6 @@ class SnipWireConfig extends ModuleConfig {
             $f->required = true;
 
         $fsAPI->add($f);
-
-            // This hidden field will be filled with jSON formatted taxes array provided by jquery.repeater.
-            // onLoad jquery.repeater will use the stored array to pre-build the repeater fields.
-            
-            /** @var InputfieldHidden $f */
-            $f = $modules->get('InputfieldHidden');
-            $f->attr('id+name', 'taxes');
-
-        $fsAPI->add($f);
             
             $languageStrings = array(
                 'tax_name' => $this->_('Tax name'),
@@ -374,14 +365,24 @@ class SnipWireConfig extends ModuleConfig {
                     '</tr>' .
                 '</tbody>' .
             '</table>';
+            
+            $notes =
+            '<p class="notes">' .
+                $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed. The first set in the list will be used as default tax by all products.') .
+            '</p>';
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
+            // This text field (HTML input hidden by CSS) will be filled with jSON formatted taxes array provided by jquery.repeater.
+            // onLoad jquery.repeater will use the stored array to pre-build the repeater fields.
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->attr('id+name', 'taxes');
+            $f->attr('class', 'hiddenTaxesInput');
             $f->label = $this->_('Taxes Configuration');
             $f->description = $this->_('SnipWire acts as a taxes provider for Snipcart. You first need to configure the taxes provider webhook in [Snipcart Dashboard > Taxes](https://app.snipcart.com/dashboard/taxes). After that, define the tax rates here to be used by the Snipcart shop-system. While processing an order, Snipcart will send a Webhook request to your server and SnipWire will return the applicable taxes.');
-            $f->notes = $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed. The first set in the list will be used as default tax by all products.');
-            $f->value = $taxesRepeaterMarkup;
             $f->columnWidth = 100;
+            $f->maxlength = 4096;
+            $f->appendMarkup = $taxesRepeaterMarkup . $notes;
 
         $fsAPI->add($f);
 
