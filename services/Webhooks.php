@@ -425,13 +425,14 @@ class Webhooks extends WireData {
                 self::snipWireWebhooksLogName,
                 'Webhooks request: invalid request data for taxes calculation - missing items'
             );
-            $this->responseStatus = 400; // 400 Bad Request
+            $this->responseStatus = 400; // Bad Request
             return;
         }
 
         // Collect all taxes and calculate total prices from payload
         $taxesCollection = array();
         foreach ($items as $item) {
+            if (!$item['taxable']) continue;
             $taxName = $item['taxes'][0]; // we currently only support a single tax per product!
             if (!isset($taxesCollection[$taxName])) {
                 $taxesCollection[$taxName] = $item['totalPriceWithoutTaxes'];
