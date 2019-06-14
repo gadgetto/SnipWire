@@ -143,8 +143,13 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      */
     public function manageCurrencyPriceFields(HookEvent $event) {
-        if (!($event->arguments[0] == 'SnipWire')) return;
-        $config = $event->arguments[1];
+        $class = $event->arguments(0);
+        if (is_object($class)) $class = $class->className();
+        // Get class name without namespace
+        $className = wireClassName($class);
+        if ($className != 'SnipWire') return;
+
+        $config = $event->arguments(1);
 
         $currencies = isset($config['currencies']) ? $config['currencies'] : false;
         if (empty($currencies) || !is_array($currencies)) return;
@@ -156,8 +161,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         
         $fieldTemplate = self::getCurrencyFieldTemplate();
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+        
         $fieldsToTemplate = array();
-    
         foreach ($currencies as $currency) {
             $fieldName = $fieldTemplate['name'] . $currency;
             $fieldsToTemplate[] = $fieldName;
