@@ -437,24 +437,24 @@ class Webhooks extends WireData {
         }
 
         // Collect all taxes and calculate total prices from payload
-        $taxesCollection = array();
+        $itemTaxes = array();
         foreach ($items as $item) {
             if (!$item['taxable']) continue;
             $taxName = $item['taxes'][0]; // we currently only support a single tax per product!
-            if (!isset($taxesCollection[$taxName])) {
-                $taxesCollection[$taxName] = $item['totalPriceWithoutTaxes'];
+            if (!isset($itemTaxes[$taxName])) {
+                $itemTaxes[$taxName] = $item['totalPriceWithoutTaxes'];
             } else {
-                $taxesCollection[$taxName] += $item['totalPriceWithoutTaxes'];
+                $itemTaxes[$taxName] += $item['totalPriceWithoutTaxes'];
             }
         }
         
         $hasTaxesIncluded = Taxes::getTaxesIncludedConfig();
 
-        // Generate response array for Snipcart
-        $taxesHelper = array();
-        foreach ($taxesCollection as $name => $value) {
+        // Generate taxes response array for Snipcart
+        $taxesResponse = array();
+        foreach ($itemTaxes as $name => $value) {
             $taxesConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeProducts, $name);
-            $taxesHelper[] = array(
+            $taxesResponse[] = array(
                 'name' => $name,
                 'amount' => Taxes::calculateTax($value, $taxesConfig['rate'], $hasTaxesIncluded, 2),
                 'rate' => $taxesConfig['rate'],
@@ -462,7 +462,7 @@ class Webhooks extends WireData {
                 'includedInPrice' => $hasTaxesIncluded,
             );
         }
-        $taxes = array('taxes' => $taxesHelper);
+        $taxes = array('taxes' => $taxesResponse);
         
         $this->responseStatus = 202; // Accepted
         $this->responseBody = wireEncodeJSON($taxes, true);
