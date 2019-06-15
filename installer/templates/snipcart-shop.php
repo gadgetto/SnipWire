@@ -15,33 +15,49 @@ if (!defined('PROCESSWIRE')) die();
 if (!modules()->isInstalled('SnipWire')) {
     ?>
     <div id="content">
-        <strong>SnipWire</strong> module is not installed. Module is required to render this page!
+        <strong>SnipWire</strong> is not installed. Module is required to render this page!
     </div>
     <?php
     return;
 }
 ?>
 <!--
-The mini cart display shows the "Items in cart" count and the "total" cart value.
+Adding a show cart button + cart summary + customer dashboard links.
 
-Notice that the container element has a "snipcart-summary" class. Add the markup you want within 
-this container, then add "snipcart-total-items" and "snipcart-total-price" classes to the elements
-that will contain cart information.
+The key is to have elements with specific Snipcart classes in your markup:
 
-Wrap the container element with a link having the class "snipcart-checkout" and the cart will pop 
-when your visitors click on it.
+ - "snipcart-summary"      -- wrapper element for all elements with Snipcart classes supplied (optional but recommended!)
+ - "snipcart-total-items"  -- displays total items currently in cart
+ - "snipcart-total-price"' -- displays the current total cart price
+ - "snipcart-user-profile" -- triggers the apparition of the users dashboard (orders history, subscriptions)
+ - "snipcart-user-email"   -- displays the users email address (previous content within this element will be overridden)
+ - "snipcart-user-logout"  -- enables a logout link/button (+ elements with this class will be hidden until the user is logged in)
+ - "snipcart-edit-profile" -- triggers the apparition of the users profile editor (billing address, shipping address)
 
 The complete markup is up to you - it just needs to have the described classes included!
 
 More here: https://docs.snipcart.com/getting-started/the-cart
+and here: https://docs.snipcart.com/getting-started/customer-dashboard
 -->
-<p id="masthead-tagline" class="-uk-text-small -uk-text-muted uk-margin-remove uk-text-center snipcart-summary">
+<div class="uk-text-center snipcart-summary" pw-after="masthead-logo">
     <a href="#" class="uk-link-reset snipcart-checkout" aria-label="Shopping cart">
         <?=ukIcon('cart')?>
-        <span class="uk-badge snipcart-total-items uk-text-middle" aria-label="Items in cart"></span>
-        <span class="snipcart-total-price uk-text-middle" aria-label="Total"></span>
+        <span class="uk-badge uk-text-middle snipcart-total-items" aria-label="Items in cart"></span>
+        <span class=" uk-text-middle snipcart-total-price" aria-label="Total"></span>
     </a>
-</p>
+    <button class="uk-button uk-button-default uk-button-small snipcart-user-profile" type="button">
+        <?=ukIcon('user', 'ratio: .8')?> <span class="snipcart-user-email">My Account</span>
+    </button>
+    <div class="uk-inline snipcart-user-logout">
+        <button class="uk-button uk-button-default uk-button-small snipcart-edit-profile" type="button"><?=ukIcon('pencil', 'ratio: .8')?> Edit Profile</button>
+        <button class="uk-button uk-button-default uk-button-small snipcart-user-logout" type="button"><?=ukIcon('sign-out', 'ratio: .8')?> Logout</button>
+    </div>
+</div>
+
+<!--
+We remove the masthead-tagline region to save space in this sample.
+-->
+<p id="masthead-tagline" pw-remove></p>
 
 <!--
 The content element holds your products catalogue.
