@@ -238,26 +238,26 @@ $resources = array(
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
         'fuzzy-regalia' => array(
-            'name' => 'fuzzy-regalia',
-            'title' => 'Fuzzy Regalia',
+            'name' => 'big-schlemel-stout',
+            'title' => 'Big Schlemel Stout',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
-                'snipcart_item_price_eur' => '99.98',
+                'snipcart_item_price_eur' => '69.98',
                 'snipcart_item_description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                'snipcart_item_image' => 'sample_images/cake.jpg', // source file from module directory
+                'snipcart_item_image' => 'sample_images/beer1.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
         'square-cream-hoax' => array(
-            'name' => 'square-cream-hoax',
-            'title' => 'Square Cream Hoax',
+            'name' => 'festish-wet-warmer',
+            'title' => 'Festish Wet Warmer',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
                 'snipcart_item_price_eur' => '19.90',
                 'snipcart_item_description' => 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                'snipcart_item_image' => 'sample_images/cookies.jpg', // source file from module directory
+                'snipcart_item_image' => 'sample_images/beer2.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
@@ -269,7 +269,7 @@ $resources = array(
             'fields' => array(
                 'snipcart_item_price_eur' => '1199',
                 'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-                'snipcart_item_image' => 'sample_images/pastries.jpg', // source file from module directory
+                'snipcart_item_image' => 'sample_images/beer3.jpg', // source file from module directory
             ),
             '_uninstall' => 'delete', // "trash" or "delete" or "no"
         ),
