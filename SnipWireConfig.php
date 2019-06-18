@@ -103,6 +103,7 @@ class SnipWireConfig extends ModuleConfig {
             'cart_image_hidpiQuality' => 50,
             'webhooks_endpoint' =>  '/webhooks/snipcart',
             'data_item_name_field' => 'title',
+            'snipwire_debug' => false,
         );
     }
 
@@ -694,6 +695,16 @@ class SnipWireConfig extends ModuleConfig {
             $f->label2 = $this->_('This Snipcart shop runs on a single-page website');
             $f->description = $this->_('For single-page shops, the data-item-url field of each product will be filled with the full URL to the selected page.');
             $f->notes = $this->_('This tells the Snipcart crawler where to find your products to validate an order\'s integrity.');
+            $f->columnWidth = 100;
+
+        $fsSnipWire->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'snipwire_debug'); 
+            $f->label = $this->_('SnipWire Debug Mode');
+            $f->label2 = $this->_('Enable SnipWire debug mode');
+            $f->description = $this->_('This will enable SnipWires extended messages, warnings and errors logging into the ProcessWire log system.');
             $f->columnWidth = 100;
 
         $fsSnipWire->add($f);
