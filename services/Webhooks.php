@@ -475,7 +475,7 @@ class Webhooks extends WireData {
     public function ___handleCustomerUpdated() {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
-            'Webhooks request: handleCustomerUpdated'
+            '[DEBUG] Webhooks request: handleCustomerUpdated'
         );
         $this->responseStatus = 202; // Accepted
     }
