@@ -38,7 +38,7 @@ class Webhooks extends WireData {
     const webhookModeTest = 'Test';
 
     /** @var boolean Turn on/off debug mode for Webhooks class */
-    private $debug = true;
+    private $debug = false;
     
     /** @var string $serverProtocol The server protocol (e.g. HTTP/1.1) */
     protected $serverProtocol = '';
@@ -79,7 +79,13 @@ class Webhooks extends WireData {
             self::webhookTaxesCalculate => 'handleTaxesCalculate',
             self::webhookCustomerUpdated => 'handleCustomerUpdated',
         );
-        
+
+        // Get SnipWire module config.
+        // (Holds merged data from DB and default config. 
+        // This works because of using the ModuleConfig class)
+        $snipwireConfig = $this->wire('modules')->get('SnipWire');
+        $this->debug = $snipwireConfig->snipwire_debug;
+
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Cache-Control: post-check=0, pre-check=0', false);
         header('Pragma: no-cache');
