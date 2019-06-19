@@ -34,17 +34,10 @@
     const snicpartAnchorTypeLink = 2;
     const snipcartProductTemplate = 'snipcart-product';
 
-    /**
-     * The module config of SnipWire module.
-     *
-     */
+    /** @var array $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = array();
 
-    /**
-     * Define the currency to be used in cart and catalogue.
-     * ('eur' or 'usd' or 'cad' ...)
-     *
-     */
+    /** @var string $currency The currency to be used in cart and catalogue ('eur' or 'usd' or 'cad' ...) */
     private $currency = '';
 
     /**
