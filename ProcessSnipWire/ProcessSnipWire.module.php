@@ -126,9 +126,9 @@ class ProcessSnipWire extends Process implements Module {
 
         $out .= $this->_renderPerformanceBoxes($dashboard[SnipRest::resourcePathDataPerformance]);
         $out .= $this->_renderChart($dashboard[SnipRest::resourcePathDataOrdersSales], $dashboard[SnipRest::resourcePathDataOrdersCount]);
-        
-        /** @var InputfieldWrapper $wrapper */
-        $wrapper = new InputfieldWrapper();
+
+        /** @var InputfieldForm $form */
+        $wrapper = $modules->get('InputfieldForm'); 
 
             /** @var InputfieldFieldset $fsTop */
             $fsTop = $modules->get('InputfieldFieldset');
@@ -158,8 +158,8 @@ class ProcessSnipWire extends Process implements Module {
 
         $out .= $wrapper->render();
 
-        /** @var InputfieldWrapper $wrapper */
-        $wrapper = new InputfieldWrapper();
+        /** @var InputfieldForm $form */
+        $wrapper = $modules->get('InputfieldForm'); 
             
             /** @var InputfieldFieldset $fsOrders */
             $fsOrders = $modules->get('InputfieldFieldset');
