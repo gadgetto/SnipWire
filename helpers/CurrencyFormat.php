@@ -33,14 +33,14 @@ class CurrencyFormat extends WireData {
 
     /**
      * Returns an array of worldwide supported currencies, as name => label
-     * (comes from static file Currencies.php which holds all currencies 
+     * (comes from static file CurrenciesTable.php which holds all currencies 
      * supported by Snipcart -> copied from Snipcart dashboard)
      * 
      * @return array
      * 
      */
     public static function getSupportedCurrencies() {
-        return require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Currencies.php';
+        return require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CurrenciesTable.php';
     }
     
     /**
