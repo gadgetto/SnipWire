@@ -105,6 +105,7 @@ class ProcessSnipWire extends Process implements Module {
         $this->_includeAssets(self::assetsIncludeAll);
 
         //if ($this->_getInputAction() == 'refresh') bd('refresh');
+        
         $startDate = $this->_getInputStartDate();
         $startDateSelector = $startDate ? $startDate . ' 00:00:00' : '';
         
@@ -135,25 +136,25 @@ class ProcessSnipWire extends Process implements Module {
             $fsTop->icon = 'bar-chart';
             $fsTop->label = $this->_('Top Store Actions');
             $fsTop->wrapClass = 'bottomSpace';
-    
+
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
                 $f->label = $this->_('Top Customers');
                 $f->value = $this->_renderTableCustomers($dashboard[SnipRest::resourcePathCustomers]);
                 $f->columnWidth = 50;
                 $f->collapsed = Inputfield::collapsedNever;
-                
+
             $fsTop->add($f);
-            
+
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
                 $f->label = $this->_('Top Products');
                 $f->value = $this->_renderTableProducts($dashboard[SnipRest::resourcePathProducts]);
                 $f->columnWidth = 50;
                 $f->collapsed = Inputfield::collapsedNever;
-                
+
             $fsTop->add($f);
-            
+
         $wrapper->add($fsTop);
 
         $out .= $wrapper->render();
