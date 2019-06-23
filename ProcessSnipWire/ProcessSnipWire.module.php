@@ -164,7 +164,7 @@ class ProcessSnipWire extends Process implements Module {
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
                 $f->label = $this->_('Top Customers');
-                $f->value = $this->_renderTableCustomers($dashboard[SnipRest::resourcePathCustomers]);
+                $f->value = $this->_renderTableTopCustomers($dashboard[SnipRest::resourcePathCustomers]);
                 $f->columnWidth = 50;
                 $f->collapsed = Inputfield::collapsedNever;
 
@@ -173,7 +173,7 @@ class ProcessSnipWire extends Process implements Module {
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
                 $f->label = $this->_('Top Products');
-                $f->value = $this->_renderTableProducts($dashboard[SnipRest::resourcePathProducts]);
+                $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resourcePathProducts]);
                 $f->columnWidth = 50;
                 $f->collapsed = Inputfield::collapsedNever;
 
@@ -193,7 +193,7 @@ class ProcessSnipWire extends Process implements Module {
 
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
-                $f->value = $this->_renderTableOrders($dashboard[SnipRest::resourcePathOrders]);
+                $f->value = $this->_renderTableRecentOrders($dashboard[SnipRest::resourcePathOrders]);
                 $f->columnWidth = 100;
                 $f->skipLabel = Inputfield::skipLabelHeader;
                 $f->collapsed = Inputfield::collapsedNever;
@@ -728,13 +728,13 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the customers table.
+     * Render the top customers table.
      *
      * @param array $items
      * @return markup MarkupAdminDataTable | custom html with `no customers` display 
      *
      */
-    private function _renderTableCustomers($items) {
+    private function _renderTableTopCustomers($items) {
         $modules = $this->wire('modules');
                     
         if (!empty($items)) {
@@ -782,13 +782,13 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the products table.
+     * Render the top products table.
      *
      * @param array $items
      * @return markup MarkupAdminDataTable | custom html with `no products` display 
      *
      */
-    private function _renderTableProducts($items) {
+    private function _renderTableTopProducts($items) {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -838,13 +838,13 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Render the orders table.
+     * Render the recent orders table.
      *
      * @param array $items
      * @return markup MarkupAdminDataTable | custom html with `no orders` display 
      *
      */
-    private function _renderTableOrders($items) {
+    private function _renderTableRecentOrders($items) {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
