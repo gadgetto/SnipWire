@@ -16,7 +16,7 @@ class CurlMulti extends WireHttp {
 
     const resultKeyContent = 'content';
     const resultKeyHttpCode = 'http_code';
-    const resultKeyCurlError = 'curl_error';
+    const resultKeyError = 'error';
 
     /** @var array $_curlMultiOptions cURL options used for all sessions */
     private $_curlMultiOptions = array();
@@ -177,7 +177,7 @@ class CurlMulti extends WireHttp {
     	    $decoded[$key] = array(
     	        self::resultKeyContent => json_last_error() === JSON_ERROR_NONE ? $decodedContent : array(),
     	        self::resultKeyHttpCode => $result[self::resultKeyHttpCode],
-    	        self::resultKeyCurlError => $result[self::resultKeyCurlError],
+    	        self::resultKeyError => $result[self::resultKeyError],
             );
     	}
 		return $decoded; 
@@ -195,12 +195,12 @@ class CurlMulti extends WireHttp {
      *        'https://app.domain.com/api/orders' => array(
      *            'content' => 'The response content...',
      *            'http_code' => 200,
-     *            'curl_error' => ''
+     *            'error' => ''
      *        ),
      *        'https://app.domain.com/api/wrongurl' => array(
      *            'content' => '',
      *            'http_code' => 404
-     *            'curl_error' => 'String containing the last error for the current session'
+     *            'error' => 'String containing the last error for the current session'
      *        )
      *    )
      *
@@ -251,7 +251,7 @@ class CurlMulti extends WireHttp {
             $this->resultsMulti[$key] = array(
                 self::resultKeyContent => $content,
                 self::resultKeyHttpCode => $httpCode,
-                self::resultKeyCurlError => $curlError,
+                self::resultKeyError => $curlError,
             );
             
             curl_multi_remove_handle($this->_multiHandle, $curl);
