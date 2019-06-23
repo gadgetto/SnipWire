@@ -11,24 +11,26 @@
 
 jQuery(document).ready(function($) {
     
-    var settings = config.pickerSettings;
+    var settings = config.filterSettings;
     var locale = config.pickerLocale;
     var rangeLabels = config.pickerRangeLabels;
     var start = settings.startDate ? moment(settings.startDate, 'YYYY-MM-DD') : moment().subtract(29, 'days');
     var end = settings.endDate ? moment(settings.endDate, 'YYYY-MM-DD') : moment();
+    var currency = settings.currency;
 
-    var form = $(settings.form);
-    var picker = $(settings.element);
-    var display = $(settings.display);
-    var fieldFrom = $(settings.fieldFrom);
-    var fieldTo = $(settings.fieldTo);
+    var $form = $(settings.form);
+    var $picker = $(settings.pickerElement);
+    var $pickerDisplay = $(settings.pickerDisplay);
+    var $fieldFrom = $(settings.fieldFrom);
+    var $fieldTo = $(settings.fieldTo);
+    var $fieldCurrency = $(settings.fieldCurrency);
 
     function updatePicker(start, end) {
         // Display values based on locale setting
-        display.html(start.format(locale.format) + locale.separator + end.format(locale.format));
+        $pickerDisplay.html(start.format(locale.format) + locale.separator + end.format(locale.format));
         // Hidden form fields always get ISO date
-        fieldFrom.val(start.format('YYYY-MM-DD'));
-        fieldTo.val(end.format('YYYY-MM-DD'));
+        $fieldFrom.val(start.format('YYYY-MM-DD'));
+        $fieldTo.val(end.format('YYYY-MM-DD'));
     }
 
     // Ranges needs to be set this way to make labels translatable!
@@ -42,7 +44,7 @@ jQuery(document).ready(function($) {
     rangesObj[rangeLabels.thismonth] = [moment().startOf('month'), moment().endOf('month')];
     rangesObj[rangeLabels.lastmonth] = [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')];
 
-    picker.daterangepicker({
+    $picker.daterangepicker({
         startDate: start,
         endDate: end,
         opens: 'left',
@@ -59,13 +61,19 @@ jQuery(document).ready(function($) {
             daysOfWeek: locale.daysOfWeek,
             monthNames: locale.monthNames,
             firstDay: 1
-        },
+        }
     },
     // Callback
     function(start, end) {
         updatePicker(start, end);
-        form.submit();
+        $form.submit();
     });
     
     updatePicker(start, end);
+    
+    // Currency selector event
+    $fieldCurrency.on('change', function() {
+        $form.submit();
+    });
+
 }); 

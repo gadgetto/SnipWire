@@ -23,7 +23,7 @@
     clear: both;
     
     .InputfieldHeader {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     .bottomSpace {
         margin-bottom: 1.5rem;
@@ -31,17 +31,15 @@
 }
 
 #PeriodPickerContainer {
-    text-align: center;
+    display: inline-block;
     font-size: 1.2rem;
-    
-    .period-label {
-        margin-right: .5rem;
-    }
+    line-height: 40px;
 }
 #period-picker {
     display: inline-block;
     margin: -.25rem 0;
     padding: .25rem .5rem;
+    line-height: inherit;
 }
 #period-picker:hover {
     background: #f5f5f5;
@@ -78,7 +76,7 @@
         .snipwire-perf-box-body {
             padding: .25rem .25rem 2rem .25rem;
             background: transparent;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             text-align: center;
         }
     }
@@ -141,7 +139,20 @@
     #SnipwireDashboard {
         overflow: hidden;
     }
-        
+    #PeriodPickerContainer {
+        font-size: 1.1rem;
+        line-height: 1.8em;
+    }
+    .CurrencyPickerContainer {
+
+        .InputfieldHeaderHidden:after {
+            content: '';
+        }
+        select {
+            width: 100%;
+            font-size: 1.1em;
+        }
+    }
     .snipwire-perf-box {
         background-color: rgba(228,235,238,.8);
     }
@@ -156,6 +167,19 @@
             padding-left: 1.2em;
         }
     }
-
+    #PeriodPickerContainer {
+        font-size: 1.1rem;
+        line-height: 1.8em;
+    }
+    .CurrencyPickerContainer {
+        
+        .InputfieldHeaderHidden:after {
+            content: '';
+        }
+        select {
+            width: 100%;
+            font-size: 1.1em;
+        }
+    }
 }
 
