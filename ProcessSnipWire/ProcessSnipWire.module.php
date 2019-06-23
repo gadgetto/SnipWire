@@ -62,6 +62,12 @@ class ProcessSnipWire extends Process implements Module {
     const assetsIncludeApexCharts = 2;
     const assetsIncludeAll = 3;
 
+    /** @var array $snipwireConfig The module config of SnipWire module */
+    protected $snipwireConfig = array();
+
+    /** @var string $currencies The activated currencies from SnipWire module config */
+    private $currencies = array();
+
     /**
      * Initalize module config variables (properties)
      *
@@ -79,6 +85,14 @@ class ProcessSnipWire extends Process implements Module {
      */
     public function init() {
         parent::init();
+        
+        // Get SnipWire module config.
+        // (Holds merged data from DB and default config. 
+        // This works because of using the ModuleConfig class)
+        $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
+
+        // Get activated $currencies from SnipWire module config
+        $this->currencies = $this->snipwireConfig->currencies;
     }    
 
     /**
@@ -111,11 +125,15 @@ class ProcessSnipWire extends Process implements Module {
         
         $endDate = $this->_getInputEndDate();
         $endDateSelector = $endDate ? $endDate . ' 23:59:59' : '';
-                
-        $out = $this->_buildDateRangeFilter($startDate, $endDate);
 
-        $packages = $sniprest->getDashboardData($startDateSelector, $endDateSelector);
-        $dashboard = $this->_extractDataPackages($packages);
+        $currency = $this->_getInputCurrency();
+        if (!$currency) $currency = $this->currencies[0]; // default = first currency from config
+
+        $out = $this->_buildFilterSelect($startDate, $endDate, $currency);
+
+        $packages = $sniprest->getDashboardData($startDateSelector, $endDateSelector, $currency);
+        $dashboard = $this->_prepareDashboardData($packages);
+        unset($packages); // free space
 
         if (!$dashboard) {
             $out .=
@@ -125,8 +143,15 @@ class ProcessSnipWire extends Process implements Module {
             return $this->_wrapDashboardOutput($out);
         }
 
-        $out .= $this->_renderPerformanceBoxes($dashboard[SnipRest::resourcePathDataPerformance]);
-        $out .= $this->_renderChart($dashboard[SnipRest::resourcePathDataOrdersSales], $dashboard[SnipRest::resourcePathDataOrdersCount]);
+        $out .= $this->_renderPerformanceBoxes(
+            $dashboard[SnipRest::resourcePathDataPerformance],
+            $currency
+        );
+        $out .= $this->_renderChart(
+            $dashboard[SnipRest::resourcePathDataOrdersSales],
+            $dashboard[SnipRest::resourcePathDataOrdersCount],
+            $currency
+        );
 
         /** @var InputfieldForm $form */
         $wrapper = $modules->get('InputfieldForm'); 
@@ -291,54 +316,112 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Extract data packages from Snipcart API results and create new sanitized array ready for rendering.
+     * Extract data packages from Snipcart API results and create new 
+     * array ready for dashboard rendering.
      *
      * @param array $packages The raw data array returned by Snipcart API
-     * @return mixed The sanitized array ready for rendering or false
+     * @return mixed The prepared array ready for rendering or false
      *
      */
-    private function _extractDataPackages($packages) {
+    private function _prepareDashboardData($packages) {
         if (empty($packages) || !is_array($packages)) return false;
-        
-        $dashboard = array();
+
+        // Initialize dashboard
+        $dashboard = array(
+            SnipRest::resourcePathDataPerformance => array(),
+            SnipRest::resourcePathDataOrdersSales => array(),
+            SnipRest::resourcePathDataOrdersCount => array(),
+            SnipRest::resourcePathCustomers => array(),
+            SnipRest::resourcePathProducts => array(),
+            SnipRest::resourcePathOrders => array(),
+        );
+
+        $ordersSales = 0.0;
+        $ordersCount = 0;
+        $averageOrdersValue = 0.0;
+
         foreach ($packages as $key => $package) {
-            if (strpos($key, SnipRest::resourcePathDataPerformance)) {
+            
+            if (strpos($key, SnipRest::resourcePathDataPerformance) !== false) {
+
+                // Performance data is NOT currency dependent therefore some values need to be 
+                // determined from other currency dependent sources and will be replaced later.
+                // (marked with "calc" in sample array)
                 
-                $dashboard[SnipRest::resourcePathDataPerformance] = isset($package[CurlMulti::resultKeyContent])
-                    ? $package[CurlMulti::resultKeyContent]
-                    : false;
+                /*
+                Sample performance array:
+                [
+                    "ordersSales" => calc,
+                    "ordersCount" => calc,
+                    "averageCustomerValue" => not in use,
+                    "taxesCollected" => not in use,
+                    "shippingCollected" => not in use,
+                    "customers" => [
+                        "newCustomers" => 14,
+                        "returningCustomers" => 2
+                    ],
+                    "averageOrdersValue" => calc,
+                    "totalRecovered" => not in use
+                ]
+                */
+                $dashboard[SnipRest::resourcePathDataPerformance] = $package;
                 
-            } elseif (strpos($key, SnipRest::resourcePathDataOrdersSales)) {
+            } elseif (strpos($key, SnipRest::resourcePathDataOrdersSales) !== false) {
                 
-                $dashboard[SnipRest::resourcePathDataOrdersSales] = isset($package[CurlMulti::resultKeyContent])
-                    ? $package[CurlMulti::resultKeyContent]
-                    : false;
+                $dashboard[SnipRest::resourcePathDataOrdersSales] = $package;
+
+                // Calc sales sum
+                if (isset($dashboard[SnipRest::resourcePathDataOrdersSales][CurlMulti::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipRest::resourcePathDataOrdersSales][CurlMulti::resultKeyContent]['data'];
+                    foreach ($data as $item) {
+                        $ordersSales += $item['value'];
+                    }
+                }
+
+            } elseif (strpos($key, SnipRest::resourcePathDataOrdersCount) !== false) {
                 
-            } elseif (strpos($key, SnipRest::resourcePathDataOrdersCount)) {
+                $dashboard[SnipRest::resourcePathDataOrdersCount] = $package;
                 
-                $dashboard[SnipRest::resourcePathDataOrdersCount] = isset($package[CurlMulti::resultKeyContent])
-                    ? $package[CurlMulti::resultKeyContent]
-                    : false;
+                // Calc orders count
+                if (isset($dashboard[SnipRest::resourcePathDataOrdersCount][CurlMulti::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipRest::resourcePathDataOrdersCount][CurlMulti::resultKeyContent]['data'];
+                    foreach ($data as $item) {
+                        $ordersCount += $item['value'];
+                    }
+                }
                 
-            } elseif (strpos($key, SnipRest::resourcePathCustomers)) {
+            } elseif (strpos($key, SnipRest::resourcePathCustomers) !== false) {
                 
                 $dashboard[SnipRest::resourcePathCustomers] = isset($package[CurlMulti::resultKeyContent]['items'])
                     ? $package[CurlMulti::resultKeyContent]['items']
-                    : false;
+                    : array();
                 
-            } elseif (strpos($key, SnipRest::resourcePathProducts)) {
+            } elseif (strpos($key, SnipRest::resourcePathProducts) !== false) {
                 
                 $dashboard[SnipRest::resourcePathProducts] = isset($package[CurlMulti::resultKeyContent]['items'])
                     ? $package[CurlMulti::resultKeyContent]['items']
-                    : false;
+                    : array();
                 
-            } elseif (strpos($key, SnipRest::resourcePathOrders)) {
+            } elseif (strpos($key, SnipRest::resourcePathOrders) !== false) {
                 
                 $dashboard[SnipRest::resourcePathOrders] = isset($package[CurlMulti::resultKeyContent]['items'])
                     ? $package[CurlMulti::resultKeyContent]['items']
-                    : false;
+                    : array();
             }
         }
+
+        // Replace performance data with currency dependent values
+        if ($ordersSales && $ordersCount) $averageOrdersValue = $ordersSales / $ordersCount;
+        $calculated = array(
+            'ordersSales' => $ordersSales,
+            'ordersCount' => $ordersCount,
+            'averageOrdersValue' => $averageOrdersValue,
+        );
+        $dashboard[SnipRest::resourcePathDataPerformance][CurlMulti::resultKeyContent] = array_merge(
+            $dashboard[SnipRest::resourcePathDataPerformance][CurlMulti::resultKeyContent],
+            $calculated
+        );
+
         unset($packages, $key, $package); // free space
         
         return $dashboard;
@@ -355,14 +438,15 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Build the period date range filter form.
+     * Build the filter select form.
      *
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
+     * @param string $currency Currency string
      * @return markup InputfieldForm
      *
      */
-    private function _buildDateRangeFilter($start = '', $end = '') {
+    private function _buildFilterSelect($start = '', $end = '', $currency = '') {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
@@ -372,14 +456,16 @@ class ProcessSnipWire extends Process implements Module {
             $end = date('Y-m-d');
         }
 
-        $pickerSettings = array(
+        $filterSettings = array(
             'form' => '#StorePerformanceFilterForm',
-            'element' => '#period-picker',
-            'display' => '#period-display',
+            'pickerElement' => '#period-picker',
+            'pickerDisplay' => '#period-display',
             'fieldFrom' => '#period-from',
             'fieldTo' => '#period-to',
+            'fieldCurrency' => '#currency-picker',
             'startDate' => $start,
             'endDate' => $end,
+            'currency' => $currency,
         );
 
         $pickerLocale = array(
@@ -424,9 +510,9 @@ class ProcessSnipWire extends Process implements Module {
             'thismonth' => $this->_('This Month'),
             'lastmonth' => $this->_('Last Month'),
         );
-        
-        // Hand over daterangepicker configuration to JS
-        $config->js('pickerSettings', $pickerSettings);
+
+        // Hand over configuration to JS
+        $config->js('filterSettings', $filterSettings);
         $config->js('pickerLocale', $pickerLocale);
         $config->js('pickerRangeLabels', $pickerRangeLabels);
         
@@ -454,10 +540,33 @@ class ProcessSnipWire extends Process implements Module {
 
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Period Range Picker');
+                $f->label = $this->_('Date Range Picker');
                 $f->skipLabel = Inputfield::skipLabelHeader;
                 $f->value = $markup;
                 $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 75;
+
+            $fsFilters->add($f);  
+
+                /** @var InputfieldSelect $f */
+                $f = $modules->get('InputfieldSelect'); 
+                $f->attr('id', 'currency-picker'); 
+                $f->attr('name', 'currency'); 
+                $f->wrapClass = 'CurrencyPickerContainer';
+                $f->label = $this->_('Currency Picker'); 
+                $f->skipLabel = Inputfield::skipLabelHeader;
+                $f->value = $currency;
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 25;
+                $f->required = true;
+
+                $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+                foreach ($this->currencies as $currencyOption) {
+                    $currencyLabel = isset($supportedCurrencies[$currencyOption])
+                        ? $supportedCurrencies[$currencyOption]
+                        : $currencyOption;
+                    $f->addOption($currencyOption, $currencyLabel);
+                }
 
             $fsFilters->add($f);            
 
@@ -470,26 +579,18 @@ class ProcessSnipWire extends Process implements Module {
      * Render the store performance boxes.
      *
      * @param array $results
+     * @param string $currency Currency string
      * @return markup Custom HTML
      *
      */
-    private function _renderPerformanceBoxes($results) {
+    private function _renderPerformanceBoxes($results, $currency) {
         
-        if (!empty($results) && is_array($results)) {
-            
-            $values = array(
-                'orders' => $results['ordersCount'],
-                'sales' => CurrencyFormat::format($results['ordersSales'], 'usd'), // @todo: handle currency(s)!
-                'average' => CurrencyFormat::format($results['averageOrdersValue'], 'usd'), // @todo: handle currency(s)!
-                'customers' => array(
-                    'new' => $results['customers']['newCustomers'],
-                    'returning' => $results['customers']['returningCustomers'],
-                )
-            );
-            
-        } else {
-            
-            $this->error($this->_('Values for store performance boxes could not be fetched'));
+        $content = $results[CurlMulti::resultKeyContent];
+        $httpCode = $results[CurlMulti::resultKeyHttpCode];
+        $error = $results[CurlMulti::resultKeyError];
+
+        if ($error) {
+            $this->error($this->_('Values for store performance boxes could not be fetched:') . ' ' . $error);
             $errorIcon = wireIconMarkup('exclamation-triangle');
             $values = array(
                 'orders' => $errorIcon,
@@ -500,7 +601,16 @@ class ProcessSnipWire extends Process implements Module {
                     'returning' => $errorIcon,
                 )
             );
-            
+        } else {
+            $values = array(
+                'orders' => $content['ordersCount'],
+                'sales' => CurrencyFormat::format($content['ordersSales'], $currency),
+                'average' => CurrencyFormat::format($content['averageOrdersValue'], $currency),
+                'customers' => array(
+                    'new' => $content['customers']['newCustomers'],
+                    'returning' => $content['customers']['returningCustomers'],
+                )
+            );
         }
 
         $boxes = array(
@@ -509,9 +619,9 @@ class ProcessSnipWire extends Process implements Module {
             'average' => $this->_('Average Order'),
             'customers' => $this->_('Customers'),
         );
-        
+
         $out = '';
-        
+
         foreach ($boxes as $box => $label) {
             $out .= 
             '<div class="snipwire-perf-box">' .
@@ -534,7 +644,7 @@ class ProcessSnipWire extends Process implements Module {
                 '</div>';
             } else {
                 $out .=
-                '<small>' . $values[$box] . '</small>';
+                '<span>' . $values[$box] . '</span>';
             }
             
             $out .=
@@ -549,28 +659,46 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param array $salesData
      * @param array $ordersData
+     * @param string $currency Currency string
      * @return markup Chart
      *
      */
-    private function _renderChart($salesData, $ordersData) {
+    private function _renderChart($salesData, $ordersData, $currency) {
         $config = $this->wire('config');
 
+        $salesDataContent = $salesData[CurlMulti::resultKeyContent];
+        $salesDataHttpCode = $salesData[CurlMulti::resultKeyHttpCode];
+        $salesDataError = $salesData[CurlMulti::resultKeyError];
         $salesCategories = array();
-        $ordersCategories = array();
         $sales = array();
-        $orders = array();
 
-        // Split results in categories & data (prepare for ApexCharts)
-        if (!empty($salesData['data']) && is_array($salesData['data'])) {
-            foreach ($salesData['data'] as $item) {
-                $salesCategories[] = $item['name'];
-                $sales[] = $item['value'];
+        if ($salesDataError) {
+            $this->error($this->_('Values for sales chart could not be fetched:') . ' ' . $salesDataError);
+        } else {
+            // Split results in categories & data (prepare for ApexCharts)
+            if (!empty($salesDataContent['data']) && is_array($salesDataContent['data'])) {
+                foreach ($salesDataContent['data'] as $item) {
+                    $salesCategories[] = $item['name'];
+                    $sales[] = $item['value'];
+                }
             }
         }
-        if (!empty($ordersData['data']) && is_array($ordersData['data'])) {
-            foreach ($ordersData['data'] as $item) {
-                $ordersCategories[] = $item['name'];
-                $orders[] = intval($item['value']);
+
+        $ordersDataContent = $ordersData[CurlMulti::resultKeyContent];
+        $ordersDataHttpCode = $ordersData[CurlMulti::resultKeyHttpCode];
+        $ordersDataError = $ordersData[CurlMulti::resultKeyError];
+        $ordersCategories = array();
+        $orders = array();
+ 
+        if ($ordersDataError) {
+            $this->error($this->_('Values for orders chart could not be fetched:') . ' ' . $ordersDataError);
+        } else {
+            // Split results in categories & data (prepare for ApexCharts)
+            if (!empty($ordersDataContent['data']) && is_array($ordersDataContent['data'])) {
+                foreach ($ordersDataContent['data'] as $item) {
+                    $ordersCategories[] = $item['name'];
+                    $orders[] = $item['value'];
+                }
             }
         }
 
@@ -774,7 +902,7 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get the sanitized start date for date range filter from input.
+     * Get the sanitized start date from input.
      *
      * @return string Sanitized ISO 8601 or null
      * 
@@ -784,13 +912,23 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get the sanitized end date for date range filter from input.
+     * Get the sanitized end date from input.
      *
      * @return string Sanitized ISO 8601 or null
      * 
      */
     private function _getInputEndDate() {
         return $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
+    }
+
+    /**
+     * Get the sanitized currency string from input.
+     *
+     * @return string The currency string (e.g. 'eur')
+     * 
+     */
+    private function _getInputCurrency() {
+        return $this->wire('input')->get->text('currency');
     }
 
     /**

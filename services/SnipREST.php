@@ -119,10 +119,11 @@ class SnipREST extends CurlMulti {
      *
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
-     * @return mixed Dashboard data as array (each package indexed by full URL) or false if something went wrong
+     * @param string $currency Currency string
+     * @return mixed Dashboard data as array (each package indexed by full URL)
      *
      */
-    public function getDashboardData($start, $end) {
+    public function getDashboardData($start, $end, $currency) {
 
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
@@ -134,8 +135,8 @@ class SnipREST extends CurlMulti {
             return $this->getDashboardDataSingle($start, $end);
         }
         
-        // ---- Performance boxes data ----
-        
+        // ---- Part of performance boxes data ----
+
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
@@ -143,13 +144,16 @@ class SnipREST extends CurlMulti {
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataPerformance . $query);
 
-        // ---- Performance chart data ----
+        // ---- Part of performance boxes + performance chart data ----
 
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
+        
+        // @todo: query Snipcart API for each currency separately and convert sales values to default currency
+        
         $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataOrdersSales . $query);
         $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
 
@@ -195,10 +199,11 @@ class SnipREST extends CurlMulti {
      *
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
-     * @return mixed Dashboard data as array (indexed by `resourcePath...`) or false if something went wrong
+     * @param string $currency Currency string
+     * @return array $data Dashboard data as array (indexed by `resourcePath...`)
      *
      */
-    public function getDashboardDataSingle($start, $end) {
+    public function getDashboardDataSingle($start, $end, $currency) {
 
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
@@ -207,38 +212,25 @@ class SnipREST extends CurlMulti {
 
         $data = array();
         
-        // ---- Performance boxes data ----
+        // ---- Part of performance boxes data ----
         
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
-        $performance = $this->getPerformance($selector, 300);
-        if ($performance === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            $performance = array();
-        }
-        $data[self::resourcePathDataPerformance] = array(CurlMulti::resultKeyContent => $performance);
+        $data[] = $this->getPerformance($selector, 300);
 
-        // ---- Performance chart data ----
+        // ---- Part of performance boxes + performance chart data ----
 
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
-        $chartSalesCount = $this->getSalesCount($selector, 300);
-        if ($chartSalesCount === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            $chartSalesCount = array();
-        }
-        $data[self::resourcePathDataOrdersSales] = array(CurlMulti::resultKeyContent => $chartSalesCount);
 
-        $chartOrdersCount = $this->getOrdersCount($selector, 300);
-        if ($chartOrdersCount === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            $chartOrdersCount = array();
-        }
-        $data[self::resourcePathDataOrdersCount] = array(CurlMulti::resultKeyContent => $chartOrdersCount);
+        // @todo: query Snipcart API for each currency separately and convert sales values to default currency
+
+        $data[] = $this->getSalesCount($selector, 300);
+        $data[] = $this->getOrdersCount($selector, 300);
         
         // ---- Top 10 customers ----
         
@@ -247,12 +239,7 @@ class SnipREST extends CurlMulti {
             'from' => $start,
             'to' => $end,
         );
-        $customers = $this->getCustomersItems($selector, 300);
-        if ($customers === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            $customers = array();
-        }
-        $data[self::resourcePathCustomers] = array(CurlMulti::resultKeyContent => $customers);
+        $data[] = $this->getCustomers($selector, 300);
 
         // ---- Top 10 products ----
 
@@ -265,12 +252,7 @@ class SnipREST extends CurlMulti {
             'from' => $start,
             'to' => $end,
         );
-        $products = $sniprest->getProductsItems($selector, 300);
-        if ($products === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            $products = array();
-        }
-        $data[self::resourcePathProducts] = array(CurlMulti::resultKeyContent => $products);
+        $data[] = $sniprest->getProducts($selector, 300);
 
         // ---- Latest 10 orders ----
 
@@ -279,12 +261,7 @@ class SnipREST extends CurlMulti {
             'from' => $start,
             'to' => $end,
         );
-        $orders = $sniprest->getOrdersItems($selector, 300);
-        if ($orders === false) {
-            $this->error(SnipREST::getMessagesText('connection_failed'));
-            $orders = array();
-        }
-        $data[self::resourcePathOrders] = array(CurlMulti::resultKeyContent => $orders);
+        $data[] = $sniprest->getOrders($selector, 300);
         
         return $data;
     }
@@ -302,10 +279,10 @@ class SnipREST extends CurlMulti {
      *  - `invoiceNumber` (string) The invoice number of the order to retrieve
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
-     *  - '`to` (datetime) Will return only the orders placed before this date
+     *  - `to` (datetime) Will return only the orders placed before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or array
+     * @return array $data
      *
      */
     public function getOrders($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -336,7 +313,15 @@ class SnipREST extends CurlMulti {
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathOrders . $query);
         });
-        return ($key && isset($response[$key])) ? $response[$key] : $response;
+
+        $response = ($key && isset($response[$key])) ? $response[$key] : $response;
+        if ($response === false) $response = array();
+        $data[self::resourcePathOrders] = array(
+            CurlMulti::resultKeyContent => $response,
+            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
+            CurlMulti::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**
@@ -349,10 +334,10 @@ class SnipREST extends CurlMulti {
      *  - `invoiceNumber` (string) The invoice number of the order to retrieve
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
-     *  - '`to` (datetime) Will return only the orders placed before this date
+     *  - `to` (datetime) Will return only the orders placed before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return boolean|integer False if request failed or items as array
+     * @return array $data
      * 
      */
     public function getOrdersItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -373,10 +358,10 @@ class SnipREST extends CurlMulti {
      *  - `excludeZeroSales`  boolean (as string) "true" or "false"  (undocumented!)
      *  - `orderBy` string The order by key (undocumented!)
      *  - `from` (datetime) Will return only the customers created after this date
-     *  - '`to` (datetime) Will return only the customers created before this date
+     *  - `to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or array
+     * @return array $data
      *
      */
     public function getProducts($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -408,7 +393,15 @@ class SnipREST extends CurlMulti {
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathProducts . $query);
         });
-        return ($key && isset($response[$key])) ? $response[$key] : $response;
+
+        $response = ($key && isset($response[$key])) ? $response[$key] : $response;
+        if ($response === false) $response = array();
+        $data[self::resourcePathProducts] = array(
+            CurlMulti::resultKeyContent => $response,
+            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
+            CurlMulti::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**
@@ -423,10 +416,10 @@ class SnipREST extends CurlMulti {
      *  - `excludeZeroSales`  boolean (as string) "true" or "false"  (undocumented!)
      *  - `orderBy` string The order by key (undocumented!)
      *  - `from` (datetime) Will return only the customers created after this date
-     *  - '`to` (datetime) Will return only the customers created before this date
+     *  - `to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or items as array
+     * @return array $data
      * 
      */
     public function getProductsItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -446,10 +439,10 @@ class SnipREST extends CurlMulti {
      *  - `email` (string) The email of the customer who placed the order
      *  - `name` (string) The name of the customer who placed the order
      *  - `from` (datetime) Will return only the customers created after this date
-     *  - '`to` (datetime) Will return only the customers created before this date
+     *  - `to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or array
+     * @return array $data
      *
      */
     public function getCustomers($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -480,7 +473,16 @@ class SnipREST extends CurlMulti {
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathCustomers . $query);
         });
-        return ($key && isset($response[$key])) ? $response[$key] : $response;
+
+        $response = ($key && isset($response[$key])) ? $response[$key] : $response;
+        if ($response === false) $response = array();
+        $data[self::resourcePathCustomers] = array(
+            CurlMulti::resultKeyContent => $response,
+            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
+            CurlMulti::resultKeyError => $this->getError(),
+        );
+        return $data;
+
     }
 
     /**
@@ -493,10 +495,10 @@ class SnipREST extends CurlMulti {
      *  - `email` (string) The email of the customer who placed the order
      *  - `name` (string) The name of the customer who placed the order
      *  - `from` (datetime) Will return only the customers created after this date
-     *  - '`to` (datetime) Will return only the customers created before this date
+     *  - `to` (datetime) Will return only the customers created before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or items as array
+     * @return array $data
      * 
      */
     public function getCustomersItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -510,10 +512,10 @@ class SnipREST extends CurlMulti {
      *
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
-     *  - '`to` (datetime) Will return only the performance before this date
+     *  - `to` (datetime) Will return only the performance before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or array
+     * @return array $data
      *
      */
     public function getPerformance($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -541,7 +543,14 @@ class SnipREST extends CurlMulti {
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDataPerformance . $query);
         });
-        return $response;
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathDataPerformance] = array(
+            CurlMulti::resultKeyContent => $response,
+            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
+            CurlMulti::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**
@@ -551,10 +560,10 @@ class SnipREST extends CurlMulti {
      *
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
-     *  - '`to` (datetime) Will return only the performance before this date
+     *  - `to` (datetime) Will return only the performance before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or array
+     * @return array $data
      *
      */
     public function getSalesCount($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -562,7 +571,7 @@ class SnipREST extends CurlMulti {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::resourcePathDataOrdersSales);
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrdersSales);
 
         $allowedOptions = array('from', 'to');
         $defaultOptions = array();
@@ -576,13 +585,20 @@ class SnipREST extends CurlMulti {
         if (!empty($options)) $query = '?' . http_build_query($options);
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::resourcePathDataOrdersSales . '.' . md5($query);
+        $cacheName = self::cacheNamePrefixOrdersSales . '.' . md5($query);
         
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersSales . $query);
         });
-        return $response;
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathDataOrdersSales] = array(
+            CurlMulti::resultKeyContent => $response,
+            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
+            CurlMulti::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**
@@ -592,10 +608,10 @@ class SnipREST extends CurlMulti {
      *
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
-     *  - '`to` (datetime) Will return only the performance before this date
+     *  - `to` (datetime) Will return only the performance before this date
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
      * @param boolean $forceRefresh Wether to refresh the settings cache
-     * @return mixed False if request failed or array
+     * @return array $data
      *
      */
     public function getOrdersCount($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
@@ -623,7 +639,14 @@ class SnipREST extends CurlMulti {
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
         });
-        return $response;
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathDataOrdersCount] = array(
+            CurlMulti::resultKeyContent => $response,
+            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
+            CurlMulti::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**
