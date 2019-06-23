@@ -369,8 +369,8 @@ class ProcessSnipWire extends Process implements Module {
                 $dashboard[SnipRest::resourcePathDataOrdersSales] = $package;
 
                 // Calc sales sum
-                if (isset($dashboard[SnipRest::resourcePathDataOrdersSales][CurlMulti::resultKeyContent]['data'])) {
-                    $data = $dashboard[SnipRest::resourcePathDataOrdersSales][CurlMulti::resultKeyContent]['data'];
+                if (isset($dashboard[SnipRest::resourcePathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipRest::resourcePathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'];
                     foreach ($data as $item) {
                         $ordersSales += $item['value'];
                     }
@@ -381,8 +381,8 @@ class ProcessSnipWire extends Process implements Module {
                 $dashboard[SnipRest::resourcePathDataOrdersCount] = $package;
                 
                 // Calc orders count
-                if (isset($dashboard[SnipRest::resourcePathDataOrdersCount][CurlMulti::resultKeyContent]['data'])) {
-                    $data = $dashboard[SnipRest::resourcePathDataOrdersCount][CurlMulti::resultKeyContent]['data'];
+                if (isset($dashboard[SnipRest::resourcePathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipRest::resourcePathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'];
                     foreach ($data as $item) {
                         $ordersCount += $item['value'];
                     }
@@ -390,20 +390,20 @@ class ProcessSnipWire extends Process implements Module {
                 
             } elseif (strpos($key, SnipRest::resourcePathCustomers) !== false) {
                 
-                $dashboard[SnipRest::resourcePathCustomers] = isset($package[CurlMulti::resultKeyContent]['items'])
-                    ? $package[CurlMulti::resultKeyContent]['items']
+                $dashboard[SnipRest::resourcePathCustomers] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                    ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
                 
             } elseif (strpos($key, SnipRest::resourcePathProducts) !== false) {
                 
-                $dashboard[SnipRest::resourcePathProducts] = isset($package[CurlMulti::resultKeyContent]['items'])
-                    ? $package[CurlMulti::resultKeyContent]['items']
+                $dashboard[SnipRest::resourcePathProducts] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                    ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
                 
             } elseif (strpos($key, SnipRest::resourcePathOrders) !== false) {
                 
-                $dashboard[SnipRest::resourcePathOrders] = isset($package[CurlMulti::resultKeyContent]['items'])
-                    ? $package[CurlMulti::resultKeyContent]['items']
+                $dashboard[SnipRest::resourcePathOrders] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                    ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
             }
         }
@@ -415,8 +415,8 @@ class ProcessSnipWire extends Process implements Module {
             'ordersCount' => $ordersCount,
             'averageOrdersValue' => $averageOrdersValue,
         );
-        $dashboard[SnipRest::resourcePathDataPerformance][CurlMulti::resultKeyContent] = array_merge(
-            $dashboard[SnipRest::resourcePathDataPerformance][CurlMulti::resultKeyContent],
+        $dashboard[SnipRest::resourcePathDataPerformance][WireHttpExtended::resultKeyContent] = array_merge(
+            $dashboard[SnipRest::resourcePathDataPerformance][WireHttpExtended::resultKeyContent],
             $calculated
         );
 
@@ -582,9 +582,9 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _renderPerformanceBoxes($results, $currency) {
         
-        $content = $results[CurlMulti::resultKeyContent];
-        $httpCode = $results[CurlMulti::resultKeyHttpCode];
-        $error = $results[CurlMulti::resultKeyError];
+        $content = $results[WireHttpExtended::resultKeyContent];
+        $httpCode = $results[WireHttpExtended::resultKeyHttpCode];
+        $error = $results[WireHttpExtended::resultKeyError];
 
         if ($error) {
             $this->error($this->_('Values for store performance boxes could not be fetched:') . ' ' . $error);
@@ -663,9 +663,9 @@ class ProcessSnipWire extends Process implements Module {
     private function _renderChart($salesData, $ordersData, $currency) {
         $config = $this->wire('config');
 
-        $salesDataContent = $salesData[CurlMulti::resultKeyContent];
-        $salesDataHttpCode = $salesData[CurlMulti::resultKeyHttpCode];
-        $salesDataError = $salesData[CurlMulti::resultKeyError];
+        $salesDataContent = $salesData[WireHttpExtended::resultKeyContent];
+        $salesDataHttpCode = $salesData[WireHttpExtended::resultKeyHttpCode];
+        $salesDataError = $salesData[WireHttpExtended::resultKeyError];
         $salesCategories = array();
         $sales = array();
 
@@ -681,9 +681,9 @@ class ProcessSnipWire extends Process implements Module {
             }
         }
 
-        $ordersDataContent = $ordersData[CurlMulti::resultKeyContent];
-        $ordersDataHttpCode = $ordersData[CurlMulti::resultKeyHttpCode];
-        $ordersDataError = $ordersData[CurlMulti::resultKeyError];
+        $ordersDataContent = $ordersData[WireHttpExtended::resultKeyContent];
+        $ordersDataHttpCode = $ordersData[WireHttpExtended::resultKeyHttpCode];
+        $ordersDataError = $ordersData[WireHttpExtended::resultKeyError];
         $ordersCategories = array();
         $orders = array();
  

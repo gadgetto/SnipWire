@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * CurlMulti - service class (wrapper for WireHttp) that allows processing of multiple cURL handles asynchronously.
+ * WireHttpExtended - service class (wrapper for WireHttp) that allows processing of multiple cURL handles asynchronously.
  * (This file is part of the SnipWire package)
  *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
@@ -12,7 +12,7 @@
  *
  */
 
-class CurlMulti extends WireHttp {
+class WireHttpExtended extends WireHttp {
 
     const resultKeyContent = 'content';
     const resultKeyHttpCode = 'http_code';

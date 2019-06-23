@@ -19,9 +19,9 @@
  *
  */
 
-require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CurlMulti.php';
+require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'WireHttpExtended.php';
 
-class SnipREST extends CurlMulti {
+class SnipREST extends WireHttpExtended {
 
     const apiEndpoint = 'https://app.snipcart.com/api/';
     const resourcePathOrders = 'orders';
@@ -317,9 +317,9 @@ class SnipREST extends CurlMulti {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
         $data[self::resourcePathOrders] = array(
-            CurlMulti::resultKeyContent => $response,
-            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
-            CurlMulti::resultKeyError => $this->getError(),
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
@@ -397,9 +397,9 @@ class SnipREST extends CurlMulti {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
         $data[self::resourcePathProducts] = array(
-            CurlMulti::resultKeyContent => $response,
-            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
-            CurlMulti::resultKeyError => $this->getError(),
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
@@ -477,9 +477,9 @@ class SnipREST extends CurlMulti {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
         $data[self::resourcePathCustomers] = array(
-            CurlMulti::resultKeyContent => $response,
-            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
-            CurlMulti::resultKeyError => $this->getError(),
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
 
@@ -546,9 +546,9 @@ class SnipREST extends CurlMulti {
 
         if ($response === false) $response = array();
         $data[self::resourcePathDataPerformance] = array(
-            CurlMulti::resultKeyContent => $response,
-            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
-            CurlMulti::resultKeyError => $this->getError(),
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
@@ -594,9 +594,9 @@ class SnipREST extends CurlMulti {
 
         if ($response === false) $response = array();
         $data[self::resourcePathDataOrdersSales] = array(
-            CurlMulti::resultKeyContent => $response,
-            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
-            CurlMulti::resultKeyError => $this->getError(),
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
@@ -642,9 +642,9 @@ class SnipREST extends CurlMulti {
 
         if ($response === false) $response = array();
         $data[self::resourcePathDataOrdersCount] = array(
-            CurlMulti::resultKeyContent => $response,
-            CurlMulti::resultKeyHttpCode => $this->getHttpCode(),
-            CurlMulti::resultKeyError => $this->getError(),
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
