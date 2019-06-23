@@ -45,6 +45,7 @@ class SnipREST extends CurlMulti {
     const cacheNamePrefixCustomers = 'Customers';
     const cacheNamePrefixPerformance = 'Performance';
     const cacheNamePrefixOrdersCount = 'OrdersCount';
+    const cacheNamePrefixOrdersSales = 'OrdersSales';
 
     /**
      * Construct/initialize
