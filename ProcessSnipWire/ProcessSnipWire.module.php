@@ -160,7 +160,6 @@ class ProcessSnipWire extends Process implements Module {
             $fsTop = $modules->get('InputfieldFieldset');
             $fsTop->icon = 'bar-chart';
             $fsTop->label = $this->_('Top Store Actions');
-            $fsTop->wrapClass = 'bottomSpace';
 
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
@@ -191,7 +190,6 @@ class ProcessSnipWire extends Process implements Module {
             $fsOrders = $modules->get('InputfieldFieldset');
             $fsOrders->icon = 'list-alt';
             $fsOrders->label = $this->_('Recent Orders');
-            $fsOrders->wrapClass = 'bottomSpace';
 
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
@@ -526,7 +524,6 @@ class ProcessSnipWire extends Process implements Module {
             $fsFilters = $modules->get('InputfieldFieldset');
             $fsFilters->icon = 'line-chart';
             $fsFilters->label = $this->_('Store Performance');
-            $fsFilters->wrapClass = 'bottomSpace';
 
                 // Period date range picker with hidden form fields
                 $markup =
@@ -651,7 +648,7 @@ class ProcessSnipWire extends Process implements Module {
                 '</div>' .
             '</div>';
         }
-        return '<div id="PerformanceBoxesContainer" class="bottomSpace">' . $out . '</div>';
+        return '<div id="PerformanceBoxesContainer">' . $out . '</div>';
     }
 
     /**
@@ -723,7 +720,6 @@ class ProcessSnipWire extends Process implements Module {
 
         $out =
         '<div id="PerformanceChart"' .
-        ' class="bottomSpace"' .
         ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
         ' role="img">' .
         '</div>';
