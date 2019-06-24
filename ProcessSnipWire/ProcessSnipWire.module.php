@@ -254,9 +254,21 @@ class ProcessSnipWire extends Process implements Module {
         $orders = isset($request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
-        
-        $out = '';
-        $out .= $this->_renderTableOrders($orders);
+
+        /** @var InputfieldWrapper $wrapper */
+        $wrapper = $this->wire(new InputfieldWrapper());
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Snipcart Orders');
+            $f->icon = 'file-text-o';
+            $f->value = $this->_renderTableOrders($orders);
+            $f->columnWidth = 100;
+            $f->collapsed = Inputfield::collapsedNever;
+
+        $wrapper->add($f);
+
+        $out = $wrapper->render();
 
         return $out;
     }
