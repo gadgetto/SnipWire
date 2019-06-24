@@ -234,15 +234,31 @@ class ProcessSnipWire extends Process implements Module {
         $config = $this->wire('config');
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Orders'));
         $this->headline($this->_('Snipcart Orders'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
+        $selector = array(
+            'offset' => 0,
+            'limit' => 20,
+            //'from' => $start,
+            //'to' => $end,
+        );
+
+        $request = $sniprest->getOrdersItems($selector);
+        $orders = isset($request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
+            : array();
+        
+        $out = '';
+        $out .= $this->_renderTableOrders($orders);
+
+        return $out;
     }
 
     /**
@@ -892,6 +908,57 @@ class ProcessSnipWire extends Process implements Module {
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No orders in selected period') .
+            '</div>';
+            return $out;
+        }
+    }
+
+    /**
+     * Render the orders table.
+     *
+     * @param array $items
+     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
+     *
+     */
+    private function _renderTableOrders($items) {
+        $modules = $this->wire('modules');
+
+        if (!empty($items)) {
+            
+            $out = '';
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->id = 'snipwire-orders-table';
+            $table->setSortable(false);
+            $table->setResizable(false);
+            $table->headerRow(array(
+                $this->_('Invoice #'),
+                $this->_('Placed on'),
+                $this->_('Placed by'),
+                $this->_('Countrty'),
+                $this->_('Payment Status'),
+                $this->_('Total'),
+            ));
+            foreach ($items as $item) {
+                $table->row(array(
+                    $item['invoiceNumber'] => '#',
+                    wireDate('relative', $item['creationDate']),
+                    $item['user']['billingAddress']['fullName'],
+                    $item['billingAddressCountry'],
+                    $item['paymentStatus'],
+                    CurrencyFormat::format($item['total'], $item['currency']),
+                ));
+            }
+            $out .= $table->render();
+
+            return $out;
+            
+        } else {
+            
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No orders found') .
             '</div>';
             return $out;
         }
