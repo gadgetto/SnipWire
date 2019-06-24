@@ -942,7 +942,7 @@ class ProcessSnipWire extends Process implements Module {
             $table->setEncodeEntities(false);
             $table->id = 'snipwire-orders-table';
             $table->setSortable(false);
-            $table->setResizable(false);
+            $table->setResizable(true);
             $table->headerRow(array(
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
@@ -961,7 +961,22 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
+
             $out .= $table->render();
+
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = '#';
+            $btn->value = $this->_('Previous');
+
+            $out .= $btn->render();
+            
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = '#';
+            $btn->value = $this->_('Next');
+
+            $out .= $btn->render();
 
             return $out;
             
