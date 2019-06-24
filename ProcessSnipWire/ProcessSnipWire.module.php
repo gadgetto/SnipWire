@@ -246,8 +246,6 @@ class ProcessSnipWire extends Process implements Module {
         $selector = array(
             'offset' => 0,
             'limit' => 20,
-            //'from' => $start,
-            //'to' => $end,
         );
 
         $request = $sniprest->getOrdersItems($selector);
@@ -270,7 +268,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $out = $wrapper->render();
 
-        return $out;
+        return $this->_wrapDashboardOutput($out);
     }
 
     /**
