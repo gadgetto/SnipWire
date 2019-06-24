@@ -38,7 +38,7 @@ class ProcessSnipWire extends Process implements Module {
                 array(
                     'url' => 'orders/', 
                     'label' => __('Orders'), 
-                    'icon' => 'list-alt', 
+                    'icon' => 'file-text-o', 
                 ),
                 array(
                     'url' => 'customers/', 
@@ -147,77 +147,77 @@ class ProcessSnipWire extends Process implements Module {
             $dashboard[SnipRest::resourcePathDataPerformance],
             $currency
         );
-        $out .= $this->_renderChart(
+
+        $chart = $this->_renderChart(
             $dashboard[SnipRest::resourcePathDataOrdersSales],
             $dashboard[SnipRest::resourcePathDataOrdersCount],
             $currency
         );
 
-        /** @var InputfieldForm $form */
-        $wrapper = $modules->get('InputfieldForm'); 
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
 
-            /** @var InputfieldFieldset $fsTop */
-            $fsTop = $modules->get('InputfieldFieldset');
-            $fsTop->icon = 'bar-chart';
-            $fsTop->label = $this->_('Top Store Actions');
-
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Top Customers');
-                $f->value = $this->_renderTableTopCustomers($dashboard[SnipRest::resourcePathCustomers]);
-                $f->columnWidth = 50;
-                $f->collapsed = Inputfield::collapsedNever;
-
-            $fsTop->add($f);
-
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Top Products');
-                $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resourcePathProducts]);
-                $f->columnWidth = 50;
-                $f->collapsed = Inputfield::collapsedNever;
-
-            $fsTop->add($f);
-
-        $wrapper->add($fsTop);
-
-        $out .= $wrapper->render();
-
-        /** @var InputfieldForm $form */
-        $wrapper = $modules->get('InputfieldForm'); 
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Performance Chart');
+            $f->icon = 'bar-chart';
+            $f->value = $chart;
+            $f->columnWidth = 100;
+            $f->collapsed = Inputfield::collapsedNever;
             
-            /** @var InputfieldFieldset $fsOrders */
-            $fsOrders = $modules->get('InputfieldFieldset');
-            $fsOrders->icon = 'list-alt';
-            $fsOrders->label = $this->_('Recent Orders');
-
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->value = $this->_renderTableRecentOrders($dashboard[SnipRest::resourcePathOrders]);
-                $f->columnWidth = 100;
-                $f->skipLabel = Inputfield::skipLabelHeader;
-                $f->collapsed = Inputfield::collapsedNever;
-                
-            $fsOrders->add($f);
-        
-        $wrapper->add($fsOrders);
+        $wrapper->add($f);
 
         $out .= $wrapper->render();
 
-        /** @var InputfieldWrapper $wrapper */
-        $wrapper = new InputfieldWrapper();
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
 
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->id = 'refresh-data';
-            $btn->href = './?action=refresh';
-            $btn->value = $this->_('Refresh');
-            $btn->icon = 'refresh';
-            $btn->showInHeader();
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Top Customers');
+            $f->icon = 'user';
+            $f->value = $this->_renderTableTopCustomers($dashboard[SnipRest::resourcePathCustomers]);
+            $f->columnWidth = 50;
+            $f->collapsed = Inputfield::collapsedNever;
 
-        $wrapper->add($btn);
+        $wrapper->add($f);
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Top Products');
+            $f->icon = 'cube';
+            $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resourcePathProducts]);
+            $f->columnWidth = 50;
+            $f->collapsed = Inputfield::collapsedNever;
+
+        $wrapper->add($f);
 
         $out .= $wrapper->render();
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Recent Orders');
+            $f->icon = 'file-text-o';
+            $f->value = $this->_renderTableRecentOrders($dashboard[SnipRest::resourcePathOrders]);
+            $f->columnWidth = 100;
+            $f->collapsed = Inputfield::collapsedNever;
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = './?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= $btn->render();
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -538,8 +538,8 @@ class ProcessSnipWire extends Process implements Module {
 
             /** @var InputfieldFieldset $fsFilters */
             $fsFilters = $modules->get('InputfieldFieldset');
-            $fsFilters->icon = 'line-chart';
-            $fsFilters->label = $this->_('Store Performance');
+            $fsFilters->icon = 'filter';
+            $fsFilters->label = $this->_('Store Performance Filter');
 
                 // Period date range picker with hidden form fields
                 $markup =
@@ -896,7 +896,7 @@ class ProcessSnipWire extends Process implements Module {
             $btn = $modules->get('InputfieldButton');
             $btn->href = './orders';
             $btn->value = $this->_('All Orders');
-            $btn->icon = 'list-alt';
+            $btn->icon = 'file-text-o';
             $btn->setSecondary(true);
             $btn->set('small', true);
 

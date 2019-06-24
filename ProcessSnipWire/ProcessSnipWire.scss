@@ -21,10 +21,6 @@
 
 #SnipwireDashboard {
     clear: both;
-    
-    .InputfieldHeader {
-        font-size: 1.2rem;
-    }
 }
 
 #PeriodPickerContainer {
@@ -58,7 +54,6 @@
         box-sizing: border-box;
         padding: 0 .5rem;
         background-color: #f0f3f7;
-        border-radius: .5rem;
         margin-bottom: 1.2rem;
         
         .snipwire-perf-box-header {
