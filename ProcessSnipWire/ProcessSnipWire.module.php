@@ -550,7 +550,6 @@ class ProcessSnipWire extends Process implements Module {
             $fsFilters = $modules->get('InputfieldFieldset');
             $fsFilters->icon = 'filter';
             $fsFilters->label = $this->_('Store Performance Filter');
-            $fsFilters->collapsed = Inputfield::collapsedYes; 
 
                 // Period date range picker with hidden form fields
                 $markup =
