@@ -7,8 +7,6 @@
  * Only accepts application/json content type -> always specify "Accept: application/json" header 
  * in every request.
  *
- * The main API endpoint is https://app.snipcart.com/api
- *
  * Snipcart is using HTTP Basic Auth.
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
