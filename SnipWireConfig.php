@@ -298,8 +298,8 @@ class SnipWireConfig extends ModuleConfig {
             foreach ($currencies as $currency) {
                 $currencyName = $currency['currency'];
                 $currencyLabel = isset($supportedCurrencies[$currency['currency']])
-                    ? $supportedCurrencies[$currency['currency']]
-                    : $currency['currency'];
+                    ? strtoupper($currency['currency']) . ' : ' . $supportedCurrencies[$currency['currency']]
+                    : strtoupper($currency['currency']);
                 $f->addOption($currencyName, $currencyLabel);
             }
             $f->required = true;
