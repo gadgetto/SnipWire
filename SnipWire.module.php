@@ -12,6 +12,12 @@
  *
  */
 
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'SnipREST.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'ExchangeREST.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'Webhooks.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+
 class SnipWire extends WireData implements Module, ConfigurableModule {
 
     public static function getModuleInfo() {
@@ -65,9 +71,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      */
     public function __construct() {
         parent::__construct();
-        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'SnipREST.php';
-        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'Webhooks.php';
-        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
     }
 
     /**

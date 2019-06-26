@@ -12,7 +12,9 @@
  *
  */
  
- class MarkupSnipWire extends WireData implements Module {
+require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
+
+class MarkupSnipWire extends WireData implements Module {
     
     public static function getModuleInfo() {
         return array(
@@ -62,7 +64,6 @@
      *
      */
     public function __construct() {
-        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
         parent::__construct();
     }
     

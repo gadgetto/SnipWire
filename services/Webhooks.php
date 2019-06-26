@@ -15,6 +15,8 @@
  *
  */
 
+require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+
 class Webhooks extends WireData {
 
     const snipWireWebhooksLogName = 'snipwire-webhooks';
@@ -417,9 +419,7 @@ class Webhooks extends WireData {
      * Webhook handler for taxes calculation.
      *
      */
-    public function ___handleTaxesCalculate() {
-        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
-        
+    public function ___handleTaxesCalculate() {        
         $log = $this->wire('log');
         
         if ($this->debug) $log->save(
