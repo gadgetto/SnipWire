@@ -68,7 +68,7 @@ class ExchangeREST extends WireHttpExtended {
         $texts = array(
             'no_headers' => __('Missing request headers for Exchangerates API connection.'),
             'connection_failed' => __('Connection to Exchangerates API failed'),
-            'unsupported_currency' => __('The specified currency is currently not supported by Exchangerates API.'),
+            'unsupported_currency' => __('The specified currency %s is currently not supported by Exchangerates API.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
@@ -78,13 +78,13 @@ class ExchangeREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading data on each request.
      *
-     * @param string $currency The currency to quote against (default: EUR)
+     * @param string $currency The currency to quote against (default: eur)
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save() [default: 1 day]
      * @param boolean $forceRefresh Wether to refresh the cache
      * @return boolean|array False if request failed or conversions array
      *
      */
-    public function getLatest($currency = 'EUR', $expires = WireCache::expireDaily, $forceRefresh = false) {
+    public function getLatest($currency = 'eur', $expires = WireCache::expireDaily, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -93,15 +93,15 @@ class ExchangeREST extends WireHttpExtended {
 
         $query = '';
         if (!empty($currency)) {
-            if (in_array($currency, $this->_supportedCurrencies)) {
-                $query = '?base=' . $currency;
+            if (array_key_exists(strtolower($currency), $this->_supportedCurrencies)) {
+                $query = '?base=' . strtoupper($currency);
             } else {
-                $this->error(self::getMessagesText('unsupported_currency'));
+                $this->error(sprintf(self::getMessagesText('unsupported_currency'), $currency));
             }
         }
 
         // Segmented orders cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixOrders . '.' . md5($query);
+        $cacheName = self::cacheNamePrefixExchangeRates . '.' . md5($query);
 
         // Try to get settings array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, self::cacheNamePrefixExchangeRates, $expires, function() use($query) {
