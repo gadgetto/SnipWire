@@ -266,6 +266,20 @@ class ProcessSnipWire extends Process implements Module {
 
         $wrapper->add($f);
 
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = './offset=0';
+            $btn->value = $this->_('Previous');
+
+        $wrapper->add($btn);
+            
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = './offset=20';
+            $btn->value = $this->_('Next');
+
+        $wrapper->add($btn);
+
         $out = $wrapper->render();
 
         return $this->_wrapDashboardOutput($out);
@@ -962,20 +976,6 @@ class ProcessSnipWire extends Process implements Module {
             }
 
             $out .= $table->render();
-
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = '#';
-            $btn->value = $this->_('Previous');
-
-            $out .= $btn->render();
-            
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = '#';
-            $btn->value = $this->_('Next');
-
-            $out .= $btn->render();
 
             return $out;
             
