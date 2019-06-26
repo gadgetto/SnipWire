@@ -81,6 +81,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     public function init() {
         /** @var SnipREST $sniprest Custom ProcessWire API variable */
         $this->wire('sniprest', new SnipREST());
+        $this->wire('exchangerest', new ExchangeREST());
         $this->addHookBefore('Modules::saveConfig', $this, 'validateTaxesRepeater');
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookAfter('Pages::added', $this, 'presetProductFields');
