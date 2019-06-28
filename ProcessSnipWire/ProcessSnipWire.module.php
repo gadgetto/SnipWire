@@ -63,7 +63,8 @@ class ProcessSnipWire extends Process implements Module {
 
     const assetsIncludeDaterangePicker = 1;
     const assetsIncludeApexCharts = 2;
-    const assetsIncludeAll = 3;
+    const assetsIncludeItemLister = 4;
+    const assetsIncludeAll = 7;
 
     /** @var array $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = array();
@@ -117,7 +118,7 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
         
-        $this->_includeAssets(self::assetsIncludeAll);
+        $this->_includeAssets(self::assetsIncludeDaterangePicker | self::assetsIncludeApexCharts);
 
         //if ($this->_getInputAction() == 'refresh') bd('refresh');
         
@@ -244,6 +245,7 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
+        $this->_includeAssets(self::assetsIncludeItemLister);
         $selector = array(
             'offset' => 0,
             'limit' => 20,
@@ -1043,7 +1045,7 @@ class ProcessSnipWire extends Process implements Module {
         $version = (int) isset($info['version']) ? $info['version'] : 0;
         $versionAdd = "?v=$version";
 
-        if ($mode & self::assetsIncludeAll || $mode & self::assetsIncludeDaterangePicker || $mode & self::assetsIncludeApexCharts) {
+        if ($mode & self::assetsIncludeDaterangePicker || $mode & self::assetsIncludeApexCharts) {
             // Include moment.js JS assets
             $config->scripts->add($config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
         }
@@ -1060,6 +1062,11 @@ class ProcessSnipWire extends Process implements Module {
             $config->scripts->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.min.js?v=3.6.9');
             $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
         }
+        if ($mode & self::assetsIncludeItemLister) {
+            // Include ItemLister JS assets
+            $config->scripts->add($config->urls->SnipWire . 'assets/scripts/ItemLister.min.js' . $versionAdd);
+        }
+
     }
 
     /**
