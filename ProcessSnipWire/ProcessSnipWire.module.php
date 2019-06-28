@@ -956,7 +956,8 @@ class ProcessSnipWire extends Process implements Module {
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
-            $table->id = 'snipwire-orders-table';
+            $table->setID('snipwire-orders-table');
+            $table->setClass('ItemLister');
             $table->setSortable(false);
             $table->setResizable(true);
             $table->headerRow(array(
