@@ -356,6 +356,71 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * Renders a custom item lister pagination.
+     * (has only Prev/Next buttons)
+     *
+     * @param string $url
+     * @param integer $limit
+     * @param integer $offset
+     * @param integer $count
+     * @return pagination markup
+     *
+     */
+    protected function itemPagination($url, $limit, $offset, $count) {
+        
+        $prevDisabled = ($offset <= 0) ? true : false;
+        $nextDisabled = ($count < $limit) ? true : false;
+
+        $paginationLabels = array(
+            'orders' => $this->_('Orders'),
+            'to' => $this->_('to'),
+            'prev' => $this->_('Prev'),
+            'next' => $this->_('Next'),
+            'go_prev' => $this->_('Goto previous page'),
+            'go_next' => $this->_('Goto next page'),
+            'no_prev' => $this->_('No previous page available'),
+            'no_next' => $this->_('No next page available'),
+        );
+        
+        $out = 
+        '<div class="item-lister-pagination">' .
+            '<h2 class="pagination-info">' .
+                $paginationLabels['orders'] . ' <span class="items-offset">' . ($offset + 1) . '</span> ' .
+                $paginationLabels['to'] . ' <span class="items-count">' . ($offset + $count) . '</span>' .
+            '</h2>' .
+            '<div class="pagination-buttons">';
+        
+        if ($prevDisabled) {
+            $out .=
+                '<span class="items-prev" aria-label="' . $paginationLabels['no_prev'] . '">' .
+                    wireIconMarkup('angle-left') . ' ' . $paginationLabels['prev'] .
+                '</span>';
+        } else {
+            $out .=
+                '<a href="' . $url . '?action=prev" role="button" class="items-prev" aria-label="' . $paginationLabels['go_prev'] . '">' .
+                    wireIconMarkup('angle-left') . ' ' . $paginationLabels['prev'] .
+                '</a>';
+        }    
+        if ($nextDisabled) {
+            $out .=
+                '<span class="items-next" aria-label="' . $paginationLabels['no_next'] . '">' .
+                    $paginationLabels['next'] . ' ' . wireIconMarkup('angle-right') .
+                '</span>';
+        } else {
+            $out .=
+                '<a href="' . $url . '?action=next" role="button" class="items-next" aria-label="' . $paginationLabels['go_next'] . '">' .
+                    $paginationLabels['next'] . ' ' . wireIconMarkup('angle-right') .
+                '</a>';
+        }
+
+        $out .= 
+            '</div>' .
+        '</div>';
+        
+        return $out;
+    }
+
+    /**
      * Extract data packages from Snipcart API results and create new 
      * array ready for dashboard rendering.
      *
