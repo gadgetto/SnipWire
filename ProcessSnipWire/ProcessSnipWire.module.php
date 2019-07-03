@@ -309,6 +309,48 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
+        $limit = 20;        
+        $currentOffset = (int) $this->sessionGet('offsetCustomers');        
+        $action = $this->_getInputAction();
+        if ($action == 'next') {
+            $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
+        } elseif ($action == 'prev') {
+            $offset = is_numeric($currentOffset) ? ($currentOffset - $limit) : 0;
+            if ($offset <= 0)  $offset = 0;
+        } else {
+            $offset = $currentOffset;
+        }
+        $this->sessionSet('offsetCustomers', $offset);
+
+        $selector = array(
+            'offset' => $offset,
+            'limit' => $limit,
+            'orderBy' => 'creationDate',
+        );
+
+        $request = $sniprest->getCustomersItems($selector);
+        $customers = isset($request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent]
+            : array();
+        
+        $count = count($customers);
+        $url = $input->url();
+
+        $pagination = $this->itemPagination($url, $limit, $offset, $count);
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Customers');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = 'user';
+        $f->value = $pagination;
+        $f->value .= $this->_renderTableCustomers($customers);
+        $f->value .= $pagination;
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $out = $f->render();
+
+        return $this->_wrapDashboardOutput($out);
     }
 
     /**
@@ -1050,6 +1092,59 @@ class ProcessSnipWire extends Process implements Module {
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No orders found') .
+            '</div>';
+
+        }
+
+        return $out;
+    }
+
+    /**
+     * Render the customers table.
+     *
+     * @param array $items
+     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
+     *
+     */
+    private function _renderTableCustomers($items) {
+        $modules = $this->wire('modules');
+
+        if (!empty($items)) {
+            
+            $out = '';
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->setID('snipwire-customers-table');
+            $table->setClass('ItemLister');
+            $table->setSortable(false);
+            $table->setResizable(false);
+            $table->headerRow(array(
+                $this->_('Email'),
+                $this->_('Name'),
+                $this->_('Created on'),
+                $this->_('# Orders'),
+                $this->_('# Subscriptions'),
+                $this->_('Status'),
+            ));
+
+            foreach ($items as $item) {
+                $table->row(array(
+                    $item['email'] => '#',
+                    $item['billingAddress']['fullName'],
+                    wireDate('relative', $item['creationDate']),
+                    $item['statistics']['ordersCount'],
+                    $item['statistics']['subscriptionsCount'],
+                    $item['status'],
+                ));
+            }
+            $out .= $table->render();
+            
+        } else {
+            
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No customers found') .
             '</div>';
 
         }
