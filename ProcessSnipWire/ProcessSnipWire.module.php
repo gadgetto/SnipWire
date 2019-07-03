@@ -98,7 +98,7 @@ class ProcessSnipWire extends Process implements Module {
     }    
 
     /**
-     * The SnipWire dashboard page.
+     * The SnipWire Dashboard page.
      *
      * @return page markup
      *
