@@ -245,44 +245,45 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
+        $limit = 20;        
+        $currentOffset = (int) $this->sessionGet('offsetOrders');        
+        $action = $this->_getInputAction();
+        if ($action == 'next') {
+            $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
+        } elseif ($action == 'prev') {
+            $offset = is_numeric($currentOffset) ? ($currentOffset - $limit) : 0;
+            if ($offset <= 0)  $offset = 0;
+        } else {
+            $offset = $currentOffset;
+        }
+        $this->sessionSet('offsetOrders', $offset);
+
         $selector = array(
-            'offset' => 0,
-            'limit' => 20,
+            'offset' => $offset,
+            'limit' => $limit,
         );
 
         $request = $sniprest->getOrdersItems($selector);
         $orders = isset($request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
+        
+        $count = count($orders);
+        $url = $input->url();
 
-        /** @var InputfieldWrapper $wrapper */
-        $wrapper = $this->wire(new InputfieldWrapper());
+        $pagination = $this->itemPagination($url, $limit, $offset, $count);
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Snipcart Orders');
-            $f->icon = 'file-text-o';
-            $f->value = $this->_renderTableOrders($orders);
-            $f->columnWidth = 100;
-            $f->collapsed = Inputfield::collapsedNever;
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Orders');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = 'file-text-o';
+        $f->value = $pagination;
+        $f->value .= $this->_renderTableOrders($orders);
+        $f->value .= $pagination;
+        $f->collapsed = Inputfield::collapsedNever;
 
-        $wrapper->add($f);
-
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = './offset=0';
-            $btn->value = $this->_('Previous');
-
-        $wrapper->add($btn);
-            
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = './offset=20';
-            $btn->value = $this->_('Next');
-
-        $wrapper->add($btn);
-
-        $out = $wrapper->render();
+        $out = $f->render();
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -1023,7 +1024,7 @@ class ProcessSnipWire extends Process implements Module {
             $table->setID('snipwire-orders-table');
             $table->setClass('ItemLister');
             $table->setSortable(false);
-            $table->setResizable(true);
+            $table->setResizable(false);
             $table->headerRow(array(
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
@@ -1042,10 +1043,7 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
-
             $out .= $table->render();
-
-            return $out;
             
         } else {
             
@@ -1053,8 +1051,10 @@ class ProcessSnipWire extends Process implements Module {
             '<div class="snipwire-no-items">' . 
                 $this->_('No orders found') .
             '</div>';
-            return $out;
+
         }
+
+        return $out;
     }
 
     /**
