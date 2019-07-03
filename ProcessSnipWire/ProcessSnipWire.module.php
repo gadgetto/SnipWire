@@ -48,11 +48,6 @@ class ProcessSnipWire extends Process implements Module {
                     'label' => __('Customers'), 
                     'icon' => 'user', 
                 ),
-                array(
-                    'url' => 'products/', 
-                    'label' => __('Products'), 
-                    'icon' => 'cube', 
-                ),
             ),
             'requires' => array(
                 'ProcessWire>=3.0.0',
@@ -351,29 +346,6 @@ class ProcessSnipWire extends Process implements Module {
         $out = $f->render();
 
         return $this->_wrapDashboardOutput($out);
-    }
-
-    /**
-     * The SnipWire Snipcart Products page.
-     *
-     * @return page markup
-     *
-     */
-    public function ___executeProducts() {
-        $modules = $this->wire('modules');
-        $user = $this->wire('user');
-        $config = $this->wire('config');
-        $input = $this->wire('input');
-        $sniprest = $this->wire('sniprest');
-        
-        $this->browserTitle($this->_('Snipcart Products'));
-        $this->headline($this->_('Snipcart Products'));
-        
-        if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
-            return '';
-        }
-
     }
 
     /**
@@ -966,15 +938,6 @@ class ProcessSnipWire extends Process implements Module {
             }
             $out .= $table->render();
 
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = './products';
-            $btn->value = $this->_('All Products');
-            $btn->icon = 'cube';
-            $btn->setSecondary(true);
-            $btn->set('small', true);
-
-            $out .= $btn->render();
             return $out;
             
         } else {
