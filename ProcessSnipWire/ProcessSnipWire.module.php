@@ -967,7 +967,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
                 $this->_('Placed by'),
-                $this->_('Countrty'),
+                $this->_('Country'),
                 $this->_('Payment Status'),
                 $this->_('Total'),
             ));
@@ -1028,7 +1028,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
                 $this->_('Placed by'),
-                $this->_('Countrty'),
+                $this->_('Country'),
                 $this->_('Payment Status'),
                 $this->_('Total'),
             ));
