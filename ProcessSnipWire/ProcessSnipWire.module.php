@@ -373,20 +373,20 @@ class ProcessSnipWire extends Process implements Module {
         $nextDisabled = ($count < $limit) ? true : false;
 
         $paginationLabels = array(
-            'orders' => $this->_('Orders'),
+            'entries' => $this->_('Entries'),
             'to' => $this->_('to'),
             'prev' => $this->_('Prev'),
             'next' => $this->_('Next'),
-            'go_prev' => $this->_('Goto previous page'),
-            'go_next' => $this->_('Goto next page'),
-            'no_prev' => $this->_('No previous page available'),
-            'no_next' => $this->_('No next page available'),
+            'list_prev' => $this->_('List previous entries'),
+            'list_next' => $this->_('List next entries'),
+            'no_prev' => $this->_('No previous entries available'),
+            'no_next' => $this->_('No next entries available'),
         );
         
         $out = 
         '<div class="item-lister-pagination">' .
             '<h2 class="pagination-info">' .
-                $paginationLabels['orders'] . ' <span class="items-offset">' . ($offset + 1) . '</span> ' .
+                $paginationLabels['entries'] . ' <span class="items-offset">' . ($offset + 1) . '</span> ' .
                 $paginationLabels['to'] . ' <span class="items-count">' . ($offset + $count) . '</span>' .
             '</h2>' .
             '<div class="pagination-buttons">';
@@ -398,7 +398,7 @@ class ProcessSnipWire extends Process implements Module {
                 '</span>';
         } else {
             $out .=
-                '<a href="' . $url . '?action=prev" role="button" class="items-prev" aria-label="' . $paginationLabels['go_prev'] . '">' .
+                '<a href="' . $url . '?action=prev" role="button" class="items-prev" aria-label="' . $paginationLabels['list_prev'] . '">' .
                     wireIconMarkup('angle-left') . ' ' . $paginationLabels['prev'] .
                 '</a>';
         }    
@@ -409,7 +409,7 @@ class ProcessSnipWire extends Process implements Module {
                 '</span>';
         } else {
             $out .=
-                '<a href="' . $url . '?action=next" role="button" class="items-next" aria-label="' . $paginationLabels['go_next'] . '">' .
+                '<a href="' . $url . '?action=next" role="button" class="items-next" aria-label="' . $paginationLabels['list_next'] . '">' .
                     $paginationLabels['next'] . ' ' . wireIconMarkup('angle-right') .
                 '</a>';
         }
