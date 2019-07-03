@@ -1033,6 +1033,46 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * Set a module session variable
+     *
+     * @param string $key
+     * @param string|int|array $value
+     * @return void
+     *
+     */
+    public function sessionSet($key, $value) {
+        $key = $this->className . '_' . $key;
+        if (is_null($value)) {
+            $this->session->remove($key);
+        } else {
+           $this->session->set($key, $value); 
+        }
+    }
+
+    /**
+     * Get a module session variable
+     *
+     * @param string $key
+     * @return string|int|array|null
+     *
+     */
+    public function sessionGet($key) {
+        $key = $this->className . '_' . $key;
+        return $this->session->get($key);
+    }
+
+    /**
+     * Clear all module session variables
+     *
+     */
+    public function sessionClear() {
+        $name = $this->className; 
+        foreach ($this->session as $key => $value) {
+            if (strpos($key, $name . '_') === 0) $this->session->remove($key); 
+        }
+    }
+
+    /**
      * Include asset files for SnipWire Dashboard.
      *
      * @param integer $mode
