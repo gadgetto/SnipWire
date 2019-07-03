@@ -98,6 +98,56 @@
     }
 }
 
+.item-lister-pagination {
+    display: flex;
+    justify-content: space-between;
+    
+    .pagination-info {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    .pagination-buttons {
+
+        a, span {
+            display: inline-block;
+            padding: 2px 11px;
+            color: #354b60;
+            background: #f0f3f7;
+            border: 1px solid #d9e1ea;
+            transition: color .1s ease-in-out;
+
+            &:first-child {
+                border-top-left-radius: 3px;
+                border-bottom-left-radius: 3px
+            }
+            &:last-child {
+                border-top-right-radius: 3px;
+                border-bottom-right-radius: 3px
+            }
+        }
+        a {
+
+            &:focus,
+            &:hover {
+                text-decoration: none;
+                color: #354b60;
+                background: #dfe6ee;
+                border: 1px solid #d9e1ea;
+            }
+        }
+        span {
+            color: #8d939e;
+            cursor: default;
+        }
+
+    }    
+}
+#SnipwireDashboard {
+    .item-lister-pagination:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .snipwire-no-items {
     display: flex;
     width: 100%;
@@ -148,6 +198,10 @@
     .snipwire-perf-box {
         background-color: rgba(228,235,238,.8);
     }
+    .item-lister-pagination {
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
 }
 .AdminThemeReno {
     #headline {
@@ -172,6 +226,9 @@
             width: 100%;
             font-size: 1.1em;
         }
+    }
+    .item-lister-pagination {
+        margin-bottom: 1.5em;
     }
 }
 
