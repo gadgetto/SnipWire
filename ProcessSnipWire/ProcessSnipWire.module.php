@@ -245,7 +245,6 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
-        $this->_includeAssets(self::assetsIncludeItemLister);
         $selector = array(
             'offset' => 0,
             'limit' => 20,
@@ -1063,11 +1062,6 @@ class ProcessSnipWire extends Process implements Module {
             $config->scripts->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.min.js?v=3.6.9');
             $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
         }
-        if ($mode & self::assetsIncludeItemLister) {
-            // Include ItemLister JS assets
-            $config->scripts->add($config->urls->SnipWire . 'assets/scripts/ItemLister.min.js' . $versionAdd);
-        }
-
     }
 
     /**
