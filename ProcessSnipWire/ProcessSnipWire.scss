@@ -101,10 +101,10 @@
 .item-lister-pagination {
     display: flex;
     justify-content: space-between;
+    margin-top: 2em;
     
     .pagination-info {
         margin-top: 0;
-        margin-bottom: 0;
     }
     .pagination-buttons {
 
@@ -145,6 +145,14 @@
 #SnipwireDashboard {
     .item-lister-pagination:last-child {
         margin-bottom: 0;
+        
+        .pagination-info {
+            margin-bottom: 0;
+        }
+    }
+    .pw-table-responsive,
+    .uk-table {
+        margin-top: 0;
     }
 }
 
