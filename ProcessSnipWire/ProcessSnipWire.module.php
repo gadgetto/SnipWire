@@ -48,6 +48,11 @@ class ProcessSnipWire extends Process implements Module {
                     'label' => __('Customers'), 
                     'icon' => 'user', 
                 ),
+                array(
+                    'url' => 'products/', 
+                    'label' => __('Products'), 
+                    'icon' => 'cube', 
+                ),
             ),
             'requires' => array(
                 'ProcessWire>=3.0.0',
@@ -346,6 +351,55 @@ class ProcessSnipWire extends Process implements Module {
         $out = $f->render();
 
         return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
+     * The SnipWire products page.
+     * (Products aren't fetched via rest API instead we use Page Lister module)
+     *
+     * @return page markup
+     *
+     */
+    public function ___executeProducts() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $ajax = $config->ajax;
+        
+        $this->browserTitle($this->_('Snipcart Products'));
+        $this->headline($this->_('Snipcart Products'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+        if (!$user->hasPermission('page-lister')) {
+            $this->error($this->_('You dont have permisson to use Page Lister - please contact your admin!'));
+            return '';
+        }
+        if ($modules->isInstalled('ProcessPageLister')) {
+            $lister = $modules->get('ProcessPageLister');
+        }
+        if (!$lister) {
+            $this->error($this->_('ProcessPageLister module - could not be loaded!'));
+            return '';
+        }
+        
+        // We will let ProcessPageLister do it's thing, since it remembers settings in session
+        if ($ajax) return $this->_wrapDashboardOutput($lister->execute());
+        
+        $lister->initSelector = '';
+        $lister->defaultSelector = 'template=snipcart-product';
+        $lister->imageFirst = true;
+        $lister->imageWidth = 60;
+        $lister->imageHeight = 0;
+        $lister->allowBookmarks = false;
+        $lister->toggles = array('collapseFilters', 'collapseColumns', 'noNewFilters', 'noButtons');
+        $lister->columns = array('title', 'snipcart_item_id', 'path', 'modified', 'snipcart_item_image');
+        
+        $out = $lister->execute();
+        return $this->_wrapDashboardOutput($out); 
     }
 
     /**
@@ -946,6 +1000,15 @@ class ProcessSnipWire extends Process implements Module {
             }
             $out .= $table->render();
 
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = './products';
+            $btn->value = $this->_('All Products');
+            $btn->icon = 'cube';
+            $btn->setSecondary(true);
+            $btn->set('small', true);
+
+            $out .= $btn->render();
             return $out;
             
         } else {
