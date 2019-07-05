@@ -49,7 +49,7 @@ class ProcessSnipWire extends Process implements Module {
                     'icon' => 'user', 
                 ),
                 array(
-                    'url' => 'products/', 
+                    'url' => 'products/?minimal=1', 
                     'label' => __('Products'), 
                     'icon' => 'cube', 
                 ),
@@ -1000,7 +1000,7 @@ class ProcessSnipWire extends Process implements Module {
 
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
-            $btn->href = './products';
+            $btn->href = './products/?minimal=1';
             $btn->value = $this->_('All Products');
             $btn->icon = 'cube';
             $btn->setSecondary(true);
