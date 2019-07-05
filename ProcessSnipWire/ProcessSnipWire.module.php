@@ -870,7 +870,7 @@ class ProcessSnipWire extends Process implements Module {
             $table->setResizable(false);
             $table->headerRow(array(
                 $this->_('Name'),
-                $this->_('Orders'),
+                $this->_('# Orders'),
                 $this->_('Total Spent'),
             ));
             foreach ($items as $item) {
