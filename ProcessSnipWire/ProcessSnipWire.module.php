@@ -1090,7 +1090,10 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
-            
+
+    		$modules->get('JqueryTableSorter')->use('widgets');
+    		$modules->get('JqueryMagnific');
+
             $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -1098,7 +1101,8 @@ class ProcessSnipWire extends Process implements Module {
             $table->setID('snipwire-orders-table');
             $table->setClass('ItemLister');
             $table->setSortable(false);
-            $table->setResizable(false);
+            $table->setResizable(true);
+            $table->setResponsive(true);
             $table->headerRow(array(
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
@@ -1142,7 +1146,10 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
-            
+
+    		$modules->get('JqueryTableSorter')->use('widgets');
+    		$modules->get('JqueryMagnific');
+
             $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -1150,7 +1157,8 @@ class ProcessSnipWire extends Process implements Module {
             $table->setID('snipwire-customers-table');
             $table->setClass('ItemLister');
             $table->setSortable(false);
-            $table->setResizable(false);
+            $table->setResizable(true);
+            $table->setResponsive(true);
             $table->headerRow(array(
                 $this->_('Email'),
                 $this->_('Name'),
