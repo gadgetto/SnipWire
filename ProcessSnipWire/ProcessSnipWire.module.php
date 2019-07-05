@@ -395,7 +395,7 @@ class ProcessSnipWire extends Process implements Module {
         $lister->imageWidth = 60;
         $lister->imageHeight = 0;
         $lister->allowBookmarks = false;
-        $lister->toggles = array('collapseFilters', 'collapseColumns', 'noNewFilters', 'noButtons');
+        $lister->toggles = array('collapseFilters', 'collapseColumns', 'noButtons');
         $lister->columns = array('title', 'snipcart_item_id', 'parent', 'modified', 'snipcart_item_image');
         
         $out = $lister->execute();
