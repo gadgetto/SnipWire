@@ -911,6 +911,7 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     private function _renderTableTopProducts($items) {
+        $pages = $this->wire('pages');
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -929,12 +930,19 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Sales'),
             ));
             foreach ($items as $item) {
-                $table->row(array(
-                    $item['name'] => '#',
-                    CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
-                    $item['statistics']['numberOfSales'],
-                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
-                ));
+                $sku = $item['userDefinedId'];
+                $product = $pages->findOne('snipcart_item_id="' . $sku . '"');
+                
+                $row = array();
+                if ($product->url) {
+                    $row[$item['name']] = $product->url;
+                } else {
+                    $row[] = $item['name'];
+                }
+                $row[] = CurrencyFormat::format($item['price'], 'usd'); // @todo: handle currency!
+                $row[] = $item['statistics']['numberOfSales'];
+                $row[] = CurrencyFormat::format($item['statistics']['totalSales'], 'usd'); // @todo: handle currency!
+                $table->row($row);
             }
             $out .= $table->render();
 
