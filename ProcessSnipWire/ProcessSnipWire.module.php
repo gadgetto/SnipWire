@@ -936,7 +936,7 @@ class ProcessSnipWire extends Process implements Module {
 
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
-            $btn->href = './customers';
+            $btn->href = './customers/';
             $btn->value = $this->_('All Customers');
             $btn->icon = 'user';
             $btn->setSecondary(true);
@@ -1060,7 +1060,7 @@ class ProcessSnipWire extends Process implements Module {
 
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
-            $btn->href = './orders';
+            $btn->href = './orders/';
             $btn->value = $this->_('All Orders');
             $btn->icon = 'file-text-o';
             $btn->setSecondary(true);
