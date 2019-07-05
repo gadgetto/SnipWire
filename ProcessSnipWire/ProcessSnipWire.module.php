@@ -441,7 +441,6 @@ class ProcessSnipWire extends Process implements Module {
         $nextDisabled = ($count < $limit) ? true : false;
 
         $paginationLabels = array(
-            'entries' => $this->_('Entries'),
             'to' => $this->_('to'),
             'prev' => $this->_('Prev'),
             'next' => $this->_('Next'),
@@ -454,8 +453,7 @@ class ProcessSnipWire extends Process implements Module {
         $out = 
         '<div class="item-lister-pagination">' .
             '<h2 class="pagination-info">' .
-                $paginationLabels['entries'] . ' <span class="items-offset">' . ($offset + 1) . '</span> ' .
-                $paginationLabels['to'] . ' <span class="items-count">' . ($offset + $count) . '</span>' .
+                ($offset + 1) . ' ' . $paginationLabels['to'] . ' ' . ($offset + $count) .
             '</h2>' .
             '<div class="pagination-buttons">';
         
