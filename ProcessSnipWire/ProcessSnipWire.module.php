@@ -72,6 +72,9 @@ class ProcessSnipWire extends Process implements Module {
     /** @var string $currencies The activated currencies from SnipWire module config */
     private $currencies = array();
 
+    /** @var ProcessPageLister|null $productsLister ProcessPageLister instance, when applicable */
+    protected $productsLister = null;
+
     /**
      * Initalize module config variables (properties)
      *
@@ -374,34 +377,46 @@ class ProcessSnipWire extends Process implements Module {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
-        if (!$user->hasPermission('page-lister')) {
-            $this->error($this->_('You dont have permisson to use Page Lister - please contact your admin!'));
-            return '';
-        }
-        if ($modules->isInstalled('ProcessPageLister')) {
-            $lister = $modules->get('ProcessPageLister');
-            $lister->imageFirst = true;
-            $lister->imageWidth = 60;
-            $lister->imageHeight = 0;
-            $lister->allowBookmarks = false;
-        }
-        if (!$lister) {
-            $this->error($this->_('ProcessPageLister module - could not be loaded!'));
-            return '';
-        }
+        if (!$lister = $this->getProductsLister()) return '';
         
-        // We will let ProcessPageLister do it's thing, since it remembers settings in session
+        // We will let ProcessPageLister do it's thing (settings are stored in session)
         if ($ajax) return $this->_wrapDashboardOutput($lister->execute());
         
         // Get first currency from module settings
         $currency = reset($this->currencies);
 
-        $lister->initSelector = '';
         $lister->defaultSelector = 'template=snipcart-product';
         $lister->columns = array('title', 'snipcart_item_id', "snipcart_item_price_$currency", 'snipcart_item_taxes', 'parent', 'modified', 'snipcart_item_image');
         
         $out = $lister->execute();
         return $this->_wrapDashboardOutput($out); 
+    }
+
+    /**
+     * Return instance of ProcessPageLister or null if not available
+     * 
+     * @return ProcessPageLister|null
+     * 
+     */
+    protected function getProductsLister() {
+        if ($this->productsLister) return $this->productsLister;
+        
+        if (!$this->wire('user')->hasPermission('page-lister')) {
+            $this->error($this->_('You dont have permisson to use Page Lister - please contact your admin!'));
+        } else {
+            if (!$this->wire('modules')->isInstalled('ProcessPageLister')) {
+                $this->error($this->_('ProcessPageLister - could not be loaded!'));
+            } else {
+                // Instantiate ProcessPageLister with default settings
+                $this->productsLister = $this->wire('modules')->get('ProcessPageLister');
+                $this->productsLister->initSelector = '';
+                $this->productsLister->imageFirst = true;
+                $this->productsLister->imageWidth = 60;
+                $this->productsLister->imageHeight = 0;
+                $this->productsLister->allowBookmarks = false;
+            }
+        }
+        return $this->productsLister;
     }
 
     /**
@@ -1093,8 +1108,8 @@ class ProcessSnipWire extends Process implements Module {
 
         if (!empty($items)) {
 
-    		$modules->get('JqueryTableSorter')->use('widgets');
-    		$modules->get('JqueryMagnific');
+            $modules->get('JqueryTableSorter')->use('widgets');
+            $modules->get('JqueryMagnific');
 
             $out = '';
             /** @var MarkupAdminDataTable $table */
@@ -1149,8 +1164,8 @@ class ProcessSnipWire extends Process implements Module {
 
         if (!empty($items)) {
 
-    		$modules->get('JqueryTableSorter')->use('widgets');
-    		$modules->get('JqueryMagnific');
+            $modules->get('JqueryTableSorter')->use('widgets');
+            $modules->get('JqueryMagnific');
 
             $out = '';
             /** @var MarkupAdminDataTable $table */
