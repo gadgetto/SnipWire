@@ -328,7 +328,6 @@ class ProcessSnipWire extends Process implements Module {
         $selector = array(
             'offset' => $offset,
             'limit' => $limit,
-            'orderBy' => 'creationDate',
         );
 
         $request = $sniprest->getCustomersItems($selector);
