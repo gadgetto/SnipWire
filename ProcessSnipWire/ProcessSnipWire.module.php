@@ -386,7 +386,15 @@ class ProcessSnipWire extends Process implements Module {
         $currency = reset($this->currencies);
 
         $lister->defaultSelector = 'template=snipcart-product';
-        $lister->columns = array('title', 'snipcart_item_id', "snipcart_item_price_$currency", 'snipcart_item_taxes', 'parent', 'modified', 'snipcart_item_image');
+        $lister->columns = array(
+            'title',
+            'snipcart_item_id',
+            "snipcart_item_price_$currency",
+            'snipcart_item_taxes',
+            'parent',
+            'modified',
+            'snipcart_item_image'
+        );
         
         $out = $lister->execute();
         return $this->_wrapDashboardOutput($out); 
