@@ -380,6 +380,10 @@ class ProcessSnipWire extends Process implements Module {
         }
         if ($modules->isInstalled('ProcessPageLister')) {
             $lister = $modules->get('ProcessPageLister');
+            $lister->imageFirst = true;
+            $lister->imageWidth = 60;
+            $lister->imageHeight = 0;
+            $lister->allowBookmarks = false;
         }
         if (!$lister) {
             $this->error($this->_('ProcessPageLister module - could not be loaded!'));
@@ -389,14 +393,12 @@ class ProcessSnipWire extends Process implements Module {
         // We will let ProcessPageLister do it's thing, since it remembers settings in session
         if ($ajax) return $this->_wrapDashboardOutput($lister->execute());
         
+        // Get first currency from module settings
+        $currency = reset($this->currencies);
+
         $lister->initSelector = '';
         $lister->defaultSelector = 'template=snipcart-product';
-        $lister->imageFirst = true;
-        $lister->imageWidth = 60;
-        $lister->imageHeight = 0;
-        $lister->allowBookmarks = false;
-        $lister->toggles = array('collapseFilters', 'collapseColumns', 'noButtons');
-        $lister->columns = array('title', 'snipcart_item_id', 'parent', 'modified', 'snipcart_item_image');
+        $lister->columns = array('title', 'snipcart_item_id', "snipcart_item_price_$currency", 'snipcart_item_taxes', 'parent', 'modified', 'snipcart_item_image');
         
         $out = $lister->execute();
         return $this->_wrapDashboardOutput($out); 
