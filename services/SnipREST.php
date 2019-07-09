@@ -38,6 +38,7 @@ class SnipREST extends WireHttpExtended {
     
     const cacheNamespace = 'SnipWire';
     const cacheNamePrefixSettings = 'Settings';
+    const cacheNamePrefixDashboard = 'Dashboard';
     const cacheNamePrefixProducts = 'Products';
     const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixCustomers = 'Customers';
@@ -123,20 +124,46 @@ class SnipREST extends WireHttpExtended {
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
      * @param string $currency Currency string
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
+     * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return mixed Dashboard data as array (each package indexed by full URL)
      *
      */
-    public function getDashboardData($start, $end, $currency) {
+    public function getDashboardData($start, $end, $currency, $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->hasCURL) {
+            $this->warning(self::getMessagesText('dashboard_no_curl'));
+            // Get data without cURL multi
+            return $this->_getDashboardDataSingle($start, $end, $currency);
+        }
+
+        // Segmented orders cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixDashboard . '.' . md5($start . $end . $currency);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get orders array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($start, $end, $currency) {
+            return $this->_getDashboardDataMulti($start, $end, $currency);
+        });
+
+        return $response;
+    }
+
+    /**
+     * Get all dashboard results using multi cURL requests
+     *
+     * @param string $start ISO 8601 date format string
+     * @param string $end ISO 8601 date format string
+     * @param string $currency Currency string
+     * @return array $data Dashboard data as array (indexed by `resourcePath...`)
+     *
+     */
+    private function _getDashboardDataMulti($start, $end, $currency) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if (!$this->hasCURL) {
-            $this->warning(self::getMessagesText('dashboard_no_curl'));
-            // Get data without cURL multi
-            return $this->getDashboardDataSingle($start, $end);
-        }
-        
+
         // ---- Part of performance boxes data ----
 
         $selector = array(
@@ -197,7 +224,7 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
-     * Get all dashboard results using single requests (cURL multi not available)
+     * Get all dashboard results using single requests
      *
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
@@ -205,7 +232,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data Dashboard data as array (indexed by `resourcePath...`)
      *
      */
-    public function getDashboardDataSingle($start, $end, $currency) {
+    private function _getDashboardDataSingle($start, $end, $currency) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
