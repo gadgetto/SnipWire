@@ -45,6 +45,8 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixPerformance = 'Performance';
     const cacheNamePrefixOrdersCount = 'OrdersCount';
     const cacheNamePrefixOrdersSales = 'OrdersSales';
+    
+    const cacheExpireDefault = 300;
 
     /**
      * Construct/initialize
@@ -94,16 +96,17 @@ class SnipREST extends WireHttpExtended {
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
      * @param string $key Which settings key to return (fallback to full settings array if $key doesnt exist)
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return boolean|array False if request failed or settings array
      *
      */
-    public function getSettings($key = '', $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getSettings($key = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
+
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixSettings);
 
         // Try to get settings array from cache first
@@ -124,7 +127,6 @@ class SnipREST extends WireHttpExtended {
      *
      */
     public function getDashboardData($start, $end, $currency) {
-
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -204,7 +206,6 @@ class SnipREST extends WireHttpExtended {
      *
      */
     public function getDashboardDataSingle($start, $end, $currency) {
-
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -218,7 +219,7 @@ class SnipREST extends WireHttpExtended {
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
-        $data[] = $this->getPerformance($selector, 300);
+        $data[] = $this->getPerformance($selector);
 
         // ---- Part of performance boxes + performance chart data ----
 
@@ -229,8 +230,8 @@ class SnipREST extends WireHttpExtended {
 
         // @todo: query Snipcart API for each currency separately and convert sales values to default currency
 
-        $data[] = $this->getSalesCount($selector, 300);
-        $data[] = $this->getOrdersCount($selector, 300);
+        $data[] = $this->getSalesCount($selector);
+        $data[] = $this->getOrdersCount($selector);
         
         // ---- Top 10 customers ----
         
@@ -239,7 +240,7 @@ class SnipREST extends WireHttpExtended {
             'from' => $start,
             'to' => $end,
         );
-        $data[] = $this->getCustomers($selector, 300);
+        $data[] = $this->getCustomers($selector);
 
         // ---- Top 10 products ----
 
@@ -252,7 +253,7 @@ class SnipREST extends WireHttpExtended {
             'from' => $start,
             'to' => $end,
         );
-        $data[] = $sniprest->getProducts($selector, 300);
+        $data[] = $sniprest->getProducts($selector);
 
         // ---- Latest 10 orders ----
 
@@ -261,7 +262,7 @@ class SnipREST extends WireHttpExtended {
             'from' => $start,
             'to' => $end,
         );
-        $data[] = $sniprest->getOrders($selector, 300);
+        $data[] = $sniprest->getOrders($selector);
         
         return $data;
     }
@@ -280,17 +281,16 @@ class SnipREST extends WireHttpExtended {
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
      *  - `to` (datetime) Will return only the orders placed before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      *
      */
-    public function getOrders($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getOrders($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrders);
 
         $allowedOptions = array('offset', 'limit', 'status', 'invoiceNumber', 'placedBy', 'from', 'to');
         $defaultOptions = array(
@@ -308,7 +308,9 @@ class SnipREST extends WireHttpExtended {
 
         // Segmented orders cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrders . '.' . md5($query);
-        
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
         // Try to get orders array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathOrders . $query);
@@ -335,12 +337,12 @@ class SnipREST extends WireHttpExtended {
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
      *  - `to` (datetime) Will return only the orders placed before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      * 
      */
-    public function getOrdersItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getOrdersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getOrders('items', $options, $expires, $forceRefresh);
     }
 
@@ -359,17 +361,16 @@ class SnipREST extends WireHttpExtended {
      *  - `orderBy` string The order by key (undocumented!)
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      *
      */
-    public function getProducts($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getProducts($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixProducts);
 
         $allowedOptions = array('offset', 'limit', 'userDefinedId', 'archived', 'excludeZeroSales', 'orderBy', 'from', 'to');
         $defaultOptions = array(
@@ -388,7 +389,9 @@ class SnipREST extends WireHttpExtended {
 
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixProducts . '.' . md5($query);
-        
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathProducts . $query);
@@ -417,12 +420,12 @@ class SnipREST extends WireHttpExtended {
      *  - `orderBy` string The order by key (undocumented!)
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      * 
      */
-    public function getProductsItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getProductsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getProducts('items', $options, $expires, $forceRefresh);
     }
 
@@ -440,17 +443,16 @@ class SnipREST extends WireHttpExtended {
      *  - `name` (string) The name of the customer who placed the order
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      *
      */
-    public function getCustomers($key = '', $options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getCustomers($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixCustomers);
 
         $allowedOptions = array('offset', 'limit', 'status', 'email', 'name', 'from', 'to');
         $defaultOptions = array(
@@ -468,7 +470,9 @@ class SnipREST extends WireHttpExtended {
 
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixCustomers . '.' . md5($query);
-        
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathCustomers . $query);
@@ -496,12 +500,12 @@ class SnipREST extends WireHttpExtended {
      *  - `name` (string) The name of the customer who placed the order
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      * 
      */
-    public function getCustomersItems($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getCustomersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getCustomers('items', $options, $expires, $forceRefresh);
     }
 
@@ -553,17 +557,16 @@ class SnipREST extends WireHttpExtended {
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
      *  - `to` (datetime) Will return only the performance before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      *
      */
-    public function getPerformance($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getPerformance($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixPerformance);
 
         $allowedOptions = array('from', 'to');
         $defaultOptions = array();
@@ -578,7 +581,9 @@ class SnipREST extends WireHttpExtended {
 
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixPerformance . '.' . md5($query);
-        
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDataPerformance . $query);
@@ -601,17 +606,16 @@ class SnipREST extends WireHttpExtended {
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
      *  - `to` (datetime) Will return only the performance before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      *
      */
-    public function getSalesCount($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getSalesCount($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrdersSales);
 
         $allowedOptions = array('from', 'to');
         $defaultOptions = array();
@@ -626,7 +630,9 @@ class SnipREST extends WireHttpExtended {
 
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrdersSales . '.' . md5($query);
-        
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersSales . $query);
@@ -649,17 +655,16 @@ class SnipREST extends WireHttpExtended {
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
      *  - `to` (datetime) Will return only the performance before this date
-     * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save()
+     * @param mixed $expires Lifetime of this cache [default: 300]
      * @param boolean $forceRefresh Wether to refresh the settings cache
      * @return array $data
      *
      */
-    public function getOrdersCount($options = array(), $expires = WireCache::expireNever, $forceRefresh = false) {
+    public function getOrdersCount($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrdersCount);
 
         $allowedOptions = array('from', 'to');
         $defaultOptions = array();
@@ -674,7 +679,9 @@ class SnipREST extends WireHttpExtended {
 
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrdersCount . '.' . md5($query);
-        
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
