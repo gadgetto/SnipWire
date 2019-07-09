@@ -47,7 +47,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixOrdersCount = 'OrdersCount';
     const cacheNamePrefixOrdersSales = 'OrdersSales';
     
-    const cacheExpireDefault = 300;
+    const cacheExpireDefault = 600;
 
     /**
      * Construct/initialize
