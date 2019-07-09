@@ -123,7 +123,7 @@ class ProcessSnipWire extends Process implements Module {
         
         $this->_includeAssets(self::assetsIncludeDaterangePicker | self::assetsIncludeApexCharts);
 
-        //if ($this->_getInputAction() == 'refresh') bd('refresh');
+        $forceRefresh = ($this->_getInputAction() == 'refresh') ? true : false;
         
         $startDate = $this->_getInputStartDate();
         $startDateSelector = $startDate ? $startDate . ' 00:00:00' : '';
@@ -136,7 +136,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $out = $this->_buildFilterSelect($startDate, $endDate, $currency);
 
-        $packages = $sniprest->getDashboardData($startDateSelector, $endDateSelector, $currency);
+        $packages = $sniprest->getDashboardData($startDateSelector, $endDateSelector, $currency,  SnipREST::cacheExpireDefault, $forceRefresh);
         $dashboard = $this->_prepareDashboardData($packages);
         unset($packages); // free space
 
