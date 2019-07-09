@@ -356,6 +356,51 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * The SnipWire Snipcart Customer detail page.
+     *
+     * @return page markup
+     *
+     */
+    public function ___executeCustomer() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sniprest = $this->wire('sniprest');
+        
+        $dashboardUrl = $input->url;
+        $id = $input->urlSegment(2); // Get Snipcart customer id
+        
+        $this->browserTitle($this->_('Snipcart Customer'));
+        $this->headline($this->_('Snipcart Customer'));
+
+        $this->breadcrumb('../', $this->_('SnipWire Dashboard'));
+        $this->breadcrumb('../customers/', $this->_('Snipcart Customers'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+        
+        $request = $sniprest->getCustomer($id);
+        $customer = isset($request[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent]
+            : array();
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Customer');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = 'user';
+        $f->value = $this->_renderDetailCustomer($customer);
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $out = $f->render();
+
+        return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
      * The SnipWire products page.
      * (Products aren't fetched via rest API instead we use Page Lister module)
      *
@@ -1209,6 +1254,32 @@ class ProcessSnipWire extends Process implements Module {
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No customers found') .
+            '</div>';
+
+        }
+
+        return $out;
+    }
+
+    /**
+     * Render the customer detail view.
+     *
+     * @param array $item
+     * @return markup 
+     *
+     */
+    private function _renderDetailCustomer($item) {
+        $modules = $this->wire('modules');
+
+        if (!empty($item)) {
+
+            $out = '<pre>' . print_r($item, true) . '</pre>';
+            
+        } else {
+            
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No customer selected') .
             '</div>';
 
         }
