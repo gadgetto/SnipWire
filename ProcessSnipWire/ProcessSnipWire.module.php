@@ -951,7 +951,7 @@ class ProcessSnipWire extends Process implements Module {
             ));
             foreach ($items as $item) {
                 $table->row(array(
-                    $item['billingAddress']['fullName'] => '#',
+                    $item['billingAddress']['fullName'] => './customer/' . $item['id'],
                     $item['statistics']['ordersCount'],
                     CurrencyFormat::format($item['statistics']['ordersAmount'], 'usd'), // @todo: handle currency!
                 ));
@@ -1184,8 +1184,8 @@ class ProcessSnipWire extends Process implements Module {
             $table->setResizable(true);
             $table->setResponsive(true);
             $table->headerRow(array(
-                $this->_('Email'),
                 $this->_('Name'),
+                $this->_('Email'),
                 $this->_('Created on'),
                 $this->_('# Orders'),
                 $this->_('# Subscriptions'),
@@ -1194,8 +1194,8 @@ class ProcessSnipWire extends Process implements Module {
 
             foreach ($items as $item) {
                 $table->row(array(
-                    $item['email'] => '#',
-                    $item['billingAddress']['fullName'],
+                    $item['billingAddress']['fullName'] => '../customer/' . $item['id'],
+                    $item['email'],
                     wireDate('relative', $item['creationDate']),
                     $item['statistics']['ordersCount'],
                     $item['statistics']['subscriptionsCount'],
