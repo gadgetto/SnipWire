@@ -123,7 +123,13 @@ class ProcessSnipWire extends Process implements Module {
         
         $this->_includeAssets(self::assetsIncludeDaterangePicker | self::assetsIncludeApexCharts);
 
-        $forceRefresh = ($this->_getInputAction() == 'refresh') ? true : false;
+        if ($this->_getInputAction() == 'refresh') {
+            $forceRefresh = true;
+            // Clean URL!
+            header('Location: ' . $input->httpUrl);
+        } else {
+            $forceRefresh = false;
+        }
         
         $startDate = $this->_getInputStartDate();
         $startDateSelector = $startDate ? $startDate . ' 00:00:00' : '';
