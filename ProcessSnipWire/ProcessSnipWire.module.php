@@ -1015,8 +1015,8 @@ class ProcessSnipWire extends Process implements Module {
             $btn->href = './customers/';
             $btn->value = $this->_('All Customers');
             $btn->icon = 'user';
-            $btn->setSecondary(true);
-            $btn->set('small', true);
+            $btn->secondary = true;
+            $btn->small = true;
 
             $out .= $btn->render();
             return $out;
@@ -1079,8 +1079,8 @@ class ProcessSnipWire extends Process implements Module {
             $btn->href = './products/';
             $btn->value = $this->_('All Products');
             $btn->icon = 'cube';
-            $btn->setSecondary(true);
-            $btn->set('small', true);
+            $btn->secondary = true;
+            $btn->small = true;
 
             $out .= $btn->render();
             return $out;
@@ -1139,8 +1139,8 @@ class ProcessSnipWire extends Process implements Module {
             $btn->href = './orders/';
             $btn->value = $this->_('All Orders');
             $btn->icon = 'file-text-o';
-            $btn->setSecondary(true);
-            $btn->set('small', true);
+            $btn->secondary = true;
+            $btn->small = true;
 
             $out .= $btn->render();
             return $out;
