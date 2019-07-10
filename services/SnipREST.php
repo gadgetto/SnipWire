@@ -199,7 +199,6 @@ class SnipREST extends WireHttpExtended {
         // ---- Top 10 products ----
 
         $selector = array(
-            'offset' => 0,
             'limit' => 10,
             'archived' => 'false',
             'excludeZeroSales' => 'true',
