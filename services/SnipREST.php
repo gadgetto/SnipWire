@@ -117,7 +117,6 @@ class SnipREST extends WireHttpExtended {
         return ($key && isset($response[$key])) ? $response[$key] : $response;
     }
 
-
     /**
      * Get all dashboard results using cURL multi (fallback to single requests if cURL not available)
      *
