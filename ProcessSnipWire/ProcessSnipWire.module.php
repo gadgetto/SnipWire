@@ -132,19 +132,20 @@ class ProcessSnipWire extends Process implements Module {
         }
         
         $startDate = $this->_getInputStartDate();
-        $startDateSelector = $startDate ? $startDate . ' 00:00:00' : '';
-        
         $endDate = $this->_getInputEndDate();
-        $endDateSelector = $endDate ? $endDate . ' 23:59:59' : '';
-
         $currency = $this->_getInputCurrency();
-        if (!$currency) $currency = $this->currencies[0]; // default = first currency from config
 
         $out = $this->_buildFilterSelect($startDate, $endDate, $currency);
 
-        $packages = $sniprest->getDashboardData($startDateSelector, $endDateSelector, $currency,  SnipREST::cacheExpireDefault, $forceRefresh);
+        $packages = $sniprest->getDashboardData(
+            "$startDate 00:00:00",
+            "$endDate 23:59:59",
+            $currency,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
         $dashboard = $this->_prepareDashboardData($packages);
-        unset($packages); // free space
+        unset($packages);
 
         if (!$dashboard) {
             $out .=
@@ -1296,31 +1297,35 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get the sanitized start date from input.
      *
-     * @return string Sanitized ISO 8601 or null
+     * @return string Sanitized ISO 8601 [default: back 29 days]
      * 
      */
     private function _getInputStartDate() {
-        return $this->wire('input')->get->date('periodFrom', 'Y-m-d', array('strict' => true));
+        $periodFrom = $this->wire('input')->get->date('periodFrom', 'Y-m-d', array('strict' => true));
+        return $periodFrom ? $periodFrom : date('Y-m-d', strtotime('-29 days'));
     }
 
     /**
      * Get the sanitized end date from input.
      *
-     * @return string Sanitized ISO 8601 or null
+     * @return string Sanitized ISO 8601 [default: today]
      * 
      */
     private function _getInputEndDate() {
-        return $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
+        $periodTo = $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
+        return $periodTo ? $periodTo : date('Y-m-d');
     }
 
     /**
      * Get the sanitized currency string from input.
      *
-     * @return string The currency string (e.g. 'eur')
+     * @return string The currency string (e.g. 'eur') [default: first currency from config]
      * 
      */
     private function _getInputCurrency() {
-        return $this->wire('input')->get->text('currency');
+        $currency = $this->wire('input')->get->text('currency');
+        return $currency ? $currency : $this->currencies[0];
+
     }
 
     /**
