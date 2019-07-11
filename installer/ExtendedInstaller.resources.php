@@ -56,9 +56,9 @@ $resources = array(
     - data-item-image: string (Thumbnail of product in the cart. This must be an absolute URL.)
     data-item-categories: string (The categories this product belongs to. Example: data-item-categories="cat1, cat2, cat3")
     - data-item-weight: integer (Required only if using shipping rates. Using grams as weight units.)
-    data-item-width: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
-    data-item-length: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
-    data-item-height: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
+    - data-item-width: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
+    - data-item-length: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
+    - data-item-height: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     data-item-stackable:
     data-item-shippable:
     - data-item-quantity: integer (Set a default quantity for the item that you are about to add.)
@@ -200,6 +200,42 @@ $resources = array(
             'label' => __('Product Weight'),
             'description' => __('Set the weight for this product.'),
             'notes' => __('Uses grams as weight unit.'),
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_width' => array(
+            'name' => 'snipcart_item_width',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Product Width'),
+            'description' => __('Set the width for this product.'),
+            'notes' => __('Uses centimeters as unit.'),
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_length' => array(
+            'name' => 'snipcart_item_length',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Product Length'),
+            'description' => __('Set the length for this product.'),
+            'notes' => __('Uses centimeters as unit.'),
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_height' => array(
+            'name' => 'snipcart_item_height',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Product Height'),
+            'description' => __('Set the height for this product.'),
+            'notes' => __('Uses centimeters as unit.'),
             'min' => 1,
             'inputType' => 'number',
             'required' => false,
