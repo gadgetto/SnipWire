@@ -420,6 +420,7 @@ class ProcessSnipWire extends Process implements Module {
         $config = $this->wire('config');
         $input = $this->wire('input');
         $ajax = $config->ajax;
+        $snipwireConfig = $this->snipwireConfig;
         
         $this->browserTitle($this->_('Snipcart Products'));
         $this->headline($this->_('Snipcart Products'));
@@ -429,7 +430,34 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
         if (!$lister = $this->getProductsLister()) return '';
-        
+
+        // Hook to render product thumb in Lister column (override default image output)
+        $this->addHookBefore('FieldtypeImage::markupValue', function($event) use($snipwireConfig) {
+            list($page, $field, $images) = $event->arguments;
+            if (!$images) $images = $page->get($field->name); 
+
+            $out = '';
+            $productThumb = null;
+
+            if ($field->name == 'snipcart_item_image') {
+                $productThumb = $images->first()->size(
+                    $snipwireConfig['cart_image_width'],
+                    $snipwireConfig['cart_image_height'],
+                    [
+                        'cropping' => $snipwireConfig['cart_image_cropping'] ? true : false,
+                        'quality' => $snipwireConfig['cart_image_quality'],
+                        'hidpi' => $snipwireConfig['cart_image_hidpi'] ? true : false,
+                        'hidpiQuality' => $snipwireConfig['cart_image_hidpiQuality'],
+                    ]
+                );
+            }
+            if ($productThumb) {
+                $out .= '<img src="' . $productThumb->url . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
+                $event->return = $out;
+                $event->replace = true;
+            }
+        });
+
         // We will let ProcessPageLister do it's thing (settings are stored in session)
         if ($ajax) return $this->_wrapDashboardOutput($lister->execute());
         
@@ -465,13 +493,11 @@ class ProcessSnipWire extends Process implements Module {
         } else {
             if (!$this->wire('modules')->isInstalled('ProcessPageLister')) {
                 $this->error($this->_('ProcessPageLister - could not be loaded!'));
-            } else {
+            } else {                
                 // Instantiate ProcessPageLister with default settings
                 $this->productsLister = $this->wire('modules')->get('ProcessPageLister');
                 $this->productsLister->initSelector = '';
                 $this->productsLister->imageFirst = true;
-                $this->productsLister->imageWidth = 60;
-                $this->productsLister->imageHeight = 0;
                 $this->productsLister->allowBookmarks = false;
             }
         }
