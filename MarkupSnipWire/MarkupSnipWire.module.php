@@ -290,7 +290,11 @@ class MarkupSnipWire extends WireData implements Module {
         if ($productThumb = $this->getProductThumb($product, $this->snipwireConfig)) {
             $out .= ' data-item-image="' . $productThumb->httpUrl . '"';
         }
-        
+
+        if ($productCategories = $this->getProductCategoriesString($product, $this->snipwireConfig)) {
+            $out .= ' data-item-categories="' . $productCategories . '"';
+        }
+
         $defaultQuantity = $product->snipcart_item_quantity ? $product->snipcart_item_quantity : 1;
         $out .= ' data-item-quantity="' . $defaultQuantity . '"';
         
@@ -493,6 +497,44 @@ class MarkupSnipWire extends WireData implements Module {
             ]);
         }
         return $productThumb;
+    }
+
+    /**
+     * Returns product categories as array or comma seperated string (if any).
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param array $snipwireConfig The SnipWire module config
+     * @param bool $array Default is to return an array (specified by TRUE). If you want a comma seperated string instead, specify FALSE. 
+     *
+     * @return null|array|string The product categories as array, comma seperated string or empty array or empty string if none found
+     *
+     */
+    public function getProductCategories(Page $product, $snipwireConfig = array(), $array = true) {
+        // Check if $product (Page) is a Snipcart product
+        if ($product->template != self::snipcartProductTemplate) return null;
+
+        if (empty($snipwireConfig)) $snipwireConfig = $this->snipwireConfig;
+
+        $categories = array();
+        if ($categoriesFieldName = $snipwireConfig['data_item_categories_field']) {
+            if ($categoriesField = $product->$categoriesFieldName) {
+                $categories = $categoriesField->each('title');
+            }
+        }
+        return $array ? $categories : implode(',', $categories);
+    }
+
+    /**
+     * Returns product categories as comma seperated string (if any).
+     *
+     * @param Page $product The product page which holds Snipcart related product fields
+     * @param array $snipwireConfig The SnipWire module config
+     *
+     * @return null|string The product categories as comma seperated string or empty string if none found
+     *
+     */
+    public function getProductCategoriesString(Page $product, $snipwireConfig = array()) {
+        return $this->getProductCategories($product, $snipwireConfig, false);
     }
 
     /**

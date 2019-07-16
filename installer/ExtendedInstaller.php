@@ -168,6 +168,27 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
                     if (isset($item['min'])) $f->min = $item['min'];
                     if (isset($item['inputType'])) $f->inputType = $item['inputType'];
+                    if (isset($item['inputfield'])) $f->inputfield = $item['inputfield'];
+                    if (isset($item['labelFieldName'])) $f->labelFieldName = $item['labelFieldName'];
+                    if (isset($item['usePageEdit'])) $f->usePageEdit = $item['usePageEdit'];
+                    if (isset($item['addable'])) $f->addable = $item['addable'];
+                    if (isset($item['derefAsPage'])) $f->derefAsPage = $item['derefAsPage'];
+                    // Used for AsmSelect
+                    if (isset($item['parent_id'])) {
+                        if (is_int($item['parent_id'])) {
+                            $f->parent_id = $item['parent_id'];
+                        } else {
+                            $f->parent_id = $pages->get($item['parent_id'])->id;
+                        }
+                    }
+                    // Used for AsmSelect
+                    if (isset($item['template_id'])) {
+                        if (is_int($item['template_id'])) {
+                            $f->template_id = $item['template_id'];
+                        } else {
+                            $f->template_id = $templates->get($item['template_id'])->id;
+                        }
+                    }
                     if (isset($item['showCount'])) $f->showCount = $item['showCount'];
                     if (isset($item['stripTags'])) $f->stripTags = $item['stripTags'];
                     if (isset($item['textformatters']) && is_array($item['textformatters'])) $f->textformatters = $item['textformatters'];

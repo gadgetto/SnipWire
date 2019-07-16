@@ -104,6 +104,7 @@ class SnipWireConfig extends ModuleConfig {
             'cart_image_hidpiQuality' => 50,
             'webhooks_endpoint' =>  '/webhooks/snipcart',
             'data_item_name_field' => 'title',
+            'data_item_categories_field' => '',
             'snipwire_debug' => false,
         );
     }
@@ -121,7 +122,8 @@ class SnipWireConfig extends ModuleConfig {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
         $sniprest = $this->wire('sniprest');
-        
+        $defaults = $this->getDefaults();
+
         $this->_includeAssets();
         $inputfields = parent::getInputfields();
 
@@ -657,22 +659,6 @@ class SnipWireConfig extends ModuleConfig {
             $f->pattern = '^\/(?!.*\/\/)([a-zA-Z-\/]+)$';
 
         $fsSnipWire->add($f);
-
-            if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {
-                $productTemplateFields = $productTemplate->fields;
-            } else {
-                $productTemplateFields = new FieldsArray();
-                $defaults = $this->getDefaults();
-                $defaultFieldName = $defaults['data_item_name_field'];
-                $defaultField = $this->wire('fields')->get($defaultFieldName);
-                $productTemplateFields->add($defaultField);
-            }
-            $allowedFieldTypes = array(
-                'FieldtypeText',
-                'FieldtypeTextLanguage',
-                'FieldtypePageTitle',
-                'FieldtypePageTitleLanguage',
-            );
     
             /** @var InputfieldSelect $f */
             $f = $modules->get('InputfieldSelect'); 
@@ -680,7 +666,35 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('Set Field for Snipcart Product Name'); 
             $f->notes = $this->_('Used as Snipcart anchor property "data-item-name"');
             $f->required = true;
+            $f->columnWidth = 50;
     
+            $allowedFieldTypes = array(
+                'FieldtypeText',
+                'FieldtypeTextLanguage',
+                'FieldtypePageTitle',
+                'FieldtypePageTitleLanguage',
+            );
+            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_name_field']);
+            foreach ($productTemplateFields as $field) {
+                if (in_array($field->type, $allowedFieldTypes)) {
+                    $f->addOption($field->name, $field->name, array());
+                }
+            }
+
+        $fsSnipWire->add($f);
+
+            /** @var InputfieldSelect $f */
+            $f = $modules->get('InputfieldSelect'); 
+            $f->attr('name', 'data_item_categories_field'); 
+            $f->label = $this->_('Set Field for Snipcart Categories'); 
+            $f->notes = $this->_('Used as Snipcart anchor property "data-item-categories"');
+            $f->required = false;
+            $f->columnWidth = 50;
+
+            $allowedFieldTypes = array(
+                'FieldtypePage',
+            );
+            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_categories_field']);
             foreach ($productTemplateFields as $field) {
                 if (in_array($field->type, $allowedFieldTypes)) {
                     $f->addOption($field->name, $field->name, array());
@@ -773,6 +787,26 @@ class SnipWireConfig extends ModuleConfig {
     
         return $templates;
     }
+
+    /**
+     * Get all fields from product template
+     * 
+     * @param string $defaultFieldName
+     * @return WireArray $fields
+     * 
+     */
+    private function _getProductTemplateFields($defaultFieldName) {
+        $fields = new WireArray();
+        if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {
+            $fields = $productTemplate->fields;
+        } else {
+            $productTemplateFields = new FieldsArray();
+            $defaultField = $this->wire('fields')->get($defaultFieldName);
+            $fields->add($defaultField);
+        }
+        return $fields;
+    }
+
 
     /**
      * Include asset files for SnipWire config editor.

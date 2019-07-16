@@ -54,7 +54,7 @@ $resources = array(
     
     - data-item-description: string (Short product description, visible in cart and during checkout)
     - data-item-image: string (Thumbnail of product in the cart. This must be an absolute URL.)
-    data-item-categories: string (The categories this product belongs to. Example: data-item-categories="cat1, cat2, cat3")
+    - data-item-categories: string (The categories this product belongs to. Example: data-item-categories="cat1, cat2, cat3")
     - data-item-weight: integer (Required only if using shipping rates. Using grams as weight units.)
     - data-item-width: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     - data-item-length: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
@@ -76,6 +76,7 @@ $resources = array(
 
     Will be set via SnipCart setting (not as PW Field)
     ==================================================
+    
     - data-item-has-taxes-included: boolean (Set to true if the taxes you defined are included in your product prices.)
     */
 
@@ -141,6 +142,22 @@ $resources = array(
             'notes' => __('The image on first position will be used as the Snipcart thumbnail image. Only this image will be used in cart and during checkout'),
             'required' => false,
             'extensions' => 'gif jpg jpeg png',
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_categories' => array(
+            'name' => 'snipcart_item_categories',
+            'type' => 'FieldtypePage',
+            'inputfield' => 'InputfieldAsmSelect',
+            'labelFieldName' => 'title', // (used for AsmSelect)
+            'usePageEdit' => true, // (used for AsmSelect)
+            'addable' => true, // (used for AsmSelect)
+            'label' => __('Categories'),
+            'description' => __('The categories for this product.'),
+            'derefAsPage' => 0, // (used for AsmSelect)
+            'parent_id' => '/categories/', // will be converted to page ID by installer (used for AsmSelect)
+            'template_id' => 'category', // will be converted to template ID by installer (used for AsmSelect)
+            'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
