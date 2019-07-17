@@ -343,7 +343,16 @@ class MarkupSnipWire extends WireData implements Module {
             $out .= ' data-item-taxes="' . $product->snipcart_item_taxes . '"';
         }
 
-        // @todo: add more data-item-* properties
+        // Metadata to be stored with each product (PW page related data)
+        $meta = array(
+            'id' => $product->id,
+            'created' => $product->created,
+            'modified' => $product->modified,
+            'published' => $product->published,
+            'created_users_id' => $product->created_users_id,
+            'modified_users_id' => $product->modified_users_id,
+        );
+        $out .= " data-item-metadata='" . wireEncodeJSON($meta) . "'";
 
         $out .= '>';
         $out .= $options['label'];
