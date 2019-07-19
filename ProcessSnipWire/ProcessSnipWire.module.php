@@ -1014,8 +1014,6 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
                     
         if (!empty($items)) {
-
-            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -1034,27 +1032,24 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['statistics']['ordersAmount'], 'usd'), // @todo: handle currency!
                 ));
             }
-            $out .= $table->render();
-
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = './customers/';
-            $btn->value = $this->_('All Customers');
-            $btn->icon = 'user';
-            $btn->secondary = true;
-            $btn->small = true;
-
-            $out .= $btn->render();
-            return $out;
-            
+            $out = $table->render();
         } else {
-            
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No customers in selected period') .
             '</div>';
-            return $out;
         }
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->href = './customers/';
+        $btn->value = $this->_('All Customers');
+        $btn->icon = 'user';
+        $btn->secondary = true;
+        $btn->small = true;
+
+        $out .= $btn->render();
+        return $out;
     }
 
     /**
@@ -1069,8 +1064,6 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
-
-            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -1098,27 +1091,24 @@ class ProcessSnipWire extends Process implements Module {
                 $row[] = CurrencyFormat::format($item['statistics']['totalSales'], 'usd'); // @todo: handle currency!
                 $table->row($row);
             }
-            $out .= $table->render();
-
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = './products/';
-            $btn->value = $this->_('All Products');
-            $btn->icon = 'cube';
-            $btn->secondary = true;
-            $btn->small = true;
-
-            $out .= $btn->render();
-            return $out;
-            
+            $out = $table->render();
         } else {
-            
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No products in selected period') .
             '</div>';
-            return $out;
         }
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->href = './products/';
+        $btn->value = $this->_('All Products');
+        $btn->icon = 'cube';
+        $btn->secondary = true;
+        $btn->small = true;
+
+        $out .= $btn->render();
+        return $out;
     }
 
     /**
@@ -1132,8 +1122,6 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
-            
-            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -1158,27 +1146,24 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
-            $out .= $table->render();
-
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->href = './orders/';
-            $btn->value = $this->_('All Orders');
-            $btn->icon = 'file-text-o';
-            $btn->secondary = true;
-            $btn->small = true;
-
-            $out .= $btn->render();
-            return $out;
-            
+            $out = $table->render();            
         } else {
-            
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No orders in selected period') .
             '</div>';
-            return $out;
         }
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->href = './orders/';
+        $btn->value = $this->_('All Orders');
+        $btn->icon = 'file-text-o';
+        $btn->secondary = true;
+        $btn->small = true;
+
+        $out .= $btn->render();
+        return $out;
     }
 
     /**
@@ -1192,11 +1177,9 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
-
             $modules->get('JqueryTableSorter')->use('widgets');
             $modules->get('JqueryMagnific');
 
-            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -1223,15 +1206,12 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
-            $out .= $table->render();
-            
+            $out = $table->render();
         } else {
-            
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No orders found') .
             '</div>';
-
         }
 
         return $out;
@@ -1248,11 +1228,9 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
-
             $modules->get('JqueryTableSorter')->use('widgets');
             $modules->get('JqueryMagnific');
 
-            $out = '';
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
@@ -1280,15 +1258,12 @@ class ProcessSnipWire extends Process implements Module {
                     $item['status'],
                 ));
             }
-            $out .= $table->render();
-            
+            $out = $table->render();
         } else {
-            
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No customers found') .
             '</div>';
-
         }
 
         return $out;
@@ -1306,15 +1281,15 @@ class ProcessSnipWire extends Process implements Module {
 
         if (!empty($item)) {
 
+
             $out = '<pre>' . print_r($item, true) . '</pre>';
-            
+
+
         } else {
-            
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No customer selected') .
             '</div>';
-
         }
 
         return $out;
