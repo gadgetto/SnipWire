@@ -49,7 +49,7 @@ class ProcessSnipWire extends Process implements Module {
                     'icon' => 'user', 
                 ),
                 array(
-                    'url' => 'products/', 
+                    'url' => 'products/?minimal=1', 
                     'label' => __('Products'), 
                     'icon' => 'cube', 
                 ),
@@ -464,7 +464,7 @@ class ProcessSnipWire extends Process implements Module {
         // Get first currency from module settings
         $currency = reset($this->currencies);
 
-        $lister->defaultSelector = 'template=snipcart-product';
+        $lister->defaultSelector = '';
         $lister->columns = array(
             'title',
             'snipcart_item_id',
@@ -493,10 +493,10 @@ class ProcessSnipWire extends Process implements Module {
         } else {
             if (!$this->wire('modules')->isInstalled('ProcessPageLister')) {
                 $this->error($this->_('ProcessPageLister - could not be loaded!'));
-            } else {                
+            } else {
                 // Instantiate ProcessPageLister with default settings
                 $this->productsLister = $this->wire('modules')->get('ProcessPageLister');
-                $this->productsLister->initSelector = '';
+                $this->productsLister->initSelector = 'template=snipcart-product';
                 $this->productsLister->imageFirst = true;
                 $this->productsLister->allowBookmarks = false;
             }
@@ -1101,7 +1101,7 @@ class ProcessSnipWire extends Process implements Module {
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
-        $btn->href = './products/';
+        $btn->href = './products/?minimal=1';
         $btn->value = $this->_('All Products');
         $btn->icon = 'cube';
         $btn->secondary = true;
