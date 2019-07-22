@@ -464,7 +464,7 @@ class ProcessSnipWire extends Process implements Module {
         // Get first currency from module settings
         $currency = reset($this->currencies);
 
-        $lister->defaultSelector = '';
+        $lister->defaultSelector = 'template=snipcart-product';
         $lister->columns = array(
             'title',
             'snipcart_item_id',
@@ -496,7 +496,7 @@ class ProcessSnipWire extends Process implements Module {
             } else {
                 // Instantiate ProcessPageLister with default settings
                 $this->productsLister = $this->wire('modules')->get('ProcessPageLister');
-                $this->productsLister->initSelector = 'template=snipcart-product';
+                $this->productsLister->initSelector = '';
                 $this->productsLister->imageFirst = true;
                 $this->productsLister->allowBookmarks = false;
             }
