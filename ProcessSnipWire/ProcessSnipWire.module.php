@@ -459,7 +459,7 @@ class ProcessSnipWire extends Process implements Module {
         });
 
         // We will let ProcessPageLister do it's thing (settings are stored in session)
-        if ($ajax) return $this->_wrapDashboardOutput($lister->execute());
+        if ($ajax) return $lister->execute();
         
         // Get first currency from module settings
         $currency = reset($this->currencies);
