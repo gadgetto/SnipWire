@@ -496,7 +496,6 @@ class ProcessSnipWire extends Process implements Module {
             } else {
                 // Instantiate ProcessPageLister with default settings
                 $this->productsLister = $this->wire('modules')->get('ProcessPageLister');
-                $this->productsLister->initSelector = '';
                 $this->productsLister->imageFirst = true;
                 $this->productsLister->allowBookmarks = false;
             }
