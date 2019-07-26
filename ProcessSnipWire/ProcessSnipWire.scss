@@ -21,6 +21,10 @@
 
 #SnipwireDashboard {
     clear: both;
+
+    .lister_headline {
+        margin-top: 20px !important; // fix for default PW style
+    }
 }
 
 #PeriodPickerContainer {
@@ -98,58 +102,72 @@
     }
 }
 
-.item-lister-pagination {
+.ItemListerTable {
+    clear: both;
+    overflow-x: auto;
+}
+.itemlister-headline {
+    float: left;
+    margin-top: 20px;
+}
+.itemlister-pagination {
+    float: right;
     display: flex;
-    justify-content: space-between;
-    margin-top: 2em;
-    
-    .pagination-info {
-        margin-top: 0;
-    }
-    .pagination-buttons {
+    flex-wrap: wrap;
+    padding: 0;
+    list-style: none;
 
-        a, span {
-            display: inline-block;
+    & > li {
+        padding: 0;
+        margin-left: -1px;
+
+        & > * {
+            display: block;
             padding: 2px 11px;
             color: #354b60;
             background: #f0f3f7;
             border: 1px solid #d9e1ea;
+            border-radius: 0;
+            text-decoration: none;
             transition: color .1s ease-in-out;
-
-            &:first-child {
-                border-top-left-radius: 3px;
-                border-bottom-left-radius: 3px
-            }
-            &:last-child {
-                border-top-right-radius: 3px;
-                border-bottom-right-radius: 3px
-            }
         }
-        a {
-
-            &:focus,
-            &:hover {
-                text-decoration: none;
-                color: #354b60;
-                background: #dfe6ee;
-                border: 1px solid #d9e1ea;
-            }
-        }
-        span {
-            color: #8d939e;
-            cursor: default;
-        }
-
-    }    
-}
-#SnipwireDashboard {
-    .item-lister-pagination:last-child {
-        margin-bottom: 0;
-        
-        .pagination-info {
-            visibility: hidden;
+        & > :focus,
+        & > :hover {
+            color: #354b60;
+            background: #dfe6ee;
+            border: 1px solid #d9e1ea;
+            text-decoration: none;
         }
     }
+    & > li:first-child > * {
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+    }
+    
+    & > li:last-child > * {
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
+    // This is the "disabled" state of pagination item
+    span {
+        color: #8d939e;
+        cursor: default;
+
+        &:hover {
+            color: #8d939e;
+            background: #f0f3f7;
+            border: 1px solid #d9e1ea;
+        }
+    }
+}
+
+.ItemListerButton {
+    display: inline-block;
+    margin: 20px 0 20px 0;
+}
+
+#SnipwireDashboard {
+    
     .pw-table-responsive,
     .uk-table {
         margin-top: 0;
@@ -183,11 +201,16 @@
     }
 }
 
+
 // Theme dependant style overrides (base styles are for AdminThemeUikit)
 
 .AdminThemeDefault {
     #SnipwireDashboard {
         overflow: hidden;
+        
+        .lister_headline {
+            margin-top: 1em !important; // fix for default PW style
+        }
     }
     #PeriodPickerContainer {
         font-size: 1.1rem;
@@ -206,12 +229,14 @@
     .snipwire-perf-box {
         background-color: rgba(228,235,238,.8);
     }
-    .item-lister-pagination {
-        margin-top: 2em;
-        margin-bottom: 1em;
-    }
 }
 .AdminThemeReno {
+    #SnipwireDashboard {
+    
+        .lister_headline {
+            margin-top: .5em !important; // fix for default PW style
+        }
+    }
     #headline {
         
         #title {
@@ -235,13 +260,9 @@
             font-size: 1.1em;
         }
     }
-    .item-lister-pagination {
+    .itemlister-headline {
         margin-top: 1em;
-        margin-bottom: 1.5em;
-        
-        .pagination-info {
-            margin-top: .5em;
-        }
     }
+
 }
 

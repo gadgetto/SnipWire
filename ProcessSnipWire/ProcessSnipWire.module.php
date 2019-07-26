@@ -281,14 +281,16 @@ class ProcessSnipWire extends Process implements Module {
         $count = count($orders);
         $url = $input->url();
 
-        $pagination = $this->itemPagination($url, $limit, $offset, $count);
+        $headline = $this->itemListerHeadline($offset, $count);
+        $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Orders');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = 'file-text-o';
-        $f->value = $pagination;
+        $f->value = $headline;
+        $f->value .= $pagination;
         $f->value .= $this->_renderTableOrders($orders);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
@@ -345,14 +347,16 @@ class ProcessSnipWire extends Process implements Module {
         $count = count($customers);
         $url = $input->url();
 
-        $pagination = $this->itemPagination($url, $limit, $offset, $count);
+        $headline = $this->itemListerHeadline($offset, $count);
+        $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Customers');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = 'user';
-        $f->value = $pagination;
+        $f->value = $headline;
+        $f->value .= $pagination;
         $f->value .= $this->_renderTableCustomers($customers);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
@@ -526,7 +530,28 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Renders a custom item lister pagination.
+     * Renders an item lister headline.
+     *
+     * @param integer $offset
+     * @param integer $count
+     * @return headline markup
+     *
+     */
+    protected function itemListerHeadline($offset, $count) {
+        $labels = array(
+            'to' => $this->_('to'),
+        );
+
+        $out = 
+        '<h2 class="itemlister-headline">' .
+            ($offset + 1) . ' ' . $labels['to'] . ' ' . ($offset + $count) .
+        '</h2>';
+        
+        return $out;
+    }
+
+    /**
+     * Renders an item lister pagination.
      * (has only Prev/Next buttons)
      *
      * @param string $url
@@ -536,54 +561,57 @@ class ProcessSnipWire extends Process implements Module {
      * @return pagination markup
      *
      */
-    protected function itemPagination($url, $limit, $offset, $count) {
+    protected function itemListerPagination($url, $limit, $offset, $count) {
         
         $prevDisabled = ($offset <= 0) ? true : false;
         $nextDisabled = ($count < $limit) ? true : false;
 
-        $paginationLabels = array(
-            'to' => $this->_('to'),
+        $labels = array(
+            'pagination_links' => $this->_('Pagination buttons'),
             'prev' => $this->_('Prev'),
             'next' => $this->_('Next'),
-            'list_prev' => $this->_('List previous entries'),
-            'list_next' => $this->_('List next entries'),
+            'list_prev' => $this->_('Previous entries'),
+            'list_next' => $this->_('Next entries'),
             'no_prev' => $this->_('No previous entries available'),
             'no_next' => $this->_('No next entries available'),
         );
         
         $out = 
-        '<div class="item-lister-pagination">' .
-            '<h2 class="pagination-info">' .
-                ($offset + 1) . ' ' . $paginationLabels['to'] . ' ' . ($offset + $count) .
-            '</h2>' .
-            '<div class="pagination-buttons">';
+        '<ul class="itemlister-pagination" role="navigation" aria-label="' . $labels['pagination_links'] . '">';
         
         if ($prevDisabled) {
             $out .=
-                '<span class="items-prev" aria-label="' . $paginationLabels['no_prev'] . '">' .
-                    wireIconMarkup('angle-left') . ' ' . $paginationLabels['prev'] .
-                '</span>';
+            '<li aria-label="' . $labels['no_prev'] . '">' .
+                '<span>' .
+                    wireIconMarkup('angle-left') . ' ' . $labels['prev'] .
+                '</span>' .
+            '</li>';
         } else {
             $out .=
-                '<a href="' . $url . '?action=prev" role="button" class="items-prev" aria-label="' . $paginationLabels['list_prev'] . '">' .
-                    wireIconMarkup('angle-left') . ' ' . $paginationLabels['prev'] .
-                '</a>';
+            '<li aria-label="' . $labels['list_prev'] . '">' .
+                '<a href="' . $url . '?action=prev" role="button">' .
+                    wireIconMarkup('angle-left') . ' ' . $labels['prev'] .
+                '</a>' .
+            '</li>';
         }    
         if ($nextDisabled) {
             $out .=
-                '<span class="items-next" aria-label="' . $paginationLabels['no_next'] . '">' .
-                    $paginationLabels['next'] . ' ' . wireIconMarkup('angle-right') .
-                '</span>';
+            '<li aria-label="' . $labels['no_next'] . '">' .
+                '<span>' .
+                    $labels['next'] . ' ' . wireIconMarkup('angle-right') .
+                '</span>' .
+            '</li>';
         } else {
             $out .=
-                '<a href="' . $url . '?action=next" role="button" class="items-next" aria-label="' . $paginationLabels['list_next'] . '">' .
-                    $paginationLabels['next'] . ' ' . wireIconMarkup('angle-right') .
-                '</a>';
+            '<li aria-label="' . $labels['list_next'] . '">' .
+                '<a href="' . $url . '?action=next" role="button">' .
+                    $labels['next'] . ' ' . wireIconMarkup('angle-right') .
+                '</a>' .
+            '</li>';
         }
 
         $out .= 
-            '</div>' .
-        '</div>';
+        '</ul>';
         
         return $out;
     }
