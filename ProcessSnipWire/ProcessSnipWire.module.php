@@ -1240,8 +1240,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('No orders found') .
             '</div>';
         }
-
-        return $out;
+        return '<div class="ItemListerTable">' . $out . '</div>';
     }
 
     /**
@@ -1292,8 +1291,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('No customers found') .
             '</div>';
         }
-
-        return $out;
+        return '<div class="ItemListerTable">' . $out . '</div>';
     }
 
     /**
