@@ -1310,8 +1310,9 @@ class ProcessSnipWire extends Process implements Module {
             ));
 
             foreach ($items as $item) {
+                $panelLink = '<a href="' . '../customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
-                    $item['billingAddress']['fullName'] => '../customer/' . $item['id'],
+                    $panelLink,
                     $item['email'],
                     wireDate('relative', $item['creationDate']),
                     $item['statistics']['ordersCount'],
