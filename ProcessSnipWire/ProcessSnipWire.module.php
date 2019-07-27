@@ -123,12 +123,11 @@ class ProcessSnipWire extends Process implements Module {
         
         $this->_includeAssets(self::assetsIncludeDaterangePicker | self::assetsIncludeApexCharts);
 
+        $forceRefresh = false;
+
         if ($this->_getInputAction() == 'refresh') {
+            $this->message(SnipREST::getMessagesText('chache_refreshed'));
             $forceRefresh = true;
-            // Clean URL!
-            header('Location: ' . $input->httpUrl);
-        } else {
-            $forceRefresh = false;
         }
         
         $startDate = $this->_getInputStartDate();
@@ -254,10 +253,16 @@ class ProcessSnipWire extends Process implements Module {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
-
+        
         $limit = 20;        
-        $currentOffset = (int) $this->sessionGet('offsetOrders');        
+        $currentOffset = (int) $this->sessionGet('offsetOrders');
+        $forceRefresh = false;
+              
         $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('chache_refreshed'));
+            $forceRefresh = true;
+        }
         if ($action == 'next') {
             $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
         } elseif ($action == 'prev') {
@@ -273,7 +278,11 @@ class ProcessSnipWire extends Process implements Module {
             'limit' => $limit,
         );
 
-        $request = $sniprest->getOrdersItems($selector);
+        $request = $sniprest->getOrdersItems(
+            $selector,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
         $orders = isset($request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
@@ -296,6 +305,16 @@ class ProcessSnipWire extends Process implements Module {
         $f->collapsed = Inputfield::collapsedNever;
 
         $out = $f->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = './?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= '<div class="ItemListerButton">' . $btn->render() . '</div>';
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -323,7 +342,13 @@ class ProcessSnipWire extends Process implements Module {
 
         $limit = 20;        
         $currentOffset = (int) $this->sessionGet('offsetCustomers');        
+        $forceRefresh = false;
+
         $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('chache_refreshed'));
+            $forceRefresh = true;
+        }
         if ($action == 'next') {
             $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
         } elseif ($action == 'prev') {
@@ -362,6 +387,16 @@ class ProcessSnipWire extends Process implements Module {
         $f->collapsed = Inputfield::collapsedNever;
 
         $out = $f->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = './?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= '<div class="ItemListerButton">' . $btn->render() . '</div>';
 
         return $this->_wrapDashboardOutput($out);
     }
