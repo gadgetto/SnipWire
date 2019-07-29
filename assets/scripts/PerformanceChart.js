@@ -24,12 +24,17 @@ jQuery(document).ready(function($) {
         },
         grid: {
             row: {
-                colors: ['#f0f3f7', 'transparent'],
-                opacity: 0.3
+                //colors: ['#f0f3f7', 'transparent'],
+                //opacity: 0.3
+            },
+            xaxis: {
+                lines: {
+                    show: true
+                }
             }
         },
         stroke: {
-            width: [0, 4],
+            width: [0, 5],
             //colors: ['', '#3eb998'],
             curve: 'smooth'
         },
@@ -78,7 +83,7 @@ jQuery(document).ready(function($) {
                 height: 14,
                 strokeWidth: 0,
                 radius: 0
-            },
+            }
         },
         noData: {
             text: chartData['noDataText'],
