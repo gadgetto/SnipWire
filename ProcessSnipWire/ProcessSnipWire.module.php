@@ -41,17 +41,17 @@ class ProcessSnipWire extends Process implements Module {
                 array(
                     'url' => 'orders/', 
                     'label' => __('Orders'), 
-                    'icon' => 'file-text-o', 
+                    'icon' => self::iconOrder, 
                 ),
                 array(
                     'url' => 'customers/', 
                     'label' => __('Customers'), 
-                    'icon' => 'user', 
+                    'icon' => self::iconCustomer, 
                 ),
                 array(
                     'url' => 'products/', 
                     'label' => __('Products'), 
-                    'icon' => 'cube', 
+                    'icon' => self::iconProduct, 
                 ),
             ),
             'requires' => array(
@@ -65,6 +65,10 @@ class ProcessSnipWire extends Process implements Module {
     const assetsIncludeApexCharts = 2;
     const assetsIncludeItemLister = 4;
     const assetsIncludeAll = 7;
+    
+    const iconCustomer = 'user';
+    const iconProduct = 'cube';
+    const iconOrder = 'file-text';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = array();
@@ -186,7 +190,7 @@ class ProcessSnipWire extends Process implements Module {
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Customers');
-            $f->icon = 'user';
+            $f->icon = self::iconCustomer;
             $f->value = $this->_renderTableTopCustomers($dashboard[SnipRest::resourcePathCustomers]);
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
@@ -196,7 +200,7 @@ class ProcessSnipWire extends Process implements Module {
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Products');
-            $f->icon = 'cube';
+            $f->icon = self::iconProduct;
             $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resourcePathProducts]);
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
@@ -211,7 +215,7 @@ class ProcessSnipWire extends Process implements Module {
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Recent Orders');
-            $f->icon = 'file-text-o';
+            $f->icon = self::iconOrder;
             $f->value = $this->_renderTableRecentOrders($dashboard[SnipRest::resourcePathOrders]);
             $f->columnWidth = 100;
             $f->collapsed = Inputfield::collapsedNever;
@@ -1153,7 +1157,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total Spent'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . './customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . './customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-fw') . $item['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['statistics']['ordersCount'],
@@ -1211,10 +1215,10 @@ class ProcessSnipWire extends Process implements Module {
                 $row = array();
                 if ($product->url) {
                     if ($product->editable()) {
-                        $row[] = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . $item['name'] . '</a>';
+                        $row[] = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconProduct, 'fa-fw') . $item['name'] . '</a>';
                     }                    
                 } else {
-                    $row[] = $item['name'];
+                    $row[] = wireIconMarkup(self::iconProduct, 'fa-fw') . $item['name'];
                 }
                 $row[] = CurrencyFormat::format($item['price'], 'usd'); // @todo: handle currency!
                 $row[] = $item['statistics']['numberOfSales'];
@@ -1267,7 +1271,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . './order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
+                $panelLink = '<a href="' . './order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
@@ -1328,7 +1332,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . '../order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
+                $panelLink = '<a href="' . '../order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
@@ -1406,7 +1410,7 @@ class ProcessSnipWire extends Process implements Module {
             ));
 
             foreach ($items as $item) {
-                $panelLink = '<a href="' . '../customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . '../customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-fw') . $item['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['email'],
