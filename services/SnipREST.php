@@ -41,6 +41,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixDashboard = 'Dashboard';
     const cacheNamePrefixProducts = 'Products';
     const cacheNamePrefixOrders = 'Orders';
+    const cacheNamePrefixOrderDetail = 'OrderDetail';
     const cacheNamePrefixCustomers = 'Customers';
     const cacheNamePrefixCustomerDetail = 'CustomerDetail';
     const cacheNamePrefixPerformance = 'Performance';
@@ -87,6 +88,7 @@ class SnipREST extends WireHttpExtended {
             'connection_failed' => __('Connection to Snipcart failed'),
             'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without.'),
             'no_customer_id' => __('Could not fetch customer data - no customer ID provided.'),
+            'no_order_token' => __('Could not fetch order data - no order token provided.'),
             'chache_refreshed' => __('Snipcart cache refreshed.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
@@ -370,6 +372,46 @@ class SnipREST extends WireHttpExtended {
      */
     public function getOrdersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getOrders('items', $options, $expires, $forceRefresh);
+    }
+
+    /**
+     * Get a single order from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $token The Snipcart $token of the order to be returned
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh the cache
+     * @return array $data
+     *
+     */
+    public function getOrder($token = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$token) {
+            $this->error(self::getMessagesText('no_order_token'));
+            return false;
+        }
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixOrderDetail . '.' . md5($token);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($token) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathOrders . '/' . $token);
+        });
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathOrders . '/' . $token] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**

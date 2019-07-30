@@ -320,6 +320,61 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * The SnipWire Snipcart Order detail page.
+     *
+     * @return page markup
+     *
+     */
+    public function ___executeOrder() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sniprest = $this->wire('sniprest');
+        
+        $dashboardUrl = $input->url;
+        $id = $input->urlSegment(2); // Get Snipcart order id
+        
+        $this->browserTitle($this->_('Snipcart Order'));
+        $this->headline($this->_('Snipcart Order'));
+
+        $this->breadcrumb('../', $this->_('SnipWire Dashboard'));
+        $this->breadcrumb('../orders/', $this->_('Snipcart Orders'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+        
+        $request = $sniprest->getOrder($id);
+        $order = isset($request[SnipRest::resourcePathOrders . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathOrders . '/' . $id][WireHttpExtended::resultKeyContent]
+            : array();
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Order');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = 'file-text-o';
+        $f->value = $this->_renderDetailOrder($order);
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $out = $f->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = './?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= $btn->render();
+
+        return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
      * The SnipWire Snipcart Customers page.
      *
      * @return page markup
@@ -1202,8 +1257,9 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
+                $panelLink = '<a href="' . './order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
                 $table->row(array(
-                    $item['invoiceNumber'] => '#',
+                    $panelLink,
                     wireDate('relative', $item['creationDate']),
                     $item['user']['billingAddress']['fullName'],
                     $item['billingAddressCountry'],
@@ -1262,8 +1318,9 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
+                $panelLink = '<a href="' . '../order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
                 $table->row(array(
-                    $item['invoiceNumber'] => '#',
+                    $panelLink,
                     wireDate('relative', $item['creationDate']),
                     $item['user']['billingAddress']['fullName'],
                     $item['billingAddressCountry'],
@@ -1279,6 +1336,32 @@ class ProcessSnipWire extends Process implements Module {
             '</div>';
         }
         return '<div class="ItemListerTable">' . $out . '</div>';
+    }
+
+    /**
+     * Render the order detail view.
+     *
+     * @param array $item
+     * @return markup 
+     *
+     */
+    private function _renderDetailOrder($item) {
+        $modules = $this->wire('modules');
+
+        if (!empty($item)) {
+
+
+            $out = '<pre>' . print_r($item, true) . '</pre>';
+
+
+        } else {
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No order selected') .
+            '</div>';
+        }
+
+        return $out;
     }
 
     /**
