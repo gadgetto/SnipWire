@@ -333,7 +333,7 @@ class ProcessSnipWire extends Process implements Module {
         $sniprest = $this->wire('sniprest');
         
         $dashboardUrl = $input->url;
-        $id = $input->urlSegment(2); // Get Snipcart order id
+        $token = $input->urlSegment(2); // Get Snipcart order token
         
         $this->browserTitle($this->_('Snipcart Order'));
         $this->headline($this->_('Snipcart Order'));
@@ -346,9 +346,9 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
         
-        $request = $sniprest->getOrder($id);
-        $order = isset($request[SnipRest::resourcePathOrders . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathOrders . '/' . $id][WireHttpExtended::resultKeyContent]
+        $request = $sniprest->getOrder($token);
+        $order = isset($request[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */
