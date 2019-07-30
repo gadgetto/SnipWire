@@ -1157,7 +1157,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total Spent'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . './customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-fw') . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . './customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['statistics']['ordersCount'],
@@ -1215,10 +1215,10 @@ class ProcessSnipWire extends Process implements Module {
                 $row = array();
                 if ($product->url) {
                     if ($product->editable()) {
-                        $row[] = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconProduct, 'fa-fw') . $item['name'] . '</a>';
+                        $row[] = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . $item['name'] . '</a>';
                     }                    
                 } else {
-                    $row[] = wireIconMarkup(self::iconProduct, 'fa-fw') . $item['name'];
+                    $row[] = $item['name'];
                 }
                 $row[] = CurrencyFormat::format($item['price'], 'usd'); // @todo: handle currency!
                 $row[] = $item['statistics']['numberOfSales'];
@@ -1271,7 +1271,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . './order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
+                $panelLink = '<a href="' . './order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
                 $panelLink2 = '<a href="' . './customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
