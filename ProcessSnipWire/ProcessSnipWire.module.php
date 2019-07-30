@@ -1145,7 +1145,9 @@ class ProcessSnipWire extends Process implements Module {
                 
                 $row = array();
                 if ($product->url) {
-                    $row[$item['name']] = $product->url;
+                    if ($product->editable()) {
+                        $row[] = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . $item['name'] . '</a>';
+                    }                    
                 } else {
                     $row[] = $item['name'];
                 }
