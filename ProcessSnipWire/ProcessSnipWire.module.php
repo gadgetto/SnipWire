@@ -498,6 +498,16 @@ class ProcessSnipWire extends Process implements Module {
 
         $out = $f->render();
 
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = './?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= $btn->render();
+
         return $this->_wrapDashboardOutput($out);
     }
 
