@@ -1272,10 +1272,11 @@ class ProcessSnipWire extends Process implements Module {
             ));
             foreach ($items as $item) {
                 $panelLink = '<a href="' . './order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
+                $panelLink2 = '<a href="' . './customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
-                    $item['user']['billingAddress']['fullName'],
+                    $panelLink2,
                     $item['billingAddressCountry'],
                     $item['paymentStatus'],
                     CurrencyFormat::format($item['total'], $item['currency']),
@@ -1333,10 +1334,11 @@ class ProcessSnipWire extends Process implements Module {
             ));
             foreach ($items as $item) {
                 $panelLink = '<a href="' . '../order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
+                $panelLink2 = '<a href="' . '../customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
-                    $item['user']['billingAddress']['fullName'],
+                    $panelLink2,
                     $item['billingAddressCountry'],
                     $item['paymentStatus'],
                     CurrencyFormat::format($item['total'], $item['currency']),
