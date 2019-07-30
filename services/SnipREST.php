@@ -100,8 +100,8 @@ class SnipREST extends WireHttpExtended {
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
      * @param string $key Which settings key to return (fallback to full settings array if $key doesnt exist)
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return boolean|array False if request failed or settings array
      *
      */
@@ -126,8 +126,8 @@ class SnipREST extends WireHttpExtended {
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
      * @param string $currency Currency string
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return mixed Dashboard data as array (each package indexed by full URL)
      *
      */
@@ -309,8 +309,8 @@ class SnipREST extends WireHttpExtended {
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
      *  - `to` (datetime) Will return only the orders placed before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
@@ -365,8 +365,8 @@ class SnipREST extends WireHttpExtended {
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
      *  - `to` (datetime) Will return only the orders placed before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      * 
      */
@@ -381,7 +381,7 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $token The Snipcart $token of the order to be returned
      * @param mixed $expires Lifetime of this cache, in seconds
-     * @param boolean $forceRefresh Wether to refresh the cache
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
@@ -429,8 +429,8 @@ class SnipREST extends WireHttpExtended {
      *  - `orderBy` string The order by key (undocumented!)
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
@@ -488,8 +488,8 @@ class SnipREST extends WireHttpExtended {
      *  - `orderBy` string The order by key (undocumented!)
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      * 
      */
@@ -511,8 +511,8 @@ class SnipREST extends WireHttpExtended {
      *  - `name` (string) The name of the customer who placed the order
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
@@ -568,8 +568,8 @@ class SnipREST extends WireHttpExtended {
      *  - `name` (string) The name of the customer who placed the order
      *  - `from` (datetime) Will return only the customers created after this date
      *  - `to` (datetime) Will return only the customers created before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      * 
      */
@@ -583,8 +583,8 @@ class SnipREST extends WireHttpExtended {
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
      * @param string $id The Snipcart id of the customer to be returned
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
@@ -625,8 +625,8 @@ class SnipREST extends WireHttpExtended {
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
      *  - `to` (datetime) Will return only the performance before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
@@ -674,8 +674,8 @@ class SnipREST extends WireHttpExtended {
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
      *  - `to` (datetime) Will return only the performance before this date
-     * @param mixed $expires Lifetime of this cache, in seconds [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
@@ -723,8 +723,8 @@ class SnipREST extends WireHttpExtended {
      * @param array $options An array of filter options that will be sent as URL params:
      *  - `from` (datetime) Will return only the performance after this date
      *  - `to` (datetime) Will return only the performance before this date
-     * @param mixed $expires Lifetime of this cache [default: 300]
-     * @param boolean $forceRefresh Wether to refresh the settings cache
+     * @param mixed $expires Lifetime of this cache
+     * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
