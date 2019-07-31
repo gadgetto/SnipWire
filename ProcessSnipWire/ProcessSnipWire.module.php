@@ -133,10 +133,10 @@ class ProcessSnipWire extends Process implements Module {
             $this->message(SnipREST::getMessagesText('chache_refreshed'));
             $forceRefresh = true;
         }
-        
-        $startDate = $this->_getInputStartDate();
-        $endDate = $this->_getInputEndDate();
-        $currency = $this->_getInputCurrency();
+
+        $startDate = $this->_getStartDate();
+        $endDate = $this->_getEndDate();
+        $currency = $this->_getCurrency();
 
         $out = $this->_buildFilterSelect($startDate, $endDate, $currency);
 
@@ -248,6 +248,7 @@ class ProcessSnipWire extends Process implements Module {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
+        $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
 
         $this->browserTitle($this->_('Snipcart Orders'));
@@ -259,7 +260,7 @@ class ProcessSnipWire extends Process implements Module {
         }
         
         $limit = 20;        
-        $currentOffset = (int) $this->sessionGet('offsetOrders');
+        $currentOffset = (int) $session->getFor($this, 'offsetOrders');
         $forceRefresh = false;
               
         $action = $this->_getInputAction();
@@ -275,7 +276,7 @@ class ProcessSnipWire extends Process implements Module {
         } else {
             $offset = $currentOffset;
         }
-        $this->sessionSet('offsetOrders', $offset);
+        $session->setFor($this, 'offsetOrders', $offset);
 
         $selector = array(
             'offset' => $offset,
@@ -389,6 +390,7 @@ class ProcessSnipWire extends Process implements Module {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
+        $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
         
         $this->browserTitle($this->_('Snipcart Customers'));
@@ -400,7 +402,7 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         $limit = 20;        
-        $currentOffset = (int) $this->sessionGet('offsetCustomers');        
+        $currentOffset = (int) $session->getFor($this, 'offsetCustomers');        
         $forceRefresh = false;
 
         $action = $this->_getInputAction();
@@ -416,7 +418,7 @@ class ProcessSnipWire extends Process implements Module {
         } else {
             $offset = $currentOffset;
         }
-        $this->sessionSet('offsetCustomers', $offset);
+        $session->setFor($this, 'offsetCustomers', $offset);
 
         $selector = array(
             'offset' => $offset,
@@ -1459,37 +1461,72 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get the sanitized start date from input.
+     * Get the sanitized start date from session or input.
      *
      * @return string Sanitized ISO 8601 [default: back 29 days]
      * 
      */
-    private function _getInputStartDate() {
+    private function _getStartDate() {
+        $session = $this->wire('session');
+        
         $periodFrom = $this->wire('input')->get->date('periodFrom', 'Y-m-d', array('strict' => true));
-        return $periodFrom ? $periodFrom : date('Y-m-d', strtotime('-29 days'));
+        $sessionPeriodFrom = $session->getFor($this, 'periodFrom');
+        if (!$sessionPeriodFrom) $sessionPeriodFrom = date('Y-m-d', strtotime('-29 days'));
+        
+        if ($periodFrom) {
+            $startDate = $periodFrom;
+        } else {
+            $startDate = $sessionPeriodFrom;
+        }
+        $session->setFor($this, 'periodFrom', $startDate);
+
+        return $startDate;
     }
 
     /**
-     * Get the sanitized end date from input.
+     * Get the sanitized end date from session or input.
      *
      * @return string Sanitized ISO 8601 [default: today]
      * 
      */
-    private function _getInputEndDate() {
+    private function _getEndDate() {
+        $session = $this->wire('session');
+        
         $periodTo = $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
-        return $periodTo ? $periodTo : date('Y-m-d');
+        $sessionPeriodTo = $session->getFor($this, 'periodTo');
+        if (!$sessionPeriodTo) $sessionPeriodTo = date('Y-m-d');
+        
+        if ($periodTo) {
+            $endDate = $periodTo;
+        } else {
+            $endDate = $sessionPeriodTo;
+        }
+        $session->setFor($this, 'periodTo', $endDate);
+
+        return $endDate;
     }
 
     /**
-     * Get the sanitized currency string from input.
+     * Get the sanitized currency string from session or input.
      *
      * @return string The currency string (e.g. 'eur') [default: first currency from config]
      * 
      */
-    private function _getInputCurrency() {
-        $currency = $this->wire('input')->get->text('currency');
-        return $currency ? $currency : $this->currencies[0];
+    private function _getCurrency() {
+        $session = $this->wire('session');
 
+        $currency = $this->wire('input')->get->text('currency');
+        $sessionCurrency = $session->getFor($this, 'currency');
+        if (!$sessionCurrency) $sessionCurrency = $this->currencies[0];
+        
+        if ($currency) {
+            $curr = $currency;
+        } else {
+            $curr = $sessionCurrency;
+        }
+        $session->setFor($this, 'currency', $curr);
+
+        return $curr;
     }
 
     /**
@@ -1500,46 +1537,6 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _getInputAction() {
         return $this->wire('input')->get->entities('action');
-    }
-
-    /**
-     * Set a module session variable
-     *
-     * @param string $key
-     * @param string|int|array $value
-     * @return void
-     *
-     */
-    public function sessionSet($key, $value) {
-        $key = $this->className . '_' . $key;
-        if (is_null($value)) {
-            $this->session->remove($key);
-        } else {
-           $this->session->set($key, $value); 
-        }
-    }
-
-    /**
-     * Get a module session variable
-     *
-     * @param string $key
-     * @return string|int|array|null
-     *
-     */
-    public function sessionGet($key) {
-        $key = $this->className . '_' . $key;
-        return $this->session->get($key);
-    }
-
-    /**
-     * Clear all module session variables
-     *
-     */
-    public function sessionClear() {
-        $name = $this->className; 
-        foreach ($this->session as $key => $value) {
-            if (strpos($key, $name . '_') === 0) $this->session->remove($key); 
-        }
     }
 
     /**
