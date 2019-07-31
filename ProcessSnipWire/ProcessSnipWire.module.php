@@ -1473,11 +1473,7 @@ class ProcessSnipWire extends Process implements Module {
         $sessionPeriodFrom = $session->getFor($this, 'periodFrom');
         if (!$sessionPeriodFrom) $sessionPeriodFrom = date('Y-m-d', strtotime('-29 days'));
         
-        if ($periodFrom) {
-            $startDate = $periodFrom;
-        } else {
-            $startDate = $sessionPeriodFrom;
-        }
+        $startDate = $periodFrom ? $periodFrom : $sessionPeriodFrom;
         $session->setFor($this, 'periodFrom', $startDate);
 
         return $startDate;
@@ -1496,11 +1492,7 @@ class ProcessSnipWire extends Process implements Module {
         $sessionPeriodTo = $session->getFor($this, 'periodTo');
         if (!$sessionPeriodTo) $sessionPeriodTo = date('Y-m-d');
         
-        if ($periodTo) {
-            $endDate = $periodTo;
-        } else {
-            $endDate = $sessionPeriodTo;
-        }
+        $endDate = $periodTo ? $periodTo : $sessionPeriodTo;
         $session->setFor($this, 'periodTo', $endDate);
 
         return $endDate;
@@ -1519,11 +1511,7 @@ class ProcessSnipWire extends Process implements Module {
         $sessionCurrency = $session->getFor($this, 'currency');
         if (!$sessionCurrency) $sessionCurrency = $this->currencies[0];
         
-        if ($currency) {
-            $curr = $currency;
-        } else {
-            $curr = $sessionCurrency;
-        }
+        $curr = $currency ? $currency : $sessionCurrency;
         $session->setFor($this, 'currency', $curr);
 
         return $curr;
