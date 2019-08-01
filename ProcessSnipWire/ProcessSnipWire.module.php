@@ -131,7 +131,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
-            $this->message(SnipREST::getMessagesText('chache_refreshed'));
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         } elseif ($action == 'reset') {
             $this->message($this->_('Store performance date range set to default.'));
@@ -269,7 +269,7 @@ class ProcessSnipWire extends Process implements Module {
               
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
-            $this->message(SnipREST::getMessagesText('chache_refreshed'));
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         }
         if ($action == 'next') {
@@ -411,7 +411,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
-            $this->message(SnipREST::getMessagesText('chache_refreshed'));
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         }
         if ($action == 'next') {

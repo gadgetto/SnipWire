@@ -89,7 +89,7 @@ class SnipREST extends WireHttpExtended {
             'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without.'),
             'no_customer_id' => __('Could not fetch customer data - no customer ID provided.'),
             'no_order_token' => __('Could not fetch order data - no order token provided.'),
-            'chache_refreshed' => __('Snipcart cache refreshed.'),
+            'cache_refreshed' => __('Snipcart cache refreshed.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
