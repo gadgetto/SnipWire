@@ -209,6 +209,11 @@
     color: #bfbfbf;
 }
 
+@media screen and (max-width: 480px) {
+    #PeriodPickerReset {
+        display: none;
+    }
+}
 @media screen and (min-width: 768px) {
     #PerformanceBoxesContainer {
         
