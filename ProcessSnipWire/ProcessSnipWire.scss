@@ -27,7 +27,7 @@
     }
 }
 
-#PeriodPickerContainer {
+#PeriodPickerSelect {
     display: inline-block;
     font-size: 1.2rem;
     line-height: 40px;
@@ -37,14 +37,30 @@
     margin: -.25rem 0;
     padding: .25rem .5rem;
     line-height: inherit;
-}
-#period-picker:hover {
-    background: #f5f5f5;
-    border-radius: .25rem;
-    cursor: default;
+
+    &:hover {
+        background: #f5f5f5;
+        border-radius: .25rem;
+        cursor: default;
+    }
 }
 #period-display {
+    display: inline-block;
     margin: 0 .5rem;
+}
+
+#PeriodPickerReset {
+    float: right;
+    display: inline-block;
+    font-size: 1.2rem;
+    line-height: 40px;
+    margin: -.25rem 0;
+    padding: .25rem .5rem;
+
+    &:hover {
+        background: #f5f5f5;
+        border-radius: .25rem;
+    }
 }
 
 #PerformanceBoxesContainer {
@@ -76,7 +92,6 @@
             text-align: center;
         }
     }
-    
     .customers-multivalue {
         display: flex;
 
@@ -212,7 +227,11 @@
             margin-top: 1em !important; // fix for default PW style
         }
     }
-    #PeriodPickerContainer {
+    #PeriodPickerSelect {
+        font-size: 1.1rem;
+        line-height: 1.8em;
+    }
+    #PeriodPickerReset {
         font-size: 1.1rem;
         line-height: 1.8em;
     }
@@ -246,7 +265,11 @@
             padding-left: 1.2em;
         }
     }
-    #PeriodPickerContainer {
+    #PeriodPickerSelect {
+        font-size: 1.1rem;
+        line-height: 1.8em;
+    }
+    #PeriodPickerReset {
         font-size: 1.1rem;
         line-height: 1.8em;
     }
@@ -263,6 +286,4 @@
     .itemlister-headline {
         margin-top: 1em;
     }
-
 }
-

@@ -129,9 +129,13 @@ class ProcessSnipWire extends Process implements Module {
 
         $forceRefresh = false;
 
-        if ($this->_getInputAction() == 'refresh') {
+        $action = $this->_getInputAction();
+        if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('chache_refreshed'));
             $forceRefresh = true;
+        } elseif ($action == 'reset') {
+            $this->message($this->_('Store performance date range set to default.'));
+            $this->_resetDateRange();
         }
 
         $startDate = $this->_getStartDate();
@@ -938,14 +942,26 @@ class ProcessSnipWire extends Process implements Module {
                 $markup =
                 '<input type="hidden" id="period-from" name="periodFrom" value="' . $start . '">' .
                 '<input type="hidden" id="period-to" name="periodTo" value="' . $end . '">' .
-                '<div id="PeriodPickerContainer">' .
+                '<div id="PeriodPickerSelect">' .
                     '<div id="period-picker" aria-label="' . $this->_('Store performance date range selector') .'">' .
                         wireIconMarkup('calendar') . ' <span id="period-display"></span> ' . wireIconMarkup('caret-down') .
                     '</div>' .
                 '</div>';
+                
+                // Reset button
+                $markup .= 
+                '<a href="./?action=reset"
+                    id="PeriodPickerReset"
+                    class="tooltip"
+                    role="button"
+                    uk-tooltip
+                    title="' . $this->_('Reset store performance date range') .'">' .
+                        wireIconMarkup('rotate-left') .
+                '</a>';
 
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
+                $f->wrapClass = 'PeriodPickerContainer';
                 $f->label = $this->_('Date Range Picker');
                 $f->skipLabel = Inputfield::skipLabelHeader;
                 $f->value = $markup;
@@ -1458,6 +1474,16 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         return $out;
+    }
+
+    /**
+     * Reset the date range session to default.
+     *
+     */
+    private function _resetDateRange() {
+        $session = $this->wire('session');
+        $session->removeFor($this, 'periodFrom');
+        $session->removeFor($this, 'periodTo');
     }
 
     /**
