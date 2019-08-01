@@ -602,6 +602,7 @@ class ProcessSnipWire extends Process implements Module {
     protected function getProductsLister() {
         if ($this->productsLister) return $this->productsLister;
         
+        $this->productsLister = null;
         if (!$this->wire('user')->hasPermission('page-lister')) {
             $this->error($this->_('You dont have permisson to use Page Lister - please contact your admin!'));
         } else {
