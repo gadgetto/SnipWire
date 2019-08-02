@@ -1489,44 +1489,45 @@ class ProcessSnipWire extends Process implements Module {
 
     /**
      * Get the sanitized start date from session or input.
+     * (session var is only set if date is selected by datepicker)
      *
      * @return string Sanitized ISO 8601 [default: back 29 days]
      * 
      */
     private function _getStartDate() {
         $session = $this->wire('session');
-        
         $periodFrom = $this->wire('input')->get->date('periodFrom', 'Y-m-d', array('strict' => true));
-        $sessionPeriodFrom = $session->getFor($this, 'periodFrom');
-        if (!$sessionPeriodFrom) $sessionPeriodFrom = date('Y-m-d', strtotime('-29 days'));
-        
-        $startDate = $periodFrom ? $periodFrom : $sessionPeriodFrom;
-        $session->setFor($this, 'periodFrom', $startDate);
-
-        return $startDate;
+        if ($periodFrom) {
+            $session->setFor($this, 'periodFrom', $periodFrom);
+        } else {
+            $periodFrom = $session->getFor($this, 'periodFrom');
+            if (!$periodFrom) $periodFrom = date('Y-m-d', strtotime('-29 days'));
+        }
+        return $periodFrom;
     }
 
     /**
      * Get the sanitized end date from session or input.
+     * (session var is only set if date is selected by datepicker)
      *
      * @return string Sanitized ISO 8601 [default: today]
      * 
      */
     private function _getEndDate() {
         $session = $this->wire('session');
-        
         $periodTo = $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
-        $sessionPeriodTo = $session->getFor($this, 'periodTo');
-        if (!$sessionPeriodTo) $sessionPeriodTo = date('Y-m-d');
-        
-        $endDate = $periodTo ? $periodTo : $sessionPeriodTo;
-        $session->setFor($this, 'periodTo', $endDate);
-
-        return $endDate;
+        if ($periodTo) {
+            $session->setFor($this, 'periodTo', $periodTo);
+        } else {
+            $periodTo = $session->getFor($this, 'periodTo');
+            if (!$periodTo) $periodTo = date('Y-m-d');
+        }
+        return $periodTo;
     }
 
     /**
      * Get the sanitized currency string from session or input.
+     * (session var is always set)
      *
      * @return string The currency string (e.g. 'eur') [default: first currency from config]
      * 
