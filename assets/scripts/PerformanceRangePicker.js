@@ -47,7 +47,7 @@ jQuery(document).ready(function($) {
     $picker.daterangepicker({
         startDate: start,
         endDate: end,
-        opens: 'left',
+        opens: 'right',
         ranges: rangesObj,
         locale: {
             format: locale.format,
