@@ -968,7 +968,7 @@ class ProcessSnipWire extends Process implements Module {
                     class="tooltip"
                     role="button"
                     uk-tooltip
-                    title="' . $this->_('Reset store performance date range') .'">' .
+                    title="' . $this->_('Reset store performance date range to default') .'">' .
                         wireIconMarkup('rotate-left') .
                 '</a>';
 
