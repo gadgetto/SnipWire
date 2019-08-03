@@ -53,6 +53,11 @@ class ProcessSnipWire extends Process implements Module {
                     'label' => __('Products'), 
                     'icon' => self::iconProduct, 
                 ),
+                array(
+                    'url' => 'settings/', 
+                    'label' => __('Settings'), 
+                    'icon' => self::iconSettings, 
+                ),
             ),
             'requires' => array(
                 'ProcessWire>=3.0.0',
@@ -69,6 +74,7 @@ class ProcessSnipWire extends Process implements Module {
     const iconCustomer = 'user';
     const iconProduct = 'cube';
     const iconOrder = 'file-text';
+    const iconSettings = 'gear';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = array();
