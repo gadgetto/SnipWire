@@ -613,6 +613,8 @@ class ProcessSnipWire extends Process implements Module {
                 $this->productsLister = $this->wire('modules')->get('ProcessPageLister');
                 $this->productsLister->imageFirst = true;
                 $this->productsLister->allowBookmarks = false;
+                $this->productsLister->viewMode = ProcessPageLister::windowModeBlank;
+                $this->productsLister->editMode = ProcessPageLister::windowModeBlank;
             }
         }
         return $this->productsLister;
