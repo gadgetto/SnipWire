@@ -945,7 +945,11 @@ class ProcessSnipWire extends Process implements Module {
                 '<input type="hidden" id="period-to" name="periodTo" value="' . $end . '">' .
                 '<div id="PeriodPickerSelect">' .
                     '<div id="period-picker" aria-label="' . $this->_('Store performance date range selector') .'">' .
-                        wireIconMarkup('calendar') . ' <span id="period-display"></span> ' . wireIconMarkup('caret-down') .
+                        wireIconMarkup('calendar') . 
+                        '<span id="period-display">' .
+                            $this->_('Preparing data...') .
+                        '</span>' . 
+                        wireIconMarkup('caret-down') .
                     '</div>' .
                 '</div>';
                 
