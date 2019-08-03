@@ -79,7 +79,7 @@ class ProcessSnipWire extends Process implements Module {
     /** @var array $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = array();
 
-    /** @var string $currencies The activated currencies from SnipWire module config */
+    /** @var array $currencies The activated currencies from SnipWire module config */
     private $currencies = array();
 
     /** @var ProcessPageLister|null $productsLister ProcessPageLister instance, when applicable */
