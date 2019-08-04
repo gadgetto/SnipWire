@@ -85,6 +85,12 @@ class ProcessSnipWire extends Process implements Module {
     /** @var ProcessPageLister|null $productsLister ProcessPageLister instance, when applicable */
     protected $productsLister = null;
 
+    /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
+    protected $snipWireRootUrl = '';
+
+    /**var string $currentUrl The URL to current (virtual) page */
+    protected $currentUrl = '';
+
     /**
      * Initalize module config variables (properties)
      *
@@ -108,6 +114,9 @@ class ProcessSnipWire extends Process implements Module {
 
         // Get activated $currencies from SnipWire module config
         $this->currencies = $this->snipwireConfig->currencies;
+
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->get('snipwire')->url, '/') . '/';
+        $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
     }    
 
     /**
@@ -237,7 +246,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
-        $btn->href = './?action=refresh';
+        $btn->href = $this->currentUrl . '?action=refresh';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
         $btn->showInHeader();
@@ -303,7 +312,7 @@ class ProcessSnipWire extends Process implements Module {
             : array();
         
         $count = count($orders);
-        $url = $input->url();
+        $url = $this->currentUrl;
 
         $headline = $this->itemListerHeadline($offset, $count);
         $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
@@ -324,7 +333,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
-        $btn->href = './?action=refresh';
+        $btn->href = $this->currentUrl . '?action=refresh';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
         $btn->showInHeader();
@@ -353,8 +362,8 @@ class ProcessSnipWire extends Process implements Module {
         $this->browserTitle($this->_('Snipcart Order'));
         $this->headline($this->_('Snipcart Order'));
 
-        $this->breadcrumb('../', $this->_('SnipWire Dashboard'));
-        $this->breadcrumb('../orders/', $this->_('Snipcart Orders'));
+        $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
+        $this->breadcrumb($this->snipWireRootUrl . 'orders/', $this->_('Snipcart Orders'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
@@ -379,7 +388,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
-        $btn->href = './?action=refresh';
+        $btn->href = $this->currentUrl . '?action=refresh';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
         $btn->showInHeader();
@@ -441,7 +450,7 @@ class ProcessSnipWire extends Process implements Module {
             : array();
         
         $count = count($customers);
-        $url = $input->url();
+        $url = $this->currentUrl;
 
         $headline = $this->itemListerHeadline($offset, $count);
         $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
@@ -462,7 +471,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
-        $btn->href = './?action=refresh';
+        $btn->href = $this->currentUrl . '?action=refresh';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
         $btn->showInHeader();
@@ -491,8 +500,8 @@ class ProcessSnipWire extends Process implements Module {
         $this->browserTitle($this->_('Snipcart Customer'));
         $this->headline($this->_('Snipcart Customer'));
 
-        $this->breadcrumb('../', $this->_('SnipWire Dashboard'));
-        $this->breadcrumb('../customers/', $this->_('Snipcart Customers'));
+        $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
+        $this->breadcrumb($this->snipWireRootUrl . 'customers/', $this->_('Snipcart Customers'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
@@ -517,7 +526,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
-        $btn->href = './?action=refresh';
+        $btn->href = $this->currentUrl . '?action=refresh';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
         $btn->showInHeader();
@@ -940,7 +949,7 @@ class ProcessSnipWire extends Process implements Module {
         $form = $modules->get('InputfieldForm'); 
         $form->attr('id', 'StorePerformanceFilterForm');
         $form->method = 'get';
-        $form->action = './';
+        $form->action = $this->currentUrl;
 
             /** @var InputfieldFieldset $fsFilters */
             $fsFilters = $modules->get('InputfieldFieldset');
@@ -963,7 +972,7 @@ class ProcessSnipWire extends Process implements Module {
                 
                 // Reset button
                 $markup .= 
-                '<a href="./?action=reset"
+                '<a href="' . $this->currentUrl . '?action=reset"
                     id="PeriodPickerReset"
                     class="tooltip"
                     role="button"
@@ -1188,7 +1197,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total Spent'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . './customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['statistics']['ordersCount'],
@@ -1205,7 +1214,7 @@ class ProcessSnipWire extends Process implements Module {
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
-        $btn->href = './customers/';
+        $btn->href = $this->snipWireRootUrl . 'customers';
         $btn->value = $this->_('All Customers');
         $btn->icon = 'user';
         $btn->secondary = true;
@@ -1266,7 +1275,7 @@ class ProcessSnipWire extends Process implements Module {
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
-        $btn->href = './products/';
+        $btn->href = $this->snipWireRootUrl . 'products';
         $btn->value = $this->_('All Products');
         $btn->icon = 'cube';
         $btn->secondary = true;
@@ -1302,8 +1311,8 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . './order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
-                $panelLink2 = '<a href="' . './customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
+                $panelLink2 = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
@@ -1323,7 +1332,7 @@ class ProcessSnipWire extends Process implements Module {
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
-        $btn->href = './orders/';
+        $btn->href = $this->snipWireRootUrl . 'orders/';
         $btn->value = $this->_('All Orders');
         $btn->icon = 'file-text-o';
         $btn->secondary = true;
@@ -1364,8 +1373,8 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . '../order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
-                $panelLink2 = '<a href="' . '../customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
+                $panelLink2 = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
@@ -1443,7 +1452,7 @@ class ProcessSnipWire extends Process implements Module {
             ));
 
             foreach ($items as $item) {
-                $panelLink = '<a href="' . '../customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-fw') . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-fw') . $item['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['email'],
@@ -1655,7 +1664,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm'); 
         $form->attr('id', 'SnipWireInstallerForm'); 
-        $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
+        $form->attr('action', $this->currentUrl . '?ret=' . urlencode($comeFromUrl)); 
         $form->attr('method', 'post');
 
         $snipwireConfig = $modules->getConfig('SnipWire');
@@ -1725,7 +1734,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm'); 
         $form->attr('id', 'SnipWireUninstallerForm'); 
-        $form->attr('action', './?ret=' . urlencode($comeFromUrl)); 
+        $form->attr('action', $this->currentUrl . '?ret=' . urlencode($comeFromUrl)); 
         $form->attr('method', 'post');
         
         $snipwireConfig = $modules->getConfig('SnipWire');
