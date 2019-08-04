@@ -951,70 +951,63 @@ class ProcessSnipWire extends Process implements Module {
         $form->method = 'get';
         $form->action = $this->currentUrl;
 
-            /** @var InputfieldFieldset $fsFilters */
-            $fsFilters = $modules->get('InputfieldFieldset');
-            $fsFilters->icon = 'filter';
-            $fsFilters->label = $this->_('Store Performance Filter');
+            // Period date range picker with hidden form fields
+            $markup =
+            '<input type="hidden" id="period-from" name="periodFrom" value="' . $start . '">' .
+            '<input type="hidden" id="period-to" name="periodTo" value="' . $end . '">' .
+            '<div id="PeriodPickerSelect">' .
+                '<div id="period-picker" aria-label="' . $this->_('Store performance date range selector') .'">' .
+                    wireIconMarkup('calendar') . 
+                    '<span id="period-display">' .
+                        $this->_('Preparing data...') .
+                    '</span>' . 
+                    wireIconMarkup('caret-down') .
+                '</div>' .
+            '</div>';
+            
+            // Reset button
+            $markup .= 
+            '<a href="' . $this->currentUrl . '?action=reset"
+                id="PeriodPickerReset"
+                class="tooltip"
+                role="button"
+                uk-tooltip
+                title="' . $this->_('Reset store performance date range to default') .'">' .
+                    wireIconMarkup('rotate-left') .
+            '</a>';
 
-                // Period date range picker with hidden form fields
-                $markup =
-                '<input type="hidden" id="period-from" name="periodFrom" value="' . $start . '">' .
-                '<input type="hidden" id="period-to" name="periodTo" value="' . $end . '">' .
-                '<div id="PeriodPickerSelect">' .
-                    '<div id="period-picker" aria-label="' . $this->_('Store performance date range selector') .'">' .
-                        wireIconMarkup('calendar') . 
-                        '<span id="period-display">' .
-                            $this->_('Preparing data...') .
-                        '</span>' . 
-                        wireIconMarkup('caret-down') .
-                    '</div>' .
-                '</div>';
-                
-                // Reset button
-                $markup .= 
-                '<a href="' . $this->currentUrl . '?action=reset"
-                    id="PeriodPickerReset"
-                    class="tooltip"
-                    role="button"
-                    uk-tooltip
-                    title="' . $this->_('Reset store performance date range to default') .'">' .
-                        wireIconMarkup('rotate-left') .
-                '</a>';
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->wrapClass = 'PeriodPickerContainer';
+            $f->label = $this->_('Date Range Picker');
+            $f->skipLabel = Inputfield::skipLabelHeader;
+            $f->value = $markup;
+            $f->collapsed = Inputfield::collapsedNever;
+            $f->columnWidth = 75;
 
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->wrapClass = 'PeriodPickerContainer';
-                $f->label = $this->_('Date Range Picker');
-                $f->skipLabel = Inputfield::skipLabelHeader;
-                $f->value = $markup;
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 75;
+        $form->add($f);  
 
-            $fsFilters->add($f);  
+            /** @var InputfieldSelect $f */
+            $f = $modules->get('InputfieldSelect'); 
+            $f->attr('id', 'currency-picker'); 
+            $f->attr('name', 'currency'); 
+            $f->wrapClass = 'CurrencyPickerContainer';
+            $f->label = $this->_('Currency Picker'); 
+            $f->skipLabel = Inputfield::skipLabelHeader;
+            $f->value = $currency;
+            $f->collapsed = Inputfield::collapsedNever;
+            $f->columnWidth = 25;
+            $f->required = true;
 
-                /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect'); 
-                $f->attr('id', 'currency-picker'); 
-                $f->attr('name', 'currency'); 
-                $f->wrapClass = 'CurrencyPickerContainer';
-                $f->label = $this->_('Currency Picker'); 
-                $f->skipLabel = Inputfield::skipLabelHeader;
-                $f->value = $currency;
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 25;
-                $f->required = true;
+            $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+            foreach ($this->currencies as $currencyOption) {
+                $currencyLabel = isset($supportedCurrencies[$currencyOption])
+                    ? $supportedCurrencies[$currencyOption]
+                    : $currencyOption;
+                $f->addOption($currencyOption, $currencyLabel);
+            }
 
-                $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
-                foreach ($this->currencies as $currencyOption) {
-                    $currencyLabel = isset($supportedCurrencies[$currencyOption])
-                        ? $supportedCurrencies[$currencyOption]
-                        : $currencyOption;
-                    $f->addOption($currencyOption, $currencyLabel);
-                }
-
-            $fsFilters->add($f);            
-
-        $form->add($fsFilters);        
+        $form->add($f);            
 
         return $form->render(); 
     }
