@@ -321,7 +321,7 @@ class ProcessSnipWire extends Process implements Module {
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Orders');
         $f->skipLabel = Inputfield::skipLabelHeader;
-        $f->icon = 'file-text-o';
+        $f->icon = self::iconOrder;
         $f->value = $headline;
         $f->value .= $pagination;
         $f->value .= $this->_renderTableOrders($orders);
@@ -379,7 +379,7 @@ class ProcessSnipWire extends Process implements Module {
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Order');
         $f->skipLabel = Inputfield::skipLabelHeader;
-        $f->icon = 'file-text-o';
+        $f->icon = self::iconOrder;
         $f->value = $this->_renderDetailOrder($order);
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -459,7 +459,7 @@ class ProcessSnipWire extends Process implements Module {
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Customers');
         $f->skipLabel = Inputfield::skipLabelHeader;
-        $f->icon = 'user';
+        $f->icon = self::iconCustomer;
         $f->value = $headline;
         $f->value .= $pagination;
         $f->value .= $this->_renderTableCustomers($customers);
@@ -517,7 +517,7 @@ class ProcessSnipWire extends Process implements Module {
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Customer');
         $f->skipLabel = Inputfield::skipLabelHeader;
-        $f->icon = 'user';
+        $f->icon = self::iconCustomer;
         $f->value = $this->_renderDetailCustomer($customer);
         $f->collapsed = Inputfield::collapsedNever;
 
