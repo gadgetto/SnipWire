@@ -1444,7 +1444,7 @@ class ProcessSnipWire extends Process implements Module {
         $btn = $modules->get('InputfieldButton');
         $btn->href = $this->snipWireRootUrl . 'products';
         $btn->value = $this->_('All Products');
-        $btn->icon = 'cube';
+        $btn->icon = self::iconProduct;
         $btn->secondary = true;
         $btn->small = true;
 
