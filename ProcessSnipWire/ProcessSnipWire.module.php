@@ -958,7 +958,6 @@ class ProcessSnipWire extends Process implements Module {
                 $attrs[] = 'title="' . $cfg['tooltip'] . '"';
                 $attrs[] = 'uk-tooltip';
                 $cls[] = 'tooltip';
-                bd($cls);
             }
             $classes = implode(' ', $cls);
             $classes = $classes ? ' class="' . $classes . '"' : '';
