@@ -990,13 +990,47 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * SnipWire dashboard output wrapper.
+     * SnipWire dashboard output wrapper with tabbed interface.
      *
      * @return markup
      *
      */
     private function _wrapDashboardOutput($out) {
-        return '<div id="SnipwireDashboard">' . $out . '</div>';
+        $modules = $this->wire('modules');
+        $config = $this->wire('config');
+
+        /** @var JqueryWireTabs $wireTabs */
+        $wireTabs = $modules->get('JqueryWireTabs');
+
+        $options = array(
+            'id' => 'SnipWireTabs',
+            'rememberTabs' => JqueryWireTabs::rememberTabsNever,
+        );
+        // Hand over configuration to JS
+        $config->js('tabsOptions', $options);
+
+        $tabs = array(
+            'dashboard' => $this->_('Dashboard'),
+            'orders' => $this->_('Orders'),
+            'customers' => $this->_('Customers'),
+            'products' => $this->_('Products'),
+            'settings' => wireIconMarkup('gear'),
+        );
+        array_walk($tabs, function(&$label, $id) {
+            $urlSegment = $id;
+            if ($urlSegment === 'dashboard') $urlSegment = ''; // dashboard is root
+            $attrs = ' id="_' . $id . '"';
+            $attrs .= $this->wire('input')->urlSegment(1) == $urlSegment
+                ? ' class="on"'
+                : '';
+            $label = '<a href="' . $this->snipWireRootUrl . $urlSegment . '"' . $attrs . '>' . $label . '</a>';
+        });
+
+        $out = 
+        $wireTabs->renderTabList($tabs, $options) .
+        '<div id="SnipwireDashboard">' . $out . '</div>';
+        
+        return $out;
     }
 
     /**
