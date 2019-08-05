@@ -40,6 +40,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixSettings = 'Settings';
     const cacheNamePrefixDashboard = 'Dashboard';
     const cacheNamePrefixProducts = 'Products';
+    const cacheNamePrefixProductDetail = 'ProductDetail';
     const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixOrderDetail = 'OrderDetail';
     const cacheNamePrefixCustomers = 'Customers';
@@ -88,6 +89,7 @@ class SnipREST extends WireHttpExtended {
             'connection_failed' => __('Connection to Snipcart failed'),
             'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without.'),
             'no_customer_id' => __('Could not fetch customer data - no customer ID provided.'),
+            'no_product_id' => __('Could not fetch product data - no product ID provided.'),
             'no_order_token' => __('Could not fetch order data - no order token provided.'),
             'cache_refreshed' => __('Snipcart cache refreshed.'),
         );
@@ -495,6 +497,46 @@ class SnipREST extends WireHttpExtended {
      */
     public function getProductsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getProducts('items', $options, $expires, $forceRefresh);
+    }
+
+    /**
+     * Get a single product from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $id The Snipcart id of the product to be returned
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getProduct($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_product_id'));
+            return false;
+        }
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixProductDetail . '.' . md5($id);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathProducts . '/' . $id);
+        });
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathProducts . '/' . $id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**

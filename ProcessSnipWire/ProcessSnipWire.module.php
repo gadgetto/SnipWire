@@ -537,8 +537,7 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * The SnipWire products page.
-     * (Products aren't fetched via rest API instead we use Page Lister module)
+     * The SnipWire Snipcart Products page.
      *
      * @return page markup
      *
@@ -548,8 +547,8 @@ class ProcessSnipWire extends Process implements Module {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
-        $ajax = $config->ajax;
-        $snipwireConfig = $this->snipwireConfig;
+        $session = $this->wire('session');
+        $sniprest = $this->wire('sniprest');
         
         $this->browserTitle($this->_('Snipcart Products'));
         $this->headline($this->_('Snipcart Products'));
@@ -558,6 +557,141 @@ class ProcessSnipWire extends Process implements Module {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
+
+        $limit = 20;        
+        $currentOffset = (int) $session->getFor($this, 'offsetProducts');        
+        $forceRefresh = false;
+
+        $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
+            $forceRefresh = true;
+        }
+        if ($action == 'next') {
+            $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
+        } elseif ($action == 'prev') {
+            $offset = is_numeric($currentOffset) ? ($currentOffset - $limit) : 0;
+            if ($offset <= 0)  $offset = 0;
+        } else {
+            $offset = $currentOffset;
+        }
+        $session->setFor($this, 'offsetProducts', $offset);
+
+        $selector = array(
+            'offset' => $offset,
+            'limit' => $limit,
+        );
+
+        $request = $sniprest->getProductsItems($selector);
+        $products = isset($request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
+            : array();
+        
+        $count = count($products);
+        $url = $this->currentUrl;
+
+        $headline = $this->itemListerHeadline($offset, $count);
+        $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Products');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = self::iconProduct;
+        $f->value = $headline;
+        $f->value .= $pagination;
+        $f->value .= $this->_renderTableProducts($products);
+        $f->value .= $pagination;
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $out = $f->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = $this->currentUrl . '?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= '<div class="ItemListerButton">' . $btn->render() . '</div>';
+
+        return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
+     * The SnipWire Snipcart Product detail page.
+     *
+     * @return page markup
+     *
+     */
+    public function ___executeProduct() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sniprest = $this->wire('sniprest');
+        
+        $dashboardUrl = $input->url;
+        $id = $input->urlSegment(2); // Get Snipcart product id
+        
+        $this->browserTitle($this->_('Snipcart Product'));
+        $this->headline($this->_('Snipcart Product'));
+
+        $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
+        $this->breadcrumb($this->snipWireRootUrl . 'products/', $this->_('Snipcart Products'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+        
+        $request = $sniprest->getProduct($id);
+        $product = isset($request[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent]
+            : array();
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Product');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = self::iconProduct;
+        $f->value = $this->_renderDetailProduct($product);
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $out = $f->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = $this->currentUrl . '?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= $btn->render();
+
+        return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
+     * The SnipWire products list page.
+     * (Products are listed Page Lister module)
+     *
+     * @return page markup
+     *
+     */
+    public function ___executeProductsList() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $ajax = $config->ajax;
+        $snipwireConfig = $this->snipwireConfig;
+        
+        $this->browserTitle($this->_('Snipcart Products Pages'));
+        $this->headline($this->_('Snipcart Products Pages'));
+        
         if (!$lister = $this->getProductsLister()) return '';
 
         // Hook to render product thumb in Lister column (override default image output)
@@ -604,8 +738,7 @@ class ProcessSnipWire extends Process implements Module {
             'snipcart_item_image'
         );
         
-        $out = $lister->execute();
-        return $this->_wrapDashboardOutput($out); 
+        return $lister->execute();
     }
 
     /**
@@ -1485,6 +1618,82 @@ class ProcessSnipWire extends Process implements Module {
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No customer selected') .
+            '</div>';
+        }
+
+        return $out;
+    }
+
+    /**
+     * Render the products table.
+     *
+     * @param array $items
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
+     *
+     */
+    private function _renderTableProducts($items) {
+        $modules = $this->wire('modules');
+
+        if (!empty($items)) {
+            $modules->get('JqueryTableSorter')->use('widgets');
+            $modules->get('JqueryMagnific');
+
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->setID('snipwire-products-table');
+            $table->setClass('ItemLister');
+            $table->setSortable(false);
+            $table->setResizable(true);
+            $table->setResponsive(true);
+            $table->headerRow(array(
+                $this->_('SKU'),
+                $this->_('Name'),
+                $this->_('Price'),
+                $this->_('# Sales'),
+                $this->_('Sales'),
+            ));
+
+            foreach ($items as $item) {
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconProduct, 'fa-fw') . $item['userDefinedId'] . '</a>';
+                $table->row(array(
+                    $panelLink,
+                    $item['name'],
+                    $item['price'],
+                    $item['statistics']['numberOfSales'],
+                    $item['statistics']['totalSales'],
+                ));
+            }
+            $out = $table->render();
+        } else {
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No products found') .
+            '</div>';
+        }
+        return '<div class="ItemListerTable">' . $out . '</div>';
+    }
+
+    /**
+     * Render the product detail view.
+     *
+     * @param array $item
+     * @return markup 
+     *
+     */
+    private function _renderDetailProduct($item) {
+        $modules = $this->wire('modules');
+
+        if (!empty($item)) {
+
+
+            $out = '<pre>' . print_r($item, true) . '</pre>';
+
+
+        } else {
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No product selected') .
             '</div>';
         }
 
