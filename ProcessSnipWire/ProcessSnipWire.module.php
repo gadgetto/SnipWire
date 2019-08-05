@@ -1171,7 +1171,7 @@ class ProcessSnipWire extends Process implements Module {
      * Render the top customers table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no customers` display 
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
     private function _renderTableTopCustomers($items) {
@@ -1221,7 +1221,7 @@ class ProcessSnipWire extends Process implements Module {
      * Render the top products table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no products` display 
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
     private function _renderTableTopProducts($items) {
@@ -1282,7 +1282,7 @@ class ProcessSnipWire extends Process implements Module {
      * Render the recent orders table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
     private function _renderTableRecentOrders($items) {
@@ -1339,7 +1339,7 @@ class ProcessSnipWire extends Process implements Module {
      * Render the orders table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
     private function _renderTableOrders($items) {
@@ -1417,7 +1417,7 @@ class ProcessSnipWire extends Process implements Module {
      * Render the customers table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no orders` display 
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
     private function _renderTableCustomers($items) {
