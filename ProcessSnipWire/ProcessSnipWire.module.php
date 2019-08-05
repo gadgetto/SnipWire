@@ -908,6 +908,7 @@ class ProcessSnipWire extends Process implements Module {
     private function _wrapDashboardOutput($out) {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
+        $input = $this->wire('input');
 
         /** @var JqueryWireTabs $wireTabs */
         $wireTabs = $modules->get('JqueryWireTabs');
@@ -926,11 +927,11 @@ class ProcessSnipWire extends Process implements Module {
             'products' => $this->_('Products'),
             'settings' => wireIconMarkup('gear'),
         );
-        array_walk($tabs, function(&$label, $id) {
+        array_walk($tabs, function(&$label, $id) use($input) {
             $urlSegment = $id;
             if ($urlSegment === 'dashboard') $urlSegment = ''; // dashboard is root
             $attrs = ' id="_' . $id . '"';
-            $attrs .= $this->wire('input')->urlSegment(1) == $urlSegment
+            $attrs .= $input->urlSegment(1) == $urlSegment
                 ? ' class="on"'
                 : '';
             $label = '<a href="' . $this->snipWireRootUrl . $urlSegment . '"' . $attrs . '>' . $label . '</a>';
