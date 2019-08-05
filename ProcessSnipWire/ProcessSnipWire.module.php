@@ -1700,9 +1700,9 @@ class ProcessSnipWire extends Process implements Module {
                 $table->row(array(
                     $panelLink,
                     $item['name'],
-                    $item['price'],
+                    CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
                     $item['statistics']['numberOfSales'],
-                    $item['statistics']['totalSales'],
+                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
                 ));
             }
             $out = $table->render();
