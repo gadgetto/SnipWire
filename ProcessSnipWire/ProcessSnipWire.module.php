@@ -910,7 +910,8 @@ class ProcessSnipWire extends Process implements Module {
         $config = $this->wire('config');
         $input = $this->wire('input');
 
-        if ($input->get('pw_panel')) {
+        // Prevent rendering of Tabs in modal/panel
+        if ($input->get('modal')) {
             return '<div id="SnipwireDashboard">' . $out . '</div>';
         }
 
