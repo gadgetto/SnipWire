@@ -910,6 +910,10 @@ class ProcessSnipWire extends Process implements Module {
         $config = $this->wire('config');
         $input = $this->wire('input');
 
+        if ($input->get('pw_panel')) {
+            return '<div id="SnipwireDashboard">' . $out . '</div>';
+        }
+
         /** @var JqueryWireTabs $wireTabs */
         $wireTabs = $modules->get('JqueryWireTabs');
 
@@ -920,24 +924,50 @@ class ProcessSnipWire extends Process implements Module {
         // Hand over configuration to JS
         $config->js('tabsOptions', $options);
 
-        $tabs = array(
-            'dashboard' => $this->_('Dashboard'),
-            'orders' => $this->_('Orders'),
-            'customers' => $this->_('Customers'),
-            'products' => $this->_('Products'),
-            'settings' => wireIconMarkup('gear'),
+        $tabsConfig = array(
+            'dashboard' => array(
+                'label' => $this->_('Dashboard'),
+                'urlsegment' => '', // dashboard is root!
+            ),
+            'orders' => array(
+                'label' => $this->_('Orders'),
+                'urlsegment' => 'orders',
+            ),
+            'customers' => array(
+                'label' => $this->_('Customers'),
+                'urlsegment' => 'customers',
+            ),
+            'products' => array(
+                'label' => $this->_('Products'),
+                'urlsegment' => 'products',
+            ),
+            'settings' => array(
+                'label' => wireIconMarkup('gear'),
+                'urlsegment' => 'settings',
+                'tooltip' => $this->_('Open SnipWire module settings page'),
+            ),
         );
-        array_walk($tabs, function(&$label, $id) use($input) {
-            $urlSegment = $id;
-            if ($urlSegment === 'dashboard') $urlSegment = ''; // dashboard is root
-            $attrs = ' id="_' . $id . '"';
-            $attrs .= $input->urlSegment(1) == $urlSegment
-                ? ' class="on"'
-                : '';
-            $label = '<a href="' . $this->snipWireRootUrl . $urlSegment . '"' . $attrs . '>' . $label . '</a>';
-        });
 
-        $out = 
+        $tabs = array();
+        foreach ($tabsConfig as $id => $cfg) {
+            $cls = array();
+            $attrs = array();
+            $attrs[] = 'id="_' . $id . '"';
+            if ($cfg['urlsegment'] == $input->urlSegment(1)) $cls[] = 'on';
+            if (!empty($cfg['tooltip'])) {
+                $attrs[] = 'title="' . $cfg['tooltip'] . '"';
+                $attrs[] = 'uk-tooltip';
+                $cls[] = 'tooltip';
+                bd($cls);
+            }
+            $classes = implode(' ', $cls);
+            $classes = $classes ? ' class="' . $classes . '"' : '';
+            $attributes = implode(' ', $attrs);
+            $attributes = $attributes ? ' ' . $attributes : '';
+            $tabs[] = '<a href="' . $this->snipWireRootUrl . $cfg['urlsegment'] . '"' . $classes . $attributes . '>' . $cfg['label'] . '</a>';
+        }
+
+        $out =
         $wireTabs->renderTabList($tabs, $options) .
         '<div id="SnipwireDashboard">' . $out . '</div>';
         
