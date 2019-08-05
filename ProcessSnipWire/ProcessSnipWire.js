@@ -11,6 +11,7 @@
 
 jQuery(document).ready(function() {
     var tabsOptions = config.tabsOptions;
+    if (!tabsOptions) return;
     var $wireTabs = $('#' + tabsOptions.id);
     
     $wireTabs.WireTabs({
