@@ -1674,6 +1674,7 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _renderTableProducts($items) {
         $modules = $this->wire('modules');
+        $snipwireConfig = $this->snipwireConfig;
 
         if (!empty($items)) {
             $modules->get('JqueryTableSorter')->use('widgets');
@@ -1689,6 +1690,7 @@ class ProcessSnipWire extends Process implements Module {
             $table->setResponsive(true);
             $table->headerRow(array(
                 $this->_('SKU'),
+                $this->_('Thumb'),
                 $this->_('Name'),
                 $this->_('Price'),
                 $this->_('# Sales'),
@@ -1697,8 +1699,10 @@ class ProcessSnipWire extends Process implements Module {
 
             foreach ($items as $item) {
                 $panelLink = '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconProduct, 'fa-fw') . $item['userDefinedId'] . '</a>';
+                $thumb = '<img src="' . $item['image'] . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
                 $table->row(array(
                     $panelLink,
+                    $thumb,
                     $item['name'],
                     CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
                     $item['statistics']['numberOfSales'],
