@@ -373,8 +373,19 @@ class ProcessSnipWire extends Process implements Module {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
-        
-        $request = $sniprest->getOrder($token);
+
+        $forceRefresh = false;
+        $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
+            $forceRefresh = true;
+        }
+
+        $request = $sniprest->getOrder(
+            $token,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
         $order = isset($request[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent]
             : array();
