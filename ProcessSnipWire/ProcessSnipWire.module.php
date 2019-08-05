@@ -1317,23 +1317,25 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Price'),
                 $this->_('# Sales'),
                 $this->_('Sales'),
+                '&nbsp;',
             ));
             foreach ($items as $item) {
-                $sku = $item['userDefinedId'];
-                $product = $pages->findOne('snipcart_item_id="' . $sku . '"');
-                
-                $row = array();
-                if ($product->url) {
-                    if ($product->editable()) {
-                        $row[] = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . $item['name'] . '</a>';
-                    }                    
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['name'] . '</a>';
+
+                $product = $pages->findOne('snipcart_item_id="' . $item['userDefinedId'] . '"');
+                if ($product->url && $product->editable()) {
+                    $editLink = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup('pencil-square-o') . '</a>';
                 } else {
-                    $row[] = $item['name'];
+                    $editLink = wireIconMarkup('pencil-square-o');
                 }
-                $row[] = CurrencyFormat::format($item['price'], 'usd'); // @todo: handle currency!
-                $row[] = $item['statistics']['numberOfSales'];
-                $row[] = CurrencyFormat::format($item['statistics']['totalSales'], 'usd'); // @todo: handle currency!
-                $table->row($row);
+
+                $table->row(array(
+                    $panelLink,
+                    CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
+                    $item['statistics']['numberOfSales'],
+                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
+                    $editLink,
+                ));
             }
             $out = $table->render();
         } else {
@@ -1576,6 +1578,7 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     private function _renderTableProducts($items) {
+        $pages = $this->wire('pages');
         $modules = $this->wire('modules');
         $snipwireConfig = $this->snipwireConfig;
 
@@ -1598,11 +1601,20 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Price'),
                 $this->_('# Sales'),
                 $this->_('Sales'),
+                '&nbsp;',
             ));
 
             foreach ($items as $item) {
                 $panelLink = '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconProduct, 'fa-fw') . $item['userDefinedId'] . '</a>';
                 $thumb = '<img src="' . $item['image'] . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
+
+                $product = $pages->findOne('snipcart_item_id="' . $item['userDefinedId'] . '"');
+                if ($product->url && $product->editable()) {
+                    $editLink = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup('pencil-square-o') . '</a>';
+                } else {
+                    $editLink = wireIconMarkup('pencil-square-o');
+                }
+
                 $table->row(array(
                     $panelLink,
                     $thumb,
@@ -1610,6 +1622,7 @@ class ProcessSnipWire extends Process implements Module {
                     CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
                     $item['statistics']['numberOfSales'],
                     CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
+                    $editLink,
                 ));
             }
             $out = $table->render();
