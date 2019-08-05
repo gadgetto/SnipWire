@@ -82,9 +82,6 @@ class ProcessSnipWire extends Process implements Module {
     /** @var array $currencies The activated currencies from SnipWire module config */
     private $currencies = array();
 
-    /** @var ProcessPageLister|null $productsLister ProcessPageLister instance, when applicable */
-    protected $productsLister = null;
-
     /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
     protected $snipWireRootUrl = '';
 
@@ -679,100 +676,6 @@ class ProcessSnipWire extends Process implements Module {
         $out .= $btn->render();
 
         return $this->_wrapDashboardOutput($out);
-    }
-
-    /**
-     * The SnipWire products list page.
-     * (Products are listed Page Lister module)
-     *
-     * @return page markup
-     *
-     */
-    public function ___executeProductsList() {
-        $modules = $this->wire('modules');
-        $user = $this->wire('user');
-        $config = $this->wire('config');
-        $input = $this->wire('input');
-        $ajax = $config->ajax;
-        $snipwireConfig = $this->snipwireConfig;
-        
-        $this->browserTitle($this->_('Snipcart Products Pages'));
-        $this->headline($this->_('Snipcart Products Pages'));
-        
-        if (!$lister = $this->getProductsLister()) return '';
-
-        // Hook to render product thumb in Lister column (override default image output)
-        $this->addHookBefore('FieldtypeImage::markupValue', function($event) use($snipwireConfig) {
-            list($page, $field, $images) = $event->arguments;
-            if (!$images) $images = $page->get($field->name); 
-
-            $out = '';
-            $productThumb = null;
-
-            if ($field->name == 'snipcart_item_image') {
-                $productThumb = $images->first()->size(
-                    $snipwireConfig['cart_image_width'],
-                    $snipwireConfig['cart_image_height'],
-                    [
-                        'cropping' => $snipwireConfig['cart_image_cropping'] ? true : false,
-                        'quality' => $snipwireConfig['cart_image_quality'],
-                        'hidpi' => $snipwireConfig['cart_image_hidpi'] ? true : false,
-                        'hidpiQuality' => $snipwireConfig['cart_image_hidpiQuality'],
-                    ]
-                );
-            }
-            if ($productThumb) {
-                $out .= '<img src="' . $productThumb->url . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
-                $event->return = $out;
-                $event->replace = true;
-            }
-        });
-
-        // We will let ProcessPageLister do it's thing (settings are stored in session)
-        if ($ajax) return $lister->execute();
-        
-        // Get first currency from module settings
-        $currency = reset($this->currencies);
-
-        $lister->defaultSelector = 'template=snipcart-product';
-        $lister->columns = array(
-            'title',
-            'snipcart_item_id',
-            "snipcart_item_price_$currency",
-            'snipcart_item_taxes',
-            'parent',
-            'modified',
-            'snipcart_item_image'
-        );
-        
-        return $lister->execute();
-    }
-
-    /**
-     * Return instance of ProcessPageLister or null if not available
-     * 
-     * @return ProcessPageLister|null
-     * 
-     */
-    protected function getProductsLister() {
-        if ($this->productsLister) return $this->productsLister;
-        
-        $this->productsLister = null;
-        if (!$this->wire('user')->hasPermission('page-lister')) {
-            $this->error($this->_('You dont have permisson to use Page Lister - please contact your admin!'));
-        } else {
-            if (!$this->wire('modules')->isInstalled('ProcessPageLister')) {
-                $this->error($this->_('ProcessPageLister - could not be loaded!'));
-            } else {
-                // Instantiate ProcessPageLister with default settings
-                $this->productsLister = $this->wire('modules')->get('ProcessPageLister');
-                $this->productsLister->imageFirst = true;
-                $this->productsLister->allowBookmarks = false;
-                $this->productsLister->viewMode = ProcessPageLister::windowModeBlank;
-                $this->productsLister->editMode = ProcessPageLister::windowModeBlank;
-            }
-        }
-        return $this->productsLister;
     }
 
     /**
