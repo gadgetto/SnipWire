@@ -158,8 +158,6 @@ class ProcessSnipWire extends Process implements Module {
         $endDate = $this->_getEndDate();
         $currency = $this->_getCurrency();
 
-        $out = $this->_buildDashboardFilter($startDate, $endDate, $currency);
-
         $packages = $sniprest->getDashboardData(
             "$startDate 00:00:00",
             "$endDate 23:59:59",
@@ -171,12 +169,14 @@ class ProcessSnipWire extends Process implements Module {
         unset($packages);
 
         if (!$dashboard) {
-            $out .=
+            $out =
             '<div class="dashboard-empty">' .
                 $this->_('Dashboard data could not be fetched') .
             '</div>';
             return $this->_wrapDashboardOutput($out);
         }
+
+        $out = $this->_buildDashboardFilter($startDate, $endDate, $currency);
 
         $out .= $this->_renderPerformanceBoxes(
             $dashboard[SnipRest::resourcePathDataPerformance],
