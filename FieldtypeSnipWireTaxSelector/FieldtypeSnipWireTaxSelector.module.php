@@ -26,7 +26,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'requires' => array(
-                'ProcessWire>=3.0.0',
+                'ProcessWire>=3.0.123',
                 'SnipWire',
                 'InputfieldSelect',
             ),

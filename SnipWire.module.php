@@ -34,7 +34,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 'MarkupSnipWire',
             ),
             'requires' => array(
-                'ProcessWire>=3.0.0',
+                'ProcessWire>=3.0.123',
             ),
         );
     }

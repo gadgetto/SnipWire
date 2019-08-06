@@ -60,7 +60,7 @@ class ProcessSnipWire extends Process implements Module {
                 ),
             ),
             'requires' => array(
-                'ProcessWire>=3.0.0',
+                'ProcessWire>=3.0.123',
                 'SnipWire',
             ),
         );
