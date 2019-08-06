@@ -217,7 +217,7 @@ class ProcessSnipWire extends Process implements Module {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Products');
             $f->icon = self::iconProduct;
-            $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resourcePathProducts]);
+            $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resourcePathProducts], $currency);
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
 
@@ -1340,10 +1340,11 @@ class ProcessSnipWire extends Process implements Module {
      * Render the top products table.
      *
      * @param array $items
+     * @param string $currency Currency tag
      * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
-    private function _renderTableTopProducts($items) {
+    private function _renderTableTopProducts($items, $currency) {
         $pages = $this->wire('pages');
         $modules = $this->wire('modules');
 
@@ -1373,9 +1374,9 @@ class ProcessSnipWire extends Process implements Module {
 
                 $table->row(array(
                     $panelLink,
-                    CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
+                    CurrencyFormat::format($item['price'], $currency),
                     $item['statistics']['numberOfSales'],
-                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
+                    CurrencyFormat::format($item['statistics']['totalSales'], $currency), // @todo: handle multi currency calculation!
                     $editLink,
                 ));
             }
