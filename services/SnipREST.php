@@ -349,7 +349,7 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
         $data[self::resourcePathOrders] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => WireArray($response),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
@@ -470,7 +470,7 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
         $data[self::resourcePathProducts] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => WireArray($response),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
@@ -591,7 +591,7 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
         $data[self::resourcePathCustomers] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => WireArray($response),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
