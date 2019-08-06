@@ -154,7 +154,7 @@ class ProcessSnipWire extends Process implements Module {
         $endDate = $this->_getEndDate();
         $currency = $this->_getCurrency();
 
-        $out = $this->_buildFilterSelect($startDate, $endDate, $currency);
+        $out = $this->_buildDashboardFilter($startDate, $endDate, $currency);
 
         $packages = $sniprest->getDashboardData(
             "$startDate 00:00:00",
@@ -997,7 +997,7 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Build the filter select form.
+     * Build the dashboard filter form.
      *
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
@@ -1005,7 +1005,7 @@ class ProcessSnipWire extends Process implements Module {
      * @return markup InputfieldForm
      *
      */
-    private function _buildFilterSelect($start = '', $end = '', $currency = '') {
+    private function _buildDashboardFilter($start = '', $end = '', $currency = '') {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
