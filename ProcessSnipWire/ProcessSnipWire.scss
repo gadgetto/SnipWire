@@ -209,6 +209,18 @@
     color: #bfbfbf;
 }
 
+.footer-version-info {
+   margin-top: 1.5rem;
+   margin-bottom: 0;
+   
+   small {
+       margin-left: .3rem;
+       color: #8d939e;
+       font-size: .875rem;
+       line-height: 1.5;
+   } 
+}
+
 @media screen and (max-width: 480px) {
     #PeriodPickerReset {
         display: none;

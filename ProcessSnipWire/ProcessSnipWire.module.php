@@ -983,7 +983,16 @@ class ProcessSnipWire extends Process implements Module {
         $out =
         $wireTabs->renderTabList($tabs, $options) .
         '<div id="SnipwireDashboard">' . $out . '</div>';
-        
+
+        $moduleInfo = $modules->getModuleInfoVerbose('SnipWire');
+        $out .= 
+        '<p class="footer-version-info">' .
+            $moduleInfo['title'] .
+            '<small>' .
+                $moduleInfo['versionStr'] . ' &copy; ' . date('Y') .
+            '</small>' .
+        '</p>';
+
         return $out;
     }
 
