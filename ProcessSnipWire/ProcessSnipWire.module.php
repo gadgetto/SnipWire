@@ -573,6 +573,8 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
+        $currency = $this->_getCurrency();
+
         $limit = 20;        
         $currentOffset = (int) $session->getFor($this, 'offsetProducts');        
         $forceRefresh = false;
@@ -615,7 +617,7 @@ class ProcessSnipWire extends Process implements Module {
         $f->icon = self::iconProduct;
         $f->value = $headline;
         $f->value .= $pagination;
-        $f->value .= $this->_renderTableProducts($products);
+        $f->value .= $this->_renderTableProducts($products, $currency);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -1617,10 +1619,11 @@ class ProcessSnipWire extends Process implements Module {
      * Render the products table.
      *
      * @param array $items
+     * @param string $currency Currency tag
      * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
-    private function _renderTableProducts($items) {
+    private function _renderTableProducts($items, $currency) {
         $pages = $this->wire('pages');
         $modules = $this->wire('modules');
         $snipwireConfig = $this->snipwireConfig;
@@ -1662,9 +1665,9 @@ class ProcessSnipWire extends Process implements Module {
                     $panelLink,
                     $thumb,
                     $item['name'],
-                    CurrencyFormat::format($item['price'], 'usd'), // @todo: handle currency!
+                    CurrencyFormat::format($item['price'], $currency),
                     $item['statistics']['numberOfSales'],
-                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle currency!
+                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle multi currency!
                     $editLink,
                 ));
             }
