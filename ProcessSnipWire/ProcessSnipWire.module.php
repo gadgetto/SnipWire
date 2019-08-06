@@ -67,9 +67,10 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     const assetsIncludeDaterangePicker = 1;
-    const assetsIncludeApexCharts = 2;
-    const assetsIncludeItemLister = 4;
-    const assetsIncludeAll = 7;
+    const assetsIncludeCurrencyPicker = 2;
+    const assetsIncludeApexCharts = 4;
+    const assetsIncludeItemLister = 8;
+    const assetsIncludeAll = 15;
     
     const iconCustomer = 'user';
     const iconProduct = 'cube';
@@ -137,11 +138,14 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
         
-        $this->_includeAssets(self::assetsIncludeDaterangePicker | self::assetsIncludeApexCharts);
-
-        $forceRefresh = false;
+        $this->_includeAssets(
+            self::assetsIncludeDaterangePicker | 
+            self::assetsIncludeCurrencyPicker | 
+            self::assetsIncludeApexCharts
+        );
 
         $action = $this->_getInputAction();
+        $forceRefresh = false;
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
@@ -1817,6 +1821,10 @@ class ProcessSnipWire extends Process implements Module {
             $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceRangePicker.css' . $versionAdd);
             $config->scripts->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
             $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceRangePicker.min.js' . $versionAdd);
+        }
+        if ($mode & self::assetsIncludeCurrencyPicker) {
+            // Include currency picker JS assets
+            $config->scripts->add($config->urls->SnipWire . 'assets/scripts/CurrencyPicker.min.js' . $versionAdd);
         }
         if ($mode & self::assetsIncludeApexCharts) {
             // Include ApexCharts CSS/JS assets

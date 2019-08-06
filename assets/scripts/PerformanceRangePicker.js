@@ -23,7 +23,6 @@ jQuery(document).ready(function($) {
     var $pickerDisplay = $(settings.pickerDisplay);
     var $fieldFrom = $(settings.fieldFrom);
     var $fieldTo = $(settings.fieldTo);
-    var $fieldCurrency = $(settings.fieldCurrency);
 
     function updatePicker(start, end) {
         // Display values based on locale setting
@@ -70,10 +69,4 @@ jQuery(document).ready(function($) {
     });
     
     updatePicker(start, end);
-    
-    // Currency selector event
-    $fieldCurrency.on('change', function() {
-        $form.submit();
-    });
-
 }); 
