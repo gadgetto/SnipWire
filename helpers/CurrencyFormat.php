@@ -67,15 +67,39 @@ class CurrencyFormat extends WireData {
     /**
      * Format the given price based on selected currency.
      *
-     * @param int|float|string $price The price value to format
+     * @param int|float|string|array $price The price value to format (can be multi currency)
      * @param string $currency The currency tag [default: `eur`]
      * @return string The formatted price (can be empty if something goes wrong)
      * 
      */
     public static function format($price, $currency = 'eur') {
-        if (empty($price) && !is_numeric($price)) return '';
+        if (empty($price)) return '';
         if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
+
+        // $price can be single or multi-currency
+        /*
+        "price": 1199.0
         
+        -- or --
+        
+        "price": {
+            "eur": 1199.0,
+            "usd": 1342.3,
+            ...
+        },
+        */
+
+        $info = '';
+        if (is_array($price)) {
+            if (array_key_exists($currency, $price)) {
+                $info = __('multi currency');
+            } else {
+                $info = __('currency not found');
+                $currency = array_keys($price)[0]; // fallback to first currency in array
+            }
+            $price = $price[$currency];
+        }
+
         // Searches the static $currencys array for $currency tag and returns the corresponding key
         $key = array_search(
             $currency,
@@ -98,7 +122,11 @@ class CurrencyFormat extends WireData {
         );
         $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
         $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
-        return sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
+
+        $formattedPrice = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
+        if ($info) $formattedPrice .= '<br><small>' . $info . '</small>';
+
+        return $formattedPrice;
     }
 
 }
