@@ -1499,6 +1499,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Placed on'),
                 $this->_('Placed by'),
                 $this->_('Country'),
+                $this->_('Status'),
                 $this->_('Payment Status'),
                 $this->_('Total'),
             ));
@@ -1510,6 +1511,7 @@ class ProcessSnipWire extends Process implements Module {
                     wireDate('relative', $item['creationDate']),
                     $panelLink2,
                     $item['billingAddressCountry'],
+                    $item['status'],
                     $item['paymentStatus'],
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
