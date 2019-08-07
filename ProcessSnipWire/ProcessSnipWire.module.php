@@ -1311,18 +1311,10 @@ class ProcessSnipWire extends Process implements Module {
                 $f->attr('name', 'products_id');
                 $f->label = $this->_('Product ID');
                 $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
+                $f->columnWidth = 100;
 
             $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->attr('name', 'product_keywords');
-                $f->label = $this->_('Keywords');
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
-
-            $fieldset->add($f);
 
 
         $form->add($fieldset);
