@@ -16,7 +16,6 @@ jQuery(document).ready(function($) {
     var rangeLabels = config.pickerRangeLabels;
     var start = settings.startDate ? moment(settings.startDate, 'YYYY-MM-DD') : moment().subtract(29, 'days');
     var end = settings.endDate ? moment(settings.endDate, 'YYYY-MM-DD') : moment();
-    var currency = settings.currency;
 
     var $form = $(settings.form);
     var $picker = $(settings.pickerElement);
