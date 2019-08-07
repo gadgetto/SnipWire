@@ -322,6 +322,8 @@ class ProcessSnipWire extends Process implements Module {
         $count = count($orders);
         $url = $this->currentUrl;
 
+        $out = $this->_buildOrdersFilter();
+
         $headline = $this->itemListerHeadline($offset, $count);
         $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
 
@@ -336,7 +338,7 @@ class ProcessSnipWire extends Process implements Module {
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
-        $out = $f->render();
+        $out .= $f->render();
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
@@ -471,6 +473,8 @@ class ProcessSnipWire extends Process implements Module {
         $count = count($customers);
         $url = $this->currentUrl;
 
+        $out = $this->_buildCustomersFilter();
+
         $headline = $this->itemListerHeadline($offset, $count);
         $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
 
@@ -485,7 +489,7 @@ class ProcessSnipWire extends Process implements Module {
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
-        $out = $f->render();
+        $out .= $f->render();
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
@@ -577,6 +581,8 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
+        $this->_includeAssets(self::assetsIncludeCurrencyPicker);
+
         $currency = $this->_getCurrency();
 
         $limit = 20;        
@@ -611,6 +617,8 @@ class ProcessSnipWire extends Process implements Module {
         $count = count($products);
         $url = $this->currentUrl;
 
+        $out = $this->_buildProductsFilter($currency);
+
         $headline = $this->itemListerHeadline($offset, $count);
         $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
 
@@ -625,7 +633,7 @@ class ProcessSnipWire extends Process implements Module {
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
-        $out = $f->render();
+        $out .= $f->render();
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
@@ -1142,6 +1150,208 @@ class ProcessSnipWire extends Process implements Module {
             }
 
         $form->add($f);            
+
+        return $form->render(); 
+    }
+
+    /**
+     * Build the orders filter form.
+     *
+     * @return markup InputfieldForm
+     *
+     */
+    private function _buildOrdersFilter() {
+        $modules = $this->wire('modules');
+        $config = $this->wire('config');
+
+        $filterSettings = array(
+            'form' => '#OrdersFilterForm',
+        );
+
+        // Hand over configuration to JS
+        $config->js('filterSettings', $filterSettings);
+
+        /** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm'); 
+        $form->attr('id', 'OrdersFilterForm');
+        $form->method = 'get';
+        $form->action = $this->currentUrl;
+
+            /** @var InputfieldFieldset $fsSnipWire */
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->label = $this->_('Search for Orders');
+            $fieldset->icon = 'search';
+            $fieldset->collapsed = Inputfield::collapsedYes;
+
+                /** @var InputfieldSelect $f */
+                $f = $modules->get('InputfieldSelect'); 
+                $f->attr('name', 'order_status'); 
+                $f->label = $this->_('Status'); 
+                //$f->value = $status;
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+                $f->addOption('all', 'All');
+
+            $fieldset->add($f);
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'order_invoice_number');
+                $f->label = $this->_('Invoice Number');
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+
+            $fieldset->add($f);
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'order_placed_by');
+                $f->label = $this->_('Placed By');
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 34;
+
+            $fieldset->add($f);
+        
+        $form->add($fieldset);
+
+        return $form->render(); 
+    }
+
+    /**
+     * Build the customers filter form.
+     *
+     * @return markup InputfieldForm
+     *
+     */
+    private function _buildCustomersFilter() {
+        $modules = $this->wire('modules');
+        $config = $this->wire('config');
+
+        $filterSettings = array(
+            'form' => '#CustomersFilterForm',
+        );
+
+        // Hand over configuration to JS
+        $config->js('filterSettings', $filterSettings);
+
+        /** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm'); 
+        $form->attr('id', 'CustomersFilterForm');
+        $form->method = 'get';
+        $form->action = $this->currentUrl;
+
+            /** @var InputfieldFieldset $fsSnipWire */
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->label = $this->_('Search for Customers');
+            $fieldset->icon = 'search';
+            $fieldset->collapsed = Inputfield::collapsedYes;
+
+                /** @var InputfieldSelect $f */
+                $f = $modules->get('InputfieldSelect'); 
+                $f->attr('name', 'customer_status'); 
+                $f->label = $this->_('Status'); 
+                //$f->value = $status;
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+                $f->addOption('all', 'All');
+
+            $fieldset->add($f);
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'customer_email');
+                $f->label = $this->_('Email');
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+
+            $fieldset->add($f);
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'customer_name');
+                $f->label = $this->_('Name');
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 34;
+
+            $fieldset->add($f);
+        
+        $form->add($fieldset);
+
+        return $form->render(); 
+    }
+
+    /**
+     * Build the products filter form.
+     *
+     * @param string $currency Currency string
+     * @return markup InputfieldForm
+     *
+     */
+    private function _buildProductsFilter($currency = '') {
+        $modules = $this->wire('modules');
+        $config = $this->wire('config');
+
+        $filterSettings = array(
+            'form' => '#ProductsFilterForm',
+            'fieldCurrency' => '#currency-picker',
+            'currency' => $currency,
+        );
+
+        // Hand over configuration to JS
+        $config->js('filterSettings', $filterSettings);
+
+        /** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm'); 
+        $form->attr('id', 'ProductsFilterForm');
+        $form->method = 'get';
+        $form->action = $this->currentUrl;
+
+            /** @var InputfieldFieldset $fsSnipWire */
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->label = $this->_('Search for Products');
+            $fieldset->icon = 'search';
+            $fieldset->collapsed = Inputfield::collapsedYes;
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'products_id');
+                $f->label = $this->_('Product ID');
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+
+            $fieldset->add($f);
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'product_keywords');
+                $f->label = $this->_('Keywords');
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+
+            $fieldset->add($f);
+
+                /** @var InputfieldSelect $f */
+                $f = $modules->get('InputfieldSelect'); 
+                $f->attr('id', 'currency-picker'); 
+                $f->attr('name', 'currency'); 
+                $f->wrapClass = 'CurrencyPickerContainer';
+                $f->label = $this->_('Change Currency'); 
+                $f->value = $currency;
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 34;
+                $f->required = true;
+    
+                $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+                foreach ($this->currencies as $currencyOption) {
+                    $currencyLabel = isset($supportedCurrencies[$currencyOption])
+                        ? $supportedCurrencies[$currencyOption]
+                        : $currencyOption;
+                    $f->addOption($currencyOption, $currencyLabel);
+                }
+
+            $fieldset->add($f);
+        
+        $form->add($fieldset);
 
         return $form->render(); 
     }
