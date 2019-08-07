@@ -1170,7 +1170,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm'); 
         $form->attr('id', 'OrdersFilterForm');
-        $form->method = 'get';
+        $form->method = 'post';
         $form->action = $this->currentUrl;
 
             /** @var InputfieldFieldset $fsSnipWire */
@@ -1207,7 +1207,15 @@ class ProcessSnipWire extends Process implements Module {
                 $f->columnWidth = 34;
 
             $fieldset->add($f);
-        
+
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->attr('type', 'submit'); 
+                $btn->value = $this->_('Search');
+                $btn->columnWidth = 100;
+
+            $fieldset->add($btn);
+
         $form->add($fieldset);
 
         return $form->render(); 
@@ -1231,9 +1239,9 @@ class ProcessSnipWire extends Process implements Module {
         $config->js('filterSettings', $filterSettings);
 
         /** @var InputfieldForm $form */
-        $form = $modules->get('InputfieldForm'); 
+        $form = $modules->get('InputfieldForm');
         $form->attr('id', 'CustomersFilterForm');
-        $form->method = 'get';
+        $form->method = 'post';
         $form->action = $this->currentUrl;
 
             /** @var InputfieldFieldset $fsSnipWire */
@@ -1243,9 +1251,9 @@ class ProcessSnipWire extends Process implements Module {
             $fieldset->collapsed = Inputfield::collapsedYes;
 
                 /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect'); 
-                $f->attr('name', 'customer_status'); 
-                $f->label = $this->_('Status'); 
+                $f = $modules->get('InputfieldSelect');
+                $f->attr('name', 'customer_status');
+                $f->label = $this->_('Status');
                 //$f->value = $status;
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
@@ -1270,10 +1278,18 @@ class ProcessSnipWire extends Process implements Module {
                 $f->columnWidth = 34;
 
             $fieldset->add($f);
-        
+
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->attr('type', 'submit');
+                $btn->value = $this->_('Search');
+                $btn->columnWidth = 100;
+
+            $fieldset->add($btn);
+
         $form->add($fieldset);
 
-        return $form->render(); 
+        return $form->render();
     }
 
     /**
@@ -1297,7 +1313,7 @@ class ProcessSnipWire extends Process implements Module {
         /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm'); 
         $form->attr('id', 'ProductsFilterForm');
-        $form->method = 'get';
+        $form->method = 'post';
         $form->action = $this->currentUrl;
 
             /** @var InputfieldFieldset $fsSnipWire */
@@ -1315,7 +1331,13 @@ class ProcessSnipWire extends Process implements Module {
 
             $fieldset->add($f);
 
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->attr('type', 'submit'); 
+                $btn->value = $this->_('Search');
+                $btn->columnWidth = 100;
 
+            $fieldset->add($btn);
 
         $form->add($fieldset);
 
