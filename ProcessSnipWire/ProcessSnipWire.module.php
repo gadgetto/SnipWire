@@ -580,8 +580,6 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
-        $this->_includeAssets(self::assetsIncludeCurrencyPicker);
-
         $limit = 20;        
         $currentOffset = (int) $session->getFor($this, 'offsetProducts');        
         $forceRefresh = false;
@@ -615,7 +613,7 @@ class ProcessSnipWire extends Process implements Module {
         $count = count($products);
         $url = $this->currentUrl;
 
-        $out = $this->_buildProductsFilter($currency);
+        $out = $this->_buildProductsFilter();
 
         $headline = $this->itemListerHeadline($offset, $count);
         $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
@@ -1285,14 +1283,12 @@ class ProcessSnipWire extends Process implements Module {
      * @return markup InputfieldForm
      *
      */
-    private function _buildProductsFilter($currency = '') {
+    private function _buildProductsFilter() {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
         $filterSettings = array(
             'form' => '#ProductsFilterForm',
-            'fieldCurrency' => '#currency-picker',
-            'currency' => $currency,
         );
 
         // Hand over configuration to JS
@@ -1328,27 +1324,7 @@ class ProcessSnipWire extends Process implements Module {
 
             $fieldset->add($f);
 
-                /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect'); 
-                $f->attr('id', 'currency-picker'); 
-                $f->attr('name', 'currency'); 
-                $f->wrapClass = 'CurrencyPickerContainer';
-                $f->label = $this->_('Change Currency'); 
-                $f->value = $currency;
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 34;
-                $f->required = true;
-    
-                $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
-                foreach ($this->currencies as $currencyOption) {
-                    $currencyLabel = isset($supportedCurrencies[$currencyOption])
-                        ? $supportedCurrencies[$currencyOption]
-                        : $currencyOption;
-                    $f->addOption($currencyOption, $currencyLabel);
-                }
 
-            $fieldset->add($f);
-        
         $form->add($fieldset);
 
         return $form->render(); 
