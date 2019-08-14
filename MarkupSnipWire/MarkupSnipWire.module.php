@@ -326,6 +326,13 @@ class MarkupSnipWire extends WireData implements Module {
             $out .= ' data-item-height="' . $product->snipcart_item_height . '"';
         }
 
+        if ($product->hasField('snipcart_item_shippable')) {
+            $shippable = $product->snipcart_item_shippable ? 'true' : 'false';
+        } else {
+            $shippable = 'true';
+        }
+        $out .= ' data-item-shippable="' . $shippable . '"';
+
         if ($product->hasField('snipcart_item_taxable')) {
             $taxable = $product->snipcart_item_taxable ? 'true' : 'false';
         } else {

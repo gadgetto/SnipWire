@@ -231,6 +231,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Preset value of field snipcart_item_id (SKU) with page ID.
      * Preset value of field snipcart_item_taxes (VAT) with first element of taxes config.
      * Preset value of checkbox field snipcart_item_taxable so it's checked by default.
+     * Preset value of checkbox field snipcart_item_shippable so it's checked by default.
      * (Method triggered after Pages added)
      *
      */
@@ -241,6 +242,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
             $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
             $page->setAndSave('snipcart_item_taxable', 1);
+            $page->setAndSave('snipcart_item_shippable', 1);
         }
     }
 

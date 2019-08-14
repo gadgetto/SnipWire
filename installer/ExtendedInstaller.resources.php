@@ -59,14 +59,14 @@ $resources = array(
     - data-item-width: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     - data-item-length: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
     - data-item-height: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
-    data-item-stackable:
-    data-item-shippable:
+    - data-item-shippable: boolean (Setting this to false, the product will be flagged as an item that can not be shipped)
     - data-item-quantity: integer (Set a default quantity for the item that you are about to add.)
     - data-item-quantity-step: integer (The quantity of a product will increment by this value.)
     - data-item-max-quantity: integer (Maximum allowed quantity of product)
     - data-item-min-quantity: integer (Minimum allowed quantity for product)
     - data-item-taxable: boolean (Set to false to exclude item from the taxes calculation. Default value is true.)
     - data-item-taxes: string (Using this option, you can define which tax will be applied on this product)
+    data-item-stackable: boolean (Setting this to false, adding the same product to the cart will result in two distinct items in the cart, instead of simply increasing the quantity)
     data-item-file-guid: 
     data-item-payment-interval: 
     data-item-payment-interval-count: 
@@ -259,12 +259,22 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
+        'snipcart_item_shippable' => array(
+            'name' => 'snipcart_item_shippable',
+            'type' => 'FieldtypeCheckbox',
+            'label' => __('Shippable'),
+            'label2' => __('Product is shippable'),
+            'description' => __('Uncheck, if this product should be flagged as not shippable.'),
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
         'snipcart_item_taxable' => array(
             'name' => 'snipcart_item_taxable',
             'type' => 'FieldtypeCheckbox',
             'label' => __('Taxable'),
             'label2' => __('Product is taxable'),
-            'description' => __('Uncheck if this product should be excluded from taxes calculation.'),
+            'description' => __('Uncheck, if this product should be excluded from taxes calculation.'),
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
