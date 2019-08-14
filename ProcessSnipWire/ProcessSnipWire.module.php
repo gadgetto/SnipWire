@@ -1383,8 +1383,8 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         $boxes = array(
-            'orders' => $this->_('Orders'),
             'sales' => $this->_('Sales'),
+            'orders' => $this->_('Orders'),
             'average' => $this->_('Average Order'),
             'customers' => $this->_('Customers'),
         );
