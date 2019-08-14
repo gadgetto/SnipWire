@@ -34,6 +34,7 @@ class SnipREST extends WireHttpExtended {
     const resourcePathShippingMethods = 'shipping_methods';
     const resourcePathSettingsGeneral = 'settings/general'; // undocumented
     const resourcePathSettingsDomain = 'settings/domain';
+    const resourcePathSettingsAllowedDomains = 'settings/alloweddomains';
     const resourcePathRequestValidation = 'requestvalidation'; // + HTTP_X_SNIPCART_REQUESTTOKEN
     
     const cacheNamespace = 'SnipWire';
