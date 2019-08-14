@@ -104,7 +104,7 @@ class SnipWireConfig extends ModuleConfig {
             'cart_image_hidpiQuality' => 50,
             'webhooks_endpoint' =>  '/webhooks/snipcart',
             'data_item_name_field' => 'title',
-            'data_item_categories_field' => '',
+            'data_item_categories_field' => 'snipcart_item_categories',
             'snipwire_debug' => false,
         );
     }
