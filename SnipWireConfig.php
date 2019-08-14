@@ -133,7 +133,7 @@ class SnipWireConfig extends ModuleConfig {
 
         $steps = array();
         $steps[] = array(
-            'type' => 'checklist',
+            'type' => 'check',
             'name' => 'product_package',
             'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
             //'url2' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl, // disabled uninstaller
@@ -744,7 +744,7 @@ class SnipWireConfig extends ModuleConfig {
         $out .= '<li>';
         
         // Render as kind of checklist
-        if ($step['type'] == 'checklist') {
+        if ($step['type'] == 'check') {
             if ($step['done']) {
                 $out .= $step['prompt'] . ' ';
                 $out .= '<span style="color: green;">';
