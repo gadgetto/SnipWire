@@ -136,23 +136,53 @@ class SnipWireConfig extends ModuleConfig {
             'type' => 'check',
             'name' => 'product_package',
             'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
-            //'url2' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl, // disabled uninstaller
             'prompt' => $this->_('Install Snipcart products package'),
-            'prompt2' => $this->_('Uninstall package'),
-            'icon' => 'check-circle',
-            'icon2' => 'times-circle',
             'description' => $this->_('Contains product templates, files, fields and some demo pages required to build a Snipcart product catalogue. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled. These resources need to be removed manually!'),
+            /*
+            'followup' => array(
+                'url' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
+                'prompt' => $this->_('Uninstall package'),
+                'icon' => 'times-circle',
+            ),
+            */
+        );
+        $steps[] = array(
+            'type' => 'link',
+            'name' => 'snipcart_account',
+            'url' => 'https://app.snipcart.com',
+            'target' => '_blank',
+            'prompt' => $this->_('Create a Snipcart account'),
+            'description' => $this->_('Create or login to a Snipcart account.'),
+        );
+        $steps[] = array(
+            'type' => 'link',
+            'name' => 'snipcart_api_keys',
+            'url' => 'https://app.snipcart.com/dashboard/account/credentials',
+            'target' => '_blank',
+            'prompt' => $this->_('Get your Snipcart API keys'),
+            'description' => $this->_('To get your public JavaScript - and secret REST API keys, head to the Account > API Keys section. There you’ll find your public API keys and also need to create your secret API keys for live and test environment.'),
+        );
+        $steps[] = array(
+            'type' => 'link',
+            'name' => 'snipcart_domains',
+            'url' => 'https://app.snipcart.com/dashboard/account/domains',
+            'target' => '_blank',
+            'prompt' => $this->_('Snipcart domains setup'),
+            'description' => $this->_('Tell Snipcart where it can crawl your products. Go to Store Configuration > Domains & URLs and set your default domain name as well as additional allowed domains and sub-domains.'),
         );
         
-        $stepsCounter = count($steps);
+        $stepsCounter = 0;
         $doneCounter = 0;
+        foreach ($steps as $step) {
+            if ($step['type'] == 'check') $stepsCounter++;
+        }
         
         if ($stepsCounter) {
             // Check which steps are already done and add flag
             $snipwireConfig = $modules->getConfig('SnipWire');
             for ($i = 0; $i < count($steps); $i++) {
                 $steps[$i]['done'] = (isset($snipwireConfig[$steps[$i]['name']]) && $snipwireConfig[$steps[$i]['name']]) ? true : false;
-                if ($steps[$i]['done']) $doneCounter += 1;
+                if ($steps[$i]['done']) $doneCounter++;
             }
 
             /** @var InputfieldMarkup $f */
@@ -177,12 +207,6 @@ class SnipWireConfig extends ModuleConfig {
         $fsAPI->icon = 'plug';
         $fsAPI->label = $this->_('Snipcart API Configuration');
         $fsAPI->set('themeOffset', true);
-
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->description = $this->_('To get your public JavaScript - and secret REST API keys, you will need a Snipcart account. To register, go to [Snipcart > Account > Register](https://app.snipcart.com/account/register). Once you’ve signed up and confirmed your account, log in and head to the [Account > API Keys section](https://app.snipcart.com/dashboard/account/credentials). There you’ll find your public API keys and also need to create your secret API keys for live and test environment.');
-
-        $fsAPI->add($f);
 
             /** @var InputfieldText $f */
             $f = $modules->get('InputfieldText');
@@ -743,26 +767,33 @@ class SnipWireConfig extends ModuleConfig {
         
         $out .= '<li>';
         
-        // Render as kind of checklist
+        // Render as checklist
         if ($step['type'] == 'check') {
+
             if ($step['done']) {
                 $out .= $step['prompt'] . ' ';
                 $out .= '<span style="color: green;">';
-                if (isset($step['icon'])) $out .= wireIconMarkup($step['icon']) . ' ';
+                $out .= wireIconMarkup('check-circle') . ' ';
                 $out .= $this->_('Done');
                 $out .= '</span>';
-                if (isset($step['url2']) && isset($step['prompt2'])) {
-                    $out .= ' -- <a' . $target . ' href="' . $step['url2'] . '">';
-                    if (isset($step['icon2'])) $out .= wireIconMarkup($step['icon2']) . ' ';
-                    $out .= $step['prompt2'];
+        
+                // Is there a followup?
+                if (isset($step['followup'])) {
+                    $fup = $step['followup'];
+                    $out .= ' -- <a' . $target . ' href="' . $fup['url'] . '">';
+                    if (isset($fup['icon'])) $out .= wireIconMarkup($fup['icon']) . ' ';
+                    $out .= $fup['prompt'];
                     $out .= '</a>';
                 }
             } else {
                 $out .= '<a' . $target .' href="' . $step['url'] . '">' . $step['prompt'] . '</a>';
             }
-        // Render as normal link
+
+        // Render as link
         } else {
+
             $out .= '<a' . $target .' href="' . $step['url'] . '">' . $step['prompt'] . '</a>';
+
         }
         if (isset($step['description'])) $out .= '<br><span class="detail">' . $step['description'] . '</span>';
         
