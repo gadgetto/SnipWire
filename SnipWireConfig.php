@@ -282,16 +282,6 @@ class SnipWireConfig extends ModuleConfig {
 
         $fsAPI->add($f);
 
-            /** @var InputfieldPageListSelect $f */
-            $f = $modules->get('InputfieldPageListSelect');
-            $f->attr('name', 'single_page_shop_page');
-            $f->label = $this->_('Select Your Single-Page Shop Page');
-            $f->required = true; // needs to be set when using requiredIf
-            $f->requiredIf = 'single_page_shop=1';
-            $f->showIf = 'single_page_shop=1';
-
-        $fsAPI->add($f);
-
             /** @var InputfieldAsmSelect $f */
             $f = $modules->get('InputfieldAsmSelect');
             $f->attr('name', 'credit_cards');
@@ -735,6 +725,16 @@ class SnipWireConfig extends ModuleConfig {
             $f->description = $this->_('For single-page shops, the data-item-url field of each product will be filled with the full URL to the selected page.');
             $f->notes = $this->_('This tells the Snipcart crawler where to find your products to validate an order\'s integrity.');
             $f->columnWidth = 100;
+
+        $fsSnipWire->add($f);
+
+            /** @var InputfieldPageListSelect $f */
+            $f = $modules->get('InputfieldPageListSelect');
+            $f->attr('name', 'single_page_shop_page');
+            $f->label = $this->_('Select Your Single-Page Shop Page');
+            $f->required = true; // needs to be set when using requiredIf
+            $f->requiredIf = 'single_page_shop=1';
+            $f->showIf = 'single_page_shop=1';
 
         $fsSnipWire->add($f);
 
