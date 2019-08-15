@@ -208,46 +208,6 @@ class SnipWireConfig extends ModuleConfig {
         $fsAPI->label = $this->_('Snipcart API Configuration');
         $fsAPI->set('themeOffset', true);
 
-            /** @var InputfieldText $f */
-            $f = $modules->get('InputfieldText');
-            $f->attr('name', 'api_key');
-            $f->label = $this->_('Snipcart Public JavaScript API Key');
-            $f->required = true;
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
-
-            /** @var InputfieldText $f */
-            $f = $modules->get('InputfieldText');
-            $f->attr('name', 'api_key_test');
-            $f->label = $this->_('Snipcart Public JavaScript Test API Key');
-            $f->required = true;
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
-
-            /** @var InputfieldText $f */
-            $f = $modules->get('InputfieldText');
-            $f->attr('name', 'api_key_secret');
-            $f->label = $this->_('Snipcart Secret API Key');
-            $f->description = $this->_('The secret key is used to access all the data of your LIVE Snipcart environment via REST API.');
-            $f->notes = $this->_('This key should never be visible to anyone!');
-            $f->required = true;
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
-
-            /** @var InputfieldText $f */
-            $f = $modules->get('InputfieldText');
-            $f->attr('name', 'api_key_secret_test');
-            $f->label = $this->_('Snipcart Secret Test API Key');
-            $f->description = $this->_('The secret test key is used to access all the data of your Snipcart TEST environment via REST API.');
-            $f->notes = $this->_('This key should never be visible to anyone!');
-            $f->required = true;
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
-
             /** @var InputfieldRadios $f */
             $f = $modules->get('InputfieldRadios');
             $f->attr('name', 'snipcart_environment');
@@ -279,6 +239,58 @@ class SnipWireConfig extends ModuleConfig {
             $f->notes = $this->_('You first need to enter valid Secret API keys in the corresponding fields.');
             $f->value = $connectionTestMarkup;
             $f->columnWidth = 50;
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->attr('name', 'api_key');
+            $f->label = $this->_('Snipcart Public API Key');
+            $f->description = $this->_('The public API key is used to access the public Snipcart `JavaScript API`.');
+            $f->notes = $this->_('This key can be shared without security issues.');
+            $f->required = true; // needs to be set when using requiredIf
+            $f->columnWidth = 50;
+            $f->requiredIf = 'snipcart_environment=1';
+            $f->showIf = 'snipcart_environment=1';
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->attr('name', 'api_key_secret');
+            $f->label = $this->_('Snipcart Secret API Key');
+            $f->description = $this->_('The secret API key is used to access your Snipcart account via `REST API`.');
+            $f->notes = $this->_('This key should never be visible to anyone!');
+            $f->required = true; // needs to be set when using requiredIf
+            $f->columnWidth = 50;
+            $f->requiredIf = 'snipcart_environment=1';
+            $f->showIf = 'snipcart_environment=1';
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->attr('name', 'api_key_test');
+            $f->label = $this->_('Snipcart Public API Key (Test)');
+            $f->description = $this->_('The public API key is used to access the public Snipcart `JavaScript API`.');
+            $f->notes = $this->_('This key can be shared without security issues.');
+            $f->required = true; // needs to be set when using requiredIf
+            $f->columnWidth = 50;
+            $f->requiredIf = 'snipcart_environment=0';
+            $f->showIf = 'snipcart_environment=0';
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->attr('name', 'api_key_secret_test');
+            $f->label = $this->_('Snipcart Secret API Key (Test)');
+            $f->description = $this->_('The secret API key is used to access your Snipcart account via `REST API`.');
+            $f->notes = $this->_('This key should never be visible to anyone!');
+            $f->required = true; // needs to be set when using requiredIf
+            $f->columnWidth = 50;
+            $f->requiredIf = 'snipcart_environment=0';
+            $f->showIf = 'snipcart_environment=0';
 
         $fsAPI->add($f);
 
