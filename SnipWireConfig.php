@@ -429,7 +429,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'shipping_same_as_billing'); 
             $f->label = $this->_('Use Billing Address for Shipping');
             $f->label2 = $this->_('Use billing address for shipping preselected');
-            $f->description = $this->_('Whether the "Use this address for shipping" option on the billing address tab is pre-selected or not.');
+            $f->description = $this->_('Whether the `Use this address for shipping` option on the billing address tab is pre-selected or not.');
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
@@ -437,9 +437,9 @@ class SnipWireConfig extends ModuleConfig {
             /** @var InputfieldCheckbox $f */
             $f = $modules->get('InputfieldCheckbox');
             $f->attr('name', 'show_continue_shopping'); 
-            $f->label = $this->_('"Continue shopping" Button');
-            $f->label2 = $this->_('Show the "Continue shopping" button');
-            $f->description = $this->_('Use this setting if you want to show the "Continue shopping" button. This button will appear just beside the "Close cart" button.');
+            $f->label = $this->_('Continue shopping Button');
+            $f->label2 = $this->_('Show the `Continue shopping` button');
+            $f->description = $this->_('Use this setting if you want to show the `Continue shopping` button. This button will appear just beside the `Close cart` button.');
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
@@ -460,7 +460,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('Snipcart JavaScript Debug Mode');
             $f->label2 = $this->_('Enable Snipcart JavaScript debug mode');
             $f->description = $this->_('This will allow you to see JavaScript errors on your site, failing requests and logs from the services you use in your browsers developer console.');
-            $f->notes = $this->_('All logs from the Snipcart script will be prefixed with Snipcart:');
+            $f->notes = $this->_('All logs from the Snipcart script will be prefixed with `Snipcart:`');
             $f->columnWidth = 100;
 
         $fsAPI->add($f);
@@ -573,7 +573,7 @@ class SnipWireConfig extends ModuleConfig {
         $fsCartImage = $modules->get('InputfieldFieldset');
         $fsCartImage->icon = 'picture-o';
         $fsCartImage->label = $this->_('Cart thumbnail sizing');
-        $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled "snipcart_item_image" PageField as cart thumbnail. The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions. Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
+        $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled `snipcart_item_image` PageField as cart thumbnail. The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions. Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
         $fsCartImage->set('themeOffset', true);
         
             /** @var InputfieldInteger $f */
@@ -678,7 +678,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldSelect'); 
             $f->attr('name', 'data_item_name_field'); 
             $f->label = $this->_('Set Field for Snipcart Product Name'); 
-            $f->notes = $this->_('Used as Snipcart anchor property "data-item-name"');
+            $f->notes = $this->_('Used as Snipcart anchor property `data-item-name`');
             $f->required = true;
             $f->columnWidth = 50;
     
@@ -701,7 +701,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldSelect'); 
             $f->attr('name', 'data_item_categories_field'); 
             $f->label = $this->_('Set Field for Snipcart Categories'); 
-            $f->notes = $this->_('Used as Snipcart anchor property "data-item-categories"');
+            $f->notes = $this->_('Used as Snipcart anchor property `data-item-categories`');
             $f->required = false;
             $f->columnWidth = 50;
 
@@ -722,7 +722,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'single_page_shop'); 
             $f->label = $this->_('Single-Page Shop');
             $f->label2 = $this->_('This Snipcart shop runs on a single-page website');
-            $f->description = $this->_('For single-page shops, the data-item-url field of each product will be filled with the full URL to the selected page.');
+            $f->description = $this->_('For single-page shops, the `data-item-url` field of each product will be filled with the full URL to the selected page.');
             $f->notes = $this->_('This tells the Snipcart crawler where to find your products to validate an order\'s integrity.');
             $f->columnWidth = 100;
 
