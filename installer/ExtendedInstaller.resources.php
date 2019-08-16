@@ -338,7 +338,3 @@ $resources = array(
         ),
     ),
 );
-
-
-
-
