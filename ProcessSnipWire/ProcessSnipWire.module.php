@@ -144,9 +144,6 @@ class ProcessSnipWire extends Process implements Module {
             self::assetsIncludeApexCharts
         );
 
-        $startDate = $this->_getStartDate();
-        $endDate = $this->_getEndDate();
-        $currency = $this->_getCurrency();
         $action = $this->_getInputAction();
         $forceRefresh = false;
         if ($action == 'refresh') {
@@ -156,6 +153,10 @@ class ProcessSnipWire extends Process implements Module {
             $this->message($this->_('Store performance date range set to default.'));
             $this->_resetDateRange();
         }
+
+        $startDate = $this->_getStartDate();
+        $endDate = $this->_getEndDate();
+        $currency = $this->_getCurrency();
 
         $packages = $sniprest->getDashboardData(
             "$startDate 00:00:00",
