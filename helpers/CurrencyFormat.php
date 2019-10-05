@@ -73,7 +73,7 @@ class CurrencyFormat extends WireData {
      * 
      */
     public static function format($price, $currency = 'eur') {
-        if (empty($price)) return '';
+        if (empty($price)) $price = 0.0;
         if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
 
         // $price can be single or multi-currency
