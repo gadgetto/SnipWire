@@ -1577,13 +1577,40 @@ class ProcessSnipWire extends Process implements Module {
                 '&nbsp;',
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['name'] . '</a>';
+                $panelLink =
+                '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        $item['name'] .
+                '</a>';
 
                 $product = $pages->findOne('snipcart_item_id="' . $item['userDefinedId'] . '"');
-                if ($product->url && $product->editable()) {
-                    $editLink = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup('pencil-square-o') . '</a>';
+                if ($product->url) {
+                    if ($product->editable()) {
+                        $editLink =
+                        '<a href="' . $product->editUrl . '"
+                            class="pw-panel"
+                            data-panel-width="70%">' .
+                                wireIconMarkup('pencil-square-o') .
+                        '</a>';
+                    } else {
+                        $editLink =
+                        '<span
+                            class="tooltip"
+                            title="' . $this->_('Product not editable') .'"
+                            uk-tooltip>' .
+                                wireIconMarkup('pencil-square-o') .
+                        '</span>';
+                    }
                 } else {
-                    $editLink = wireIconMarkup('pencil-square-o');
+                    // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
+                    $editLink =
+                    '<span
+                        class="tooltip"
+                        title="' . $this->_('No matching ProcessWire page found.') .'"
+                        uk-tooltip>' . 
+                            wireIconMarkup('exclamation-triangle') .
+                    '</span>';
                 }
 
                 $table->row(array(
@@ -1865,14 +1892,41 @@ class ProcessSnipWire extends Process implements Module {
             ));
 
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconProduct, 'fa-fw') . $item['userDefinedId'] . '</a>';
+                $panelLink =
+                '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        wireIconMarkup(self::iconProduct, 'fa-fw') . $item['userDefinedId'] .
+                '</a>';
                 $thumb = '<img src="' . $item['image'] . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
 
                 $product = $pages->findOne('snipcart_item_id="' . $item['userDefinedId'] . '"');
-                if ($product->url && $product->editable()) {
-                    $editLink = '<a href="' . $product->editUrl . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup('pencil-square-o') . '</a>';
+                if ($product->url) {
+                    if ($product->editable()) {
+                        $editLink =
+                        '<a href="' . $product->editUrl . '"
+                            class="pw-panel"
+                            data-panel-width="70%">' .
+                                wireIconMarkup('pencil-square-o') .
+                        '</a>';
+                    } else {
+                        $editLink =
+                        '<span
+                            class="tooltip"
+                            title="' . $this->_('Product not editable') .'"
+                            uk-tooltip>' .
+                                wireIconMarkup('pencil-square-o') .
+                        '</span>';
+                    }
                 } else {
-                    $editLink = wireIconMarkup('pencil-square-o');
+                    // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
+                    $editLink =
+                    '<span
+                        class="tooltip"
+                        title="' . $this->_('No matching ProcessWire page found.') .'"
+                        uk-tooltip>' . 
+                            wireIconMarkup('exclamation-triangle') .
+                    '</span>';
                 }
 
                 $table->row(array(
