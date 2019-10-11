@@ -312,9 +312,12 @@ class ProcessSnipWire extends Process implements Module {
             ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
 
+        $total = $orders['totalItems'];
+        $count = count($orders['items']);
+
         $out = $this->_buildOrdersFilter();
 
-        $pageArray = $this->_prepareItemListerPagination($orders, $limit, $offset);
+        $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
         $headline = $pageArray->getPaginationString(array(
             'label' => $this->_('Orders'),
             'zeroLabel' => $this->_('No orders found'), // 3.0.127+ only
@@ -461,12 +464,12 @@ class ProcessSnipWire extends Process implements Module {
             ? $request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent]
             : array();
         
-        $count = count($customers);
-        $url = $this->currentUrl;
+        $total = $customers['totalItems'];
+        $count = count($customers['items']);
 
         $out = $this->_buildCustomersFilter();
 
-        $pageArray = $this->_prepareItemListerPagination($customers, $limit, $offset);
+        $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
         $headline = $pageArray->getPaginationString(array(
             'label' => $this->_('Customers'),
             'zeroLabel' => $this->_('No customers found'), // 3.0.127+ only
@@ -602,10 +605,13 @@ class ProcessSnipWire extends Process implements Module {
         $products = isset($request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
             : array();
-        
+
+        $total = $customers['totalItems'];
+        $count = count($customers['items']);
+
         $out = $this->_buildProductsFilter();
 
-        $pageArray = $this->_prepareItemListerPagination($products, $limit, $offset);
+        $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
         $headline = $pageArray->getPaginationString(array(
             'label' => $this->_('Products'),
             'zeroLabel' => $this->_('No products found'), // 3.0.127+ only
@@ -729,22 +735,14 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Prepares a PageArray with generic placeholder pages to give MarkupPagerNav what it needs.
      *
-     * @param array $items The items array 
+     * @param integer $total 
+     * @param integer $count
      * @param integer $limit
      * @param integer $offset
-     * @return PageArray $pageArray
+     * @return PageArray $pageArray A PageArray filled with generic pages
      *
      */
-    private function _prepareItemListerPagination($items, $limit, $offset) {
-        if (!isset($items['totalItems']) || !isset($items['items'])) {
-            // Invalid array provided
-            $total = 0;
-            $count = 0;
-        } else {
-            $total = $items['totalItems'];
-            $count = count($items['items']);
-        }
-        
+    private function _prepareItemListerPagination($total, $count, $limit, $offset) {
         // Add in generic placeholder pages
         $pageArray = new PageArray();
         $pageArray->setDuplicateChecking(false);
