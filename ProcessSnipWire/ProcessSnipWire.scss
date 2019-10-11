@@ -22,8 +22,8 @@
 #SnipwireDashboard {
     clear: both;
 
-    .lister_headline {
-        margin-top: 20px !important; // fix for default PW style
+    .MarkupPagerNav {
+        float: right;
     }
 }
 
@@ -131,61 +131,10 @@
     clear: both;
     overflow-x: auto;
 }
-.itemlister-headline {
+.ItemListerHeadline {
     float: left;
     margin-top: 20px;
 }
-.itemlister-pagination {
-    float: right;
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0;
-    list-style: none;
-
-    & > li {
-        padding: 0;
-        margin-left: -1px;
-
-        & > * {
-            display: block;
-            padding: 2px 11px;
-            color: #354b60;
-            background: #f0f3f7;
-            border: 1px solid #d9e1ea;
-            border-radius: 0;
-            text-decoration: none;
-            transition: color .1s ease-in-out;
-        }
-        & > :focus,
-        & > :hover {
-            color: #354b60;
-            background: #dfe6ee;
-            border: 1px solid #d9e1ea;
-            text-decoration: none;
-        }
-    }
-    & > li:first-child > * {
-        border-top-left-radius: 3px;
-        border-bottom-left-radius: 3px;
-    }
-    
-    & > li:last-child > * {
-        border-top-right-radius: 3px;
-        border-bottom-right-radius: 3px;
-    }
-    // This is the "disabled" state of pagination item
-    span {
-        color: #8d939e;
-        cursor: default;
-
-        &:hover {
-            color: #8d939e;
-            background: #f0f3f7;
-            border: 1px solid #d9e1ea;
-        }
-    }
-}
-
 .ItemListerButton {
     display: inline-block;
     margin: 20px 0 20px 0;
@@ -249,10 +198,6 @@
 .AdminThemeDefault {
     #SnipwireDashboard {
         overflow: hidden;
-        
-        .lister_headline {
-            margin-top: 1em !important; // fix for default PW style
-        }
     }
     #PeriodPickerSelect {
         font-size: 1.1rem;
@@ -290,10 +235,7 @@
 }
 .AdminThemeReno {
     #SnipwireDashboard {
-    
-        .lister_headline {
-            margin-top: .5em !important; // fix for default PW style
-        }
+        
     }
     #headline {
         
@@ -333,7 +275,7 @@
             font-size: 1.1em;
         }
     }
-    .itemlister-headline {
+    .ItemListerHeadline {
         margin-top: 1em;
     }
 }

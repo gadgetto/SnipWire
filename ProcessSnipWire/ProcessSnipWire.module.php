@@ -286,55 +286,49 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
         
-        $limit = 20;        
-        $currentOffset = (int) $session->getFor($this, 'offsetOrders');
         $forceRefresh = false;
+        $limit = 20;        
+        $offset = ($input->pageNum - 1) * $limit;
               
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         }
-        if ($action == 'next') {
-            $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
-        } elseif ($action == 'prev') {
-            $offset = is_numeric($currentOffset) ? ($currentOffset - $limit) : 0;
-            if ($offset <= 0)  $offset = 0;
-        } else {
-            $offset = $currentOffset;
-        }
-        $session->setFor($this, 'offsetOrders', $offset);
 
         $selector = array(
             'offset' => $offset,
             'limit' => $limit,
         );
 
-        $request = $sniprest->getOrdersItems(
+        $request = $sniprest->getOrders(
+            '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
+
         $orders = isset($request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
-        
-        $count = count($orders);
-        $url = $this->currentUrl;
 
         $out = $this->_buildOrdersFilter();
 
-        $headline = $this->itemListerHeadline($offset, $count);
-        $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
+        $pageArray = $this->_prepareItemListerPagination($orders, $limit, $offset);
+        $headline = $pageArray->getPaginationString(array(
+            'label' => $this->_('Orders'),
+            'zeroLabel' => $this->_('No orders found'), // 3.0.127+ only
+        ));
+        $pagination = $pageArray->renderPager();
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Orders');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = self::iconOrder;
-        $f->value = $headline;
+        $f->value = $this->_wrapItemListerHeadline($headline);
         $f->value .= $pagination;
-        $f->value .= $this->_renderTableOrders($orders);
+        $f->value .= $this->_renderTableOrders($orders['items']);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -441,31 +435,28 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
-        $limit = 20;        
-        $currentOffset = (int) $session->getFor($this, 'offsetCustomers');        
         $forceRefresh = false;
+        $limit = 20;        
+        $offset = ($input->pageNum - 1) * $limit;
 
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         }
-        if ($action == 'next') {
-            $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
-        } elseif ($action == 'prev') {
-            $offset = is_numeric($currentOffset) ? ($currentOffset - $limit) : 0;
-            if ($offset <= 0)  $offset = 0;
-        } else {
-            $offset = $currentOffset;
-        }
-        $session->setFor($this, 'offsetCustomers', $offset);
 
         $selector = array(
             'offset' => $offset,
             'limit' => $limit,
         );
 
-        $request = $sniprest->getCustomersItems($selector);
+        $request = $sniprest->getCustomers(
+            '',
+            $selector,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
+
         $customers = isset($request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent]
             : array();
@@ -475,17 +466,21 @@ class ProcessSnipWire extends Process implements Module {
 
         $out = $this->_buildCustomersFilter();
 
-        $headline = $this->itemListerHeadline($offset, $count);
-        $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
+        $pageArray = $this->_prepareItemListerPagination($customers, $limit, $offset);
+        $headline = $pageArray->getPaginationString(array(
+            'label' => $this->_('Customers'),
+            'zeroLabel' => $this->_('No customers found'), // 3.0.127+ only
+        ));
+        $pagination = $pageArray->renderPager();
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Customers');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = self::iconCustomer;
-        $f->value = $headline;
+        $f->value = $this->_wrapItemListerHeadline($headline);
         $f->value .= $pagination;
-        $f->value .= $this->_renderTableCustomers($customers);
+        $f->value .= $this->_renderTableCustomers($customers['items']);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -581,9 +576,9 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
-        $limit = 20;        
-        $currentOffset = (int) $session->getFor($this, 'offsetProducts');        
         $forceRefresh = false;
+        $limit = 20;        
+        $offset = ($input->pageNum - 1) * $limit;
 
         $currency = $this->_getCurrency();
         $action = $this->_getInputAction();
@@ -591,42 +586,40 @@ class ProcessSnipWire extends Process implements Module {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         }
-        if ($action == 'next') {
-            $offset = is_numeric($currentOffset) ? ($currentOffset + $limit) : 0;
-        } elseif ($action == 'prev') {
-            $offset = is_numeric($currentOffset) ? ($currentOffset - $limit) : 0;
-            if ($offset <= 0)  $offset = 0;
-        } else {
-            $offset = $currentOffset;
-        }
-        $session->setFor($this, 'offsetProducts', $offset);
 
         $selector = array(
             'offset' => $offset,
             'limit' => $limit,
         );
 
-        $request = $sniprest->getProductsItems($selector);
+        $request = $sniprest->getProducts(
+            '',
+            $selector,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
+
         $products = isset($request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent])
             ? $request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
             : array();
         
-        $count = count($products);
-        $url = $this->currentUrl;
-
         $out = $this->_buildProductsFilter();
 
-        $headline = $this->itemListerHeadline($offset, $count);
-        $pagination = $this->itemListerPagination($url, $limit, $offset, $count);
+        $pageArray = $this->_prepareItemListerPagination($products, $limit, $offset);
+        $headline = $pageArray->getPaginationString(array(
+            'label' => $this->_('Products'),
+            'zeroLabel' => $this->_('No products found'), // 3.0.127+ only
+        ));
+        $pagination = $pageArray->renderPager();
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Products');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = self::iconProduct;
-        $f->value = $headline;
+        $f->value = $this->_wrapItemListerHeadline($headline);
         $f->value .= $pagination;
-        $f->value .= $this->_renderTableProducts($products, $currency);
+        $f->value .= $this->_renderTableProducts($products['items'], $currency);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -723,90 +716,49 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Renders an item lister headline.
+     * Renders a wrapper for the item lister headline.
      *
-     * @param integer $offset
-     * @param integer $count
+     * @param string $headline
      * @return headline markup
      *
      */
-    protected function itemListerHeadline($offset, $count) {
-        $labels = array(
-            'to' => $this->_('to'),
-        );
-
-        $out = 
-        '<h2 class="itemlister-headline">' .
-            ($offset + 1) . ' ' . $labels['to'] . ' ' . ($offset + $count) .
-        '</h2>';
-        
-        return $out;
+    private function _wrapItemListerHeadline($headline) {
+        return '<h2 class="ItemListerHeadline">' . $headline . '</h2>';
     }
 
     /**
-     * Renders an item lister pagination.
-     * (has only Prev/Next buttons)
+     * Prepares a PageArray with generic placeholder pages to give MarkupPagerNav what it needs.
      *
-     * @param string $url
+     * @param array $items The items array 
      * @param integer $limit
      * @param integer $offset
-     * @param integer $count
-     * @return pagination markup
+     * @return PageArray $pageArray
      *
      */
-    protected function itemListerPagination($url, $limit, $offset, $count) {
-        
-        $prevDisabled = ($offset <= 0) ? true : false;
-        $nextDisabled = ($count < $limit) ? true : false;
-
-        $labels = array(
-            'pagination_links' => $this->_('Pagination buttons'),
-            'prev' => $this->_('Prev'),
-            'next' => $this->_('Next'),
-            'list_prev' => $this->_('Previous entries'),
-            'list_next' => $this->_('Next entries'),
-            'no_prev' => $this->_('No previous entries available'),
-            'no_next' => $this->_('No next entries available'),
-        );
-        
-        $out = 
-        '<ul class="itemlister-pagination" role="navigation" aria-label="' . $labels['pagination_links'] . '">';
-        
-        if ($prevDisabled) {
-            $out .=
-            '<li aria-label="' . $labels['no_prev'] . '">' .
-                '<span>' .
-                    wireIconMarkup('angle-left') . ' ' . $labels['prev'] .
-                '</span>' .
-            '</li>';
+    private function _prepareItemListerPagination($items, $limit, $offset) {
+        if (!isset($items['totalItems']) || !isset($items['items'])) {
+            // Invalid array provided
+            $total = 0;
+            $count = 0;
         } else {
-            $out .=
-            '<li aria-label="' . $labels['list_prev'] . '">' .
-                '<a href="' . $url . '?action=prev" role="button">' .
-                    wireIconMarkup('angle-left') . ' ' . $labels['prev'] .
-                '</a>' .
-            '</li>';
-        }    
-        if ($nextDisabled) {
-            $out .=
-            '<li aria-label="' . $labels['no_next'] . '">' .
-                '<span>' .
-                    $labels['next'] . ' ' . wireIconMarkup('angle-right') .
-                '</span>' .
-            '</li>';
-        } else {
-            $out .=
-            '<li aria-label="' . $labels['list_next'] . '">' .
-                '<a href="' . $url . '?action=next" role="button">' .
-                    $labels['next'] . ' ' . wireIconMarkup('angle-right') .
-                '</a>' .
-            '</li>';
+            $total = $items['totalItems'];
+            $count = count($items['items']);
         }
-
-        $out .= 
-        '</ul>';
         
-        return $out;
+        // Add in generic placeholder pages
+        $pageArray = new PageArray();
+        $pageArray->setDuplicateChecking(false);
+        for ($i = 0; $i < $count; $i++) {
+            $pageArray->add(new Page());
+        }
+        
+        // Tell the PageArray some details it needs for pagination
+        // (something that PW usually does internally, for pages it loads)
+        $pageArray->setTotal($total);
+        $pageArray->setLimit($limit);
+        $pageArray->setStart($offset);
+        
+        return $pageArray;
     }
 
     /**
