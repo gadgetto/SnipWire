@@ -86,8 +86,11 @@ class ProcessSnipWire extends Process implements Module {
     /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
     protected $snipWireRootUrl = '';
 
-    /**var string $currentUrl The URL to current (virtual) page */
+    /**var string $currentUrl The URL to current (virtual) page + path + url-segments */
     protected $currentUrl = '';
+
+    /**var string $processUrl The URL to current (virtual) page */
+    protected $processUrl = '';
 
     /**
      * Initalize module config variables (properties)
@@ -115,6 +118,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $this->snipWireRootUrl = rtrim($this->wire('pages')->get('snipwire')->url, '/') . '/';
         $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
+        $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment;
     }    
 
     /**
