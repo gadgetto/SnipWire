@@ -319,6 +319,12 @@ class ProcessSnipWire extends Process implements Module {
         $total = $orders['totalItems'];
         $items = $orders['items'];
         $count = count($items);
+        
+        // Pagination out of bound
+        if (!$count && $input->pageNum > 1) {
+            $session->redirect($this->processUrl);
+            return '';
+        }
 
         $out = $this->_buildOrdersFilter();
 
@@ -473,6 +479,12 @@ class ProcessSnipWire extends Process implements Module {
         $items = $customers['items'];
         $count = count($items);
 
+        // Pagination out of bound
+        if (!$count && $input->pageNum > 1) {
+            $session->redirect($this->processUrl);
+            return '';
+        }
+
         $out = $this->_buildCustomersFilter();
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
@@ -615,6 +627,12 @@ class ProcessSnipWire extends Process implements Module {
         $total = $products['totalItems'];
         $items = $products['items'];
         $count = count($items);
+
+        // Pagination out of bound
+        if (!$count && $input->pageNum > 1) {
+            $session->redirect($this->processUrl);
+            return '';
+        }
 
         $out = $this->_buildProductsFilter();
 
