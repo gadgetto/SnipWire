@@ -1887,7 +1887,7 @@ class ProcessSnipWire extends Process implements Module {
                     } else {
                         $editLink =
                         '<span
-                            class="tooltip"
+                            class="pw-tooltip"
                             title="' . $this->_('Product not editable') .'"
                             uk-tooltip>' .
                                 wireIconMarkup('pencil-square-o') .
@@ -1897,7 +1897,7 @@ class ProcessSnipWire extends Process implements Module {
                     // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
                     $editLink =
                     '<span
-                        class="tooltip"
+                        class="pw-tooltip"
                         title="' . $this->_('No matching ProcessWire page found.') .'"
                         uk-tooltip>' . 
                             wireIconMarkup('exclamation-triangle') .
