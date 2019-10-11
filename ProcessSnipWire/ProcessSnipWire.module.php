@@ -313,7 +313,8 @@ class ProcessSnipWire extends Process implements Module {
             : array();
 
         $total = $orders['totalItems'];
-        $count = count($orders['items']);
+        $items = $orders['items'];
+        $count = count($items);
 
         $out = $this->_buildOrdersFilter();
 
@@ -331,7 +332,7 @@ class ProcessSnipWire extends Process implements Module {
         $f->icon = self::iconOrder;
         $f->value = $this->_wrapItemListerHeadline($headline);
         $f->value .= $pagination;
-        $f->value .= $this->_renderTableOrders($orders['items']);
+        $f->value .= $this->_renderTableOrders($items);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -465,7 +466,8 @@ class ProcessSnipWire extends Process implements Module {
             : array();
         
         $total = $customers['totalItems'];
-        $count = count($customers['items']);
+        $items = $customers['items'];
+        $count = count($items);
 
         $out = $this->_buildCustomersFilter();
 
@@ -483,7 +485,7 @@ class ProcessSnipWire extends Process implements Module {
         $f->icon = self::iconCustomer;
         $f->value = $this->_wrapItemListerHeadline($headline);
         $f->value .= $pagination;
-        $f->value .= $this->_renderTableCustomers($customers['items']);
+        $f->value .= $this->_renderTableCustomers($items);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
@@ -606,8 +608,9 @@ class ProcessSnipWire extends Process implements Module {
             ? $request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
             : array();
 
-        $total = $customers['totalItems'];
-        $count = count($customers['items']);
+        $total = $products['totalItems'];
+        $items = $products['items'];
+        $count = count($items);
 
         $out = $this->_buildProductsFilter();
 
@@ -625,7 +628,7 @@ class ProcessSnipWire extends Process implements Module {
         $f->icon = self::iconProduct;
         $f->value = $this->_wrapItemListerHeadline($headline);
         $f->value .= $pagination;
-        $f->value .= $this->_renderTableProducts($products['items'], $currency);
+        $f->value .= $this->_renderTableProducts($items, $currency);
         $f->value .= $pagination;
         $f->collapsed = Inputfield::collapsedNever;
 
