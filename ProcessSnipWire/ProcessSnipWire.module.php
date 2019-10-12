@@ -951,7 +951,7 @@ class ProcessSnipWire extends Process implements Module {
             $cls = array();
             $attrs = array();
             $attrs[] = 'id="_' . $id . '"';
-            if ($cfg['urlsegment'] == $input->urlSegment(1)) $cls[] = 'on';
+            if ($cfg['urlsegment'] == $this->getProcessPage()->urlSegment) $cls[] = 'on';
             if (!empty($cfg['tooltip'])) {
                 $attrs[] = 'title="' . $cfg['tooltip'] . '"';
                 $attrs[] = 'uk-tooltip';
