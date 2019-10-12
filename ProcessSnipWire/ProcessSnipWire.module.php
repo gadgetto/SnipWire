@@ -316,8 +316,8 @@ class ProcessSnipWire extends Process implements Module {
             ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
 
-        $total = $orders['totalItems'];
-        $items = $orders['items'];
+        $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;;
+        $items = isset($orders['items']) ? $orders['items'] : array();
         $count = count($items);
         
         // Pagination out of bound
@@ -475,8 +475,8 @@ class ProcessSnipWire extends Process implements Module {
             ? $request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent]
             : array();
         
-        $total = $customers['totalItems'];
-        $items = $customers['items'];
+        $total = isset($customers['totalItems']) ? $customers['totalItems'] : 0;
+        $items = isset($customers['items']) ? $customers['items'] : array();
         $count = count($items);
 
         // Pagination out of bound
@@ -624,8 +624,8 @@ class ProcessSnipWire extends Process implements Module {
             ? $request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
             : array();
 
-        $total = $products['totalItems'];
-        $items = $products['items'];
+        $total = isset($products['totalItems']) ? $products['totalItems'] : 0;
+        $items = isset($products['items']) ? $products['items'] : array();
         $count = count($items);
 
         // Pagination out of bound
