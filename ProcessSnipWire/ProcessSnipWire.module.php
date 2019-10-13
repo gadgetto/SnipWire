@@ -961,11 +961,11 @@ class ProcessSnipWire extends Process implements Module {
             $classes = $classes ? ' class="' . $classes . '"' : '';
             $attributes = implode(' ', $attrs);
             $attributes = $attributes ? ' ' . $attributes : '';
-            $tabs[] = '<a href="' . $this->snipWireRootUrl . $cfg['urlsegment'] . '"' . $classes . $attributes . '>' . $cfg['label'] . '</a>';
+            $tabs[$cfg['urlsegment']] = '<a href="' . $this->snipWireRootUrl . $cfg['urlsegment'] . '"' . $classes . $attributes . '>' . $cfg['label'] . '</a>';
         }
 
         $out =
-        $wireTabs->renderTabList($tabs, $options) .
+        $this->_renderTabListCustom($tabs, $options) .
         '<div id="SnipwireDashboard">' . $out . '</div>';
 
         $moduleInfo = $modules->getModuleInfoVerbose('SnipWire');
@@ -978,6 +978,52 @@ class ProcessSnipWire extends Process implements Module {
         '</p>';
 
         return $out;
+    }
+
+    /**
+     * Render a tab list (WireTabs) to prevent "jump of tabs" on page reload in UIKit admin theme
+     * (This is a modified version of renderTabList method from JqueryWireTabs class)
+     *
+     * @todo: should be fixed in WireTabs core module!
+     * 
+     * @param array $tabs array of (tabID => title)
+     * @param array $options to modify behavior
+     * @return string WireTabs compatible Markup
+     * 
+     */
+    private function _renderTabListCustom(array $tabs, array $options = array()) {
+        $settings = $this->wire('config')->get('JqueryWireTabs');
+        $defaults = array(
+            'class' => isset($options['class']) ? $options['class'] : $settings['ulClass'],
+            'id' => '', 
+        );
+        $options = array_merge($defaults, $options); 
+        $attrs = "class='$options[class]'" . ($options['id'] ? " id='$options[id]'" : "");
+        if (!empty($settings['ulAttrs'])) $attrs .= " $settings[ulAttrs]";
+        $out = "<ul $attrs>";
+        
+        foreach ($tabs as $tabID => $title) {
+            $tabCls = array();
+            $tabAttrs = array();
+            if ($tabID == $this->getProcessPage()->urlSegment) {
+                $tabCls[] = 'uk-active';
+                $tabAttrs[] = 'aria-expanded="true"';
+            } else {
+                $tabAttrs[] = 'aria-expanded="false"';
+            }
+            $classes = implode(' ', $tabCls);
+            $classes = $classes ? ' class="' . $classes . '"' : '';
+            $attributes = implode(' ', $tabAttrs);
+            $attributes = $attributes ? ' ' . $attributes : '';
+            if (strpos($title, '<a ') !== false) {
+                $out .= "<li$attributes$classes>$title</li>";
+            } else {
+                $out .= "<li$attributes$classes><a href='#$tabID' id='_$tabID'>$title</a></li>";
+            }
+        }
+        
+        $out .= "</ul>";
+        return $out; 
     }
 
     /**

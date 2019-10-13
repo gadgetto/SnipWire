@@ -24,6 +24,4 @@ jQuery(document).ready(function() {
         window.location.href = $(this).attr('href');
         return false;
     });
-
-	$('#' + tabsOptions.id + ' a.on').parent('li').click();
 });
