@@ -254,13 +254,6 @@ class ProcessSnipWire extends Process implements Module {
         $btn->href = $this->currentUrl . '?action=refresh';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
-        /*
-        $btn->addActionLink(
-            $this->currentUrl . '?action=refresh_all', 
-            'Refresh Complete Snipcart Cache',
-            'refresh'
-        );
-        */
         $btn->showInHeader();
 
         $out .= $btn->render();
