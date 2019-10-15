@@ -243,6 +243,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
             $page->setAndSave('snipcart_item_taxable', 1);
             $page->setAndSave('snipcart_item_shippable', 1);
+            $page->setAndSave('snipcart_item_stackable', 1);
         }
     }
 

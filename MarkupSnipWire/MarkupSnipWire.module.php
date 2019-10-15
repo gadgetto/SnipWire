@@ -350,6 +350,13 @@ class MarkupSnipWire extends WireData implements Module {
             $out .= ' data-item-taxes="' . $product->snipcart_item_taxes . '"';
         }
 
+        if ($product->hasField('snipcart_item_stackable')) {
+            $stackable = $product->snipcart_item_stackable ? 'true' : 'false';
+        } else {
+            $stackable = 'true';
+        }
+        $out .= ' data-item-stackable="' . $stackable . '"';
+
         // Metadata to be stored with each product (PW page related data)
         $meta = array(
             'id' => $product->id,

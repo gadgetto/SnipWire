@@ -66,7 +66,7 @@ $resources = array(
     - data-item-min-quantity: integer (Minimum allowed quantity for product)
     - data-item-taxable: boolean (Set to false to exclude item from the taxes calculation. Default value is true.)
     - data-item-taxes: string (Using this option, you can define which tax will be applied on this product)
-    data-item-stackable: boolean (Setting this to false, adding the same product to the cart will result in two distinct items in the cart, instead of simply increasing the quantity)
+    - data-item-stackable: boolean (Setting this to false, adding the same product to the cart will result in two distinct items in the cart, instead of simply increasing the quantity)
     data-item-file-guid: 
     data-item-payment-interval: 
     data-item-payment-interval-count: 
@@ -289,7 +289,16 @@ $resources = array(
             'taxesType' => 1, // = taxesTypeProducts
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
-
+        'snipcart_item_stackable' => array(
+            'name' => 'snipcart_item_stackable',
+            'type' => 'FieldtypeCheckbox',
+            'label' => __('Stackable'),
+            'label2' => __('Product is stackable'),
+            'description' => __('Uncheck, if this product should be added to cart in distinct items instead of increasing quantity.'),
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
     ),
 
     'pages' => array(
