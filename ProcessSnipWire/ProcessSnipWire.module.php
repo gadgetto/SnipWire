@@ -1387,12 +1387,22 @@ class ProcessSnipWire extends Process implements Module {
             );
         } else {
             $values = array(
-                'orders' => $content['ordersCount'],
-                'sales' => CurrencyFormat::format($content['ordersSales'], $currency),
-                'average' => CurrencyFormat::format($content['averageOrdersValue'], $currency),
+                'orders' => isset($content['ordersCount'])
+                    ? $content['ordersCount']
+                    : $errorIcon,
+                'sales' => isset($content['ordersSales'])
+                    ? CurrencyFormat::format($content['ordersSales'], $currency)
+                    : $errorIcon,
+                'average' => isset($content['averageOrdersValue'])
+                    ? CurrencyFormat::format($content['averageOrdersValue'], $currency)
+                    : $errorIcon,
                 'customers' => array(
-                    'new' => $content['customers']['newCustomers'],
-                    'returning' => $content['customers']['returningCustomers'],
+                    'new' => isset($content['customers']['newCustomers'])
+                        ? $content['customers']['newCustomers']
+                        : $errorIcon,
+                    'returning' => isset($content['customers']['returningCustomers'])
+                        ? $content['customers']['returningCustomers']
+                        : $errorIcon,
                 )
             );
         }
