@@ -11,17 +11,18 @@
 
 jQuery(document).ready(function() {
     var tabsOptions = config.tabsOptions;
-    if (!tabsOptions) return;
     var $wireTabs = $('#' + tabsOptions.id);
     
-    $wireTabs.WireTabs({
-        id: tabsOptions.id,
-        cookieName: tabsOptions.id,
-        rememberTabs: tabsOptions.rememberTabs
-    });
-    
-    $(document).on('click', '#' + tabsOptions.id + ' li a', function($event) {
-        window.location.href = $(this).attr('href');
-        return false;
-    });
+    if ($wireTabs.length ) {
+        $wireTabs.WireTabs({
+            id: tabsOptions.id,
+            cookieName: tabsOptions.id,
+            rememberTabs: tabsOptions.rememberTabs
+        });
+        
+        $(document).on('click', '#' + tabsOptions.id + ' li a', function($event) {
+            window.location.href = $(this).attr('href');
+            return false;
+        });
+    }
 });
