@@ -1374,8 +1374,16 @@ class ProcessSnipWire extends Process implements Module {
         $error = $results[WireHttpExtended::resultKeyError];
 
         if ($error) {
-            $this->error($this->_('Values for store performance boxes could not be fetched:') . ' ' . $error);
-            $errorIcon = wireIconMarkup('exclamation-triangle');
+            $errorMessage = $this->_('Values for store performance boxes could not be fetched:');
+            $this->error($errorMessage . ' ' . $error);
+            $errorIcon =
+            '<a href="#"
+                class="tooltip"
+                uk-tooltip
+                title="' . $errorMessage .'">' .
+                    wireIconMarkup('exclamation-triangle') .
+            '</a>';
+
             $values = array(
                 'orders' => $errorIcon,
                 'sales' => $errorIcon, 
@@ -1386,6 +1394,15 @@ class ProcessSnipWire extends Process implements Module {
                 )
             );
         } else {
+            $errorMessage = $this->_('Missing value in Snipcart data');
+            $errorIcon =
+            '<a href="#"
+                class="tooltip"
+                uk-tooltip
+                title="' . $errorMessage .'">' .
+                    wireIconMarkup('exclamation-triangle') .
+            '</a>';
+
             $values = array(
                 'orders' => isset($content['ordersCount'])
                     ? $content['ordersCount']
