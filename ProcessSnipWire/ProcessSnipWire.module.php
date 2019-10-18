@@ -625,10 +625,16 @@ class ProcessSnipWire extends Process implements Module {
             $forceRefresh = true;
         }
 
-        $selector = array(
+        $filter = array(
+            'userDefinedId' => $input->userDefinedId ? $input->userDefinedId : '',
+        );
+
+        $defaultSelector = array(
             'offset' => $offset,
             'limit' => $limit,
         );
+
+        $selector = array_merge($defaultSelector, $filter);
 
         $request = $sniprest->getProducts(
             '',
@@ -651,14 +657,18 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
-        $out = $this->_buildProductsFilter();
+        $out = $this->_buildProductsFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
         $headline = $pageArray->getPaginationString(array(
             'label' => $this->_('Products'),
             'zeroLabel' => $this->_('No products found'), // 3.0.127+ only
         ));
-        $pagination = $pageArray->renderPager();
+
+        $pager = $modules->get('MarkupPagerNav');
+        $pager->setBaseUrl($this->processUrl);
+        $pager->setGetVars($filter);
+        $pagination = $pager->render($pageArray);
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -1395,11 +1405,11 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Build the products filter form.
      *
-     * @param string $currency Currency string
+     * @param array $filter The current filter values
      * @return markup InputfieldForm
      *
      */
-    private function _buildProductsFilter() {
+    private function _buildProductsFilter($filter) {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
@@ -1420,12 +1430,19 @@ class ProcessSnipWire extends Process implements Module {
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->label = $this->_('Search for Products');
             $fieldset->icon = 'search';
-            $fieldset->collapsed = Inputfield::collapsedYes;
+            if (
+                $filter['userDefinedId']
+            ) {
+                $fieldset->collapsed = Inputfield::collapsedNo;
+            } else {
+                $fieldset->collapsed = Inputfield::collapsedYes;
+            }
 
                 /** @var InputfieldText $f */
                 $f = $modules->get('InputfieldText');
-                $f->attr('name', 'products_id');
-                $f->label = $this->_('Product ID');
+                $f->attr('name', 'userDefinedId');
+                $f->label = $this->_('SKU');
+                $f->value = $filter['userDefinedId'];
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 100;
 
@@ -1434,8 +1451,19 @@ class ProcessSnipWire extends Process implements Module {
                 /** @var InputfieldButton $btn */
                 $btn = $modules->get('InputfieldButton');
                 $btn->attr('type', 'submit'); 
+                $btn->icon = 'search';
                 $btn->value = $this->_('Search');
-                $btn->columnWidth = 100;
+                $btn->small = true;
+
+            $fieldset->add($btn);
+
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->href = $this->processUrl;
+                $btn->value = $this->_('Reset');
+                $btn->icon = 'rotate-left';
+                $btn->secondary = true;
+                $btn->small = true;
 
             $fieldset->add($btn);
 
