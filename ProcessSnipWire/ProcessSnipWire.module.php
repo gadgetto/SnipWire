@@ -349,7 +349,7 @@ class ProcessSnipWire extends Process implements Module {
         $btn->icon = 'refresh';
         $btn->showInHeader();
 
-        $out .= '<div class="ItemListerButton">' . $btn->render() . '</div>';
+        $out .= '<div class="ItemListerButtons">' . $btn->render() . '</div>';
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -508,7 +508,7 @@ class ProcessSnipWire extends Process implements Module {
         $btn->icon = 'refresh';
         $btn->showInHeader();
 
-        $out .= '<div class="ItemListerButton">' . $btn->render() . '</div>';
+        $out .= '<div class="ItemListerButtons">' . $btn->render() . '</div>';
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -657,7 +657,7 @@ class ProcessSnipWire extends Process implements Module {
         $btn->icon = 'refresh';
         $btn->showInHeader();
 
-        $out .= '<div class="ItemListerButton">' . $btn->render() . '</div>';
+        $out .= '<div class="ItemListerButtons">' . $btn->render() . '</div>';
 
         return $this->_wrapDashboardOutput($out);
     }
