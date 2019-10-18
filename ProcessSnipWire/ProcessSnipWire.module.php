@@ -293,10 +293,18 @@ class ProcessSnipWire extends Process implements Module {
             $forceRefresh = true;
         }
 
-        $selector = array(
+        $filter = array(
+            'status' => $input->status ? $input->status : 'All',
+            'invoiceNumber' => $input->invoiceNumber ? $input->invoiceNumber : '',
+            'placedBy' => $input->placedBy ? $input->placedBy : '',
+        );
+
+        $defaultSelector = array(
             'offset' => $offset,
             'limit' => $limit,
         );
+ 
+        $selector = array_merge($defaultSelector, $filter);
 
         $request = $sniprest->getOrders(
             '',
@@ -319,14 +327,18 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
-        $out = $this->_buildOrdersFilter();
+        $out = $this->_buildOrdersFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
         $headline = $pageArray->getPaginationString(array(
             'label' => $this->_('Orders'),
             'zeroLabel' => $this->_('No orders found'), // 3.0.127+ only
         ));
-        $pagination = $pageArray->renderPager();
+
+        $pager = $modules->get('MarkupPagerNav');
+        $pager->setBaseUrl($this->processUrl);
+        $pager->setGetVars($filter);
+        $pagination = $pager->render($pageArray);
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -1166,12 +1178,24 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Build the orders filter form.
      *
+     * @param array $filter The current filter values
      * @return markup InputfieldForm
      *
      */
-    private function _buildOrdersFilter() {
+    private function _buildOrdersFilter($filter) {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
+
+        $statuses = array(
+            'All' =>  $this->_('All Orders'),
+            'InProgress' => $this->_('In Progress'),
+            'Processed' => $this->_('Processed'),
+            'Disputed' => $this->_('Disputed'),
+            'Shipped' => $this->_('Shipped'),
+            'Delivered' => $this->_('Delivered'),
+            'Pending' => $this->_('Pending'),
+            'Cancelled' => $this->_('Cancelled'),
+        );
 
         $filterSettings = array(
             'form' => '#OrdersFilterForm',
@@ -1190,23 +1214,33 @@ class ProcessSnipWire extends Process implements Module {
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->label = $this->_('Search for Orders');
             $fieldset->icon = 'search';
-            $fieldset->collapsed = Inputfield::collapsedYes;
+            if (
+                ($filter['status'] && $filter['status'] != 'All') ||
+                $filter['invoiceNumber'] ||
+                $filter['placedBy']
+            ) {
+                $fieldset->collapsed = Inputfield::collapsedNo;
+            } else {
+                $fieldset->collapsed = Inputfield::collapsedYes;
+            }
 
                 /** @var InputfieldSelect $f */
                 $f = $modules->get('InputfieldSelect'); 
-                $f->attr('name', 'order_status'); 
+                $f->attr('name', 'status'); 
                 $f->label = $this->_('Status'); 
-                //$f->value = $status;
+                $f->value = $filter['status'];
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
-                $f->addOption('all', 'All');
+                $f->required = true;
+                $f->addOptions($statuses);
 
             $fieldset->add($f);
 
                 /** @var InputfieldText $f */
                 $f = $modules->get('InputfieldText');
-                $f->attr('name', 'order_invoice_number');
+                $f->attr('name', 'invoiceNumber');
                 $f->label = $this->_('Invoice Number');
+                $f->value = $filter['invoiceNumber'];
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
 
@@ -1214,8 +1248,9 @@ class ProcessSnipWire extends Process implements Module {
 
                 /** @var InputfieldText $f */
                 $f = $modules->get('InputfieldText');
-                $f->attr('name', 'order_placed_by');
+                $f->attr('name', 'placedBy');
                 $f->label = $this->_('Placed By');
+                $f->value = $filter['placedBy'];
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 34;
 
@@ -1224,8 +1259,19 @@ class ProcessSnipWire extends Process implements Module {
                 /** @var InputfieldButton $btn */
                 $btn = $modules->get('InputfieldButton');
                 $btn->attr('type', 'submit'); 
+                $btn->icon = 'search';
                 $btn->value = $this->_('Search');
-                $btn->columnWidth = 100;
+                $btn->small = true;
+
+            $fieldset->add($btn);
+
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->href = $this->processUrl;
+                $btn->value = $this->_('Reset');
+                $btn->icon = 'rotate-left';
+                $btn->secondary = true;
+                $btn->small = true;
 
             $fieldset->add($btn);
 
