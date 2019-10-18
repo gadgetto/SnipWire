@@ -947,8 +947,7 @@ class ProcessSnipWire extends Process implements Module {
             if ($cfg['urlsegment'] == $this->getProcessPage()->urlSegment) $cls[] = 'on';
             if (!empty($cfg['tooltip'])) {
                 $attrs[] = 'title="' . $cfg['tooltip'] . '"';
-                $attrs[] = 'uk-tooltip';
-                $cls[] = 'tooltip';
+                $cls[] = 'pw-tooltip';
             }
             $classes = implode(' ', $cls);
             $classes = $classes ? ' class="' . $classes . '"' : '';
@@ -1122,9 +1121,8 @@ class ProcessSnipWire extends Process implements Module {
             $markup .= 
             '<a href="' . $this->currentUrl . '?action=reset"
                 id="PeriodPickerReset"
-                class="tooltip"
+                class="pw-tooltip"
                 role="button"
-                uk-tooltip
                 title="' . $this->_('Reset store performance date range to default') .'">' .
                     wireIconMarkup('rotate-left') .
             '</a>';
@@ -1377,12 +1375,11 @@ class ProcessSnipWire extends Process implements Module {
             $errorMessage = $this->_('Values for store performance boxes could not be fetched:');
             $this->error($errorMessage . ' ' . $error);
             $errorIcon =
-            '<a href="#"
-                class="tooltip"
-                uk-tooltip
+            '<span
+                class="pw-tooltip"
                 title="' . $errorMessage .'">' .
                     wireIconMarkup('exclamation-triangle') .
-            '</a>';
+            '</span>';
 
             $values = array(
                 'orders' => $errorIcon,
@@ -1396,12 +1393,11 @@ class ProcessSnipWire extends Process implements Module {
         } else {
             $errorMessage = $this->_('Missing value in Snipcart data');
             $errorIcon =
-            '<a href="#"
-                class="tooltip"
-                uk-tooltip
+            '<span
+                class="pw-tooltip"
                 title="' . $errorMessage .'">' .
                     wireIconMarkup('exclamation-triangle') .
-            '</a>';
+            '</span>';
 
             $values = array(
                 'orders' => isset($content['ordersCount'])
@@ -1637,9 +1633,8 @@ class ProcessSnipWire extends Process implements Module {
                     } else {
                         $editLink =
                         '<span
-                            class="tooltip"
-                            title="' . $this->_('Product not editable') .'"
-                            uk-tooltip>' .
+                            class="pw-tooltip"
+                            title="' . $this->_('Product not editable') .'">' .
                                 wireIconMarkup('pencil-square-o') .
                         '</span>';
                     }
@@ -1647,9 +1642,8 @@ class ProcessSnipWire extends Process implements Module {
                     // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
                     $editLink =
                     '<span
-                        class="tooltip"
-                        title="' . $this->_('No matching ProcessWire page found.') .'"
-                        uk-tooltip>' . 
+                        class="pw-tooltip"
+                        title="' . $this->_('No matching ProcessWire page found.') .'">' . 
                             wireIconMarkup('exclamation-triangle') .
                     '</span>';
                 }
@@ -1954,8 +1948,7 @@ class ProcessSnipWire extends Process implements Module {
                         $editLink =
                         '<span
                             class="pw-tooltip"
-                            title="' . $this->_('Product not editable') .'"
-                            uk-tooltip>' .
+                            title="' . $this->_('Product not editable') .'">' .
                                 wireIconMarkup('pencil-square-o') .
                         '</span>';
                     }
@@ -1964,8 +1957,7 @@ class ProcessSnipWire extends Process implements Module {
                     $editLink =
                     '<span
                         class="pw-tooltip"
-                        title="' . $this->_('No matching ProcessWire page found.') .'"
-                        uk-tooltip>' . 
+                        title="' . $this->_('No matching ProcessWire page found.') .'">' . 
                             wireIconMarkup('exclamation-triangle') .
                     '</span>';
                 }
