@@ -464,10 +464,18 @@ class ProcessSnipWire extends Process implements Module {
             $forceRefresh = true;
         }
 
-        $selector = array(
+        $filter = array(
+            'status' => $input->status ? $input->status : 'All',
+            'email' => $input->email ? $input->email : '',
+            'name' => $input->name ? $input->name : '',
+        );
+
+        $defaultSelector = array(
             'offset' => $offset,
             'limit' => $limit,
         );
+
+        $selector = array_merge($defaultSelector, $filter);
 
         $request = $sniprest->getCustomers(
             '',
@@ -490,14 +498,18 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
 
-        $out = $this->_buildCustomersFilter();
+        $out = $this->_buildCustomersFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
         $headline = $pageArray->getPaginationString(array(
             'label' => $this->_('Customers'),
             'zeroLabel' => $this->_('No customers found'), // 3.0.127+ only
         ));
-        $pagination = $pageArray->renderPager();
+
+        $pager = $modules->get('MarkupPagerNav');
+        $pager->setBaseUrl($this->processUrl);
+        $pager->setGetVars($filter);
+        $pagination = $pager->render($pageArray);
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -1283,12 +1295,19 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Build the customers filter form.
      *
+     * @param array $filter The current filter values
      * @return markup InputfieldForm
      *
      */
-    private function _buildCustomersFilter() {
+    private function _buildCustomersFilter($filter) {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
+
+        $statuses = array(
+            'All' =>  $this->_('All Customers'),
+            'Confirmed' => $this->_('Confirmed'),
+            'Unconfirmed' => $this->_('Unconfirmed'),
+        );
 
         $filterSettings = array(
             'form' => '#CustomersFilterForm',
@@ -1307,23 +1326,33 @@ class ProcessSnipWire extends Process implements Module {
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->label = $this->_('Search for Customers');
             $fieldset->icon = 'search';
-            $fieldset->collapsed = Inputfield::collapsedYes;
+            if (
+                ($filter['status'] && $filter['status'] != 'All') ||
+                $filter['email'] ||
+                $filter['name']
+            ) {
+                $fieldset->collapsed = Inputfield::collapsedNo;
+            } else {
+                $fieldset->collapsed = Inputfield::collapsedYes;
+            }
 
                 /** @var InputfieldSelect $f */
                 $f = $modules->get('InputfieldSelect');
-                $f->attr('name', 'customer_status');
+                $f->attr('name', 'status');
                 $f->label = $this->_('Status');
-                //$f->value = $status;
+                $f->value = $filter['status'];
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
-                $f->addOption('all', 'All');
+                $f->required = true;
+                $f->addOptions($statuses);
 
             $fieldset->add($f);
 
                 /** @var InputfieldText $f */
                 $f = $modules->get('InputfieldText');
-                $f->attr('name', 'customer_email');
+                $f->attr('name', 'email');
                 $f->label = $this->_('Email');
+                $f->value = $filter['email'];
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
 
@@ -1331,8 +1360,9 @@ class ProcessSnipWire extends Process implements Module {
 
                 /** @var InputfieldText $f */
                 $f = $modules->get('InputfieldText');
-                $f->attr('name', 'customer_name');
+                $f->attr('name', 'name');
                 $f->label = $this->_('Name');
+                $f->value = $filter['name'];
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 34;
 
@@ -1341,8 +1371,19 @@ class ProcessSnipWire extends Process implements Module {
                 /** @var InputfieldButton $btn */
                 $btn = $modules->get('InputfieldButton');
                 $btn->attr('type', 'submit');
+                $btn->icon = 'search';
                 $btn->value = $this->_('Search');
-                $btn->columnWidth = 100;
+                $btn->small = true;
+
+            $fieldset->add($btn);
+
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->href = $this->processUrl;
+                $btn->value = $this->_('Reset');
+                $btn->icon = 'rotate-left';
+                $btn->secondary = true;
+                $btn->small = true;
 
             $fieldset->add($btn);
 
