@@ -50,7 +50,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixOrdersCount = 'OrdersCount';
     const cacheNamePrefixOrdersSales = 'OrdersSales';
     
-    const cacheExpireDefault = 600;
+    const cacheExpireDefault = 900; // max. cache expiration time in seconds
 
     /**
      * Construct/initialize
