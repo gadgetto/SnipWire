@@ -118,7 +118,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
         $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
-        $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment;
+        $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . '/';
     }    
 
     /**
