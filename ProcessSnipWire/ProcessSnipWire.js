@@ -21,7 +21,7 @@ jQuery(document).ready(function() {
                 rememberTabs: tabsOptions.rememberTabs
             });
             
-            $(document).on('click', '#' + tabsOptions.id + ' li a', function($event) {
+            $(document).on('click', '#' + tabsOptions.id + ' li a', function() {
                 window.location.href = $(this).attr('href');
                 return false;
             });
