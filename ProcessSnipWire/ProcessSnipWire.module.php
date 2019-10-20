@@ -272,6 +272,7 @@ class ProcessSnipWire extends Process implements Module {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
+        $sanitizer = $this->wire('sanitizer');
         $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
 
@@ -284,7 +285,7 @@ class ProcessSnipWire extends Process implements Module {
         }
         
         $forceRefresh = false;
-        $limit = 20;        
+        $limit = 20;
         $offset = ($input->pageNum - 1) * $limit;
               
         $action = $this->_getInputAction();
@@ -293,10 +294,13 @@ class ProcessSnipWire extends Process implements Module {
             $forceRefresh = true;
         }
 
+        $status = $sanitizer->text($input->status);
+        $invoiceNumber = $sanitizer->text($input->invoiceNumber);
+        $placedBy = $sanitizer->text($input->placedBy);
         $filter = array(
-            'status' => $input->status ? $input->status : 'All',
-            'invoiceNumber' => $input->invoiceNumber ? $input->invoiceNumber : '',
-            'placedBy' => $input->placedBy ? $input->placedBy : '',
+            'status' => $status ? $status : 'All',
+            'invoiceNumber' => $invoiceNumber ? $invoiceNumber : '',
+            'placedBy' => $placedBy ? $placedBy : '',
         );
 
         $defaultSelector = array(
@@ -443,6 +447,7 @@ class ProcessSnipWire extends Process implements Module {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
+        $sanitizer = $this->wire('sanitizer');
         $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
         
@@ -455,7 +460,7 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         $forceRefresh = false;
-        $limit = 20;        
+        $limit = 20;
         $offset = ($input->pageNum - 1) * $limit;
 
         $action = $this->_getInputAction();
@@ -464,10 +469,13 @@ class ProcessSnipWire extends Process implements Module {
             $forceRefresh = true;
         }
 
+        $status = $sanitizer->text($input->status);
+        $email = $sanitizer->text($input->email);
+        $name = $sanitizer->text($input->name);
         $filter = array(
-            'status' => $input->status ? $input->status : 'All',
-            'email' => $input->email ? $input->email : '',
-            'name' => $input->name ? $input->name : '',
+            'status' => $status ? $status : 'All',
+            'email' => $email ? $email : '',
+            'name' => $name ? $name : '',
         );
 
         $defaultSelector = array(
@@ -603,6 +611,7 @@ class ProcessSnipWire extends Process implements Module {
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
+        $sanitizer = $this->wire('sanitizer');
         $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
         
@@ -615,7 +624,7 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         $forceRefresh = false;
-        $limit = 20;        
+        $limit = 20;
         $offset = ($input->pageNum - 1) * $limit;
 
         $currency = $this->_getCurrency();
@@ -625,8 +634,9 @@ class ProcessSnipWire extends Process implements Module {
             $forceRefresh = true;
         }
 
+        $userDefinedId = $sanitizer->text($input->userDefinedId);
         $filter = array(
-            'userDefinedId' => $input->userDefinedId ? $input->userDefinedId : '',
+            'userDefinedId' => $userDefinedId ? $userDefinedId : '',
         );
 
         $defaultSelector = array(
