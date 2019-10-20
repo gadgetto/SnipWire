@@ -383,7 +383,6 @@ class ProcessSnipWire extends Process implements Module {
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
         
-        $dashboardUrl = $input->url;
         $token = $input->urlSegment(2); // Get Snipcart order token
         
         $this->browserTitle($this->_('Snipcart Order'));
@@ -558,7 +557,6 @@ class ProcessSnipWire extends Process implements Module {
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
         
-        $dashboardUrl = $input->url;
         $id = $input->urlSegment(2); // Get Snipcart customer id
         
         $this->browserTitle($this->_('Snipcart Customer'));
@@ -719,7 +717,6 @@ class ProcessSnipWire extends Process implements Module {
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
         
-        $dashboardUrl = $input->url;
         $id = $input->urlSegment(2); // Get Snipcart product id
         
         $this->browserTitle($this->_('Snipcart Product'));
