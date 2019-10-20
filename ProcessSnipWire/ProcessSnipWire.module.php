@@ -1359,7 +1359,7 @@ class ProcessSnipWire extends Process implements Module {
             $fieldset->add($f);
 
                 /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
+                $f = $modules->get('InputfieldEmail');
                 $f->attr('name', 'email');
                 $f->label = $this->_('Email');
                 $f->value = $filter['email'];
