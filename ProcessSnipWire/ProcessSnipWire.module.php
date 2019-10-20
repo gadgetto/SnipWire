@@ -321,7 +321,7 @@ class ProcessSnipWire extends Process implements Module {
             ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
 
-        $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;;
+        $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;
         $items = isset($orders['items']) ? $orders['items'] : array();
         $count = count($items);
         
