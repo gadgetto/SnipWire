@@ -308,6 +308,7 @@ class SnipREST extends WireHttpExtended {
      *  - `offset` (int) Number of results to skip. [default = 0] #required
      *  - `limit` (int) Number of results to fetch. [default = 20] #required
      *  - `status` (string) A status criteria for your order collection. (Possible values: InProgress, Processed, Disputed, Shipped, Delivered, Pending, Cancelled)
+     *  - `paymentStatus` (string) A payment status criteria for your order collection. (Possible values: Paid, PaidDeferred, Deferred)
      *  - `invoiceNumber` (string) The invoice number of the order to retrieve
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
@@ -323,7 +324,7 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
-        $allowedOptions = array('offset', 'limit', 'status', 'invoiceNumber', 'placedBy', 'from', 'to');
+        $allowedOptions = array('offset', 'limit', 'status', 'paymentStatus', 'invoiceNumber', 'placedBy', 'from', 'to');
         $defaultOptions = array(
             'offset' => 0,
             'limit' => 20,
@@ -427,6 +428,7 @@ class SnipREST extends WireHttpExtended {
      *  - `offset` (int) Number of results to skip. [default = 0] #required
      *  - `limit` (int) Number of results to fetch. [default = 20] #required
      *  - `userDefinedId` string The custom product ID
+     *  - `keywords` string A keyword to search for
      *  - `archived` boolean (as string) "true" or "false" (undocumented!)
      *  - `excludeZeroSales`  boolean (as string) "true" or "false"  (undocumented!)
      *  - `orderBy` string The order by key (undocumented!)
@@ -443,7 +445,7 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
-        $allowedOptions = array('offset', 'limit', 'userDefinedId', 'archived', 'excludeZeroSales', 'orderBy', 'from', 'to');
+        $allowedOptions = array('offset', 'limit', 'userDefinedId', 'keywords', 'archived', 'excludeZeroSales', 'orderBy', 'from', 'to');
         $defaultOptions = array(
             'offset' => 0,
             'limit' => 20,

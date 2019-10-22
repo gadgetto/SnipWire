@@ -635,8 +635,10 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         $userDefinedId = $sanitizer->text($input->userDefinedId);
+        $keywords = $sanitizer->text($input->keywords);
         $filter = array(
             'userDefinedId' => $userDefinedId ? $userDefinedId : '',
+            'keywords' => $keywords ? $keywords : '',
         );
 
         $defaultSelector = array(
@@ -1434,7 +1436,8 @@ class ProcessSnipWire extends Process implements Module {
             $fieldset->label = $this->_('Search for Products');
             $fieldset->icon = 'search';
             if (
-                $filter['userDefinedId']
+                $filter['userDefinedId'] ||
+                $filter['keywords']
             ) {
                 $fieldset->collapsed = Inputfield::collapsedNo;
             } else {
@@ -1447,11 +1450,19 @@ class ProcessSnipWire extends Process implements Module {
                 $f->label = $this->_('SKU');
                 $f->value = $filter['userDefinedId'];
                 $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 100;
+                $f->columnWidth = 50;
 
             $fieldset->add($f);
 
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'keywords');
+                $f->label = $this->_('Keywords');
+                $f->value = $filter['keywords'];
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 50;
 
+            $fieldset->add($f);
 
                 $buttonsWrapper = $modules->get('InputfieldMarkup');
                 $buttonsWrapper->contentClass = 'ItemsFilterButtonWrapper';
