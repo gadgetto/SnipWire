@@ -1284,25 +1284,12 @@ class ProcessSnipWire extends Process implements Module {
                 $f->columnWidth = 34;
 
             $fieldset->add($f);
+            
+                $buttonsWrapper = $modules->get('InputfieldMarkup');
+                $buttonsWrapper->contentClass = 'ItemsFilterButtonWrapper';
+                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
-                $btn->attr('type', 'submit'); 
-                $btn->icon = 'search';
-                $btn->value = $this->_('Search');
-                $btn->small = true;
-
-            $fieldset->add($btn);
-
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
-                $btn->href = $this->processUrl;
-                $btn->value = $this->_('Reset');
-                $btn->icon = 'rotate-left';
-                $btn->secondary = true;
-                $btn->small = true;
-
-            $fieldset->add($btn);
+            $fieldset->add($buttonsWrapper);
 
         $form->add($fieldset);
 
@@ -1385,24 +1372,11 @@ class ProcessSnipWire extends Process implements Module {
 
             $fieldset->add($f);
 
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
-                $btn->attr('type', 'submit');
-                $btn->icon = 'search';
-                $btn->value = $this->_('Search');
-                $btn->small = true;
+                $buttonsWrapper = $modules->get('InputfieldMarkup');
+                $buttonsWrapper->contentClass = 'ItemsFilterButtonWrapper';
+                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
-            $fieldset->add($btn);
-
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
-                $btn->href = $this->processUrl;
-                $btn->value = $this->_('Reset');
-                $btn->icon = 'rotate-left';
-                $btn->secondary = true;
-                $btn->small = true;
-
-            $fieldset->add($btn);
+            $fieldset->add($buttonsWrapper);
 
         $form->add($fieldset);
 
@@ -1455,28 +1429,45 @@ class ProcessSnipWire extends Process implements Module {
 
             $fieldset->add($f);
 
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
-                $btn->attr('type', 'submit'); 
-                $btn->icon = 'search';
-                $btn->value = $this->_('Search');
-                $btn->small = true;
 
-            $fieldset->add($btn);
 
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
-                $btn->href = $this->processUrl;
-                $btn->value = $this->_('Reset');
-                $btn->icon = 'rotate-left';
-                $btn->secondary = true;
-                $btn->small = true;
+                $buttonsWrapper = $modules->get('InputfieldMarkup');
+                $buttonsWrapper->contentClass = 'ItemsFilterButtonWrapper';
+                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
-            $fieldset->add($btn);
+            $fieldset->add($buttonsWrapper);
 
         $form->add($fieldset);
 
         return $form->render(); 
+    }
+
+
+    /**
+     * Get markup for custom filter form buttons.
+     *
+     * @param string $resetUrl Currency string
+     * @return markup Button markup for filter forms
+     *
+     */
+    private function _getFilterFormButtons($resetUrl) {
+        $out = 
+        '<small>' .
+            '<button class="ui-button ui-widget ui-corner-all ui-state-default" type="submit">' .
+                '<span class="ui-button-text">' .
+                    '<i class="fa fa-search"></i> ' . $this->_('Search') .
+                '</span>' .
+            '</button>' .
+        '</small>' .
+        '<small>' .
+            '<button class="ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary ItemsFilterResetButton" value="' . $resetUrl . '" type="button">' .
+                '<span class="ui-button-text">' .
+                    '<i class="fa fa-rotate-left"></i> ' . $this->_('Reset') .
+                '</span>' .
+            '</button>' .
+        '</small>';
+
+        return $out;
     }
 
     /**

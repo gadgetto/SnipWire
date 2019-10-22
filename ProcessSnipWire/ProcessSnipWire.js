@@ -27,4 +27,10 @@ jQuery(document).ready(function() {
             });
         }
     }
+    
+    var $ItemsFilterResetButton = $('.ItemsFilterResetButton');
+    $ItemsFilterResetButton.on('click', function() {
+        window.location.href = $ItemsFilterResetButton.attr('value');
+        return false;
+    });
 });
