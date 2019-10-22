@@ -295,10 +295,12 @@ class ProcessSnipWire extends Process implements Module {
         }
 
         $status = $sanitizer->text($input->status);
+        $paymentStatus = $sanitizer->text($input->paymentStatus);
         $invoiceNumber = $sanitizer->text($input->invoiceNumber);
         $placedBy = $sanitizer->text($input->placedBy);
         $filter = array(
             'status' => $status ? $status : 'All',
+            'paymentStatus' => $paymentStatus ? $paymentStatus : 'All',
             'invoiceNumber' => $invoiceNumber ? $invoiceNumber : '',
             'placedBy' => $placedBy ? $placedBy : '',
         );
@@ -1225,6 +1227,13 @@ class ProcessSnipWire extends Process implements Module {
             'Pending' => $this->_('Pending'),
             'Cancelled' => $this->_('Cancelled'),
         );
+        
+        $paymentStatuses = array(
+            'All' =>  $this->_('All Orders'),
+            'Paid' => $this->_('Paid'),
+            'PaidDeferred' => $this->_('Paid (deferred)'),
+            'Deferred' => $this->_('Not paid'),
+        );
 
         $filterSettings = array(
             'form' => '#OrdersFilterForm',
@@ -1245,6 +1254,7 @@ class ProcessSnipWire extends Process implements Module {
             $fieldset->icon = 'search';
             if (
                 ($filter['status'] && $filter['status'] != 'All') ||
+                ($filter['paymentStatus'] && $filter['paymentStatus'] != 'All') ||
                 $filter['invoiceNumber'] ||
                 $filter['placedBy']
             ) {
@@ -1259,9 +1269,21 @@ class ProcessSnipWire extends Process implements Module {
                 $f->label = $this->_('Status'); 
                 $f->value = $filter['status'];
                 $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
+                $f->columnWidth = 50;
                 $f->required = true;
                 $f->addOptions($statuses);
+
+            $fieldset->add($f);
+
+                /** @var InputfieldSelect $f */
+                $f = $modules->get('InputfieldSelect'); 
+                $f->attr('name', 'paymentStatus'); 
+                $f->label = $this->_('Payment Status'); 
+                $f->value = $filter['paymentStatus'];
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 50;
+                $f->required = true;
+                $f->addOptions($paymentStatuses);
 
             $fieldset->add($f);
 
@@ -1271,7 +1293,7 @@ class ProcessSnipWire extends Process implements Module {
                 $f->label = $this->_('Invoice Number');
                 $f->value = $filter['invoiceNumber'];
                 $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
+                $f->columnWidth = 50;
 
             $fieldset->add($f);
 
@@ -1281,7 +1303,7 @@ class ProcessSnipWire extends Process implements Module {
                 $f->label = $this->_('Placed By');
                 $f->value = $filter['placedBy'];
                 $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 34;
+                $f->columnWidth = 50;
 
             $fieldset->add($f);
             
