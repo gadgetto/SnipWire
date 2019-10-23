@@ -42,6 +42,8 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixDashboard = 'Dashboard';
     const cacheNamePrefixProducts = 'Products';
     const cacheNamePrefixProductDetail = 'ProductDetail';
+    const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
+    const cacheNamePrefixCartAbandonedDetail = 'CartAbandonedDetail';
     const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixOrderDetail = 'OrderDetail';
     const cacheNamePrefixCustomers = 'Customers';
@@ -92,6 +94,7 @@ class SnipREST extends WireHttpExtended {
             'no_customer_id' => __('Could not fetch customer data - no customer ID provided.'),
             'no_product_id' => __('Could not fetch product data - no product ID provided.'),
             'no_order_token' => __('Could not fetch order data - no order token provided.'),
+            'no_cart_id' => __('Could not fetch cart data - no cart ID provided.'),
             'cache_refreshed' => __('Snipcart cache refreshed.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
@@ -655,6 +658,138 @@ class SnipREST extends WireHttpExtended {
 
         if ($response === false) $response = array();
         $data[self::resourcePathCustomers . '/' . $id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Get the abandoned carts from Snipcart dashboard as array.
+     *
+     * The Snipcart API handles pagination different in this case!
+     * (need to use prev / next button instead of pagination)
+     *
+     *   From the response use
+     *     - `continuationToken`
+     *     - `hasMoreResults`
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $key The array key to be returned
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `offset` (int) Number of results to skip. [default = 0] #required
+     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `timeRange` (string) A time range criteria for abandoned carts. (Possible values: Anytime, LessThan4Hours, LessThanADay, LessThanAWeek, LessThanAMonth)
+     *  - `minimalValue` (float) The minimum total cart value of results to fetch
+     *  - `email` (string) The email of the customer who placed the order
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getAbandonedCarts($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+
+        $allowedOptions = array('offset', 'limit', 'timeRange', 'minimalValue', 'email');
+        $defaultOptions = array(
+            'offset' => 0,
+            'limit' => 20,
+        );
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        $query = '';
+        if (!empty($options)) $query = '?' . http_build_query($options);
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixCartsAbandoned . '.' . md5($query);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathCartsAbandoned . $query);
+        });
+
+        $response = ($key && isset($response[$key])) ? $response[$key] : $response;
+        if ($response === false) $response = array();
+        $data[self::resourcePathCartsAbandoned] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Get the abandoned carts items from Snipcart dashboard as array.
+     *
+     * The Snipcart API handles pagination different in this case!
+     * (need to use prev / next button instead of pagination)
+     *
+     *   From the response use
+     *     - `continuationToken`
+     *     - `hasMoreResults`
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $key The array key to be returned
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `offset` (int) Number of results to skip. [default = 0] #required
+     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `timeRange` (string) A time range criteria for abandoned carts. (Possible values: Anytime, LessThan4Hours, LessThanADay, LessThanAWeek, LessThanAMonth)
+     *  - `minimalValue` (float) The minimum total cart value of results to fetch
+     *  - `email` (string) The email of the customer who placed the order
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getAbandonedCartsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        return $this->getAbandonedCarts('items', $options, $expires, $forceRefresh);
+    }
+
+    /**
+     * Get a single abandoned cart from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $id The Snipcart id of the cart to be returned
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getAbandonedCart($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_cart_id'));
+            return false;
+        }
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixCartAbandonedDetail . '.' . md5($id);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathCartsAbandoned . '/' . $id);
+        });
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathCartsAbandoned . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
