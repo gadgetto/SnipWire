@@ -136,6 +136,10 @@
 .ItemListerTable {
     clear: both;
     overflow-x: auto;
+    
+    .fa-right-margin {
+        margin-right: .5rem;
+    }
 }
 .ItemListerHeadline {
     float: left;

@@ -1913,7 +1913,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-fw') . $item['invoiceNumber'] . '</a>';
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] . '</a>';
                 $panelLink2 = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
@@ -1993,7 +1993,7 @@ class ProcessSnipWire extends Process implements Module {
             ));
 
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-fw') . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] . '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['email'],
@@ -2079,7 +2079,7 @@ class ProcessSnipWire extends Process implements Module {
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
                     class="pw-panel"
                     data-panel-width="70%">' .
-                        wireIconMarkup(self::iconProduct, 'fa-fw') . $item['userDefinedId'] .
+                        wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
                 '</a>';
                 $thumb = '<img src="' . $item['image'] . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
 
