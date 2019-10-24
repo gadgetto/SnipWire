@@ -1000,7 +1000,10 @@ class ProcessSnipWire extends Process implements Module {
             $classes = $classes ? ' class="' . $classes . '"' : '';
             $attributes = implode(' ', $attrs);
             $attributes = $attributes ? ' ' . $attributes : '';
-            $tabs[$cfg['urlsegment']] = '<a href="' . $this->snipWireRootUrl . $cfg['urlsegment'] . '"' . $classes . $attributes . '>' . $cfg['label'] . '</a>';
+            $tabs[$cfg['urlsegment']] =
+            '<a href="' . $this->snipWireRootUrl . $cfg['urlsegment'] . '"' . $classes . $attributes . '>' .
+                $cfg['label'] .
+            '</a>';
         }
 
         $out =
