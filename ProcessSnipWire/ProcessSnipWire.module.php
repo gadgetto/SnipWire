@@ -1711,7 +1711,12 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total Spent'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink =
+                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        $item['billingAddress']['fullName'] .
+                '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['statistics']['ordersCount'],
@@ -1853,8 +1858,18 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . $item['invoiceNumber'] . '</a>';
-                $panelLink2 = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
+                $panelLink =
+                '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        $item['invoiceNumber'] .
+                '</a>';
+                $panelLink2 =
+                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        $item['user']['billingAddress']['fullName'] .
+                '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
@@ -1916,8 +1931,18 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] . '</a>';
-                $panelLink2 = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '" class="pw-panel" data-panel-width="70%">' . $item['user']['billingAddress']['fullName'] . '</a>';
+                $panelLink =
+                '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
+                '</a>';
+                $panelLink2 =
+                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        $item['user']['billingAddress']['fullName'] .
+                '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
@@ -1996,7 +2021,10 @@ class ProcessSnipWire extends Process implements Module {
             ));
 
             foreach ($items as $item) {
-                $panelLink = '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' . wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] . '</a>';
+                $panelLink =
+                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' .
+                    wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
+                '</a>';
                 $table->row(array(
                     $panelLink,
                     $item['email'],
