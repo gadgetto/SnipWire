@@ -980,7 +980,7 @@ class ProcessSnipWire extends Process implements Module {
                 'urlsegment' => 'products',
             ),
             'settings' => array(
-                'label' => wireIconMarkup('gear'),
+                'label' => wireIconMarkup(self::iconSettings),
                 'urlsegment' => 'settings',
                 'tooltip' => $this->_('Open SnipWire module settings page'),
             ),
