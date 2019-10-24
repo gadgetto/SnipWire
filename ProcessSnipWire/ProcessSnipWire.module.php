@@ -1911,7 +1911,6 @@ class ProcessSnipWire extends Process implements Module {
 
         if (!empty($items)) {
             $modules->get('JqueryTableSorter')->use('widgets');
-            $modules->get('JqueryMagnific');
 
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -2001,7 +2000,6 @@ class ProcessSnipWire extends Process implements Module {
 
         if (!empty($items)) {
             $modules->get('JqueryTableSorter')->use('widgets');
-            $modules->get('JqueryMagnific');
 
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -2085,7 +2083,6 @@ class ProcessSnipWire extends Process implements Module {
 
         if (!empty($items)) {
             $modules->get('JqueryTableSorter')->use('widgets');
-            $modules->get('JqueryMagnific');
 
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
