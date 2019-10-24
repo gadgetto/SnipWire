@@ -71,10 +71,12 @@ class ProcessSnipWire extends Process implements Module {
     const assetsIncludeApexCharts = 4;
     const assetsIncludeItemLister = 8;
     const assetsIncludeAll = 15;
-    
-    const iconCustomer = 'user';
-    const iconProduct = 'cube';
+
+    const iconDasboard = 'bar-chart';
     const iconOrder = 'file-text';
+    const iconCustomer = 'user';
+    const iconProduct = 'tag';
+    const iconCart = 'shopping-cart';
     const iconSettings = 'gear';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
@@ -199,7 +201,7 @@ class ProcessSnipWire extends Process implements Module {
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Performance Chart');
-            $f->icon = 'bar-chart';
+            $f->icon = self::iconDasboard;
             $f->value = $chart;
             $f->columnWidth = 100;
             $f->collapsed = Inputfield::collapsedNever;
