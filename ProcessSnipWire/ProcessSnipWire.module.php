@@ -2020,8 +2020,10 @@ class ProcessSnipWire extends Process implements Module {
 
             foreach ($items as $item) {
                 $panelLink =
-                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '" class="pw-panel" data-panel-width="70%">' .
-                    wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
+                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
                 '</a>';
                 $table->row(array(
                     $panelLink,
