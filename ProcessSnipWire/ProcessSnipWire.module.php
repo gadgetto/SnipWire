@@ -74,6 +74,7 @@ class ProcessSnipWire extends Process implements Module {
 
     const iconDasboard = 'bar-chart';
     const iconOrder = 'file-text';
+    const iconSubscription = 'calendar';
     const iconCustomer = 'user';
     const iconProduct = 'tag';
     const iconAbandonedCart = 'shopping-cart';
