@@ -1482,7 +1482,6 @@ class ProcessSnipWire extends Process implements Module {
         return $form->render(); 
     }
 
-
     /**
      * Get markup for custom filter form buttons.
      *
