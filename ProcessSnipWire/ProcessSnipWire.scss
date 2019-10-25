@@ -25,6 +25,10 @@
     .MarkupPagerNav {
         float: right;
     }
+    .pw-table-responsive,
+    .uk-table {
+        margin-top: 0;
+    }
 }
 
 #PeriodPickerSelect {
@@ -150,11 +154,6 @@
     margin: 20px 0 20px 0;
 }
 
-#SnipwireDashboard {
-    
-    .pw-table-responsive,
-    .uk-table {
-        margin-top: 0;
     }
 }
 
