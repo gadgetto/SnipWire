@@ -679,7 +679,7 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $key The array key to be returned
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `limit` (int) Number of results to fetch. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 50]
      *  - `continuationToken` (string) The contionuation token for abandoned cart pager [default = null]
      *  - `timeRange` (string) A time range criteria for abandoned carts. (Possible values: Anytime, LessThan4Hours, LessThanADay, LessThanAWeek, LessThanAMonth)
      *  - `minimalValue` (float) The minimum total cart value of results to fetch
@@ -697,7 +697,7 @@ class SnipREST extends WireHttpExtended {
 
         $allowedOptions = array('limit', 'continuationToken', 'timeRange', 'minimalValue', 'email');
         $defaultOptions = array(
-            'limit' => 0,
+            'limit' => 50,
             'continuationToken' => null,
         );
         $options = array_merge(
