@@ -668,8 +668,8 @@ class SnipREST extends WireHttpExtended {
     /**
      * Get the abandoned carts from Snipcart dashboard as array.
      *
-     * The Snipcart API handles pagination different in this case!
-     * (need to use prev / next button instead of pagination)
+     * The Snipcart API has no pagination in this case!
+     * (only "Load more" button possible)
      *
      *   From the response use
      *     - `continuationToken`
@@ -679,8 +679,8 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $key The array key to be returned
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `limit` (int) Number of results to fetch. [default = 0]
+     *  - `continuationToken` (string) The contionuation token for abandoned cart pager [default = null]
      *  - `timeRange` (string) A time range criteria for abandoned carts. (Possible values: Anytime, LessThan4Hours, LessThanADay, LessThanAWeek, LessThanAMonth)
      *  - `minimalValue` (float) The minimum total cart value of results to fetch
      *  - `email` (string) The email of the customer who placed the order
@@ -695,10 +695,10 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
-        $allowedOptions = array('offset', 'limit', 'timeRange', 'minimalValue', 'email');
+        $allowedOptions = array('limit', 'continuationToken', 'timeRange', 'minimalValue', 'email');
         $defaultOptions = array(
-            'offset' => 0,
-            'limit' => 20,
+            'limit' => 0,
+            'continuationToken' => null,
         );
         $options = array_merge(
             $defaultOptions,
