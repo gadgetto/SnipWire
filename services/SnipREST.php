@@ -341,12 +341,12 @@ class SnipREST extends WireHttpExtended {
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
 
-        // Segmented orders cache (each query is cached self-contained)
+        // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrders . '.' . md5($query);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
-        // Try to get orders array from cache first
+        // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resourcePathOrders . $query);
         });
