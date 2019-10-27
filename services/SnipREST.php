@@ -46,6 +46,8 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixOrdersCount = 'OrdersCount';
     const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixOrderDetail = 'OrderDetail';
+    const cacheNamePrefixSubscriptions = 'Subscriptions';
+    const cacheNamePrefixSubscriptionDetail = 'SubscriptionDetail';
     const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
     const cacheNamePrefixCartAbandonedDetail = 'CartAbandonedDetail';
     const cacheNamePrefixCustomers = 'Customers';
@@ -90,12 +92,13 @@ class SnipREST extends WireHttpExtended {
         $texts = array(
             'no_headers' => __('Missing request headers for Snipcart REST connection.'),
             'connection_failed' => __('Connection to Snipcart failed'),
+            'cache_refreshed' => __('Snipcart cache refreshed.'),
             'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without.'),
+            'no_order_token' => __('Could not fetch order data - no order token provided.'),
+            'no_subscription_id' => __('Could not fetch subscription data - no subscription ID provided.'),
+            'no_cart_id' => __('Could not fetch cart data - no cart ID provided.'),
             'no_customer_id' => __('Could not fetch customer data - no customer ID provided.'),
             'no_product_id' => __('Could not fetch product data - no product ID provided.'),
-            'no_order_token' => __('Could not fetch order data - no order token provided.'),
-            'no_cart_id' => __('Could not fetch cart data - no cart ID provided.'),
-            'cache_refreshed' => __('Snipcart cache refreshed.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
@@ -414,6 +417,125 @@ class SnipREST extends WireHttpExtended {
 
         if ($response === false) $response = array();
         $data[self::resourcePathOrders . '/' . $token] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Get all subscriptions from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $key The array key to be returned
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `offset` (int) Number of results to skip. [default = 0] #required
+     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `status` (string) A criteria to return items having the specified status. (Possible values: Active, Paused, Canceled)
+     *  - `userDefinedPlanName` (string) A criteria to return items matching the specified plan name.
+     *  - `userDefinedCustomerNameOrEmail` (string) A criteria to return items belonging to the specified customer name or email.
+     *  - `from` (datetime) Filter subscriptions to return items that start on specified date.
+     *  - `to` (datetime) Filter subscriptions to return items that end on specified date.
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getSubscriptions($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+
+        $allowedOptions = array('offset', 'limit', 'status', 'userDefinedPlanName', 'userDefinedCustomerNameOrEmail', 'from', 'to');
+        $defaultOptions = array(
+            'offset' => 0,
+            'limit' => 20,
+        );
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        $query = '';
+        if (!empty($options)) $query = '?' . http_build_query($options);
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixSubscriptions . '.' . md5($query);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathSubscriptions . $query);
+        });
+
+        $response = ($key && isset($response[$key])) ? $response[$key] : $response;
+        if ($response === false) $response = array();
+        $data[self::resourcePathSubscriptions] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Get subscriptions items from Snipcart dashboard.
+     *
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `offset` (int) Number of results to skip. [default = 0] #required
+     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `status` (string) A criteria to return items having the specified status. (Possible values: Active, Paused, Canceled)
+     *  - `userDefinedPlanName` (string) A criteria to return items matching the specified plan name.
+     *  - `userDefinedCustomerNameOrEmail` (string) A criteria to return items belonging to the specified customer name or email.
+     *  - `from` (datetime) Filter subscriptions to return items that start on specified date.
+     *  - `to` (datetime) Filter subscriptions to return items that end on specified date.
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     * 
+     */
+    public function getSubscriptionsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        return $this->getSubscriptions('items', $options, $expires, $forceRefresh);
+    }
+
+    /**
+     * Get a single subscription from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $id The Snipcart item id of the subscription to be returned
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getSubscription($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_subscription_id'));
+            return false;
+        }
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixSubscriptions . '.' . md5($id);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathSubscriptions . '/' . $id);
+        });
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathSubscriptions . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
