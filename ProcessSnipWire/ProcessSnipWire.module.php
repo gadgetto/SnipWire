@@ -1140,7 +1140,7 @@ class ProcessSnipWire extends Process implements Module {
                 'urlsegment' => 'orders',
             ),
             'abandoned-carts' => array(
-                'label' => $this->_('Abandoned carts'),
+                'label' => $this->_('Abandoned Carts'),
                 'urlsegment' => 'abandoned-carts',
             ),
             'customers' => array(
