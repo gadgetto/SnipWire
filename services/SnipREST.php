@@ -22,37 +22,37 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'WireHttpExtended.php';
 class SnipREST extends WireHttpExtended {
 
     const apiEndpoint = 'https://app.snipcart.com/api/';
-    const resourcePathOrders = 'orders';
+    const resourcePathDataPerformance = 'data/performance'; // undocumented
     const resourcePathDataOrdersSales = 'data/orders/sales'; // undocumented
     const resourcePathDataOrdersCount = 'data/orders/count'; // undocumented
-    const resourcePathDataPerformance = 'data/performance'; // undocumented
+    const resourcePathOrders = 'orders';
     const resourcePathSubscriptions = 'subscriptions';
+    const resourcePathCartsAbandoned = 'carts/abandoned';
     const resourcePathCustomers = 'customers';
     const resourcePathDiscounts = 'discounts';
     const resourcePathProducts = 'products';
-    const resourcePathCartsAbandoned = 'carts/abandoned';
-    const resourcePathShippingMethods = 'shipping_methods';
     const resourcePathSettingsGeneral = 'settings/general'; // undocumented
     const resourcePathSettingsDomain = 'settings/domain';
     const resourcePathSettingsAllowedDomains = 'settings/alloweddomains';
+    const resourcePathShippingMethods = 'shipping_methods';
     const resourcePathRequestValidation = 'requestvalidation'; // + HTTP_X_SNIPCART_REQUESTTOKEN
     
     const cacheNamespace = 'SnipWire';
-    const cacheNamePrefixSettings = 'Settings';
+    const cacheExpireDefault = 900; // max. cache expiration time in seconds
+    
     const cacheNamePrefixDashboard = 'Dashboard';
-    const cacheNamePrefixProducts = 'Products';
-    const cacheNamePrefixProductDetail = 'ProductDetail';
-    const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
-    const cacheNamePrefixCartAbandonedDetail = 'CartAbandonedDetail';
+    const cacheNamePrefixPerformance = 'Performance';
+    const cacheNamePrefixOrdersSales = 'OrdersSales';
+    const cacheNamePrefixOrdersCount = 'OrdersCount';
     const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixOrderDetail = 'OrderDetail';
+    const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
+    const cacheNamePrefixCartAbandonedDetail = 'CartAbandonedDetail';
     const cacheNamePrefixCustomers = 'Customers';
     const cacheNamePrefixCustomerDetail = 'CustomerDetail';
-    const cacheNamePrefixPerformance = 'Performance';
-    const cacheNamePrefixOrdersCount = 'OrdersCount';
-    const cacheNamePrefixOrdersSales = 'OrdersSales';
-    
-    const cacheExpireDefault = 900; // max. cache expiration time in seconds
+    const cacheNamePrefixProducts = 'Products';
+    const cacheNamePrefixProductDetail = 'ProductDetail';
+    const cacheNamePrefixSettings = 'Settings';
 
     /**
      * Construct/initialize
