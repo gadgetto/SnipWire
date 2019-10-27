@@ -38,47 +38,9 @@ $resources = array(
         ),
     ),
 
-    /*
-    Snipcart product fields: https://docs.snipcart.com/configuration/product-definition
-    
-    Required fields:
-    ================
-    
-    - data-item-id: string Unique Stock Keeping Unit - SKU (will be prefilled with page ID) 
-    - data-item-name: string (ProcessWire Page title by default - can be changed to any text field type)
-    - data-item-price: string (Will be created by selecting the desired currency(s) in module config form)
-    - data-item-url: string (URL where Snipcart crawler will find the Buy button)
-    
-    Optional fields:
-    ================
-    
-    - data-item-description: string (Short product description, visible in cart and during checkout)
-    - data-item-image: string (Thumbnail of product in the cart. This must be an absolute URL.)
-    - data-item-categories: string (The categories this product belongs to. Example: data-item-categories="cat1, cat2, cat3")
-    - data-item-weight: integer (Required only if using shipping rates. Using grams as weight units.)
-    - data-item-width: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
-    - data-item-length: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
-    - data-item-height: integer? (Using centimeters as dimension unit and this attribute is required to use Australia Post)
-    - data-item-shippable: boolean (Setting this to false, the product will be flagged as an item that can not be shipped)
-    - data-item-quantity: integer (Set a default quantity for the item that you are about to add.)
-    - data-item-quantity-step: integer (The quantity of a product will increment by this value.)
-    - data-item-max-quantity: integer (Maximum allowed quantity of product)
-    - data-item-min-quantity: integer (Minimum allowed quantity for product)
-    - data-item-taxable: boolean (Set to false to exclude item from the taxes calculation. Default value is true.)
-    - data-item-taxes: string (Using this option, you can define which tax will be applied on this product)
-    - data-item-stackable: boolean (Setting this to false, adding the same product to the cart will result in two distinct items in the cart, instead of simply increasing the quantity)
-    data-item-file-guid: 
-    data-item-payment-interval: 
-    data-item-payment-interval-count: 
-    data-item-payment-trial: 
-    data-item-recurring-shipping: boolean
-
-    Will be set by SnipCart automatically (not defined as PW fields)
-    ================================================================
-    
-    - data-item-has-taxes-included: boolean (Set to true if the taxes you defined are included in your product prices.)
-    - data-item-metadata: json-object (Example usage: data-item-metadata='{"key": "value"}')
-    */
+    // Snipcart product fields:
+    // @see: https://docs.snipcart.com/v3/setup/products
+    // @see: /MarkupSnipWire/MarkupSnipWire.module.php for product attributes definitions
 
     'fields' => array(
         // `title` is an alredy available field which only needs to be configured in template context
@@ -161,56 +123,6 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
-        'snipcart_item_quantity' => array(
-            'name' => 'snipcart_item_quantity',
-            'type' => 'FieldtypeInteger',
-            'label' => __('Default Quantity'),
-            'description' => __('The default quantity for the product that will be added to cart.'),
-            'notes' => __('Integer number (min value = 1).'),
-            'defaultValue' => 1,
-            'min' => 1,
-            'inputType' => 'number',
-            'required' => false,
-            'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
-        ),
-        'snipcart_item_quantity_step' => array(
-            'name' => 'snipcart_item_quantity_step',
-            'type' => 'FieldtypeInteger',
-            'label' => __('Quantity Step'),
-            'description' => __('The quantity of a product will increment by this value.'),
-            'notes' => __('Integer number (min value = 1).'),
-            'defaultValue' => 1,
-            'min' => 1,
-            'inputType' => 'number',
-            'required' => false,
-            'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
-        ),
-        'snipcart_item_max_quantity' => array(
-            'name' => 'snipcart_item_max_quantity',
-            'type' => 'FieldtypeInteger',
-            'label' => __('Maximum Quantity'),
-            'description' => __('Set the maximum allowed quantity for this product.'),
-            'notes' => __('Leave empty for no limit.'),
-            'min' => 1,
-            'inputType' => 'number',
-            'required' => false,
-            'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
-        ),
-        'snipcart_item_min_quantity' => array(
-            'name' => 'snipcart_item_min_quantity',
-            'type' => 'FieldtypeInteger',
-            'label' => __('Minimum Quantity'),
-            'description' => __('Set the minimum allowed quantity for this product.'),
-            'notes' => __('Leave empty for no limit.'),
-            'min' => 1,
-            'inputType' => 'number',
-            'required' => false,
-            'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
-        ),
         'snipcart_item_weight' => array(
             'name' => 'snipcart_item_weight',
             'type' => 'FieldtypeInteger',
@@ -259,12 +171,62 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
-        'snipcart_item_shippable' => array(
-            'name' => 'snipcart_item_shippable',
+        'snipcart_item_quantity' => array(
+            'name' => 'snipcart_item_quantity',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Default Quantity'),
+            'description' => __('The default quantity for the product that will be added to cart.'),
+            'notes' => __('Integer number (min value = 1).'),
+            'defaultValue' => 1,
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_max_quantity' => array(
+            'name' => 'snipcart_item_max_quantity',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Maximum Quantity'),
+            'description' => __('Set the maximum allowed quantity for this product.'),
+            'notes' => __('Leave empty for no limit.'),
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_min_quantity' => array(
+            'name' => 'snipcart_item_min_quantity',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Minimum Quantity'),
+            'description' => __('Set the minimum allowed quantity for this product.'),
+            'notes' => __('Leave empty for no limit.'),
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_quantity_step' => array(
+            'name' => 'snipcart_item_quantity_step',
+            'type' => 'FieldtypeInteger',
+            'label' => __('Quantity Step'),
+            'description' => __('The quantity of a product will increment by this value.'),
+            'notes' => __('Integer number (min value = 1).'),
+            'defaultValue' => 1,
+            'min' => 1,
+            'inputType' => 'number',
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+        ),
+        'snipcart_item_stackable' => array(
+            'name' => 'snipcart_item_stackable',
             'type' => 'FieldtypeCheckbox',
-            'label' => __('Shippable'),
-            'label2' => __('Product is shippable'),
-            'description' => __('Uncheck, if this product should be flagged as not shippable.'),
+            'label' => __('Stackable'),
+            'label2' => __('Product is stackable'),
+            'description' => __('Uncheck, if this product should be added to cart in distinct items instead of increasing quantity.'),
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
@@ -289,12 +251,12 @@ $resources = array(
             'taxesType' => 1, // = taxesTypeProducts
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
-        'snipcart_item_stackable' => array(
-            'name' => 'snipcart_item_stackable',
+        'snipcart_item_shippable' => array(
+            'name' => 'snipcart_item_shippable',
             'type' => 'FieldtypeCheckbox',
-            'label' => __('Stackable'),
-            'label2' => __('Product is stackable'),
-            'description' => __('Uncheck, if this product should be added to cart in distinct items instead of increasing quantity.'),
+            'label' => __('Shippable'),
+            'label2' => __('Product is shippable'),
+            'description' => __('Uncheck, if this product should be flagged as not shippable.'),
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names

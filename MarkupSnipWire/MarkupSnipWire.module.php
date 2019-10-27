@@ -237,8 +237,68 @@ class MarkupSnipWire extends WireData implements Module {
      *  - `attr` (array): Any additional tag attributes to add, as attr => value (default: 'title' => 'Add to cart').
      *  - `label` (string): The button or link label (default='Add to cart').
      *  - `type` (integer) The anchor type - can be button or link [default=self::snicpartAnchorTypeButton]
-     *
      * @return string $out The HTML for a snipcart buy button or link (HTML button | a tag)
+     *
+     * @see: https://docs.snipcart.com/v3/setup/products
+     *
+     * Mandatory product attributes:
+     * =============================
+     * 
+     * - data-item-name: string ProcessWire Page title by default - can be changed to any text field type.
+     * - data-item-id: string Unique Stock Keeping Unit - SKU (will be prefilled with page ID).
+     * - data-item-price: number Will be created by selecting the desired currency(s) in module config form.
+     * - data-item-url: string URL where Snipcart crawler will find the Buy button.
+     *   *) Will be set by SnipCart automatically (not defined as PW field)
+     * - data-item-description: string Short product description, visible in cart and during checkout.
+     * - data-item-image: string Thumbnail URL of product in cart. This must be an absolute URL.
+     * 
+     * Optional product attributes:
+     * ============================
+     * 
+     * Product information:
+     * 
+     * - data-item-categories: string[] The categories this product belongs to. Example: data-item-categories="cat1, cat2, cat3"
+     * - data-item-metadata: json-object Metadata for the product. Example: data-item-metadata='{"key": "value"}'
+     *   *) Will be set by SnipCart automatically (not defined as PW field)
+     * 
+     * Product dimensions:
+     * 
+     * - data-item-weight: number Using grams as weight units. This is mandatory if you use any integrated shipping provider.
+     * - data-item-width: number Using centimeters as dimension unit. Will be used if you enabled an integrated shipping provider.
+     * - data-item-length: number Using centimeters as dimension unit. Will be used if you enabled an integrated shipping provider.
+     * - data-item-height: number Using centimeters as dimension unit. Will be used if you enabled an integrated shipping provider.
+     * 
+     * Product quantity:
+     * 
+     * - data-item-quantity: number Set a default quantity for the item that you are about to add.
+     * - data-item-max-quantity: number Maximum allowed quantity of product
+     * - data-item-min-quantity: number Minimum allowed quantity for product
+     * - data-item-quantity-step: integer The quantity of a product will increment by this value.
+     * - data-item-stackable: boolean Setting this to false, adding the same product to the cart will result in two distinct items in the cart, instead of simply increasing the quantity.
+     * 
+     * Product taxes:
+     * 
+     * - data-item-taxable: boolean Set to false to exclude item from the taxes calculation. Default is true.
+     * - data-item-taxes: string[] Using this option, you can define which tax will be applied on this product.
+     * - data-item-has-taxes-included: boolean Set to true if the taxes you defined are included in your product prices.
+     *   *) Will be set by SnipCart automatically (not defined as PW field)
+     * 
+     * Digital goods:
+     * 
+     *   data-item-file-guid: 
+     * 
+     * Subscriptions and recurring payments:
+     * 
+     *   data-item-payment-interval: 
+     *   data-item-payment-interval-count: 
+     *   data-item-payment-trial: 
+     *   data-item-recurring-shipping: boolean
+     *   data-item-cancellation-action:
+     *   data-item-pausing-action:
+     * 
+     * Others:
+     * 
+     * - data-item-shippable: boolean Setting this to false, the product will be flagged as an item that can not be shipped.
      *
      */
     public function anchor(Page $product, $options = array()) {
@@ -275,40 +335,38 @@ class MarkupSnipWire extends WireData implements Module {
         }
 
         // Required Snipcart data-item-* properties
-        
-        $out .= ' data-item-id="' . $product->snipcart_item_id . '"';
+        // ========================================
+
         $out .= ' data-item-name="' . $this->getProductName($product, $this->snipwireConfig) . '"';
-        $out .= ' data-item-url="' . $this->getProductUrl($product, $this->snipwireConfig) . '"';
+        $out .= ' data-item-id="' . $product->snipcart_item_id . '"';
         $out .= " data-item-price='" . $this->getProductPrice($product, $this->snipwireConfig) . "'";
-        
-        // Optional Snipcart data-item-* properties
+        $out .= ' data-item-url="' . $this->getProductUrl($product, $this->snipwireConfig) . '"';
 
         if ($product->snipcart_item_description) {
             $out .= ' data-item-description="' . $product->snipcart_item_description . '"';
         }
-        
+
         if ($productThumb = $this->getProductThumb($product, $this->snipwireConfig)) {
             $out .= ' data-item-image="' . $productThumb->httpUrl . '"';
         }
+
+        // Optional Snipcart data-item-* properties
+        // ========================================
 
         if ($productCategories = $this->getProductCategoriesString($product, $this->snipwireConfig)) {
             $out .= ' data-item-categories="' . $productCategories . '"';
         }
 
-        $defaultQuantity = $product->snipcart_item_quantity ? $product->snipcart_item_quantity : 1;
-        $out .= ' data-item-quantity="' . $defaultQuantity . '"';
-        
-        if ($product->snipcart_item_quantity_step) {
-            $out .= ' data-item-quantity-step="' . $product->snipcart_item_quantity_step . '"';
-        }
-
-        if ($product->snipcart_item_max_quantity) {
-            $out .= ' data-item-max-quantity="' . $product->snipcart_item_max_quantity . '"';
-        }
-
-        if ($product->snipcart_item_min_quantity) {
-            $out .= ' data-item-min-quantity="' . $product->snipcart_item_min_quantity . '"';
-        }
+        // Metadata to be stored with each product (PW page related data)
+        $meta = array(
+            'id' => $product->id,
+            'created' => $product->created,
+            'modified' => $product->modified,
+            'published' => $product->published,
+            'created_users_id' => $product->created_users_id,
+            'modified_users_id' => $product->modified_users_id,
+        );
+        $out .= " data-item-metadata='" . wireEncodeJSON($meta) . "'";
 
         if ($product->snipcart_item_weight) {
             $out .= ' data-item-weight="' . $product->snipcart_item_weight . '"';
@@ -326,28 +384,19 @@ class MarkupSnipWire extends WireData implements Module {
             $out .= ' data-item-height="' . $product->snipcart_item_height . '"';
         }
 
-        if ($product->hasField('snipcart_item_shippable')) {
-            $shippable = $product->snipcart_item_shippable ? 'true' : 'false';
-        } else {
-            $shippable = 'true';
-        }
-        $out .= ' data-item-shippable="' . $shippable . '"';
-
-        if ($product->hasField('snipcart_item_taxable')) {
-            $taxable = $product->snipcart_item_taxable ? 'true' : 'false';
-        } else {
-            $taxable = 'true';
-        }
-        $out .= ' data-item-taxable="' . $taxable . '"';
-
-        // This is a global property and is set for all products in SnipWire config editor
-        if ($this->snipwireConfig->taxes_included) {
-            $out .= ' data-item-has-taxes-included="true"';
+        $defaultQuantity = $product->snipcart_item_quantity ? $product->snipcart_item_quantity : 1;
+        $out .= ' data-item-quantity="' . $defaultQuantity . '"';
+        
+        if ($product->snipcart_item_max_quantity) {
+            $out .= ' data-item-max-quantity="' . $product->snipcart_item_max_quantity . '"';
         }
 
-        // Only a single tax per product for now (Snipcart supports multiple taxes per product)
-        if ($product->snipcart_item_taxes) {
-            $out .= ' data-item-taxes="' . $product->snipcart_item_taxes . '"';
+        if ($product->snipcart_item_min_quantity) {
+            $out .= ' data-item-min-quantity="' . $product->snipcart_item_min_quantity . '"';
+        }
+
+        if ($product->snipcart_item_quantity_step) {
+            $out .= ' data-item-quantity-step="' . $product->snipcart_item_quantity_step . '"';
         }
 
         if ($product->hasField('snipcart_item_stackable')) {
@@ -357,16 +406,29 @@ class MarkupSnipWire extends WireData implements Module {
         }
         $out .= ' data-item-stackable="' . $stackable . '"';
 
-        // Metadata to be stored with each product (PW page related data)
-        $meta = array(
-            'id' => $product->id,
-            'created' => $product->created,
-            'modified' => $product->modified,
-            'published' => $product->published,
-            'created_users_id' => $product->created_users_id,
-            'modified_users_id' => $product->modified_users_id,
-        );
-        $out .= " data-item-metadata='" . wireEncodeJSON($meta) . "'";
+        if ($product->hasField('snipcart_item_taxable')) {
+            $taxable = $product->snipcart_item_taxable ? 'true' : 'false';
+        } else {
+            $taxable = 'true';
+        }
+        $out .= ' data-item-taxable="' . $taxable . '"';
+
+        // Only a single tax per product for now (Snipcart supports multiple taxes per product)
+        if ($product->snipcart_item_taxes) {
+            $out .= ' data-item-taxes="' . $product->snipcart_item_taxes . '"';
+        }
+
+        // This is a global property and is set for all products in SnipWire config editor
+        if ($this->snipwireConfig->taxes_included) {
+            $out .= ' data-item-has-taxes-included="true"';
+        }
+
+        if ($product->hasField('snipcart_item_shippable')) {
+            $shippable = $product->snipcart_item_shippable ? 'true' : 'false';
+        } else {
+            $shippable = 'true';
+        }
+        $out .= ' data-item-shippable="' . $shippable . '"';
 
         $out .= '>';
         $out .= $options['label'];
