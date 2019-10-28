@@ -951,7 +951,6 @@ class SnipREST extends WireHttpExtended {
             return $this->getJSON(self::apiEndpoint . self::resourcePathDiscounts);
         });
 
-        $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
         $data[self::resourcePathDiscounts] = array(
             WireHttpExtended::resultKeyContent => $response,
