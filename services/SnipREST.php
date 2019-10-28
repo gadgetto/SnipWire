@@ -29,8 +29,8 @@ class SnipREST extends WireHttpExtended {
     const resourcePathSubscriptions = 'subscriptions';
     const resourcePathCartsAbandoned = 'carts/abandoned';
     const resourcePathCustomers = 'customers';
-    const resourcePathDiscounts = 'discounts';
     const resourcePathProducts = 'products';
+    const resourcePathDiscounts = 'discounts';
     const resourcePathSettingsGeneral = 'settings/general'; // undocumented
     const resourcePathSettingsDomain = 'settings/domain';
     const resourcePathSettingsAllowedDomains = 'settings/alloweddomains';
@@ -54,6 +54,8 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixCustomerDetail = 'CustomerDetail';
     const cacheNamePrefixProducts = 'Products';
     const cacheNamePrefixProductDetail = 'ProductDetail';
+    const cacheNamePrefixDiscounts = 'Discounts';
+    const cacheNamePrefixDiscountDetail = 'DiscountDetail';
     const cacheNamePrefixSettings = 'Settings';
 
     /**
@@ -99,6 +101,7 @@ class SnipREST extends WireHttpExtended {
             'no_cart_id' => __('Could not fetch cart data - no cart ID provided.'),
             'no_customer_id' => __('Could not fetch customer data - no customer ID provided.'),
             'no_product_id' => __('Could not fetch product data - no product ID provided.'),
+            'no_discount_id' => __('Could not fetch discount data - no discount ID provided.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
@@ -912,6 +915,85 @@ class SnipREST extends WireHttpExtended {
 
         if ($response === false) $response = array();
         $data[self::resourcePathProducts . '/' . $id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Get discounts from Snipcart dashboard as array.
+     *
+     * The Snipcart API has no pagination in this case!
+     * The Snipcart API has no options for query!
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getDiscounts($expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixDiscounts;
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathDiscounts);
+        });
+
+        $response = ($key && isset($response[$key])) ? $response[$key] : $response;
+        if ($response === false) $response = array();
+        $data[self::resourcePathDiscounts] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Get a single discount from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $id The Snipcart id of the discount to be returned
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getDiscount($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_discount_id'));
+            return false;
+        }
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixDiscountDetail . '.' . md5($id);
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
+            return $this->getJSON(self::apiEndpoint . self::resourcePathDiscounts . '/' . $id);
+        });
+
+        if ($response === false) $response = array();
+        $data[self::resourcePathDiscounts . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
