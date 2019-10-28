@@ -133,11 +133,11 @@ class ProcessSnipWire extends Process implements Module {
         $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . '/';
 
         $this->abandonedCartsTimeRanges = array(
-            'Anytime' =>  __('Anytime'),
-            'LessThan4Hours' => __('Last 4 hours'),
-            'LessThanADay' => __('Last 24 hours'),
-            'LessThanAWeek' => __('Last 7 days'),
-            'LessThanAMonth' => __('Last 30 days'),
+            'Anytime' =>  $this->_('Anytime'),
+            'LessThan4Hours' => $this->_('Last 4 hours'),
+            'LessThanADay' => $this->_('Last 24 hours'),
+            'LessThanAWeek' => $this->_('Last 7 days'),
+            'LessThanAMonth' => $this->_('Last 30 days'),
         );
     }    
 
