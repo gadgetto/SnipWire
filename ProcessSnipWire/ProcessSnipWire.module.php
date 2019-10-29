@@ -3211,6 +3211,8 @@ class ProcessSnipWire extends Process implements Module {
                     $rebate = $item['rate'] . '%';
                 }
 
+                $code = $item['code'] ? $item['code'] : '-';
+
                 $usages =
                     $item['numberOfUsages'] . ' ' .
                     $this->_('of') .
@@ -3221,7 +3223,7 @@ class ProcessSnipWire extends Process implements Module {
                     $condition,
                     $action,
                     $rebate,
-                    $item['code'],
+                    $code,
                     $usages,
                     wireDate('Y-m-d', $item['expires']),
                 ));
