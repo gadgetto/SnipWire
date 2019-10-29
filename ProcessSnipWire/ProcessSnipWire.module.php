@@ -59,6 +59,11 @@ class ProcessSnipWire extends Process implements Module {
                     'icon' => self::iconProduct, 
                 ),
                 array(
+                    'url' => 'discounts/', 
+                    'label' => __('Discounts'), 
+                    'icon' => self::iconDiscount, 
+                ),
+                array(
                     'url' => 'settings/', 
                     'label' => __('Settings'), 
                     'icon' => self::iconSettings, 
@@ -104,6 +109,15 @@ class ProcessSnipWire extends Process implements Module {
     /**var array $abandonedCartsTimeRanges The abandoned carts time ranges */
     public $abandonedCartsTimeRanges = array();
 
+    /**var array $discountsStatuses The discounts statuses */
+    public $discountsStatuses = array();
+
+    /**var array $discountsTypes The discounts types */
+    public $discountsTypes = array();
+
+    /**var array $discountsTriggers The discounts triggers */
+    public $discountsTriggers = array();
+
     /**
      * Initalize module config variables (properties)
      *
@@ -138,6 +152,33 @@ class ProcessSnipWire extends Process implements Module {
             'LessThanADay' => $this->_('Last 24 hours'),
             'LessThanAWeek' => $this->_('Last 7 days'),
             'LessThanAMonth' => $this->_('Last 30 days'),
+        );
+        $this->discountsStatuses = array(
+            'All' =>  $this->_('All Discounts'),
+            'Active' => $this->_('Active'),
+            'Archived' => $this->_('Archived'),
+        );
+        $this->discountsTypes = array(
+            'FixedAmount' => $this->_('Fixed amount will be deducted from the order'),
+            'Rate' => $this->_('Percentage rebate on the total of the order'),
+            'AlternatePrice' => $this->_('Discount price provided by an alternate price list'),
+            'Shipping' => $this->_('Discount on the shipping'),
+            'FixedAmountOnItems' => $this->_('Fixed amount will be deducted on specified products'),
+            'RateOnItems' => $this->_('Rate will be deducted on specified products'),
+            'FixedAmountOnCategory' => $this->_('Fixed amount will be deducted on items of specified categories'),
+            'RateOnCategory' => $this->_('Rate will be deducted on products of specified categories'),
+            'GetFreeItems' => $this->_('Free products when customer buys a specified quantity of a product'),
+            'AmountOnSubscription' => $this->_('Fixed amount on subscription'),
+            'RateOnSubscription' => $this->_('Rate on subscription'),
+        );
+        $this->discountsTriggers = array(
+            'Code' => $this->_('Enter a discount code'),
+            'Product' => $this->_('Specific product is added'),
+            'Total' => $this->_('Order reaches a specific amount'),
+            'QuantityOfAProduct' => $this->_('Product is added a number of times'),
+            'CartContainsOnlySpecifiedProducts' => $this->_('Cart only contains specified products'),
+            'CartContainsSomeSpecifiedProducts' => $this->_('Cart contains some of the specified products'),
+            'CartContainsAtLeastAllSpecifiedProducts' => $this->_('Cart contains at least all specified products'),
         );
     }    
 
@@ -933,6 +974,162 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * The SnipWire Snipcart Discounts page.
+     *
+     * @return page markup
+     *
+     */
+    public function ___executeDiscounts() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sanitizer = $this->wire('sanitizer');
+        $session = $this->wire('session');
+        $sniprest = $this->wire('sniprest');
+        
+        $this->browserTitle($this->_('Snipcart Discounts'));
+        $this->headline($this->_('Snipcart Discounts'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+
+        $forceRefresh = false;
+
+        $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
+            $forceRefresh = true;
+        }
+
+        $status = $sanitizer->text($input->status);
+        $name = $sanitizer->text($input->name);
+        $code = $sanitizer->text($input->code);
+        $filter = array(
+            'status' => $status ? $status : 'All',
+            'name' => $name ? $name : '',
+            'code' => $code ? $code : '',
+        );
+
+        // Currently there is no pagination available as Snipcart has no limit & offset params in this case.
+        // @todo: create an alternative way to use pagination here
+
+        $request = $sniprest->getDiscounts(
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
+
+        $discounts = isset($request[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent]
+            : array();
+
+        // As discounts have no query params for REST, we need to search in the result set instead
+        if (!empty($discounts) && ($status == 'Archived' || $status == 'Active')) {
+            $archived = ($status == 'Archived') ? true : false;
+            $discounts = array_filter($discounts, function ($discounts) use ($archived) {
+                return ($discounts['archived'] == $archived);
+            });
+        }
+        if (!empty($discounts) && $name) {
+            $discounts = array_filter($discounts, function ($discounts) use ($name) {
+                // Compare case insensitive and part of string
+                return (stripos($discounts['name'], $name) !== false);
+            });
+        }
+        if (!empty($discounts) && $code) {
+            $discounts = array_filter($discounts, function ($discounts) use ($code) {
+                // Compare case sensitive + full string
+                return ($discounts['code'] == $code);
+            });
+        }
+
+        $items = $discounts ? $discounts : array();
+
+        $out = $this->_buildDiscountsFilter($filter);
+
+        $headline = $this->_('Discounts');
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Discounts');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = self::iconDiscount;
+        $f->value = $this->_wrapItemListerHeadline($headline);
+        $f->value .= $this->_renderTableDiscounts($items);
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $out .= $f->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = $this->currentUrl . '?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= '<div class="ItemListerButtons">' . $btn->render() . '</div>';
+
+        return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
+     * The SnipWire Discount detail page.
+     *
+     * @return page markup
+     *
+     */
+    public function ___executeDiscount() {
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $config = $this->wire('config');
+        $input = $this->wire('input');
+        $sniprest = $this->wire('sniprest');
+        
+        $id = $input->urlSegment(2); // Get Snipcart discount id
+        
+        $this->browserTitle($this->_('Snipcart Discount'));
+        $this->headline($this->_('Snipcart Discount'));
+
+        $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
+        $this->breadcrumb($this->snipWireRootUrl . 'discounts/', $this->_('Snipcart Discounts'));
+        
+        if (!$user->hasPermission('snipwire-dashboard')) {
+            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            return '';
+        }
+        
+        $request = $sniprest->getDiscount($id);
+        $discount = isset($request[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $request[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+            : array();
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Snipcart Discount');
+        $f->skipLabel = Inputfield::skipLabelHeader;
+        $f->icon = self::iconDiscount;
+        $f->value = $this->_renderDetailDiscount($discount);
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $out = $f->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->id = 'refresh-data';
+        $btn->href = $this->currentUrl . '?action=refresh';
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $out .= $btn->render();
+
+        return $this->_wrapDashboardOutput($out);
+    }
+
+    /**
      * Redirect to SniWire module settings.
      *
      * @return page Markup
@@ -1150,6 +1347,10 @@ class ProcessSnipWire extends Process implements Module {
             'products' => array(
                 'label' => $this->_('Products'),
                 'urlsegment' => 'products',
+            ),
+            'discounts' => array(
+                'label' => $this->_('Discounts'),
+                'urlsegment' => 'discounts',
             ),
             'settings' => array(
                 'label' => wireIconMarkup(self::iconSettings),
@@ -1731,6 +1932,87 @@ class ProcessSnipWire extends Process implements Module {
         $form->add($fieldset);
 
         return $form->render(); 
+    }
+
+    /**
+     * Build the discounts filter form.
+     *
+     * @param array $filter The current filter values
+     * @return markup InputfieldForm
+     *
+     */
+    private function _buildDiscountsFilter($filter) {
+        $modules = $this->wire('modules');
+        $config = $this->wire('config');
+
+        $filterSettings = array(
+            'form' => '#DiscountsFilterForm',
+        );
+
+        // Hand over configuration to JS
+        $config->js('filterSettings', $filterSettings);
+
+        /** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm');
+        $form->attr('id', 'DiscountsFilterForm');
+        $form->method = 'post';
+        $form->action = $this->currentUrl;
+
+            /** @var InputfieldFieldset $fsSnipWire */
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->label = $this->_('Search for Discounts');
+            $fieldset->icon = 'search';
+            if (
+                ($filter['status'] && $filter['status'] != 'All') ||
+                $filter['name'] ||
+                $filter['code']
+            ) {
+                $fieldset->collapsed = Inputfield::collapsedNo;
+            } else {
+                $fieldset->collapsed = Inputfield::collapsedYes;
+            }
+
+                /** @var InputfieldSelect $f */
+                $f = $modules->get('InputfieldSelect');
+                $f->attr('name', 'status');
+                $f->label = $this->_('Status');
+                $f->value = $filter['status'];
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+                $f->required = true;
+                $f->addOptions($this->discountsStatuses);
+
+            $fieldset->add($f);
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'name');
+                $f->label = $this->_('Name');
+                $f->value = $filter['name'];
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 34;
+
+            $fieldset->add($f);
+
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->attr('name', 'code');
+                $f->label = $this->_('Code');
+                $f->value = $filter['code'];
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 33;
+
+            $fieldset->add($f);
+
+                $buttonsWrapper = $modules->get('InputfieldMarkup');
+                $buttonsWrapper->contentClass = 'ItemsFilterButtonWrapper';
+                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
+
+            $fieldset->add($buttonsWrapper);
+
+        $form->add($fieldset);
+
+        return $form->render();
     }
 
     /**
@@ -2517,6 +2799,106 @@ class ProcessSnipWire extends Process implements Module {
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No product selected') .
+            '</div>';
+        }
+
+        return $out;
+    }
+
+    /**
+     * Render the discounts table.
+     *
+     * @param array $items
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
+     *
+     */
+    private function _renderTableDiscounts($items) {
+        $modules = $this->wire('modules');
+
+        if (!empty($items)) {
+            $modules->get('JqueryTableSorter')->use('widgets');
+
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->setID('snipwire-discounts-table');
+            $table->setClass('ItemLister');
+            $table->setSortable(false);
+            $table->setResizable(true);
+            $table->setResponsive(true);
+            $table->headerRow(array(
+                $this->_('Name'),
+                $this->_('Condition'),
+                $this->_('Action'),
+                $this->_('Rebate'),
+                $this->_('Code'),
+                $this->_('Usages'),
+                $this->_('Expires'),
+            ));
+
+            foreach ($items as $item) {
+                $panelLink =
+                '<a href="' . $this->snipWireRootUrl . 'discount/' . $item['id'] . '"
+                    class="pw-panel"
+                    data-panel-width="70%">' .
+                        wireIconMarkup(self::iconDiscount, 'fa-right-margin') . $item['name'] .
+                '</a>';
+
+                $condition = $this->discountsTriggers[$item['trigger']];
+                $action = $this->discountsTypes[$item['type']];
+
+                $rebate = '';
+                if ($item['amount']) {
+                    $rebate = CurrencyFormat::format($item['amount'], $item['currency']);
+                } elseif ($item['rate']) {
+                    $rebate = $item['rate'] . '%';
+                }
+
+                $usages =
+                    $item['numberOfUsages'] . ' ' .
+                    $this->_('of') .
+                    ' ' . $item['maxNumberOfUsages'];
+
+                $table->row(array(
+                    $panelLink,
+                    $condition,
+                    $action,
+                    $rebate,
+                    $item['code'],
+                    $usages,
+                    wireDate('Y-m-d', $item['expires']),
+                ));
+            }
+            $out = $table->render();
+        } else {
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No discounts found') .
+            '</div>';
+        }
+        return '<div class="ItemListerTable">' . $out . '</div>';
+    }
+
+    /**
+     * Render the discount detail view.
+     *
+     * @param array $item
+     * @return markup 
+     *
+     */
+    private function _renderDetailDiscount($item) {
+        $modules = $this->wire('modules');
+
+        if (!empty($item)) {
+
+
+            $out = '<pre>' . print_r($item, true) . '</pre>';
+
+
+        } else {
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No discount selected') .
             '</div>';
         }
 
