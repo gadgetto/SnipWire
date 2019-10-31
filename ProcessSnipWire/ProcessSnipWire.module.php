@@ -3187,7 +3187,7 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Name'),
                 $this->_('Condition'),
                 $this->_('Action'),
-                $this->_('Rebate'),
+                $this->_('Currency'),
                 $this->_('Code'),
                 $this->_('Usages'),
                 $this->_('Expires'),
@@ -3202,27 +3202,37 @@ class ProcessSnipWire extends Process implements Module {
                 '</a>';
 
                 $condition = $this->discountsTriggers[$item['trigger']];
+                if ($item['trigger'] == 'Total') {
+                    $condition .= ': <strong>' . CurrencyFormat::format($item['totalToReach'], $item['currency']) . '</strong>';
+                }
+                
                 $action = $this->discountsTypes[$item['type']];
-
-                $rebate = '';
-                if ($item['amount']) {
-                    $rebate = CurrencyFormat::format($item['amount'], $item['currency']);
-                } elseif ($item['rate']) {
-                    $rebate = $item['rate'] . '%';
+                if (strpos(strtolower($item['type']), 'amount') !== false) {
+                    $amount = $item['amount']
+                        ? CurrencyFormat::format($item['amount'], $item['currency'])
+                        : $this->_('(missing value)');
+                    $action .= ': <strong>' . $amount . '</strong>';
+                } elseif (strpos(strtolower($item['type']), 'rate') !== false) {
+                    $rate = $item['rate']
+                        ? $item['rate'] . '%'
+                        : $this->_('(missing value)');
+                    $action .= ': <strong>' . $rate . '</strong>';
                 }
 
+                $currency = !empty($item['currency']) ? $item['currency'] : '-';
+                $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+                $currencyLabel = isset($supportedCurrencies[$currency])
+                    ? $supportedCurrencies[$currency]
+                    : $currency;
+                
                 $code = $item['code'] ? $item['code'] : '-';
-
-                $usages =
-                    $item['numberOfUsages'] . ' ' .
-                    $this->_('of') .
-                    ' ' . $item['maxNumberOfUsages'];
+                $usages = $item['numberOfUsages'] . ' ' . $this->_('of') . ' ' . $item['maxNumberOfUsages'];
 
                 $table->row(array(
                     $panelLink,
                     $condition,
                     $action,
-                    $rebate,
+                    $currencyLabel,
                     $code,
                     $usages,
                     wireDate('Y-m-d', $item['expires']),
