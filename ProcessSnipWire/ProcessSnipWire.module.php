@@ -3201,15 +3201,17 @@ class ProcessSnipWire extends Process implements Module {
                         wireIconMarkup(self::iconDiscount, 'fa-right-margin') . $item['name'] .
                 '</a>';
 
+                $currency = !empty($item['currency']) ? $item['currency'] : '-';
+
                 $condition = $this->discountsTriggers[$item['trigger']];
                 if ($item['trigger'] == 'Total') {
-                    $condition .= ': <strong>' . CurrencyFormat::format($item['totalToReach'], $item['currency']) . '</strong>';
+                    $condition .= ': <strong>' . CurrencyFormat::format($item['totalToReach'], $currency) . '</strong>';
                 }
                 
                 $action = $this->discountsTypes[$item['type']];
                 if (strpos(strtolower($item['type']), 'amount') !== false) {
                     $amount = $item['amount']
-                        ? CurrencyFormat::format($item['amount'], $item['currency'])
+                        ? CurrencyFormat::format($item['amount'], $currency)
                         : $this->_('(missing value)');
                     $action .= ': <strong>' . $amount . '</strong>';
                 } elseif (strpos(strtolower($item['type']), 'rate') !== false) {
@@ -3219,7 +3221,6 @@ class ProcessSnipWire extends Process implements Module {
                     $action .= ': <strong>' . $rate . '</strong>';
                 }
 
-                $currency = !empty($item['currency']) ? $item['currency'] : '-';
                 $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
                 $currencyLabel = isset($supportedCurrencies[$currency])
                     ? $supportedCurrencies[$currency]
