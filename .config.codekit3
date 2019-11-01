@@ -360,6 +360,54 @@
 		"oS": 3,
 		"uL": 1
 		},
+	"/ProcessSnipWire/sections/AbandonedCarts.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/ProcessSnipWire/sections/AbandonedCarts.php",
+		"oF": 0
+		},
+	"/ProcessSnipWire/sections/Customers.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/ProcessSnipWire/sections/Customers.php",
+		"oF": 0
+		},
+	"/ProcessSnipWire/sections/Discounts.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/ProcessSnipWire/sections/Discounts.php",
+		"oF": 0
+		},
+	"/ProcessSnipWire/sections/Orders.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/ProcessSnipWire/sections/Orders.php",
+		"oF": 0
+		},
+	"/ProcessSnipWire/sections/Products.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/ProcessSnipWire/sections/Products.php",
+		"oF": 0
+		},
+	"/ProcessSnipWire/sections/Subscriptions.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/ProcessSnipWire/sections/Subscriptions.php",
+		"oF": 0
+		},
 	"/README.md": {
 		"cB": 0,
 		"cS": 0,
