@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * Extended resources installer and uninstaller for SnipWire.
+ * Extended resources installer for SnipWire.
  * (This file is part of the SnipWire package)
  * 
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
@@ -313,120 +313,4 @@ class ExtendedInstaller extends Wire {
         
         return ($this->wire('notices')->hasWarnings() or $this->wire('notices')->hasErrors()) ? false : true;    
     }
-
-
-    /**
-     * Called when extended resources are uninstalled.
-     *
-     * @param integer $mode
-     * @return void
-     *
-     */
-    public function uninstallResources($mode = self::installerModeAll) {
-        $fields      = $this->wire('fields');
-        $fieldgroups = $this->wire('fieldgroups');
-        $templates   = $this->wire('templates');
-        $pages       = $this->wire('pages');
-        $permissions = $this->wire('permissions');
-        $modules     = $this->wire('modules');
-        $config      = $this->wire('config');
-        
-        /* ====== Uninstall pages ====== */
-
-        if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
-            foreach ($this->resources['pages'] as $item) {
-                // Find the page to uninstall
-                $p = $pages->get('template='.$item['template'] . ', name=' . $item['name']); 
-        
-                // If page was found, delete or trash it and let the user know
-                if ($p->id) {
-                    if (isset($item['_uninstall'])) {
-                        if ($item['_uninstall'] == 'delete') {
-                            $p->delete(true); // including sub-pages
-                            $this->message('Deleted Page: '.$p->path);
-                        } elseif ($item['_uninstall'] == 'trash') {
-                            $p->trash();
-                            $this->message('Trashed Page: ' . $p->path);
-                        }
-                    }
-                }
-            }
-        }
-
-        /* ====== Uninstall fields ====== */
-        
-        if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
-            foreach ($this->resources['fields'] as $item) {
-                // First remove field from template(s) before deleting it
-                foreach (explode(',', $item['_addToTemplates']) as $tn) {
-                    $t = $templates->get($tn);
-                    $fg = $t->fieldgroup;
-                    $fg->remove($fields->get($item['name']));
-                    $fg->save();
-                }
-    
-                // Now delete the field
-                $f = $fields->get($item['name']);
-                if ($f->id) {
-                    $fields->delete($f);
-                    $this->message('Deleted Field: ' . $item['name']);
-                }
-            }
-        }
-
-        /* ====== Uninstall files ====== */
-        
-        if (!empty($this->resources['files']) && is_array($this->resources['files']) && $mode & self::installerModeFiles) {
-            foreach ($this->resources['files'] as $file) {
-                $destination = $config->paths->templates . $file['name'];
-                if (file_exists($destination)) {
-                    if ($this->wire('files')->unlink($destination)) {
-                        $out = sprintf($this->_("Removed file [%s]."), $destination);
-                        $this->message($out);
-                    } else {
-                        $out = sprintf($this->_("Could not remove file [%s] to [%s]. Please remove this file manually."), $destination);
-                        $this->warning($out);
-                    }
-                }
-            }
-        }
-        
-        /* ====== Uninstall templates ====== */
-                
-        if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
-            foreach ($this->resources['templates'] as $item) {
-                $t = $templates->get($item['name']);
-                // Template exists?
-                if (!$t->id) {
-                    $out = sprintf($this->_("Could not delete template [%s]. The template does not exist!"), $item['name']);
-                    $this->warning($out);
-                // Only delete template if not assigned to existing pages
-                } elseif ($templates->getNumPages($t) > 0) {
-                    $out = sprintf($this->_("Could not delete template [%s]. The template is assigned to at least on page!"), $item['name']);
-                    $this->warning($out);
-                // All OK - delete!
-                } else {
-                    $templates->delete($t);
-                    $fieldgroups->delete($t->fieldgroup); // delete the associated fieldgroup
-                    $this->message('Deleted Template: ' . $item['name']);
-                }
-            }
-        }
-
-        /* ====== Uninstall permissions ====== */
-        
-        if (!empty($this->resources['permissions']) && is_array($this->resources['permissions']) && $mode & self::installerModePermissions) {
-            foreach ($this->resources['permissions'] as $item) {
-                // If permission was found, let the user know and delete it
-                $permission = $permissions->get('name=' . $item['name']);
-                if ($permission->id){
-                    $permission->delete();
-                    $this->message('Deleted Permission: ' . $item['name']);
-                }
-            }
-        }
-
-        return ($this->wire('notices')->hasWarnings() or $this->wire('notices')->hasErrors()) ? false : true;    
-    }
-
 }
