@@ -697,7 +697,7 @@ class ProcessSnipWire extends Process implements Module {
                 id="PeriodPickerReset"
                 class="pw-tooltip"
                 role="button"
-                title="' . $this->_('Reset store performance date range to default') .'">' .
+                title="' . $this->_('Reset date range to default') .'">' .
                     wireIconMarkup('rotate-left') .
             '</a>';
 
