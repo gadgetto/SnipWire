@@ -20,8 +20,8 @@ jQuery(document).ready(function() {
                 cookieName: tabsOptions.id,
                 rememberTabs: tabsOptions.rememberTabs
             });
-            
-            $(document).on('click', '#' + tabsOptions.id + ' li a', function() {
+
+            $(document).on('click', '.pw-ready #' + tabsOptions.id + ' li a', function() {
                 window.location.href = $(this).attr('href');
                 return false;
             });
