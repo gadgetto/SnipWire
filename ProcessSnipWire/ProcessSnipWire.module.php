@@ -101,8 +101,10 @@ class ProcessSnipWire extends Process implements Module {
     const iconSubscription = 'calendar';
     const iconAbandonedCart = 'shopping-cart';
     const iconCustomer = 'user';
+    const iconAddress = 'address-card';
     const iconProduct = 'tag';
     const iconDiscount = 'scissors';
+    const iconInfo = 'info-circle';
     const iconSettings = 'gear';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
