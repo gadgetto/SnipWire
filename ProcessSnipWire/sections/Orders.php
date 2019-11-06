@@ -333,14 +333,14 @@ trait Orders {
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
-                    class="pw-panel"
-                    data-panel-width="70%">' .
+                    class="pw-panel pw-panel-links"
+                    data-panel-width="75%">' .
                         wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
                 '</a>';
                 $panelLink2 =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="75%">' .
                         $item['user']['billingAddress']['fullName'] .
                 '</a>';
                 $table->row(array(
