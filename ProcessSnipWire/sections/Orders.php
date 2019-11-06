@@ -179,10 +179,9 @@ trait Orders {
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
-        $btn->href = $this->currentUrl . '?action=refresh';
+        $btn->href = $this->currentUrl . '?action=refresh&modal=1';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
-        $btn->showInHeader();
 
         $out .= $btn->render();
 
