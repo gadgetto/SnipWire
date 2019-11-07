@@ -39,7 +39,7 @@ trait Orders {
         $forceRefresh = false;
         $limit = 20;
         $offset = ($input->pageNum - 1) * $limit;
-              
+
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
@@ -78,7 +78,7 @@ trait Orders {
         $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;
         $items = isset($orders['items']) ? $orders['items'] : array();
         $count = count($items);
-        
+
         // Pagination out of bound
         if (!$count && $input->pageNum > 1) {
             $session->redirect($this->processUrl);
