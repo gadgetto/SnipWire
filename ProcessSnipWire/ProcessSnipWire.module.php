@@ -105,6 +105,7 @@ class ProcessSnipWire extends Process implements Module {
     const iconProduct = 'tag';
     const iconDiscount = 'scissors';
     const iconInfo = 'info-circle';
+    const iconPayment = 'credit-card-alt';
     const iconSettings = 'gear';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
