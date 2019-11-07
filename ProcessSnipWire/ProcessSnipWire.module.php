@@ -1129,7 +1129,7 @@ class ProcessSnipWire extends Process implements Module {
                     wireDate('relative', $item['creationDate']),
                     $panelLink2,
                     $item['billingAddressCountry'],
-                    $item['paymentStatus'],
+                    $this->paymentStatuses[$item['paymentStatus']],
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }

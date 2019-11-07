@@ -330,8 +330,8 @@ trait Orders {
                     wireDate('relative', $item['creationDate']),
                     $panelLink2,
                     $item['billingAddressCountry'],
-                    $item['paymentStatus'],
                     $this->orderStatuses[$item['status']],
+                    $this->paymentStatuses[$item['paymentStatus']],
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
