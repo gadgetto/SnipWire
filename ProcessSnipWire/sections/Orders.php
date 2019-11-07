@@ -210,13 +210,6 @@ trait Orders {
             'Cancelled' => $this->_('Cancelled'),
         );
         
-        $paymentStatuses = array(
-            'All' =>  $this->_('All Orders'),
-            'Paid' => $this->_('Paid'),
-            'PaidDeferred' => $this->_('Paid (deferred)'),
-            'Deferred' => $this->_('Not paid'),
-        );
-
         $filterSettings = array(
             'form' => '#OrdersFilterForm',
         );
@@ -265,7 +258,7 @@ trait Orders {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 50;
                 $f->required = true;
-                $f->addOptions($paymentStatuses);
+                $f->addOptions($this->paymentStatuses);
 
             $fieldset->add($f);
 
