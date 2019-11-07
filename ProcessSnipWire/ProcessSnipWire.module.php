@@ -123,6 +123,9 @@ class ProcessSnipWire extends Process implements Module {
     /**var string $processUrl The URL to current (virtual) page */
     protected $processUrl = '';
 
+    /**var array $orderStatuses The order statuses */
+    public $orderStatuses = array();
+
     /**var array $paymentStatuses The payment statuses */
     public $paymentStatuses = array();
 
@@ -166,6 +169,16 @@ class ProcessSnipWire extends Process implements Module {
         $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
         $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . '/';
 
+        $this->orderStatuses = array(
+            'All' =>  $this->_('All Orders'),
+            'InProgress' => $this->_('In Progress'),
+            'Processed' => $this->_('Processed'),
+            'Disputed' => $this->_('Disputed'),
+            'Shipped' => $this->_('Shipped'),
+            'Delivered' => $this->_('Delivered'),
+            'Pending' => $this->_('Pending'),
+            'Cancelled' => $this->_('Cancelled'),
+        );
         $this->paymentStatuses = array(
             'All' =>  $this->_('All Orders'),
             'Paid' => $this->_('Paid'),

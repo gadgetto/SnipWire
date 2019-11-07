@@ -198,17 +198,6 @@ trait Orders {
     private function _buildOrdersFilter($filter) {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
-
-        $statuses = array(
-            'All' =>  $this->_('All Orders'),
-            'InProgress' => $this->_('In Progress'),
-            'Processed' => $this->_('Processed'),
-            'Disputed' => $this->_('Disputed'),
-            'Shipped' => $this->_('Shipped'),
-            'Delivered' => $this->_('Delivered'),
-            'Pending' => $this->_('Pending'),
-            'Cancelled' => $this->_('Cancelled'),
-        );
         
         $filterSettings = array(
             'form' => '#OrdersFilterForm',
@@ -246,7 +235,7 @@ trait Orders {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 50;
                 $f->required = true;
-                $f->addOptions($statuses);
+                $f->addOptions($this->orderStatuses);
 
             $fieldset->add($f);
 
@@ -341,8 +330,8 @@ trait Orders {
                     wireDate('relative', $item['creationDate']),
                     $panelLink2,
                     $item['billingAddressCountry'],
-                    $item['status'],
                     $item['paymentStatus'],
+                    $this->orderStatuses[$item['status']],
                     CurrencyFormat::format($item['total'], $item['currency']),
                 ));
             }
