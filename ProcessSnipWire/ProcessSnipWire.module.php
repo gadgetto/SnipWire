@@ -90,6 +90,8 @@ class ProcessSnipWire extends Process implements Module {
         );
     }
 
+    const snipcartInvoiceUrl = 'https://app.snipcart.com/invoice/';
+
     const assetsIncludeDaterangePicker = 1;
     const assetsIncludeCurrencyPicker = 2;
     const assetsIncludeApexCharts = 4;
