@@ -187,6 +187,11 @@ class ProcessSnipWire extends Process implements Module {
             'PaidDeferred' => $this->_('Paid (deferred)'),
             'Deferred' => $this->_('Not paid'),
         );
+        $this->paymentMethods = array(
+            'All' =>  $this->_('All Methods'),
+            'CreditCard' => $this->_('Credit Card'),
+            'WillBePaidLater' => $this->_('Deferred Payment'),
+        );
         $this->abandonedCartsTimeRanges = array(
             'Anytime' =>  $this->_('Anytime'),
             'LessThan4Hours' => $this->_('Last 4 hours'),
