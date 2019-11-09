@@ -9,6 +9,39 @@
  *
  */
 
+.ProcessSnipWire {
+    
+    .snipwire-badge {
+        display: inline-block;
+        margin: 0 .25rem;
+        padding: .25em .4em;
+        font-size: .8em;
+        font-weight: 500;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: text-bottom;
+        border-radius: .25rem;
+
+        &.snipwire-badge-success {
+            color: #fff;
+            background-color: #28a745;
+        }
+        &.snipwire-badge-danger {
+            color: #fff;
+            background-color: #dc3545;
+        }
+        &.snipwire-badge-warning {
+            color: #fff;
+            background-color: #ffc107;
+        }
+        &.snipwire-badge-info {
+            color: #fff;
+            background-color: #1ec6e0;
+        }
+    }
+}
+
 #pw-content-head {
     
     h1 {
