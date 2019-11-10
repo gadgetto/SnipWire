@@ -314,7 +314,8 @@ trait Orders {
                 $this->_('Placed by'),
                 $this->_('Country'),
                 $this->_('Status'),
-                $this->_('Payment Status'),
+                $this->_('Payment status'),
+                $this->_('Payment method'),
                 $this->_('Total'),
                 '&nbsp;',
             ));
@@ -344,6 +345,7 @@ trait Orders {
                     $item['billingAddressCountry'],
                     $this->orderStatuses[$item['status']],
                     $this->paymentStatuses[$item['paymentStatus']],
+                    $this->paymentMethods[$item['paymentMethod']],
                     CurrencyFormat::format($item['total'], $item['currency']),
                     $downloadLink,
                 ));
