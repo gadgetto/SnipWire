@@ -36,14 +36,19 @@ trait Orders {
             return '';
         }
         
+        $out = '';
+
         $forceRefresh = false;
         $limit = 20;
         $offset = ($input->pageNum - 1) * $limit;
 
+        $token = $sanitizer->text($input->token); // Get Snipcart order token
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
+        } elseif ($action == 'download_invoice') {
+            $out .= $this->_downloadInvoice($token);
         }
 
         $status = $sanitizer->text($input->status);
@@ -85,7 +90,7 @@ trait Orders {
             return '';
         }
 
-        $out = $this->_buildOrdersFilter($filter);
+        $out .= $this->_buildOrdersFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
         $headline = $pageArray->getPaginationString(array(
@@ -311,6 +316,7 @@ trait Orders {
                 $this->_('Status'),
                 $this->_('Payment Status'),
                 $this->_('Total'),
+                '&nbsp;',
             ));
             foreach ($items as $item) {
                 $panelLink =
@@ -325,6 +331,12 @@ trait Orders {
                     data-panel-width="75%">' .
                         $item['user']['billingAddress']['fullName'] .
                 '</a>';
+                $downloadLink =
+                '<a href="' . $this->currentUrl . '?action=download_invoice&token=' . $item['token'] . '"
+                    class="pw-tooltip"
+                    title="' . $this->_('Download invoice') .'">' .
+                        wireIconMarkup('download') .
+                '</a>';
                 $table->row(array(
                     $panelLink,
                     wireDate('relative', $item['creationDate']),
@@ -333,6 +345,7 @@ trait Orders {
                     $this->orderStatuses[$item['status']],
                     $this->paymentStatuses[$item['paymentStatus']],
                     CurrencyFormat::format($item['total'], $item['currency']),
+                    $downloadLink,
                 ));
             }
             $out = $table->render();
