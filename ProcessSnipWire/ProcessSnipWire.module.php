@@ -1301,7 +1301,15 @@ class ProcessSnipWire extends Process implements Module {
      * 
      */
     private function _getInputAction() {
-        return $this->wire('input')->get->entities('action');
+        $input = $this->wire('input');
+        $requestMethod = strtolower($input->requestMethod());
+        $action = '';
+        if ($requestMethod == 'get') {
+            $action = $input->get->entities('action');
+        } elseif ($requestMethod == 'post') {
+            $action = $input->post->entities('action');
+        }
+        return $action;
     }
 
     /**
