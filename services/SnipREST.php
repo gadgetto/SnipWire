@@ -26,6 +26,7 @@ class SnipREST extends WireHttpExtended {
     const resourcePathDataOrdersSales = 'data/orders/sales'; // undocumented
     const resourcePathDataOrdersCount = 'data/orders/count'; // undocumented
     const resourcePathOrders = 'orders';
+    const resourcePathOrdersNotifications = 'orders/{token}/notifications';
     const resourcePathSubscriptions = 'subscriptions';
     const resourcePathCartsAbandoned = 'carts/abandoned';
     const resourcePathCustomers = 'customers';
@@ -46,6 +47,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixOrdersSales = 'OrdersSales';
     const cacheNamePrefixOrdersCount = 'OrdersCount';
     const cacheNamePrefixOrders = 'Orders';
+    const cacheNamePrefixOrdersNotifications = 'OrdersNotifications';
     const cacheNamePrefixOrderDetail = 'OrderDetail';
     const cacheNamePrefixSubscriptions = 'Subscriptions';
     const cacheNamePrefixSubscriptionDetail = 'SubscriptionDetail';
@@ -421,6 +423,60 @@ class SnipREST extends WireHttpExtended {
 
         if ($response === false) $response = array();
         $data[self::resourcePathOrders . '/' . $token] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Creates a new notification on a specified order.
+     *
+     * (Includes sending some information to your customer or generating automatic emails)
+     *
+     * @param string $token The Snipcart $token of the order
+     * @param array $options An array of options that will be sent as POST params:
+     *  - `type` (string) Type of notification. (Possible values: Comment, OrderStatusChanged, OrderShipped, TrackingNumber, Invoice) #required
+     *  - `deliveryMethod` (string) 'Email' send by email, 'None' keep it private. #required
+     *  - `message` (string) Message of the notification. Optional when used with type 'TrackingNumber'.
+     * @return array $data
+     * 
+     */
+    public function postOrderNotification($token = '', $options = array()) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$token) {
+            $this->error(self::getMessagesText('no_order_token'));
+            return false;
+        }
+        // Add necessary header for POST request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $allowedOptions = array('type', 'deliveryMethod', 'message');
+        $defaultOptions = array(
+            'type' => 'TrackingNumber',
+            'deliveryMethod' => 'Email',
+        );
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        
+        $url = wirePopulateStringTags(
+            self::apiEndpoint . self::resourcePathOrdersNotifications,
+            array('token' => $token)
+        );
+        $requestbody = wireEncodeJSON($options);
+        
+        $response = $this->post($url, $requestbody);
+
+        if ($response === false) $response = array();
+        $data[$token] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
