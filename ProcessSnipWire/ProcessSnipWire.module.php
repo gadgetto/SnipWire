@@ -726,10 +726,12 @@ class ProcessSnipWire extends Process implements Module {
             $markup .= 
             '<a href="' . $this->currentUrl . '?action=reset"
                 id="PeriodPickerReset"
-                class="pw-tooltip"
+                class="ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary pw-tooltip"
                 role="button"
                 title="' . $this->_('Reset date range to default') .'">' .
-                    wireIconMarkup('rotate-left') .
+                    '<span class="ui-button-text">' .
+                        wireIconMarkup('rotate-left') .
+                    '</span>' .
             '</a>';
 
             /** @var InputfieldMarkup $f */
