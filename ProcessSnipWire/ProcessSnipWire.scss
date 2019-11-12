@@ -73,6 +73,15 @@
     }
 }
 
+#SnipwireDashboardModal {
+    clear: both;
+
+    .pw-table-responsive,
+    .uk-table {
+        margin-top: 0;
+    }
+}
+
 #PeriodPickerSelect {
     display: inline-block;
     font-size: 1.2rem;
