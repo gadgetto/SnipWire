@@ -435,7 +435,7 @@ class SnipREST extends WireHttpExtended {
      *
      * (Includes sending some information to your customer or generating automatic emails)
      *
-     * @param string $token The Snipcart $token of the order
+     * @param string $token The Snipcart token of the order
      * @param array $options An array of options that will be sent as POST params:
      *  - `type` (string) Type of notification. (Possible values: Comment, OrderStatusChanged, OrderShipped, TrackingNumber, Invoice) #required
      *  - `deliveryMethod` (string) 'Email' send by email, 'None' keep it private. #required
