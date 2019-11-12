@@ -36,6 +36,7 @@ class SnipREST extends WireHttpExtended {
     const resourcePathSettingsAllowedDomains = 'settings/alloweddomains';
     const resourcePathShippingMethods = 'shipping_methods';
     const resourcePathRequestValidation = 'requestvalidation'; // + HTTP_X_SNIPCART_REQUESTTOKEN
+    const snipcartInvoiceUrl = 'https://app.snipcart.com/invoice/{token}'; // currently not possible via API
     
     const cacheNamespace = 'SnipWire';
     const cacheExpireDefault = 900; // max. cache expiration time in seconds
