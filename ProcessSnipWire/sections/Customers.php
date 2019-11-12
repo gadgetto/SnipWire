@@ -62,15 +62,15 @@ trait Customers {
 
         $selector = array_merge($defaultSelector, $filter);
 
-        $request = $sniprest->getCustomers(
+        $response = $sniprest->getCustomers(
             '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
 
-        $customers = isset($request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent]
+        $customers = isset($response[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent]
             : array();
         
         $total = isset($customers['totalItems']) ? $customers['totalItems'] : 0;
@@ -148,9 +148,9 @@ trait Customers {
             return '';
         }
         
-        $request = $sniprest->getCustomer($id);
-        $customer = isset($request[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent]
+        $response = $sniprest->getCustomer($id);
+        $customer = isset($response[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

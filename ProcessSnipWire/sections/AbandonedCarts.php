@@ -65,15 +65,15 @@ trait AbandonedCarts {
 
         $selector = array_merge($defaultSelector, $filter);
 
-        $request = $sniprest->getAbandonedCarts(
+        $response = $sniprest->getAbandonedCarts(
             '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
 
-        $abandonedCarts = isset($request[SnipRest::resourcePathCartsAbandoned][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathCartsAbandoned][WireHttpExtended::resultKeyContent]
+        $abandonedCarts = isset($response[SnipRest::resourcePathCartsAbandoned][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathCartsAbandoned][WireHttpExtended::resultKeyContent]
             : array();
         
         $items = isset($abandonedCarts['items']) ? $abandonedCarts['items'] : array();
@@ -135,9 +135,9 @@ trait AbandonedCarts {
             return '';
         }
         
-        $request = $sniprest->getAbandonedCart($id);
-        $cart = isset($request[SnipRest::resourcePathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent]
+        $response = $sniprest->getAbandonedCart($id);
+        $cart = isset($response[SnipRest::resourcePathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

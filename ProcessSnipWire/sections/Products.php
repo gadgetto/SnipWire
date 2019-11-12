@@ -61,15 +61,15 @@ trait Products {
 
         $selector = array_merge($defaultSelector, $filter);
 
-        $request = $sniprest->getProducts(
+        $response = $sniprest->getProducts(
             '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
 
-        $products = isset($request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
+        $products = isset($response[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
             : array();
 
         $total = isset($products['totalItems']) ? $products['totalItems'] : 0;
@@ -147,9 +147,9 @@ trait Products {
             return '';
         }
         
-        $request = $sniprest->getProduct($id);
-        $product = isset($request[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent]
+        $response = $sniprest->getProduct($id);
+        $product = isset($response[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

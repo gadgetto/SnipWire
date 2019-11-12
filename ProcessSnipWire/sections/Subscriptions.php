@@ -62,15 +62,15 @@ trait Subscriptions {
  
         $selector = array_merge($defaultSelector, $filter);
 
-        $request = $sniprest->getSubscriptions(
+        $response = $sniprest->getSubscriptions(
             '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
 
-        $subscriptions = isset($request[SnipRest::resourcePathSubscriptions][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathSubscriptions][WireHttpExtended::resultKeyContent]
+        $subscriptions = isset($response[SnipRest::resourcePathSubscriptions][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathSubscriptions][WireHttpExtended::resultKeyContent]
             : array();
 
         $total = isset($subscriptions['totalItems']) ? $subscriptions['totalItems'] : 0;
@@ -155,13 +155,13 @@ trait Subscriptions {
             $forceRefresh = true;
         }
 
-        $request = $sniprest->getSubscription(
+        $response = $sniprest->getSubscription(
             $id,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $subscription = isset($request[SnipRest::resourcePathSubscriptions . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathSubscriptions . '/' . $id][WireHttpExtended::resultKeyContent]
+        $subscription = isset($response[SnipRest::resourcePathSubscriptions . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathSubscriptions . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

@@ -69,15 +69,15 @@ trait Orders {
  
         $selector = array_merge($defaultSelector, $filter);
 
-        $request = $sniprest->getOrders(
+        $response = $sniprest->getOrders(
             '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
 
-        $orders = isset($request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
+        $orders = isset($response[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
             : array();
 
         $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;
@@ -162,13 +162,13 @@ trait Orders {
             $forceRefresh = true;
         }
 
-        $request = $sniprest->getOrder(
+        $response = $sniprest->getOrder(
             $token,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $order = isset($request[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent]
+        $order = isset($response[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

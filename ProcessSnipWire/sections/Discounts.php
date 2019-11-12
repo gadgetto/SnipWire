@@ -56,13 +56,13 @@ trait Discounts {
         // Currently there is no pagination available as Snipcart has no limit & offset params in this case.
         // @todo: create an alternative way to use pagination here
 
-        $request = $sniprest->getDiscounts(
+        $response = $sniprest->getDiscounts(
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
 
-        $discounts = isset($request[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent]
+        $discounts = isset($response[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent]
             : array();
 
         // As discounts have no query params for REST, we need to search in the result set instead
@@ -141,9 +141,9 @@ trait Discounts {
             return '';
         }
         
-        $request = $sniprest->getDiscount($id);
-        $discount = isset($request[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $request[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+        $response = $sniprest->getDiscount($id);
+        $discount = isset($response[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */
