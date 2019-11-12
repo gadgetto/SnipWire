@@ -167,6 +167,22 @@
         }
     }
 }
+@media screen and (min-width: 768px) {
+    #PerformanceBoxesContainer {
+        
+        .snipwire-perf-box {
+            flex-basis: calc((100% + 1.2rem) / 2 - 1.2rem); // 2 boxes in row
+        }
+    }
+}
+@media screen and (min-width: 960px) {
+    #PerformanceBoxesContainer {
+
+        .snipwire-perf-box {
+            flex-basis: calc((100% + 1.2rem) / 4 - 1.2rem); // 4 boxes in row
+        }
+    }
+}
 
 .ItemsFilterButtonWrapper {
     
@@ -212,24 +228,6 @@
        line-height: 1.5;
    } 
 }
-
-@media screen and (min-width: 768px) {
-    #PerformanceBoxesContainer {
-        
-        .snipwire-perf-box {
-            flex-basis: calc((100% + 1.2rem) / 2 - 1.2rem); // 2 boxes in row
-        }
-    }
-}
-@media screen and (min-width: 960px) {
-    #PerformanceBoxesContainer {
-
-        .snipwire-perf-box {
-            flex-basis: calc((100% + 1.2rem) / 4 - 1.2rem); // 4 boxes in row
-        }
-    }
-}
-
 
 // Theme dependant style overrides (base styles are for AdminThemeUikit)
 
