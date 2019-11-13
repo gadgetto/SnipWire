@@ -218,6 +218,14 @@
 		"oAP": "/helpers/CurrencyFormat.php",
 		"oF": 0
 		},
+	"/helpers/Functions.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/helpers/Functions.php",
+		"oF": 0
+		},
 	"/helpers/Taxes.php": {
 		"cB": 0,
 		"ft": 8192,
