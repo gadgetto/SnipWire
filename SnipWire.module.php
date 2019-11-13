@@ -15,6 +15,7 @@
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'SnipREST.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'ExchangeREST.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'Webhooks.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Functions.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
 
@@ -117,7 +118,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             if (empty($tax['name']) || empty($tax['rate'])) {
                 $taxesField->error(sprintf($this->_('Taxes repeater row [%s]: "Tax name" and "Rate" may not be empty'), $key + 1));
             }
-            if (!$this->checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
+            if (!checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
                 $taxesField->error(sprintf($this->_('Taxes repeater row [%s]: "Rate" value needs to be float'), $key + 1));
             }
             if (empty($tax['appliesOnShipping'][0])) $productTaxes += 1;
@@ -126,19 +127,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             }
         }
     }
-
-    /**
-     * Check a value against a given regex pattern.
-     *
-     * @param mixed $value The value to check
-     * @param string $pattern The regex pattern
-     * @param boolean
-     *
-     */
-	public function checkPattern($value, $pattern) {
-		$regex = '#' . str_replace('#', '\#', $pattern) . '#';
-		return preg_match($regex, $value) ? true : false;
-	}
 
     /**
      * Manage currency specific price input fields based on module "currencies" property.

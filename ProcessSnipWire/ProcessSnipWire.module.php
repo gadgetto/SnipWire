@@ -12,6 +12,7 @@
  *
  */
 
+require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/Functions.php';
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/CurrencyFormat.php';
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'installer/ExtendedInstaller.php';
 
