@@ -27,6 +27,7 @@ class SnipREST extends WireHttpExtended {
     const resourcePathDataOrdersCount = 'data/orders/count'; // undocumented
     const resourcePathOrders = 'orders';
     const resourcePathOrdersNotifications = 'orders/{token}/notifications';
+    const resourcePathOrdersRefunds = 'orders/{token}/refunds';
     const resourcePathSubscriptions = 'subscriptions';
     const resourcePathCartsAbandoned = 'carts/abandoned';
     const resourcePathCustomers = 'customers';
@@ -469,6 +470,56 @@ class SnipREST extends WireHttpExtended {
         
         $url = wirePopulateStringTags(
             self::apiEndpoint . self::resourcePathOrdersNotifications,
+            array('token' => $token)
+        );
+        $requestbody = wireEncodeJSON($options);
+        
+        $response = $this->post($url, $requestbody);
+
+        if ($response === false) $response = array();
+        $data[$token] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Creates a new refund on a specified order.
+     *
+     * (Includes sending some information to your customer or generating automatic emails)
+     *
+     * @param string $token The Snipcart token of the order
+     * @param array $options An array of options that will be sent as POST params:
+     *  - `amount` (float) The amount to be refunded #required
+     *  - `comment` (string) The reason for the refund (internal note - not for customer)
+     * @return array $data
+     * 
+     */
+    public function postOrderRefund($token = '', $options = array()) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$token) {
+            $this->error(self::getMessagesText('no_order_token'));
+            return false;
+        }
+        // Add necessary header for POST request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $allowedOptions = array('amount', 'comment');
+        $defaultOptions = array();
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        
+        $url = wirePopulateStringTags(
+            self::apiEndpoint . self::resourcePathOrdersRefunds,
             array('token' => $token)
         );
         $requestbody = wireEncodeJSON($options);
