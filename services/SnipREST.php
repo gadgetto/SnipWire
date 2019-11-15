@@ -432,6 +432,22 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
+     * Delete a single order cache (WireCache).
+     *
+     * @param string $token The Snipcart $token of the order
+     * @return void
+     *
+     */
+    public function deleteOrderCache($token) {
+        if (!$token) {
+            $this->error(self::getMessagesText('no_order_token'));
+            return false;
+        }
+        $cacheName = self::cacheNamePrefixOrderDetail . '.' . md5($token);
+        $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+    }
+
+    /**
      * Creates a new notification on a specified order.
      *
      * (Includes sending some information to your customer or generating automatic emails)
