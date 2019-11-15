@@ -482,6 +482,22 @@ trait Orders {
 
         $out .= $wrapper->render();
 
+        if (!empty($item['refunds'])) {
+            /** @var InputfieldForm $wrapper */
+            $wrapper = $modules->get('InputfieldForm');
+    
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Refunds Summary');
+                $f->icon = self::iconRefund;
+                $f->value = $this->_renderTableRefundsSummary($item['refunds'], $item['currency']);
+                $f->collapsed = Inputfield::collapsedYes;
+                
+            $wrapper->add($f);
+    
+            $out .= $wrapper->render();
+        }
+
         if ($this->snipwireConfig->snipwire_debug) {
 
             /** @var InputfieldForm $wrapper */
@@ -922,6 +938,54 @@ trait Orders {
                 '<span class="total-adjusted-value">' . CurrencyFormat::format($item['adjustedAmount'], $currency) . '</span>',
             ), array(
                 'class' => 'row-summary-total-adjusted',
+            ));
+        }
+
+        $out = $table->render();            
+
+        return $out;
+    }
+
+    /**
+     * Render the refunds table.
+     *
+     * @param array $refunds
+     * @param string $currency
+     * @return markup MarkupAdminDataTable 
+     *
+     */
+    private function _renderTableRefundsSummary($refunds, $currency) {
+        $modules = $this->wire('modules');
+
+        /*
+        {
+            "orderToken": "7043e043-bb47-42c4-b7a5-646944c36e10",
+            "amount": 55.00,
+            "comment": "Internal comment...",
+            "notifyCustomer": false,
+            "refundedByPaymentGateway": true,
+            "id": "5e2c1b82-2dcc-4e37-a79e-308891ae5d84",
+            "creationDate": "2019-11-14T13:23:35.897Z",
+            "modificationDate": "2019-11-14T13:23:35.897Z"
+        },
+        */
+
+        /** @var MarkupAdminDataTable $table */
+        $table = $modules->get('MarkupAdminDataTable');
+        $table->setEncodeEntities(false);
+        $table->id = 'RefundsSummaryTable';
+        $table->setSortable(false);
+        $table->setResizable(false);
+        $table->headerRow(array(
+            $this->_('Created on'),
+            $this->_('Amount'),
+            $this->_('Comment'),
+        ));
+        foreach ($refunds as $refund) {
+            $table->row(array(
+                wireDate('Y-m-d H:i:s', $refund['creationDate']),
+                CurrencyFormat::format($refund['amount'], $currency),
+                $refund['comment'],
             ));
         }
 
