@@ -100,12 +100,12 @@ class SnipREST extends WireHttpExtended {
             'connection_failed' => __('Connection to Snipcart failed'),
             'cache_refreshed' => __('Snipcart cache refreshed.'),
             'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without.'),
-            'no_order_token' => __('Could not fetch order data - no order token provided.'),
-            'no_subscription_id' => __('Could not fetch subscription data - no subscription ID provided.'),
-            'no_cart_id' => __('Could not fetch cart data - no cart ID provided.'),
-            'no_customer_id' => __('Could not fetch customer data - no customer ID provided.'),
-            'no_product_id' => __('Could not fetch product data - no product ID provided.'),
-            'no_discount_id' => __('Could not fetch discount data - no discount ID provided.'),
+            'no_order_token' => __('No order token provided.'),
+            'no_subscription_id' => __('No subscription ID provided.'),
+            'no_cart_id' => __('No cart ID provided.'),
+            'no_customer_id' => __('No customer ID provided.'),
+            'no_product_id' => __('No product ID provided.'),
+            'no_discount_id' => __('No discount ID provided.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
