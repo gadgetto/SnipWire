@@ -9,15 +9,50 @@
  *
  */
 
+$danger-color: #ff4444;
+$danger-color-dark: #CC0000;
+$warning-color: #ffbb33;
+$warning-color-dark: #FF8800;
+$success-color: #00C851;
+$success-color-dark: #007E33;
+$info-color: #33b5e5;
+$info-color-dark: #0099CC;
+
+
 .ProcessSnipWire {
-    
+
+    .danger-color {
+        color: $danger-color;
+    }
+    .danger-color-dark {
+        color: $danger-color-dark;
+    }
+    .warning-color {
+        color: $warning-color;
+    }
+    .warning-color-dark {
+        color: $warning-color-dark;
+    }
+    .success-color {
+        color: $success-color;
+    }
+    .success-color-dark {
+        color: $success-color-dark;
+    }
+    .info-color {
+        color: $info-color;
+    }
+    .info-color-dark {
+        color: $info-color-dark;
+    }
+
     .snipwire-badge {
         display: inline-block;
         margin: 0 .25rem;
-        padding: .25em .4em;
+        padding: .25em .5em;
         font-size: .8em;
         font-weight: 400;
-        line-height: 1.1;
+        line-height: 1.3;
         text-align: center;
         white-space: nowrap;
         vertical-align: middle;
@@ -25,19 +60,19 @@
 
         &.snipwire-badge-success {
             color: #fff;
-            background-color: #28a745;
+            background-color: $success-color-dark;
         }
         &.snipwire-badge-danger {
             color: #fff;
-            background-color: #dc3545;
+            background-color: $danger-color-dark;
         }
         &.snipwire-badge-warning {
             color: #fff;
-            background-color: #ffc107;
+            background-color: $warning-color-dark;
         }
         &.snipwire-badge-info {
             color: #fff;
-            background-color: #6c8dae;
+            background-color: $info-color-dark;
         }
     }
 }
@@ -207,6 +242,136 @@
     margin: 20px 0 20px 0;
 }
 
+.ItemDetailHeader {
+    overflow: hidden;
+    padding: 1rem 0;
+}
+.ItemDetailTitle {
+    font-size: 1.5rem !important;
+    line-height: 3rem !important;
+    margin: 0 !important;
+}
+.ItemDetailActionButtons {
+    line-height: 3rem;
+    
+    button,
+    .ui-button {
+        margin-left: 0;
+        margin-right: .5rem;
+    }
+}
+@media screen and (min-width: 800px) {
+    .ItemDetailTitle {
+        float: left;
+        font-size: 2rem !important;
+    }
+    .ItemDetailActionButtons {
+        float: right;
+        
+        button,
+        .ui-button {
+            margin-left: .5rem;
+            margin-right: 0;
+        }
+    }
+}
+
+.ItemDetailTable {
+    border: none;
+    border-collapse: collapse;
+    margin: 0;
+    
+    th {
+        padding: .25rem 1rem .25rem 0;
+        line-height: 1.5rem;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 700;
+        color: #6c8dae;
+        text-transform: uppercase;
+        vertical-align: top;
+    }
+    td {
+        padding: .25rem 0;
+        line-height: 1.5rem;
+        vertical-align: top;
+    }
+}
+@media screen and (min-width: 768px) {
+    .ItemDetailTable {
+        
+        th {
+            padding: .25rem 2rem .25rem 0;
+            white-space: nowrap;
+        }
+    }
+}
+
+#OrdersTable {
+    
+}
+
+#OrderSummaryTable {
+
+    .row-summary-subtotal {
+        
+        td {
+        	border-top: 2px solid #e5e5e5;
+        }
+        .subtotal-label {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .subtotal-value {
+            font-weight: bold;
+        }
+    }
+    .row-summary-shipping {
+        
+        td {
+            color: $info-color-dark;
+        }
+    }
+    .row-summary-tax {
+        
+        td {
+            font-size: .9rem;
+        }
+    }
+    .row-summary-total {
+        
+        td {
+        	border-top: 2px solid #e5e5e5;
+        }
+        .total-label {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .total-value {
+            font-weight: bold;
+        }
+    }
+    .row-summary-refunds {
+        
+        td {
+            color: $warning-color-dark;
+        }
+    }
+    .row-summary-total-adjusted {
+        
+        td {
+        	border-top: 2px solid #e5e5e5;
+        }
+        .total-adjusted-label {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .total-adjusted-value {
+            font-weight: bold;
+        }
+    }
+}
+
 .snipwire-no-items {
     display: flex;
     width: 100%;
@@ -253,7 +418,16 @@
     .snipwire-perf-box {
         background-color: rgba(228,235,238,.8);
     }
+
+    .ItemDetailTable {
+        
+        th {
+            font-size: .833333em;
+            color: #9ec5d2;
+        }
+    }
 }
+
 .AdminThemeReno {
     #SnipwireDashboard {
         
@@ -284,5 +458,13 @@
     }
     .ItemListerHeadline {
         margin-top: 1em;
+    }
+    
+    .ItemDetailTable {
+        
+        th {
+            font-size: .8em;
+            color: #6c8dae;
+        }
     }
 }

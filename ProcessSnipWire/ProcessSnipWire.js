@@ -33,4 +33,12 @@ jQuery(document).ready(function() {
         window.location.href = $ItemsFilterResetButton.attr('value');
         return false;
     });
+
+    var orderActionStrings = config.orderActionStrings;
+    $('.ResendInvoiceButton').on('click', function() {
+        return window.confirm(orderActionStrings.confirm_resend_invoice);
+    });
+    $('#SendRefundButton').on('click', function() {
+        return window.confirm(orderActionStrings.confirm_send_refund);
+    });
 });
