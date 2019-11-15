@@ -544,7 +544,7 @@ trait Orders {
             $fieldset->entityEncodeLabel = false;
             $fieldset->label = $this->_('Refund an amount');
             $fieldset->label .= $refundBadges;
-            $fieldset->icon = 'thumbs-o-up';
+            $fieldset->icon = self::iconRefund;
             $fieldset->collapsed = ($input->send_refund)
                 ? Inputfield::collapsedNo
                 : Inputfield::collapsedYes;
