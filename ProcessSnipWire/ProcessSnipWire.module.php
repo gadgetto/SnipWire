@@ -977,7 +977,7 @@ class ProcessSnipWire extends Process implements Module {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="75%">' .
                         $item['billingAddress']['fullName'] .
                 '</a>';
                 $table->row(array(
@@ -1036,7 +1036,7 @@ class ProcessSnipWire extends Process implements Module {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="75%">' .
                         $item['name'] .
                 '</a>';
 
@@ -1046,7 +1046,7 @@ class ProcessSnipWire extends Process implements Module {
                         $editLink =
                         '<a href="' . $product->editUrl . '"
                             class="pw-panel"
-                            data-panel-width="70%">' .
+                            data-panel-width="75%">' .
                                 wireIconMarkup('pencil-square-o') .
                         '</a>';
                     } else {
@@ -1124,13 +1124,13 @@ class ProcessSnipWire extends Process implements Module {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="75%">' .
                         $item['invoiceNumber'] .
                 '</a>';
                 $panelLink2 =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="75%">' .
                         $item['user']['billingAddress']['fullName'] .
                 '</a>';
                 $table->row(array(
