@@ -338,7 +338,7 @@ trait Orders {
                 '</a>';
                 $panelLink2 =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
-                    class="pw-panel"
+                    class="pw-panel pw-panel-links"
                     data-panel-width="75%">' .
                         $item['user']['billingAddress']['fullName'] .
                 '</a>';
