@@ -705,43 +705,26 @@ trait Orders {
             'trackingNumber' => $this->_('Tracking number'),
         );
 
-        $trackingNumber = $item['trackingNumber'] ? $item['trackingNumber'] : '-';
-        if ($item['trackingUrl'] && $trackingNumber != '-') {
+        $itemData = array();
+        
+        $itemData['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'] . ' (' . $item['email'] .')';
+        $itemData['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $itemData['status'] = $this->orderStatuses[$item['status']];
+        $itemData['shippingMethod'] = $item['shippingMethod'];
+        $itemData['shippingProvider'] = $item['shippingProvider'];
+
+        $trackingNumber = $item['trackingNumber'];
+        if ($item['trackingUrl'] && $item['trackingNumber']) {
             $trackingNumber = '<a href="' . $item['trackingUrl'] . '" target="_blank">' . $trackingNumber . '</a>';
         }
+        $itemData['trackingNumber'] = $trackingNumber;
+        
+        $data = array();
+        foreach ($infoCaptions as $key => $caption) {
+            $data[$caption] = !empty($itemData[$key]) ? $itemData[$key] : '-';
+        }
 
-        $out =
-        '<table class="ItemDetailTable">' .
-            '<tr>' .
-                '<th>' . $infoCaptions['customer'] . '</th> ' .
-                '<td>' . 
-                    $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'] .
-                    ' (' . $item['email'] .')' .
-                '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['creationDate'] . '</th> ' .
-                '<td>' . wireDate('Y-m-d H:i:s', $item['creationDate']) . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['status'] . '</th> ' .
-                '<td>' . $this->orderStatuses[$item['status']] . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['shippingMethod'] . '</th> ' .
-                '<td>' . ($item['shippingMethod'] ? $item['shippingMethod'] : '-') . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['shippingProvider'] . '</th> ' .
-                '<td>' . ($item['shippingProvider'] ? $item['shippingProvider'] : '-') . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['trackingNumber'] . '</th> ' .
-                '<td>' . $trackingNumber . '</td>' .
-            '</tr>' .
-        '</table>';
-
-        return $out;
+        return $this->renderDataSheet($data);
     }
 
     /**
@@ -761,52 +744,31 @@ trait Orders {
             'paymentStatus' => $this->_('Payment Status'),
         );
 
-        $paymentMethodLabel = isset($this->paymentMethods[$item['paymentMethod']])
+        $itemData = array();
+        
+        $itemData['paymentMethod'] = isset($this->paymentMethods[$item['paymentMethod']])
             ? $this->paymentMethods[$item['paymentMethod']]
             : $item['paymentMethod'];
 
-        $creditCardLabel = !empty($item['creditCardLast4Digits'])
+        $itemData['creditCardLast4Digits'] = !empty($item['creditCardLast4Digits'])
             ? '****&nbsp;****&nbsp;****&nbsp;' . $item['creditCardLast4Digits']
-            : '-';
+            : '';
 
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
-        $currencyLabel = isset($supportedCurrencies[$item['currency']])
+        $itemData['currency'] = isset($supportedCurrencies[$item['currency']])
             ? $supportedCurrencies[$item['currency']]
             : $item['currency'];
 
-        $paymentStatusLabel = isset($this->paymentStatuses[$item['paymentStatus']])
+        $itemData['paymentStatus'] = isset($this->paymentStatuses[$item['paymentStatus']])
             ? $this->paymentStatuses[$item['paymentStatus']]
             : $item['paymentStatus'];
 
-        $out =
-        '<table class="ItemDetailTable">' .
-            '<tr>' .
-                '<th>' . $infoCaptions['paymentMethod'] . '</th> ' .
-                '<td>' . $paymentMethodLabel . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['cardType'] . '</th> ' .
-                '<td>' . ($item['cardType'] ? $item['cardType'] : '-') . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['cardHolderName'] . '</th> ' .
-                '<td>' . ($item['cardHolderName'] ? $item['cardHolderName'] : '-') . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['creditCardLast4Digits'] . '</th> ' .
-                '<td>' . $creditCardLabel . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['currency'] . '</th> ' .
-                '<td>' . $currencyLabel . '</td>' .
-            '</tr>' .
-            '<tr>' .
-                '<th>' . $infoCaptions['paymentStatus'] . '</th> ' .
-                '<td>' . $paymentStatusLabel . '</td>' .
-            '</tr>' .
-        '</table>';
+        $data = array();
+        foreach ($infoCaptions as $key => $caption) {
+            $data[$caption] = !empty($itemData[$key]) ? $itemData[$key] : '-';
+        }
 
-        return $out;
+        return $this->renderDataSheet($data);
     }
 
     /**
@@ -1032,17 +994,12 @@ trait Orders {
             'vatNumber' => $this->_('VAT Number'),
         );
 
-        $out = '<table class="ItemDetailTable">';
+        $data = array();
         foreach ($addressCaptions as $key => $caption) {
-            $out .=
-            '<tr>' .
-                '<th>' . $caption . '</th> ' .
-                '<td>' . (!empty($address[$key]) ? $address[$key] : '-') . '</td>';
-            '</tr>';
+            $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
         }
-        $out .= '</table>';
 
-        return $out;
+        return $this->renderDataSheet($data);
     }
 
     /**

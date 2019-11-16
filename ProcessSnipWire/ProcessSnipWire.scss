@@ -276,7 +276,7 @@ $info-color-dark: #0099CC;
     }
 }
 
-.ItemDetailTable {
+.SnipWireDataSheet {
     border: none;
     border-collapse: collapse;
     margin: 0;
@@ -298,7 +298,7 @@ $info-color-dark: #0099CC;
     }
 }
 @media screen and (min-width: 768px) {
-    .ItemDetailTable {
+    .SnipWireDataSheet {
         
         th {
             padding: .25rem 2rem .25rem 0;
@@ -419,7 +419,7 @@ $info-color-dark: #0099CC;
         background-color: rgba(228,235,238,.8);
     }
 
-    .ItemDetailTable {
+    .SnipWireDataSheet {
         
         th {
             font-size: .833333em;
@@ -460,7 +460,7 @@ $info-color-dark: #0099CC;
         margin-top: 1em;
     }
     
-    .ItemDetailTable {
+    .SnipWireDataSheet {
         
         th {
             font-size: .8em;

@@ -1164,6 +1164,28 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * Renders a data sheet (styled like AdminDataTable).
+     *
+     * @param array $data (label => value)
+     * @return markup
+     *
+     */
+    public function renderDataSheet(array $data) {
+
+        $out = '<table class="SnipWireDataSheet">';
+        foreach ($data as $label => $value) {
+            $out .=
+            '<tr>' .
+                '<th>' . $label . '</th> ' .
+                '<td>' . $value . '</td>' .
+            '</tr>';
+        }
+        $out .= '</table>';
+
+        return $out;
+    }
+
+    /**
      * Renders a wrapper for the item lister headline.
      *
      * @param string $headline
