@@ -977,7 +977,7 @@ class ProcessSnipWire extends Process implements Module {
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
-                    class="pw-panel"
+                    class="pw-panel pw-panel-links"
                     data-panel-width="75%">' .
                         $item['billingAddress']['fullName'] .
                 '</a>';
@@ -1036,7 +1036,7 @@ class ProcessSnipWire extends Process implements Module {
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
-                    class="pw-panel"
+                    class="pw-panel pw-panel-links"
                     data-panel-width="75%">' .
                         $item['name'] .
                 '</a>';
@@ -1125,13 +1125,13 @@ class ProcessSnipWire extends Process implements Module {
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
-                    class="pw-panel"
+                    class="pw-panel pw-panel-links"
                     data-panel-width="75%">' .
                         $item['invoiceNumber'] .
                 '</a>';
                 $panelLink2 =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
-                    class="pw-panel"
+                    class="pw-panel pw-panel-links"
                     data-panel-width="75%">' .
                         $item['user']['billingAddress']['fullName'] .
                 '</a>';
