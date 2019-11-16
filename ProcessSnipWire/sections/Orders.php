@@ -547,15 +547,19 @@ trait Orders {
         $form = $modules->get('InputfieldForm');
         $form->id = 'RefundForm';
         $form->action = $this->currentUrl;
+
             $refundBadges = 
             ' <span class="snipwire-badge snipwire-badge-info">' .
                 $this->_('max.') .
                 ' ' . $maxAmountFormatted .
-            '</span>' .
-            ' <span class="snipwire-badge snipwire-badge-warning">' .
-                $this->_('already refunded') .
-                ' ' . $refundsAmountFormatted .
             '</span>';
+            if ($item['refundsAmount']) {
+                $refundBadges .=
+                ' <span class="snipwire-badge snipwire-badge-warning">' .
+                    $this->_('already refunded') .
+                    ' ' . $refundsAmountFormatted .
+                '</span>';
+            }
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->entityEncodeLabel = false;
             $fieldset->label = $this->_('Refund an amount');
