@@ -703,6 +703,7 @@ trait Orders {
     private function _renderOrderInfo($item) {
         $infoCaptions = array(
             'customer' => $this->_('Customer'),
+            'email' => $this->_('Email'),
             'creationDate' => $this->_('Order date'),
             'status' => $this->_('Order status'),
             'shippingMethod' => $this->_('Shipping method'),
@@ -712,7 +713,8 @@ trait Orders {
 
         $itemData = array();
         
-        $itemData['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'] . ' (' . $item['email'] .')';
+        $itemData['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'];
+        $itemData['email'] = '<a href="mailto:' . $item['email'] . '">' . $item['email'] .'</a>';
         $itemData['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
         $itemData['status'] = $this->orderStatuses[$item['status']];
         $itemData['shippingMethod'] = $item['shippingMethod'];
