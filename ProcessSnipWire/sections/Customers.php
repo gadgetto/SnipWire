@@ -187,12 +187,6 @@ trait Customers {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
-        $statuses = array(
-            'All' =>  $this->_('All Customers'),
-            'Confirmed' => $this->_('Confirmed'),
-            'Unconfirmed' => $this->_('Unconfirmed'),
-        );
-
         $filterSettings = array(
             'form' => '#CustomersFilterForm',
         );
@@ -228,7 +222,7 @@ trait Customers {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
                 $f->required = true;
-                $f->addOptions($statuses);
+                $f->addOptions($this->customerStatuses);
 
             $fieldset->add($f);
 
@@ -306,7 +300,7 @@ trait Customers {
                     wireDate('relative', $item['creationDate']),
                     $item['statistics']['ordersCount'],
                     $item['statistics']['subscriptionsCount'],
-                    $item['status'],
+                    $this->customerStatuses[$item['status']],
                 ));
             }
             $out = $table->render();
