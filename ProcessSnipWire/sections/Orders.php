@@ -407,6 +407,7 @@ trait Orders {
         $out =
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
+                wireIconMarkup(self::iconOrder, 'fa-right-margin') .
                 $this->_('Order') . ': ' .
                 $item['invoiceNumber'] .
             '</h2>' .

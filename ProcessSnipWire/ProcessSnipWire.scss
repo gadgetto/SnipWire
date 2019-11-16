@@ -250,6 +250,13 @@ $info-color-dark: #0099CC;
     font-size: 1.5rem !important;
     line-height: 3rem !important;
     margin: 0 !important;
+    
+    .fa {
+        opacity: .8;
+    }
+    .fa-right-margin {
+        margin-right: .25em;
+    }
 }
 .ItemDetailActionButtons {
     line-height: 3rem;
