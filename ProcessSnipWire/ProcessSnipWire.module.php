@@ -135,6 +135,9 @@ class ProcessSnipWire extends Process implements Module {
     /**var array $abandonedCartsTimeRanges The abandoned carts time ranges */
     public $abandonedCartsTimeRanges = array();
 
+    /**var array $customerAddressLabels The customer address labels (billing and shipping) */
+    public $customerAddressLabels = array();
+
     /**var array $customerStatuses The customer statuses */
     public $customerStatuses = array();
 
@@ -202,6 +205,19 @@ class ProcessSnipWire extends Process implements Module {
             'LessThanADay' => $this->_('Last 24 hours'),
             'LessThanAWeek' => $this->_('Last 7 days'),
             'LessThanAMonth' => $this->_('Last 30 days'),
+        );
+        $this->customerAddressLabels = array(
+            'firstName' => $this->_('First Name'),
+            'name' => $this->_('Last Name'),
+            'company' => $this->_('Company'),
+            'address1' => $this->_('Address 1'),
+            'address2' => $this->_('Address 2'),
+            'city' => $this->_('City'),
+            'postalCode' => $this->_('Postal Code'),
+            'province' => $this->_('Province'),
+            'country' => $this->_('Country'),
+            'phone' => $this->_('Phone'),
+            'vatNumber' => $this->_('VAT Number'),
         );
         $this->customerStatuses = array(
             'All' =>  $this->_('All Customers'),
