@@ -404,7 +404,23 @@ trait Orders {
             return $out;
         }
 
-        $out =
+        $out = '';
+
+        // Determine if request comes from within another modal panel.
+        // In this case there will be an URL param "ret" which holds the return URL
+        $ret = urldecode($this->wire('input')->ret);
+        if ($ret) {
+            $out .=
+            '<div class="ItemDetailBackLink">' . 
+                '<a href="' .$ret . '?modal=1"
+                    class="pw-panel-links">' .
+                        wireIconMarkup('times-circle', 'fa-right-margin') .
+                        $this->_('Close order details') .
+                '</a>' .
+            '</div>';
+        }
+
+        $out .=
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
                 wireIconMarkup(self::iconOrder, 'fa-right-margin') .
