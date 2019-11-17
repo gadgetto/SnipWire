@@ -31,6 +31,7 @@ class SnipREST extends WireHttpExtended {
     const resourcePathSubscriptions = 'subscriptions';
     const resourcePathCartsAbandoned = 'carts/abandoned';
     const resourcePathCustomers = 'customers';
+    const resourcePathCustomersOrders = 'customers/{id}/orders';
     const resourcePathProducts = 'products';
     const resourcePathDiscounts = 'discounts';
     const resourcePathSettingsGeneral = 'settings/general'; // undocumented
@@ -55,6 +56,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
     const cacheNamePrefixCartAbandonedDetail = 'CartAbandonedDetail';
     const cacheNamePrefixCustomers = 'Customers';
+    const cacheNamePrefixCustomersOrders = 'CustomersOrders';
     const cacheNamePrefixCustomerDetail = 'CustomerDetail';
     const cacheNamePrefixProducts = 'Products';
     const cacheNamePrefixProductDetail = 'ProductDetail';
@@ -859,7 +861,6 @@ class SnipREST extends WireHttpExtended {
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
-
     }
 
     /**
@@ -880,6 +881,51 @@ class SnipREST extends WireHttpExtended {
      */
     public function getCustomersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getCustomers('items', $options, $expires, $forceRefresh);
+    }
+
+    /**
+     * Get all orders of a customer from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $id The Snipcart id of the customer
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getCustomersOrders($id, $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_customer_id'));
+            return false;
+        }
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixCustomersOrders . '.' . md5($id);
+
+        $url = wirePopulateStringTags(
+            self::apiEndpoint . self::resourcePathCustomersOrders,
+            array('id' => $id)
+        );
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($url) {
+            return $this->getJSON($url);
+        });
+
+        if ($response === false) $response = array();
+        $data[$id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**
