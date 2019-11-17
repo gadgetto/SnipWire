@@ -459,14 +459,26 @@ trait Orders {
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
+            $address = $item['user']['billingAddress'];
+            $data = array();
+            foreach ($this->customerAddressLabels as $key => $caption) {
+                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+            }
+
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Billing Address');
             $f->icon = self::iconAddress;
-            $f->value = $this->_renderCustomerAddress($item['user']['billingAddress']);
+            $f->value = $this->renderDataSheet($data);
             $f->columnWidth = 50;
 
         $wrapper->add($f);
+
+            $address = $item['user']['shippingAddress'];
+            $data = array();
+            foreach ($this->customerAddressLabels as $key => $caption) {
+                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+            }
 
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
@@ -476,7 +488,7 @@ trait Orders {
                 $f->label .= ' <span class="snipwire-badge snipwire-badge-info">' . $this->_('same as billing') . '</span>';
             }
             $f->icon = self::iconAddress;
-            $f->value = $this->_renderCustomerAddress($item['user']['shippingAddress']);
+            $f->value = $this->renderDataSheet($data);
             $f->columnWidth = 50;
 
         $wrapper->add($f);
@@ -961,52 +973,6 @@ trait Orders {
         $out = $table->render();            
 
         return $out;
-    }
-
-    /**
-     * Render a customer address block.
-     *
-     * @param array $address
-     * @return markup 
-     *
-     */
-    private function _renderCustomerAddress($address) {
-        /*
-            "fullName": "John Doe",
-            "firstName": "John",
-            "name": "Doe",
-            "company": "",
-            "address1": "Noname Street 7",
-            "address2": "",
-            "fullAddress": "Noname Street 7",
-            "city": "Nowhere",
-            "country": "AT",
-            "postalCode": "1000",
-            "province": "",
-            "phone": "1234567890",
-            "vatNumber": null
-        */
-
-        $addressCaptions = array(
-            'firstName' => $this->_('First Name'),
-            'name' => $this->_('Last Name'),
-            'company' => $this->_('Company'),
-            'address1' => $this->_('Address 1'),
-            'address2' => $this->_('Address 2'),
-            'city' => $this->_('City'),
-            'postalCode' => $this->_('Postal Code'),
-            'province' => $this->_('Province'),
-            'country' => $this->_('Country'),
-            'phone' => $this->_('Phone'),
-            'vatNumber' => $this->_('VAT Number'),
-        );
-
-        $data = array();
-        foreach ($addressCaptions as $key => $caption) {
-            $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
-        }
-
-        return $this->renderDataSheet($data);
     }
 
     /**
