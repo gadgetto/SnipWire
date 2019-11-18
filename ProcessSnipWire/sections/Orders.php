@@ -410,6 +410,8 @@ trait Orders {
             return $out;
         }
 
+        $refundsCount = count($item['refunds']);
+
         $out = '';
 
         if ($ret) {
@@ -517,12 +519,19 @@ trait Orders {
         if (!empty($item['refunds'])) {
             /** @var InputfieldForm $wrapper */
             $wrapper = $modules->get('InputfieldForm');
-    
+
+                $refundsBadge = 
+                ' <span class="snipwire-badge snipwire-badge-info">' .
+                    sprintf(_n("%d refund", "%d refunds", $refundsCount), $refundsCount) .
+                '</span>';
+
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Refunds Summary');
+                $f->entityEncodeLabel = false;
+                $f->label = $this->_('Refunds');
+                $f->label .= $refundsBadge;
                 $f->icon = self::iconRefund;
-                $f->value = $this->_renderTableRefundsSummary($item['refunds'], $item['currency']);
+                $f->value = $this->_renderTableRefunds($item['refunds'], $item['currency']);
                 $f->collapsed = Inputfield::collapsedYes;
                 
             $wrapper->add($f);
@@ -970,7 +979,7 @@ trait Orders {
      * @return markup MarkupAdminDataTable 
      *
      */
-    private function _renderTableRefundsSummary($refunds, $currency) {
+    private function _renderTableRefunds($refunds, $currency) {
         $modules = $this->wire('modules');
 
         /*
