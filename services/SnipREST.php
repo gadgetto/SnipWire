@@ -920,7 +920,7 @@ class SnipREST extends WireHttpExtended {
         });
 
         if ($response === false) $response = array();
-        $data[$id] = array(
+        $data[self::resourcePathCustomersOrders] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
