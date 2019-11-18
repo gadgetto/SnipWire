@@ -135,8 +135,6 @@ trait Customers {
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
         
-        $id = $input->urlSegment(2); // Get Snipcart customer id
-        
         $this->browserTitle($this->_('Snipcart Customer'));
         $this->headline($this->_('Snipcart Customer'));
 
@@ -147,11 +145,26 @@ trait Customers {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
-        
-        $response = $sniprest->getCustomer($id);
+
+        $id = $input->urlSegment(2); // Get Snipcart customer id
+        $forceRefresh = false;
+
+        $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
+            $forceRefresh = true;
+        }
+
+        $response = $sniprest->getCustomer(
+            $id,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
         $customer = isset($response[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent])
             ? $response[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
+
+        $out = '';
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -161,12 +174,12 @@ trait Customers {
         $f->value = $this->_renderDetailCustomer($customer);
         $f->collapsed = Inputfield::collapsedNever;
 
-        $out = $f->render();
+        $out .= $f->render();
 
         /** @var InputfieldButton $btn */
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
-        $btn->href = $this->currentUrl . '?action=refresh';
+        $btn->href = $this->currentUrl . '?action=refresh&modal=1';
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
         $btn->showInHeader();
@@ -273,7 +286,7 @@ trait Customers {
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
-            $table->setID('snipwire-customers-table');
+            $table->setID('CustomersTable');
             $table->setClass('ItemLister');
             $table->setSortable(false);
             $table->setResizable(true);
@@ -290,8 +303,8 @@ trait Customers {
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
-                    class="pw-panel"
-                    data-panel-width="70%">' .
+                    class="pw-panel pw-panel-links"
+                    data-panel-width="75%">' .
                         wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
                 '</a>';
                 $table->row(array(
@@ -322,20 +335,304 @@ trait Customers {
      */
     private function _renderDetailCustomer($item) {
         $modules = $this->wire('modules');
+        $sniprest = $this->wire('sniprest');
 
-        if (!empty($item)) {
-
-
-            $out = '<pre>' . print_r($item, true) . '</pre>';
-
-
-        } else {
+        if (empty($item)) {
             $out =
             '<div class="snipwire-no-items">' . 
                 $this->_('No customer selected') .
             '</div>';
+            return $out;
+        }
+
+        $id = $item['id'];
+        $email = $item['email'];
+        $ordersCount = $item['statistics']['ordersCount'];
+        $subscriptionsCount = $item['statistics']['subscriptionsCount'];
+
+        $out =
+        '<div class="ItemDetailHeader">' .
+            '<h2 class="ItemDetailTitle">' .
+                wireIconMarkup(self::iconCustomer, 'fa-right-margin') .
+                $this->_('Customer') . ': ' .
+                $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'] .
+            '</h2>' .
+            '<div class="ItemDetailActionButtons">' .
+                $this->_getCustomerDetailActionButtons($id, $email) .
+            '</div>' .
+        '</div>';
+
+        $response = $sniprest->getCustomersOrders($id);
+        $orders = isset($response[SnipREST::resourcePathCustomersOrders][WireHttpExtended::resultKeyContent])
+            ? $response[SnipREST::resourcePathCustomersOrders][WireHttpExtended::resultKeyContent]
+            : array();
+        unset($response);
+        
+        $response = $sniprest->getSubscriptionsItems(array(
+            'limit' => 0,
+            'userDefinedCustomerNameOrEmail' => $email,
+        ));
+        $subscriptions = isset($response[SnipREST::resourcePathSubscriptions][WireHttpExtended::resultKeyContent])
+            ? $response[SnipREST::resourcePathSubscriptions][WireHttpExtended::resultKeyContent]
+            : array();
+        unset($response);
+        
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            $address = $item['billingAddress'];
+            $data = array();
+            foreach ($this->customerAddressLabels as $key => $caption) {
+                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+            }
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Billing Address');
+            $f->icon = self::iconAddress;
+            $f->value = $this->renderDataSheet($data);
+            $f->columnWidth = 50;
+
+        $wrapper->add($f);
+
+            $address = $item['shippingAddress'];
+            $data = array();
+            foreach ($this->customerAddressLabels as $key => $caption) {
+                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+            }
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->entityEncodeLabel = false;
+            $f->label = $this->_('Shipping Address');
+            if ($item['shippingAddressSameAsBilling']) {
+                $f->label .= ' <span class="snipwire-badge snipwire-badge-info">' . $this->_('same as billing') . '</span>';
+            }
+            $f->icon = self::iconAddress;
+            $f->value = $this->renderDataSheet($data);
+            $f->columnWidth = 50;
+
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            $ordersBadge = 
+            ' <span class="snipwire-badge snipwire-badge-info">' .
+                sprintf(_n("%d order", "%d orders", $ordersCount), $ordersCount) .
+            '</span>';
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->entityEncodeLabel = false;
+            $f->label = $this->_('Order History');
+            $f->label .= $ordersBadge;
+            $f->collapsed = Inputfield::collapsedYes;
+            $f->icon = self::iconOrder;
+            $f->value = $this->_renderTableCustomerOrders($orders, $id);
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+        
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            $subscriptionsBadge = 
+            ' <span class="snipwire-badge snipwire-badge-info">' .
+                sprintf(_n("%d subscription", "%d subscriptions", $subscriptionsCount), $subscriptionsCount) .
+            '</span>';
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->entityEncodeLabel = false;
+            $f->label = $this->_('Subscriptions');
+            $f->label .= $subscriptionsBadge;
+            $f->collapsed = Inputfield::collapsedYes;
+            $f->icon = self::iconOrder;
+            $f->value = $this->_renderTableCustomerSubscriptions($subscriptions);
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        if ($this->snipwireConfig->snipwire_debug) {
+
+            /** @var InputfieldForm $wrapper */
+            $wrapper = $modules->get('InputfieldForm');
+
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Debug infos');
+                $f->collapsed = Inputfield::collapsedYes;
+                $f->icon = self::iconDebug;
+                $f->value = '<pre>' . print_r($item, true) . '</pre>';
+                
+            $wrapper->add($f);
+
+            $out .= $wrapper->render();
         }
 
         return $out;
+    }
+
+    /**
+     * Render customer detail action buttons.
+     *
+     * (Currently uses custom button markup as there is a PW bug which 
+     * triggers href targets twice + we need to attach JavaScript events on button click)
+     *
+     * @param $id The customer id
+     * @param $email The customer eamil
+     * @return buttons markup 
+     *
+     */
+    private function _getCustomerDetailActionButtons($id, $email) {
+        
+        $out =
+        '<a href="mailto:' . $email . '"
+            class="SendCustomerEmailButton ui-button ui-widget ui-corner-all ui-state-default"
+            role="button">' .
+                '<span class="ui-button-text ui-button-text-email">' .
+                    wireIconMarkup('envelope') . ' ' . $email .
+                '</span>' .
+        '</a>';                    
+
+        return $out;
+    }
+
+    /**
+     * Render the customer orders table.
+     *
+     * @param array $items
+     * @param array $customerId The customer id
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
+     *
+     */
+    private function _renderTableCustomerOrders($items, $customerId) {
+        $modules = $this->wire('modules');
+
+        if (!empty($items)) {
+            $modules->get('JqueryTableSorter')->use('widgets');
+
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->setID('OrdersTable');
+            $table->setClass('ItemLister');
+            $table->setSortable(false);
+            $table->setResizable(true);
+            $table->setResponsive(true);
+            $table->headerRow(array(
+                $this->_('Invoice #'),
+                $this->_('Placed on'),
+                $this->_('Country'),
+                $this->_('Status'),
+                $this->_('Payment status'),
+                $this->_('Payment method'),
+                $this->_('Total'),
+                //$this->_('Refunded'),
+                '&nbsp;',
+            ));
+            foreach ($items as $item) {
+                // Need to attach a return ULR to be able to stay in modal panel when order detail is opened
+                $ret = urlencode($this->snipWireRootUrl . 'customer/' . $customerId);
+                $invoiceNumber =
+                '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '?modal=1&ret=' . $ret . '"
+                    class="pw-panel-links">' .
+                        wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
+                '</a>';
+                $total =
+                '<strong>' .
+                    CurrencyFormat::format($item['total'], $item['currency']) .
+                '</strong>';
+                // refunds values are currently missing in payload - so can't be used now
+                $refunded = $item['refundsAmount']
+                    ? '<span class="warning-color-dark">' .
+                          CurrencyFormat::format($item['refundsAmount'], $item['currency']) .
+                      '</span>'
+                    : '-';
+                $downloadUrl = wirePopulateStringTags(
+                    SnipREST::snipcartInvoiceUrl,
+                    array('token' => $item['token'])
+                );
+                $downloadLink =
+                '<a href="' . $downloadUrl . '"
+                    target="' . $item['token'] . '"
+                    class="DownloadInvoiceButton pw-tooltip"
+                    title="' . $this->_('Download invoice') .'">' .
+                        wireIconMarkup('download') .
+                '</a>';
+
+                $table->row(array(
+                    $invoiceNumber,
+                    wireDate('relative', $item['creationDate']),
+                    $item['billingAddressCountry'],
+                    $this->orderStatuses[$item['status']],
+                    $this->paymentStatuses[$item['paymentStatus']],
+                    $this->paymentMethods[$item['paymentMethod']],
+                    $total,
+                    //$refunded,
+                    $downloadLink,
+                ));
+            }
+            $out = $table->render();
+        } else {
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No orders found') .
+            '</div>';
+        }
+        return '<div class="ItemListerTable">' . $out . '</div>';
+    }
+
+    /**
+     * Render the customer subscriptions table.
+     *
+     * @param array $items
+     * @return markup MarkupAdminDataTable | custom html with `no items` display 
+     *
+     */
+    private function _renderTableCustomerSubscriptions($items) {
+        $modules = $this->wire('modules');
+
+        if (!empty($items)) {
+            $modules->get('JqueryTableSorter')->use('widgets');
+
+            /** @var MarkupAdminDataTable $table */
+            $table = $modules->get('MarkupAdminDataTable');
+            $table->setEncodeEntities(false);
+            $table->setID('snipwire-subscriptions-table');
+            $table->setClass('ItemLister');
+            $table->setSortable(false);
+            $table->setResizable(true);
+            $table->setResponsive(true);
+            $table->headerRow(array(
+                $this->_('Plan'),
+                $this->_('Creation Date'),
+                $this->_('Status'),
+            ));
+            foreach ($items as $item) {
+                $plan =
+                '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '"
+                    class="pw-panel-links">' .
+                        wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
+                '</a>';
+                $table->row(array(
+                    $plan,
+                    wireDate('relative', $item['creationDate']),
+                    $item['status'],
+                ));
+            }
+            $out = $table->render();
+        } else {
+            $out =
+            '<div class="snipwire-no-items">' . 
+                $this->_('No subscriptions found') .
+            '</div>';
+        }
+        return '<div class="ItemListerTable">' . $out . '</div>';
     }
 }

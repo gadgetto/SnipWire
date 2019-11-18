@@ -242,6 +242,12 @@ $info-color-dark: #0099CC;
     margin: 20px 0 20px 0;
 }
 
+.ItemDetailBackLink {
+    
+    .fa-right-margin {
+        margin-right: .25em;
+    }
+}
 .ItemDetailHeader {
     overflow: hidden;
     padding: 1rem 0;
@@ -258,6 +264,10 @@ $info-color-dark: #0099CC;
         margin-right: .25em;
     }
 }
+.ItemDetailAdditionalInfo {
+    line-height: 1.5rem;
+    font-size: 1rem;
+}
 .ItemDetailActionButtons {
     line-height: 3rem;
     
@@ -266,11 +276,20 @@ $info-color-dark: #0099CC;
         margin-left: 0;
         margin-right: .5rem;
     }
+    .ui-button-text.ui-button-text-email {
+        text-transform: lowercase;
+    }
+
 }
 @media screen and (min-width: 800px) {
     .ItemDetailTitle {
         float: left;
         font-size: 2rem !important;
+    }
+    .ItemDetailAdditionalInfo {
+        float: right;
+        line-height: 3rem;
+        font-size: 1.3rem;
     }
     .ItemDetailActionButtons {
         float: right;
