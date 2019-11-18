@@ -337,6 +337,16 @@ $info-color-dark: #0099CC;
     
 }
 
+.RefundFormDisabled {
+    display: flex;
+    width: 100%;
+    height: 4rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #bfbfbf;
+}
+
 #OrderSummaryTable {
 
     .row-summary-subtotal {

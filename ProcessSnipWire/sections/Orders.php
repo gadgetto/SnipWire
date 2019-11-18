@@ -576,6 +576,7 @@ trait Orders {
         $token = $item['token'];
         $currency = $item['currency'];
         $maxAmount = $item['adjustedAmount'];
+        $refundingEnabled = ($maxAmount > 0) ? true : false;
         $maxAmountFormatted = CurrencyFormat::format($maxAmount, $currency);
         $refundsAmount = $item['refundsAmount'];
         $refundsAmountFormatted = CurrencyFormat::format($refundsAmount, $currency);
@@ -600,9 +601,16 @@ trait Orders {
         }
 
             $refundBadges = 
-            ' <span class="snipwire-badge snipwire-badge-info">' .
+            ' <span class="snipwire-badge snipwire-badge-info">';
+            if ($refundingEnabled) {
+                $refundBadges .=
                 $this->_('max.') .
-                ' ' . $maxAmountFormatted .
+                ' ' . $maxAmountFormatted;
+            } else {
+                $refundBadges .=
+                $this->_('total order refunded');
+            }
+            $refundBadges .= 
             '</span>';
             if ($item['refundsAmount']) {
                 $refundBadges .=
@@ -621,51 +629,69 @@ trait Orders {
                 : Inputfield::collapsedYes;
 
         $form->add($fieldset);
- 
-            /** @var InputfieldText $f */
-            $f = $modules->get('InputfieldText');
-            $f->name = 'amount';
-            $f->label = $this->_('Amount');
-            $f->label .= ' (' . $currencyLabel . ')';
-            $f->description = $this->_('Enter the amount to be refunded.');
-            $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
-            $f->required = true;
-            $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
-            $f->columnWidth = 40;
-        
-        $fieldset->add($f);
 
-            /** @var InputfieldTextarea $f */
-            $f = $modules->get('InputfieldTextarea');
-            $f->name = 'comment';
-            $f->label = $this->_('Internal Note');
-            $f->description = $this->_('This note is for your eyes only and won\'t be shown to your customer.');
-            $f->rows = 3;
-            $f->columnWidth = 60;
-        
-        $fieldset->add($f);
+        if ($refundingEnabled) {
+     
+                /** @var InputfieldText $f */
+                $f = $modules->get('InputfieldText');
+                $f->name = 'amount';
+                $f->label = $this->_('Amount');
+                $f->label .= ' (' . $currencyLabel . ')';
+                $f->description = $this->_('Enter the amount to be refunded.');
+                $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
+                $f->required = true;
+                $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
+                $f->columnWidth = 40;
+            
+            $fieldset->add($f);
+    
+                /** @var InputfieldTextarea $f */
+                $f = $modules->get('InputfieldTextarea');
+                $f->name = 'comment';
+                $f->label = $this->_('Internal Note');
+                $f->description = $this->_('This note is for your eyes only and won\'t be shown to your customer.');
+                $f->rows = 3;
+                $f->columnWidth = 60;
+            
+            $fieldset->add($f);
+    
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->id = 'SendRefundButton';
+                $btn->name = 'send_refund';
+                $btn->value = $this->_('Send refund');
+                $btn->type = 'submit';
+                $btn->small = true;
+    
+            $fieldset->add($btn);
+    
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->name = 'cancel_refund';
+                $btn->value = $this->_('Cancel');
+                $btn->type = 'button';
+                $btn->href = $this->currentUrl . '?modal=1';
+                if ($ret) $btn->href .= '&ret=' . urlencode($ret);
+                $btn->small = true;
+                $btn->secondary = true;
+    
+            $fieldset->add($btn);
 
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->id = 'SendRefundButton';
-            $btn->name = 'send_refund';
-            $btn->value = $this->_('Send refund');
-            $btn->type = 'submit';
-            $btn->small = true;
+        } else {
 
-        $fieldset->add($btn);
-
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
-            $btn->name = 'cancel_refund';
-            $btn->value = $this->_('Cancel');
-            $btn->type = 'button';
-            $btn->href = $this->currentUrl . '?modal=1';
-            if ($ret) $btn->href .= '&ret=' . urlencode($ret);
-            $btn->small = true;
-            $btn->secondary = true;
-
-        $fieldset->add($btn);
+                $disabledMarkup =
+                '<div class="RefundFormDisabled">' .
+                    $this->_('Maximum refund amount reached') .
+                '</div>';
+                
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Refunding disabled');
+                $f->value = $disabledMarkup;
+                $f->collapsed = Inputfield::collapsedNever;
+            
+            $fieldset->add($f);
+        }
 
         // Render form without processing if not submitted
         if (!$input->post->send_refund) return $form->render();
