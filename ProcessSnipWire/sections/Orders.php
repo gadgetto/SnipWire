@@ -158,6 +158,10 @@ trait Orders {
 
         $this->_setJSConfigValues();
 
+        // Determine if request comes from within another page in a modal panel.
+        // In this case there will be an input param "ret" (can be GET or POST) which holds the return URL.
+        $ret = urldecode($input->ret);
+
         $token = $input->urlSegment(2); // Get Snipcart order token
         $forceRefresh = false;
 
@@ -185,7 +189,7 @@ trait Orders {
         $f->label = $this->_('Snipcart Order');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = self::iconOrder;
-        $f->value = $this->_renderDetailOrder($order);
+        $f->value = $this->_renderDetailOrder($order, $ret);
         $f->collapsed = Inputfield::collapsedNever;
 
         $out .= $f->render();
@@ -194,6 +198,7 @@ trait Orders {
         $btn = $modules->get('InputfieldButton');
         $btn->id = 'refresh-data';
         $btn->href = $this->currentUrl . '?action=refresh&modal=1';
+        if ($ret) $btn->href .= '&ret=' . urlencode($ret);
         $btn->value = $this->_('Refresh');
         $btn->icon = 'refresh';
 
@@ -390,10 +395,11 @@ trait Orders {
      * Render the order detail view.
      *
      * @param array $item
+     * @param string $ret A return URL (optional)
      * @return markup 
      *
      */
-    private function _renderDetailOrder($item) {
+    private function _renderDetailOrder($item, $ret = '') {
         $modules = $this->wire('modules');
 
         if (empty($item)) {
@@ -406,9 +412,6 @@ trait Orders {
 
         $out = '';
 
-        // Determine if request comes from within another modal panel.
-        // In this case there will be an URL param "ret" which holds the return URL
-        $ret = urldecode($this->wire('input')->ret);
         if ($ret) {
             $out .=
             '<div class="ItemDetailBackLink">' . 
@@ -428,11 +431,11 @@ trait Orders {
                 $item['invoiceNumber'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                $this->_getOrderDetailActionButtons($item['token']) .
+                $this->_getOrderDetailActionButtons($item['token'], $ret) .
             '</div>' .
         '</div>';
 
-        $out .= $this->_processRefundForm($item);
+        $out .= $this->_processRefundForm($item, $ret);
 
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
@@ -551,10 +554,11 @@ trait Orders {
      * Render and process the refund form.
      *
      * @param array $item
+     * @param string $ret A return URL (optional)
      * @return markup 
      *
      */
-    private function _processRefundForm($item) {
+    private function _processRefundForm($item, $ret = '') {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
         $input = $this->wire('input');
@@ -576,6 +580,15 @@ trait Orders {
         $form = $modules->get('InputfieldForm');
         $form->id = 'RefundForm';
         $form->action = $this->currentUrl;
+
+        if ($ret) {
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->name = 'ret';
+            $f->value = urlencode($ret);
+
+            $form->add($f);
+        }
 
             $refundBadges = 
             ' <span class="snipwire-badge snipwire-badge-info">' .
@@ -639,6 +652,7 @@ trait Orders {
             $btn->value = $this->_('Cancel');
             $btn->type = 'button';
             $btn->href = $this->currentUrl . '?modal=1';
+            if ($ret) $btn->href .= '&ret=' . urlencode($ret);
             $btn->small = true;
             $btn->secondary = true;
 
@@ -677,7 +691,9 @@ trait Orders {
         if ($success) {
             // Reset cache for this order and redirect to myself to display updated values
             $this->wire('sniprest')->deleteOrderCache($token);
-            $session->redirect($this->currentUrl . '?modal=1');
+            $redirectUrl = $this->currentUrl . '?modal=1';
+            if ($ret) $redirectUrl .= '&ret=' . urlencode($ret);
+            $session->redirect($redirectUrl);
         }
 
         return $form->render();
@@ -690,10 +706,11 @@ trait Orders {
      * triggers href targets twice + we need to attach JavaScript events on button click)
      *
      * @param $token The order token
+     * @param string $ret A return URL (optional)
      * @return buttons markup 
      *
      */
-    private function _getOrderDetailActionButtons($token) {
+    private function _getOrderDetailActionButtons($token, $ret = '') {
         $downloadUrl = wirePopulateStringTags(
             SnipREST::snipcartInvoiceUrl,
             array('token' => $token)
@@ -709,8 +726,10 @@ trait Orders {
                 '</span>' .
         '</a>';
 
+        $resendInvoiceUrl = $this->currentUrl . '?action=resend_invoice&modal=1';
+        if ($ret) $resendInvoiceUrl .= '&ret=' . urlencode($ret);
         $out .=
-        '<a href="' . $this->currentUrl . '?action=resend_invoice&modal=1"
+        '<a href="' . $resendInvoiceUrl . '"
             class="ResendInvoiceButton ui-button ui-widget ui-corner-all ui-state-default"
             role="button">' .
                 '<span class="ui-button-text">' .
