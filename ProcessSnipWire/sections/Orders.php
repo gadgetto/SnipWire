@@ -700,7 +700,7 @@ trait Orders {
     }
 
     /**
-     * Render the action buttons.
+     * Render order detail action buttons.
      *
      * (Currently uses custom button markup as there is a PW bug which 
      * triggers href targets twice + we need to attach JavaScript events on button click)
