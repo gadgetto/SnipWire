@@ -210,12 +210,14 @@ $info-color-dark: #0099CC;
     }
 }
 
-.ItemsFilterButtonWrapper {
+.FormButtonsWrapper {
     
-    button {
+    button,
+    .ui-button {
         margin-right: .5rem;
     }
 }
+
 .ItemListerTable {
     clear: both;
     overflow-x: auto;
