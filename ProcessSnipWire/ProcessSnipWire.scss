@@ -77,15 +77,6 @@ $info-color-dark: #0099CC;
     }
 }
 
-// Fix for unnecessary margin of empty pw-content-head-buttons in modals
-// @todo: needs to be fixed in ProcessWire core!
-.modal.ProcessSnipWire {
-    
-    #pw-content-head-buttons {
-        display: none;
-    }
-}
-
 #pw-content-head {
     
     h1 {
