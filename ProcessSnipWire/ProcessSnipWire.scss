@@ -438,13 +438,15 @@ $info-color-dark: #0099CC;
     }
     #PeriodPickerSelect {
         font-size: 1.1rem;
-        line-height: 1.8em;
     }
 
     .CurrencyPickerContainer {
 
         .InputfieldHeaderHidden:after {
             content: '';
+        }
+        .InputfieldContent {
+            margin-top: .25em;
         }
         select {
             width: 100%;
@@ -479,13 +481,15 @@ $info-color-dark: #0099CC;
     }
     #PeriodPickerSelect {
         font-size: 1.1rem;
-        line-height: 1.8em;
     }
 
     .CurrencyPickerContainer {
         
         .InputfieldHeaderHidden:after {
             content: '';
+        }
+        .InputfieldContent {
+            margin-top: .25em;
         }
         select {
             width: 100%;
