@@ -658,6 +658,7 @@ trait Orders {
                 $btn->id = 'SendRefundButton';
                 $btn->name = 'send_refund';
                 $btn->value = $this->_('Send refund');
+                $btn->icon = self::iconRefund;
                 $btn->type = 'submit';
                 $btn->small = true;
     
