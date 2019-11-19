@@ -258,7 +258,8 @@ $info-color-dark: #0099CC;
     margin: 0 !important;
     
     .fa {
-        opacity: .8;
+        opacity: .7;
+        font-size: inherit !important;
     }
     .fa-right-margin {
         margin-right: .25em;
