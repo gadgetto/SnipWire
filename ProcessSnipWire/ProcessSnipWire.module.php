@@ -1257,6 +1257,9 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     private function _getFilterFormButtons($resetUrl) {
+        // Currently need to add button(s) below a form this way as 
+        // InputfieldButton has a lot of layout based problems
+        // @todo: fix this in Processwire core
         $out = 
         '<small>' .
             '<button class="ui-button ui-widget ui-corner-all ui-state-default" type="submit">' .
