@@ -641,7 +641,6 @@ trait Orders {
                 $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
                 $f->required = true;
                 $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
-                $f->columnWidth = 40;
             
             $fieldset->add($f);
     
@@ -651,10 +650,9 @@ trait Orders {
                 $f->label = $this->_('Internal Note');
                 $f->description = $this->_('This note is for your eyes only and won\'t be shown to your customer.');
                 $f->rows = 3;
-                $f->columnWidth = 60;
             
             $fieldset->add($f);
-    
+
                 /** @var InputfieldButton $btn */
                 $btn = $modules->get('InputfieldButton');
                 $btn->id = 'SendRefundButton';
@@ -662,18 +660,6 @@ trait Orders {
                 $btn->value = $this->_('Send refund');
                 $btn->type = 'submit';
                 $btn->small = true;
-    
-            $fieldset->add($btn);
-    
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
-                $btn->name = 'cancel_refund';
-                $btn->value = $this->_('Cancel');
-                $btn->type = 'button';
-                $btn->href = $this->currentUrl . '?modal=1';
-                if ($ret) $btn->href .= '&ret=' . urlencode($ret);
-                $btn->small = true;
-                $btn->secondary = true;
     
             $fieldset->add($btn);
 
