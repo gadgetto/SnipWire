@@ -648,7 +648,7 @@ trait Orders {
                 $f = $modules->get('InputfieldTextarea');
                 $f->name = 'comment';
                 $f->label = $this->_('Internal Note');
-                $f->description = $this->_('This note is for your eyes only and won\'t be shown to your customer.');
+                $f->detail = $this->_('This note is for your eyes only and won\'t be shown to your customer.');
                 $f->rows = 3;
             
             $fieldset->add($f);
