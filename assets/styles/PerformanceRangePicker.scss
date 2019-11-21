@@ -57,39 +57,3 @@
         }
     }
 }
-
-// Theme dependant style overrides (base styles are for AdminThemeUikit)
-
-.AdminThemeDefault {
-
-    .drp-buttons {
-        
-        .btn:hover {
-            background: #db1174;
-            opacity: 1;
-        }
-        .btn-default {
-            background: #93bf0d;
-            opacity: .7;
-        }
-        .btn-primary {
-            background: #93bf0d;
-        }
-    }
-}
-.AdminThemeReno {
-    
-    .drp-buttons {
-        
-        .btn {
-            transition: all 120ms ease-in;
-        }
-        .btn-default {
-            background: #364d68;
-        }
-        .btn-primary {
-            background: #3eb998;
-        }
-    }
-}
-

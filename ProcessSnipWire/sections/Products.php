@@ -220,7 +220,6 @@ trait Products {
             $fieldset->add($f);
 
                 $buttonsWrapper = $modules->get('InputfieldMarkup');
-                $buttonsWrapper->contentClass = 'ItemsFilterButtonWrapper';
                 $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
             $fieldset->add($buttonsWrapper);

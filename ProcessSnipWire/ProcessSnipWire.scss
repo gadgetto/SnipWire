@@ -133,6 +133,9 @@ $info-color-dark: #0099CC;
 #PeriodPickerReset {
     display: inline-block;
     float: right;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-right: 0;
 }
 @media screen and (max-width: 480px) {
     #PeriodPickerReset {
@@ -210,12 +213,9 @@ $info-color-dark: #0099CC;
     }
 }
 
-.FormButtonsWrapper {
-    
-    button,
-    .ui-button {
-        margin-right: .5rem;
-    }
+.SnipCartActionButtons {
+    display: inline-block;
+    margin: 20px 0 20px 0;
 }
 
 .ItemListerTable {
@@ -229,15 +229,6 @@ $info-color-dark: #0099CC;
 .ItemListerHeadline {
     float: left;
     margin-top: 20px;
-}
-.SnipCartActionButtons {
-    display: inline-block;
-    margin: 20px 0 20px 0;
-    
-    .ui-button {
-        margin-left: 0;
-        margin-right: .5rem;
-    }
 }
 
 .ItemDetailBackLink {
@@ -427,83 +418,4 @@ $info-color-dark: #0099CC;
        font-size: .875rem;
        line-height: 1.5;
    } 
-}
-
-// Theme dependant style overrides (base styles are for AdminThemeUikit)
-
-.AdminThemeDefault {
-    #SnipwireDashboard {
-        overflow: hidden;
-    }
-    #PeriodPickerSelect {
-        font-size: 1.1rem;
-    }
-
-    .CurrencyPickerContainer {
-
-        .InputfieldHeaderHidden:after {
-            content: '';
-        }
-        .InputfieldContent {
-            margin-top: .25em;
-        }
-        select {
-            width: 100%;
-            font-size: 1.1em;
-        }
-    }
-    .snipwire-perf-box {
-        background-color: rgba(228,235,238,.8);
-    }
-
-    .SnipWireDataSheet {
-        
-        th {
-            font-size: .833333em;
-            color: #9ec5d2;
-        }
-    }
-}
-
-.AdminThemeReno {
-    #SnipwireDashboard {
-        
-    }
-    #headline {
-        
-        #title {
-            display: inline-block;
-            background: url(../assets/images/snipwire-logo.svg) no-repeat left center;
-            background-size: auto 1em;
-            padding-left: 1.2em;
-        }
-    }
-    #PeriodPickerSelect {
-        font-size: 1.1rem;
-    }
-
-    .CurrencyPickerContainer {
-        
-        .InputfieldHeaderHidden:after {
-            content: '';
-        }
-        .InputfieldContent {
-            margin-top: .25em;
-        }
-        select {
-            width: 100%;
-            font-size: 1.1em;
-        }
-    }
-    .ItemListerHeadline {
-        margin-top: 1em;
-    }
-    
-    .SnipWireDataSheet {
-        
-        th {
-            font-size: .8em;
-            color: #6c8dae;
-        }
-    }
 }

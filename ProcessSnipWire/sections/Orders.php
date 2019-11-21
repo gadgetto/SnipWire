@@ -282,7 +282,6 @@ trait Orders {
             $fieldset->add($f);
             
                 $buttonsWrapper = $modules->get('InputfieldMarkup');
-                $buttonsWrapper->contentClass = 'FormButtonsWrapper';
                 $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
             $fieldset->add($buttonsWrapper);
