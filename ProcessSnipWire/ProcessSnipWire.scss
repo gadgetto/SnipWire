@@ -233,6 +233,11 @@ $info-color-dark: #0099CC;
 .SnipCartActionButtons {
     display: inline-block;
     margin: 20px 0 20px 0;
+    
+    .ui-button {
+        margin-left: 0;
+        margin-right: .5rem;
+    }
 }
 
 .ItemDetailBackLink {
