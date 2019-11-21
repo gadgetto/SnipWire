@@ -67,6 +67,7 @@ trait Orders {
         $defaultSelector = array(
             'offset' => $offset,
             'limit' => $limit,
+            'format' => 'Excerpt',
         );
  
         $selector = array_merge($defaultSelector, $filter);
@@ -311,6 +312,26 @@ trait Orders {
     private function _renderTableOrders($items) {
         $modules = $this->wire('modules');
 
+        /*
+        This is a sample order item when using format="Excerpt":
+        (hint from Snipcart/@charls on Slack on 20.11.2019 #undocumented)
+        {
+            "token": "7043e043-bb47-42c4-b7a5-646944c36e10",
+            "invoiceNumber": "SNIP-1062",
+            "recoveredFromCampaignId": null,
+            "isRecurringOrder": false,
+            "completionDate": "2019-11-09T06:41:12Z",
+            "placedBy": "John Doe",
+            "status": "Processed",
+            "paymentStatus": "Paid",
+            "paymentMethod": "CreditCard",
+            "shippingMethod": "Express Delivery",
+            "finalGrandTotal": 219.66,
+            "adjustedAmount": 76.66,
+            "currency": "eur"
+        }
+        */
+        
         if (!empty($items)) {
             $modules->get('JqueryTableSorter')->use('widgets');
 
@@ -326,7 +347,6 @@ trait Orders {
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
                 $this->_('Placed by'),
-                $this->_('Country'),
                 $this->_('Status'),
                 $this->_('Payment status'),
                 $this->_('Payment method'),
@@ -341,19 +361,14 @@ trait Orders {
                     data-panel-width="75%">' .
                         wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
                 '</a>';
-                $panelLink2 =
-                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
-                    class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
-                        $item['user']['billingAddress']['fullName'] .
-                '</a>';
                 $total =
                 '<strong>' .
-                    CurrencyFormat::format($item['total'], $item['currency']) .
+                    CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
                 '</strong>';
-                $refunded = $item['refundsAmount']
+                $refundsAmount = $item['finalGrandTotal'] - $item['adjustedAmount'];
+                $refunded = $refundsAmount
                     ? '<span class="warning-color-dark">' .
-                          CurrencyFormat::format($item['refundsAmount'], $item['currency']) .
+                          CurrencyFormat::format($refundsAmount, $item['currency']) .
                       '</span>'
                     : '-';
                 $downloadUrl = wirePopulateStringTags(
@@ -370,9 +385,8 @@ trait Orders {
 
                 $table->row(array(
                     $panelLink,
-                    wireDate('relative', $item['creationDate']),
-                    $panelLink2,
-                    $item['billingAddressCountry'],
+                    wireDate('relative', $item['completionDate']),
+                    $item['placedBy'],
                     $this->orderStatuses[$item['status']],
                     $this->paymentStatuses[$item['paymentStatus']],
                     $this->paymentMethods[$item['paymentMethod']],
