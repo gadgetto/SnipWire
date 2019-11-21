@@ -513,7 +513,7 @@ class ProcessSnipWire extends Process implements Module {
 
         // Prevent rendering of Tabs in modal/panel
         if ($input->get('modal')) {
-            return '<div id="SnipWireDashboardModal" class="SnipWireDashboardWrapper">' . $out . '</div>';
+            return '<div id="SnipWireDashboardModal">' . $out . '</div>';
         }
 
         /** @var JqueryWireTabs $wireTabs */
@@ -584,7 +584,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $out =
         $this->_renderTabListCustom($tabs, $options) .
-        '<div id="SnipWireDashboard" class="SnipWireDashboardWrapper">' . $out . '</div>';
+        '<div id="SnipWireDashboard">' . $out . '</div>';
 
         $moduleInfo = $modules->getModuleInfoVerbose('SnipWire');
         $out .= 
