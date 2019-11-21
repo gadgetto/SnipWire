@@ -673,7 +673,7 @@ class ProcessSnipWire extends Process implements Module {
         $btn->icon = 'refresh';
         $btn->secondary = true;
         $btn->attr('title', $this->_('Refresh the complete Snipcart cache for all sections'));
-        $btn->addClass('tooltip');
+        $btn->addClass('pw-tooltip');
 
         $actionButtons .= $btn->render();
 
