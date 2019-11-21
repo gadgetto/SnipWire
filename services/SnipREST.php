@@ -328,6 +328,7 @@ class SnipREST extends WireHttpExtended {
      *  - `placedBy` (string) The name of the person who made the purchase
      *  - `from` (datetime) Will return only the orders placed after this date
      *  - `to` (datetime) Will return only the orders placed before this date
+     *  - 'format' (string) Get a simplified version of orders payload + faster query (Possible values: Excerpt) #undocumented
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
@@ -339,7 +340,7 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
-        $allowedOptions = array('offset', 'limit', 'status', 'paymentStatus', 'invoiceNumber', 'placedBy', 'from', 'to');
+        $allowedOptions = array('offset', 'limit', 'status', 'paymentStatus', 'invoiceNumber', 'placedBy', 'from', 'to', 'format');
         $defaultOptions = array(
             'offset' => 0,
             'limit' => 20,
