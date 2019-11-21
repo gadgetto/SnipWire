@@ -235,6 +235,7 @@ class SnipREST extends WireHttpExtended {
             'limit' => 10,
             'from' => $start,
             'to' => $end,
+            'format' => 'Excerpt',
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathOrders . $query);
@@ -307,6 +308,7 @@ class SnipREST extends WireHttpExtended {
             'limit' => 10,
             'from' => $start,
             'to' => $end,
+            'format' => 'Excerpt',
         );
         $data[] = $sniprest->getOrders($selector);
         

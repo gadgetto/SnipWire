@@ -1141,9 +1141,9 @@ class ProcessSnipWire extends Process implements Module {
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
                 $this->_('Placed by'),
-                $this->_('Country'),
                 $this->_('Status'),
-                $this->_('Payment Status'),
+                $this->_('Payment status'),
+                $this->_('Payment method'),
                 $this->_('Total'),
             ));
             foreach ($items as $item) {
@@ -1153,20 +1153,18 @@ class ProcessSnipWire extends Process implements Module {
                     data-panel-width="75%">' .
                         $item['invoiceNumber'] .
                 '</a>';
-                $panelLink2 =
-                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
-                    class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
-                        $item['user']['billingAddress']['fullName'] .
-                '</a>';
+                $total =
+                '<strong>' .
+                    CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
+                '</strong>';
                 $table->row(array(
                     $panelLink,
-                    wireDate('relative', $item['creationDate']),
-                    $panelLink2,
-                    $item['billingAddressCountry'],
+                    wireDate('relative', $item['completionDate']),
+                    $item['placedBy'],
                     $this->orderStatuses[$item['status']],
                     $this->paymentStatuses[$item['paymentStatus']],
-                    CurrencyFormat::format($item['total'], $item['currency']),
+                    $this->paymentMethods[$item['paymentMethod']],
+                    $total,
                 ));
             }
             $out = $table->render();            
