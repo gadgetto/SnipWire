@@ -677,7 +677,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $actionButtons .= $btn->render();
 
-        return '<div class="SnipCartActionButtons">' . $actionButtons . '</div>';
+        return '<div class="ActionButtonsWrapper">' . $actionButtons . '</div>';
     }
 
     /**
