@@ -285,6 +285,9 @@ class ProcessSnipWire extends Process implements Module {
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
+        } elseif ($action == 'refresh_all') {
+            $sniprest->resetFullCache();
+            $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
         } elseif ($action == 'reset') {
             $this->message($this->_('Store performance date range set to default.'));
             $this->_resetDateRange();
@@ -380,15 +383,7 @@ class ProcessSnipWire extends Process implements Module {
 
         $out .= $wrapper->render();
 
-        /** @var InputfieldButton $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->id = 'refresh-data';
-        $btn->href = $this->currentUrl . '?action=refresh';
-        $btn->value = $this->_('Refresh');
-        $btn->icon = 'refresh';
-        $btn->showInHeader();
-
-        $out .= $btn->render();
+        $out .= $this->_renderActionButtons();
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -647,6 +642,42 @@ class ProcessSnipWire extends Process implements Module {
         
         $out .= "</ul>";
         return $out; 
+    }
+
+    /**
+     * Render action buttons with wrapper.
+     * (used below item listers and detail pages)
+     *
+     * @return markup
+     *
+     */
+    private function _renderActionButtons() {
+        $modules = $this->wire('modules');
+        $input = $this->wire('input');
+
+        $modal = ($input->get('modal')) ? '&modal=1' : '';
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->href = $this->currentUrl . '?action=refresh' . $modal;
+        $btn->value = $this->_('Refresh');
+        $btn->icon = 'refresh';
+        $btn->showInHeader();
+
+        $actionButtons = $btn->render();
+
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->href = $this->currentUrl . '?action=refresh_all' . $modal;
+        $btn->value = $this->_('Refresh all');
+        $btn->icon = 'refresh';
+        $btn->secondary = true;
+        $btn->attr('title', $this->_('Refresh the complete Snipcart cache for all sections'));
+        $btn->addClass('tooltip');
+
+        $actionButtons .= $btn->render();
+
+        return '<div class="SnipCartActionButtons">' . $actionButtons . '</div>';
     }
 
     /**

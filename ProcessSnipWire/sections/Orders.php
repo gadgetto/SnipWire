@@ -49,6 +49,9 @@ trait Orders {
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
+        } elseif ($action == 'refresh_all') {
+            $sniprest->resetFullCache();
+            $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
         } elseif ($action == 'download_invoice') {
             $out .= $this->_downloadInvoice($token);
         }
@@ -119,15 +122,7 @@ trait Orders {
 
         $out .= $f->render();
 
-        /** @var InputfieldButton $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->id = 'refresh-data';
-        $btn->href = $this->currentUrl . '?action=refresh';
-        $btn->value = $this->_('Refresh');
-        $btn->icon = 'refresh';
-        $btn->showInHeader();
-
-        $out .= '<div class="ItemListerButtons">' . $btn->render() . '</div>';
+        $out .= $this->_renderActionButtons();
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -170,6 +165,9 @@ trait Orders {
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
+        } elseif ($action == 'refresh_all') {
+            $sniprest->resetFullCache();
+            $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
         } elseif ($action == 'resend_invoice') {
             $this->_resendInvoice($token);
         }
@@ -195,15 +193,7 @@ trait Orders {
 
         $out .= $f->render();
 
-        /** @var InputfieldButton $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->id = 'refresh-data';
-        $btn->href = $this->currentUrl . '?action=refresh&modal=1';
-        if ($ret) $btn->href .= '&ret=' . urlencode($ret);
-        $btn->value = $this->_('Refresh');
-        $btn->icon = 'refresh';
-
-        $out .= $btn->render();
+        $out .= $this->_renderActionButtons();
 
         return $this->_wrapDashboardOutput($out);
     }

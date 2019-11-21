@@ -44,6 +44,9 @@ trait AbandonedCarts {
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
+        } elseif ($action == 'refresh_all') {
+            $sniprest->resetFullCache();
+            $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
         }
 
         $timeRange = $sanitizer->text($input->timeRange);
@@ -96,15 +99,7 @@ trait AbandonedCarts {
 
         $out .= $f->render();
 
-        /** @var InputfieldButton $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->id = 'refresh-data';
-        $btn->href = $this->currentUrl . '?action=refresh';
-        $btn->value = $this->_('Refresh');
-        $btn->icon = 'refresh';
-        $btn->showInHeader();
-
-        $out .= '<div class="ItemListerButtons">' . $btn->render() . '</div>';
+        $out .= $this->_renderActionButtons();
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -150,15 +145,7 @@ trait AbandonedCarts {
 
         $out = $f->render();
 
-        /** @var InputfieldButton $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->id = 'refresh-data';
-        $btn->href = $this->currentUrl . '?action=refresh';
-        $btn->value = $this->_('Refresh');
-        $btn->icon = 'refresh';
-        $btn->showInHeader();
-
-        $out .= $btn->render();
+        $out .= $this->_renderActionButtons();
 
         return $this->_wrapDashboardOutput($out);
     }
