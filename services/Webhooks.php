@@ -182,7 +182,7 @@ class Webhooks extends WireData {
             );
             return false;
         }
-        $handshakeUrl = $sniprest::apiEndpoint . $sniprest::resourcePathRequestValidation . DIRECTORY_SEPARATOR . $requestToken;
+        $handshakeUrl = $sniprest::apiEndpoint . $sniprest::resPathRequestValidation . DIRECTORY_SEPARATOR . $requestToken;
         if (($handshake = $sniprest->get($handshakeUrl)) === false) {
             $log->save(
                 self::snipWireWebhooksLogName,

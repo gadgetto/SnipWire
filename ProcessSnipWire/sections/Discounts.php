@@ -64,8 +64,8 @@ trait Discounts {
             $forceRefresh
         );
 
-        $discounts = isset($response[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathDiscounts][WireHttpExtended::resultKeyContent]
+        $discounts = isset($response[SnipRest::resPathDiscounts][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathDiscounts][WireHttpExtended::resultKeyContent]
             : array();
 
         // As discounts have no query params for REST, we need to search in the result set instead
@@ -137,8 +137,8 @@ trait Discounts {
         }
         
         $response = $sniprest->getDiscount($id);
-        $discount = isset($response[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+        $discount = isset($response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

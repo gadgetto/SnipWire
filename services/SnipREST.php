@@ -22,23 +22,23 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'WireHttpExtended.php';
 class SnipREST extends WireHttpExtended {
 
     const apiEndpoint = 'https://app.snipcart.com/api/';
-    const resourcePathDataPerformance = 'data/performance'; // undocumented
-    const resourcePathDataOrdersSales = 'data/orders/sales'; // undocumented
-    const resourcePathDataOrdersCount = 'data/orders/count'; // undocumented
-    const resourcePathOrders = 'orders';
-    const resourcePathOrdersNotifications = 'orders/{token}/notifications';
-    const resourcePathOrdersRefunds = 'orders/{token}/refunds';
-    const resourcePathSubscriptions = 'subscriptions';
-    const resourcePathCartsAbandoned = 'carts/abandoned';
-    const resourcePathCustomers = 'customers';
-    const resourcePathCustomersOrders = 'customers/{id}/orders';
-    const resourcePathProducts = 'products';
-    const resourcePathDiscounts = 'discounts';
-    const resourcePathSettingsGeneral = 'settings/general'; // undocumented
-    const resourcePathSettingsDomain = 'settings/domain';
-    const resourcePathSettingsAllowedDomains = 'settings/alloweddomains';
-    const resourcePathShippingMethods = 'shipping_methods';
-    const resourcePathRequestValidation = 'requestvalidation'; // + HTTP_X_SNIPCART_REQUESTTOKEN
+    const resPathDataPerformance = 'data/performance'; // undocumented
+    const resPathDataOrdersSales = 'data/orders/sales'; // undocumented
+    const resPathDataOrdersCount = 'data/orders/count'; // undocumented
+    const resPathOrders = 'orders';
+    const resPathOrdersNotifications = 'orders/{token}/notifications';
+    const resPathOrdersRefunds = 'orders/{token}/refunds';
+    const resPathSubscriptions = 'subscriptions';
+    const resPathCartsAbandoned = 'carts/abandoned';
+    const resPathCustomers = 'customers';
+    const resPathCustomersOrders = 'customers/{id}/orders';
+    const resPathProducts = 'products';
+    const resPathDiscounts = 'discounts';
+    const resPathSettingsGeneral = 'settings/general'; // undocumented
+    const resPathSettingsDomain = 'settings/domain';
+    const resPathSettingsAllowedDomains = 'settings/alloweddomains';
+    const resPathShippingMethods = 'shipping_methods';
+    const resPathRequestValidation = 'requestvalidation'; // + HTTP_X_SNIPCART_REQUESTTOKEN
     const snipcartInvoiceUrl = 'https://app.snipcart.com/invoice/{token}'; // currently not possible via API
     
     const cacheNamespace = 'SnipWire';
@@ -134,7 +134,7 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get settings array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, self::cacheNamePrefixSettings, $expires, function() {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathSettingsGeneral);
+            return $this->getJSON(self::apiEndpoint . self::resPathSettingsGeneral);
         });
         return ($key && isset($response[$key])) ? $response[$key] : $response;
     }
@@ -176,7 +176,7 @@ class SnipREST extends WireHttpExtended {
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
      * @param string $currency Currency string
-     * @return array $data Dashboard data as array (indexed by `resourcePath...`)
+     * @return array $data Dashboard data as array (indexed by `resPath...`)
      *
      */
     private function _getDashboardDataMulti($start, $end, $currency) {
@@ -192,7 +192,7 @@ class SnipREST extends WireHttpExtended {
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
-        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataPerformance . $query);
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataPerformance . $query);
 
         // ---- Part of performance boxes + performance chart data ----
 
@@ -204,8 +204,8 @@ class SnipREST extends WireHttpExtended {
         
         // @todo: query Snipcart API for each currency separately and convert sales values to default currency
         
-        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataOrdersSales . $query);
-        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataOrdersSales . $query);
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataOrdersCount . $query);
 
         // ---- Top 10 customers ----
         
@@ -215,7 +215,7 @@ class SnipREST extends WireHttpExtended {
             'to' => $end,
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
-        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathCustomers . $query);
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resPathCustomers . $query);
 
         // ---- Top 10 products ----
 
@@ -228,7 +228,7 @@ class SnipREST extends WireHttpExtended {
             'to' => $end,
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
-        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathProducts . $query);
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resPathProducts . $query);
 
         // ---- Latest 10 orders ----
 
@@ -239,7 +239,7 @@ class SnipREST extends WireHttpExtended {
             'format' => 'Excerpt',
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
-        $this->addMultiCURLRequest(self::apiEndpoint . self::resourcePathOrders . $query);
+        $this->addMultiCURLRequest(self::apiEndpoint . self::resPathOrders . $query);
 
         return $this->getMultiJSON();
     }
@@ -250,7 +250,7 @@ class SnipREST extends WireHttpExtended {
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
      * @param string $currency Currency string
-     * @return array $data Dashboard data as array (indexed by `resourcePath...`)
+     * @return array $data Dashboard data as array (indexed by `resPath...`)
      *
      */
     private function _getDashboardDataSingle($start, $end, $currency) {
@@ -364,12 +364,12 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathOrders . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathOrders . $query);
         });
 
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
-        $data[self::resourcePathOrders] = array(
+        $data[self::resPathOrders] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -425,11 +425,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($token) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathOrders . '/' . $token);
+            return $this->getJSON(self::apiEndpoint . self::resPathOrders . '/' . $token);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathOrders . '/' . $token] = array(
+        $data[self::resPathOrders . '/' . $token] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -491,7 +491,7 @@ class SnipREST extends WireHttpExtended {
         );
         
         $url = wirePopulateStringTags(
-            self::apiEndpoint . self::resourcePathOrdersNotifications,
+            self::apiEndpoint . self::resPathOrdersNotifications,
             array('token' => $token)
         );
         $requestbody = wireEncodeJSON($options);
@@ -541,7 +541,7 @@ class SnipREST extends WireHttpExtended {
         );
         
         $url = wirePopulateStringTags(
-            self::apiEndpoint . self::resourcePathOrdersRefunds,
+            self::apiEndpoint . self::resPathOrdersRefunds,
             array('token' => $token)
         );
         $requestbody = wireEncodeJSON($options);
@@ -603,12 +603,12 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathSubscriptions . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathSubscriptions . $query);
         });
 
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
-        $data[self::resourcePathSubscriptions] = array(
+        $data[self::resPathSubscriptions] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -664,11 +664,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathSubscriptions . '/' . $id);
+            return $this->getJSON(self::apiEndpoint . self::resPathSubscriptions . '/' . $id);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathSubscriptions . '/' . $id] = array(
+        $data[self::resPathSubscriptions . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -727,12 +727,12 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathCartsAbandoned . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathCartsAbandoned . $query);
         });
 
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
-        $data[self::resourcePathCartsAbandoned] = array(
+        $data[self::resPathCartsAbandoned] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -796,11 +796,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathCartsAbandoned . '/' . $id);
+            return $this->getJSON(self::apiEndpoint . self::resPathCartsAbandoned . '/' . $id);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathCartsAbandoned . '/' . $id] = array(
+        $data[self::resPathCartsAbandoned . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -854,12 +854,12 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathCustomers . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathCustomers . $query);
         });
 
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
-        $data[self::resourcePathCustomers] = array(
+        $data[self::resPathCustomers] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -912,7 +912,7 @@ class SnipREST extends WireHttpExtended {
         $cacheName = self::cacheNamePrefixCustomersOrders . '.' . md5($id);
 
         $url = wirePopulateStringTags(
-            self::apiEndpoint . self::resourcePathCustomersOrders,
+            self::apiEndpoint . self::resPathCustomersOrders,
             array('id' => $id)
         );
 
@@ -924,7 +924,7 @@ class SnipREST extends WireHttpExtended {
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathCustomersOrders] = array(
+        $data[self::resPathCustomersOrders] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -960,11 +960,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathCustomers . '/' . $id);
+            return $this->getJSON(self::apiEndpoint . self::resPathCustomers . '/' . $id);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathCustomers . '/' . $id] = array(
+        $data[self::resPathCustomers . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1021,12 +1021,12 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathProducts . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathProducts . $query);
         });
 
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         if ($response === false) $response = array();
-        $data[self::resourcePathProducts] = array(
+        $data[self::resPathProducts] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1084,11 +1084,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathProducts . '/' . $id);
+            return $this->getJSON(self::apiEndpoint . self::resPathProducts . '/' . $id);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathProducts . '/' . $id] = array(
+        $data[self::resPathProducts . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1122,11 +1122,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathDiscounts);
+            return $this->getJSON(self::apiEndpoint . self::resPathDiscounts);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathDiscounts] = array(
+        $data[self::resPathDiscounts] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1162,11 +1162,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathDiscounts . '/' . $id);
+            return $this->getJSON(self::apiEndpoint . self::resPathDiscounts . '/' . $id);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathDiscounts . '/' . $id] = array(
+        $data[self::resPathDiscounts . '/' . $id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1211,11 +1211,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathDataPerformance . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathDataPerformance . $query);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathDataPerformance] = array(
+        $data[self::resPathDataPerformance] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1260,11 +1260,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersSales . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathDataOrdersSales . $query);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathDataOrdersSales] = array(
+        $data[self::resPathDataOrdersSales] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1309,11 +1309,11 @@ class SnipREST extends WireHttpExtended {
 
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathDataOrdersCount . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathDataOrdersCount . $query);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathDataOrdersCount] = array(
+        $data[self::resPathDataOrdersCount] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
@@ -1323,7 +1323,7 @@ class SnipREST extends WireHttpExtended {
 
     /**
      * Snipcart REST API connection test.
-     * (uses resourcePathSettingsDomain for test request)
+     * (uses resPathSettingsDomain for test request)
      *
      * @return mixed $status True on success or string of status code on error
      * 
@@ -1333,7 +1333,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        return ($this->get(self::apiEndpoint . self::resourcePathSettingsDomain)) ? true : $this->getError();
+        return ($this->get(self::apiEndpoint . self::resPathSettingsDomain)) ? true : $this->getError();
     }
     
     /**

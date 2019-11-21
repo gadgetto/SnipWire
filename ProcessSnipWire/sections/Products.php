@@ -71,8 +71,8 @@ trait Products {
             $forceRefresh
         );
 
-        $products = isset($response[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathProducts][WireHttpExtended::resultKeyContent]
+        $products = isset($response[SnipRest::resPathProducts][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathProducts][WireHttpExtended::resultKeyContent]
             : array();
 
         $total = isset($products['totalItems']) ? $products['totalItems'] : 0;
@@ -143,8 +143,8 @@ trait Products {
         }
         
         $response = $sniprest->getProduct($id);
-        $product = isset($response[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathProducts . '/' . $id][WireHttpExtended::resultKeyContent]
+        $product = isset($response[SnipRest::resPathProducts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathProducts . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

@@ -72,8 +72,8 @@ trait Customers {
             $forceRefresh
         );
 
-        $customers = isset($response[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathCustomers][WireHttpExtended::resultKeyContent]
+        $customers = isset($response[SnipRest::resPathCustomers][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathCustomers][WireHttpExtended::resultKeyContent]
             : array();
         
         $total = isset($customers['totalItems']) ? $customers['totalItems'] : 0;
@@ -158,8 +158,8 @@ trait Customers {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $customer = isset($response[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathCustomers . '/' . $id][WireHttpExtended::resultKeyContent]
+        $customer = isset($response[SnipRest::resPathCustomers . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathCustomers . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         $out = '';
@@ -352,8 +352,8 @@ trait Customers {
         '</div>';
 
         $response = $sniprest->getCustomersOrders($id);
-        $orders = isset($response[SnipREST::resourcePathCustomersOrders][WireHttpExtended::resultKeyContent])
-            ? $response[SnipREST::resourcePathCustomersOrders][WireHttpExtended::resultKeyContent]
+        $orders = isset($response[SnipREST::resPathCustomersOrders][WireHttpExtended::resultKeyContent])
+            ? $response[SnipREST::resPathCustomersOrders][WireHttpExtended::resultKeyContent]
             : array();
         unset($response);
         
@@ -361,8 +361,8 @@ trait Customers {
             'limit' => 0,
             'userDefinedCustomerNameOrEmail' => $email,
         ));
-        $subscriptions = isset($response[SnipREST::resourcePathSubscriptions][WireHttpExtended::resultKeyContent])
-            ? $response[SnipREST::resourcePathSubscriptions][WireHttpExtended::resultKeyContent]
+        $subscriptions = isset($response[SnipREST::resPathSubscriptions][WireHttpExtended::resultKeyContent])
+            ? $response[SnipREST::resPathSubscriptions][WireHttpExtended::resultKeyContent]
             : array();
         unset($response);
         

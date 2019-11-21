@@ -318,13 +318,13 @@ class ProcessSnipWire extends Process implements Module {
         $out = $this->_buildDashboardFilter($startDate, $endDate, $currency);
 
         $out .= $this->_renderPerformanceBoxes(
-            $dashboard[SnipRest::resourcePathDataPerformance],
+            $dashboard[SnipRest::resPathDataPerformance],
             $currency
         );
 
         $chart = $this->_renderChart(
-            $dashboard[SnipRest::resourcePathDataOrdersSales],
-            $dashboard[SnipRest::resourcePathDataOrdersCount],
+            $dashboard[SnipRest::resPathDataOrdersSales],
+            $dashboard[SnipRest::resPathDataOrdersCount],
             $currency
         );
 
@@ -350,7 +350,7 @@ class ProcessSnipWire extends Process implements Module {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Customers');
             $f->icon = self::iconCustomer;
-            $f->value = $this->_renderTableTopCustomers($dashboard[SnipRest::resourcePathCustomers]);
+            $f->value = $this->_renderTableTopCustomers($dashboard[SnipRest::resPathCustomers]);
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
 
@@ -360,7 +360,7 @@ class ProcessSnipWire extends Process implements Module {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Products');
             $f->icon = self::iconProduct;
-            $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resourcePathProducts], $currency);
+            $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resPathProducts], $currency);
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
 
@@ -375,7 +375,7 @@ class ProcessSnipWire extends Process implements Module {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Recent Orders');
             $f->icon = self::iconOrder;
-            $f->value = $this->_renderTableRecentOrders($dashboard[SnipRest::resourcePathOrders]);
+            $f->value = $this->_renderTableRecentOrders($dashboard[SnipRest::resPathOrders]);
             $f->columnWidth = 100;
             $f->collapsed = Inputfield::collapsedNever;
             
@@ -401,12 +401,12 @@ class ProcessSnipWire extends Process implements Module {
 
         // Initialize dashboard
         $dashboard = array(
-            SnipRest::resourcePathDataPerformance => array(),
-            SnipRest::resourcePathDataOrdersSales => array(),
-            SnipRest::resourcePathDataOrdersCount => array(),
-            SnipRest::resourcePathCustomers => array(),
-            SnipRest::resourcePathProducts => array(),
-            SnipRest::resourcePathOrders => array(),
+            SnipRest::resPathDataPerformance => array(),
+            SnipRest::resPathDataOrdersSales => array(),
+            SnipRest::resPathDataOrdersCount => array(),
+            SnipRest::resPathCustomers => array(),
+            SnipRest::resPathProducts => array(),
+            SnipRest::resPathOrders => array(),
         );
 
         $ordersSales = 0.0;
@@ -415,7 +415,7 @@ class ProcessSnipWire extends Process implements Module {
 
         foreach ($packages as $key => $package) {
             
-            if (strpos($key, SnipRest::resourcePathDataPerformance) !== false) {
+            if (strpos($key, SnipRest::resPathDataPerformance) !== false) {
 
                 // Performance data is NOT currency dependent therefore some values need to be 
                 // determined from other currency dependent sources and will be replaced later.
@@ -437,47 +437,47 @@ class ProcessSnipWire extends Process implements Module {
                     "totalRecovered" => not in use
                 ]
                 */
-                $dashboard[SnipRest::resourcePathDataPerformance] = $package;
+                $dashboard[SnipRest::resPathDataPerformance] = $package;
                 
-            } elseif (strpos($key, SnipRest::resourcePathDataOrdersSales) !== false) {
+            } elseif (strpos($key, SnipRest::resPathDataOrdersSales) !== false) {
                 
-                $dashboard[SnipRest::resourcePathDataOrdersSales] = $package;
+                $dashboard[SnipRest::resPathDataOrdersSales] = $package;
 
                 // Calc sales sum
-                if (isset($dashboard[SnipRest::resourcePathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'])) {
-                    $data = $dashboard[SnipRest::resourcePathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'];
+                if (isset($dashboard[SnipRest::resPathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipRest::resPathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'];
                     foreach ($data as $item) {
                         $ordersSales += $item['value'];
                     }
                 }
 
-            } elseif (strpos($key, SnipRest::resourcePathDataOrdersCount) !== false) {
+            } elseif (strpos($key, SnipRest::resPathDataOrdersCount) !== false) {
                 
-                $dashboard[SnipRest::resourcePathDataOrdersCount] = $package;
+                $dashboard[SnipRest::resPathDataOrdersCount] = $package;
                 
                 // Calc orders count
-                if (isset($dashboard[SnipRest::resourcePathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'])) {
-                    $data = $dashboard[SnipRest::resourcePathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'];
+                if (isset($dashboard[SnipRest::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipRest::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'];
                     foreach ($data as $item) {
                         $ordersCount += $item['value'];
                     }
                 }
                 
-            } elseif (strpos($key, SnipRest::resourcePathCustomers) !== false) {
+            } elseif (strpos($key, SnipRest::resPathCustomers) !== false) {
                 
-                $dashboard[SnipRest::resourcePathCustomers] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                $dashboard[SnipRest::resPathCustomers] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
                 
-            } elseif (strpos($key, SnipRest::resourcePathProducts) !== false) {
+            } elseif (strpos($key, SnipRest::resPathProducts) !== false) {
                 
-                $dashboard[SnipRest::resourcePathProducts] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                $dashboard[SnipRest::resPathProducts] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
                 
-            } elseif (strpos($key, SnipRest::resourcePathOrders) !== false) {
+            } elseif (strpos($key, SnipRest::resPathOrders) !== false) {
                 
-                $dashboard[SnipRest::resourcePathOrders] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                $dashboard[SnipRest::resPathOrders] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
             }
@@ -490,8 +490,8 @@ class ProcessSnipWire extends Process implements Module {
             'ordersCount' => $ordersCount,
             'averageOrdersValue' => $averageOrdersValue,
         );
-        $dashboard[SnipRest::resourcePathDataPerformance][WireHttpExtended::resultKeyContent] = array_merge(
-            $dashboard[SnipRest::resourcePathDataPerformance][WireHttpExtended::resultKeyContent],
+        $dashboard[SnipRest::resPathDataPerformance][WireHttpExtended::resultKeyContent] = array_merge(
+            $dashboard[SnipRest::resPathDataPerformance][WireHttpExtended::resultKeyContent],
             $calculated
         );
 

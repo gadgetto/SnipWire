@@ -75,8 +75,8 @@ trait AbandonedCarts {
             $forceRefresh
         );
 
-        $abandonedCarts = isset($response[SnipRest::resourcePathCartsAbandoned][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathCartsAbandoned][WireHttpExtended::resultKeyContent]
+        $abandonedCarts = isset($response[SnipRest::resPathCartsAbandoned][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathCartsAbandoned][WireHttpExtended::resultKeyContent]
             : array();
         
         $items = isset($abandonedCarts['items']) ? $abandonedCarts['items'] : array();
@@ -131,8 +131,8 @@ trait AbandonedCarts {
         }
         
         $response = $sniprest->getAbandonedCart($id);
-        $cart = isset($response[SnipRest::resourcePathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent]
+        $cart = isset($response[SnipRest::resPathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */

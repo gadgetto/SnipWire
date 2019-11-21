@@ -82,8 +82,8 @@ trait Orders {
             $forceRefresh
         );
 
-        $orders = isset($response[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathOrders][WireHttpExtended::resultKeyContent]
+        $orders = isset($response[SnipRest::resPathOrders][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathOrders][WireHttpExtended::resultKeyContent]
             : array();
 
         $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;
@@ -177,8 +177,8 @@ trait Orders {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $order = isset($response[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resourcePathOrders . '/' . $token][WireHttpExtended::resultKeyContent]
+        $order = isset($response[SnipRest::resPathOrders . '/' . $token][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathOrders . '/' . $token][WireHttpExtended::resultKeyContent]
             : array();
 
         $out = '';

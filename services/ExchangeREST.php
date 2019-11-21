@@ -22,7 +22,7 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'WireHttpExtended.php';
 class ExchangeREST extends WireHttpExtended {
 
     const apiEndpoint = 'https://api.exchangeratesapi.io/';
-    const resourcePathLatest = 'latest';
+    const resPathLatest = 'latest';
 
     const cacheNamespace = 'SnipWire';
     const cacheNamePrefixExchangeRates = 'Exchangerates';
@@ -105,11 +105,11 @@ class ExchangeREST extends WireHttpExtended {
 
         // Try to get settings array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, self::cacheNamePrefixExchangeRates, $expires, function() use($query) {
-            return $this->getJSON(self::apiEndpoint . self::resourcePathLatest . $query);
+            return $this->getJSON(self::apiEndpoint . self::resPathLatest . $query);
         });
 
         if ($response === false) $response = array();
-        $data[self::resourcePathLatest] = array(
+        $data[self::resPathLatest] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
