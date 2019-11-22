@@ -28,6 +28,11 @@ jQuery(document).ready(function() {
         }
     }
     
+    // Items filter form - selector form submit
+    $('.filter-form-select').on('change', function() {
+        $(this).closest('form').submit();
+    });
+
     var $ItemsFilterResetButton = $('.ItemsFilterResetButton');
     $ItemsFilterResetButton.on('click', function() {
         window.location.href = $ItemsFilterResetButton.attr('value');

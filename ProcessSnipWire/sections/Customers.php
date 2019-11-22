@@ -219,6 +219,7 @@ trait Customers {
 
                 /** @var InputfieldSelect $f */
                 $f = $modules->get('InputfieldSelect');
+                $f->addClass('filter-form-select');
                 $f->attr('name', 'status');
                 $f->label = $this->_('Status');
                 $f->value = $filter['status'];

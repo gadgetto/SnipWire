@@ -189,6 +189,7 @@ trait AbandonedCarts {
 
                 /** @var InputfieldSelect $f */
                 $f = $modules->get('InputfieldSelect');
+                $f->addClass('filter-form-select');
                 $f->attr('name', 'timeRange');
                 $f->label = $this->_('Time range');
                 $f->value = $filter['timeRange'];
