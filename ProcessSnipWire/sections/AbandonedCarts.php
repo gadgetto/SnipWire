@@ -266,6 +266,10 @@ trait AbandonedCarts {
                     data-panel-width="70%">' .
                         wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
                 '</a>';
+                $total =
+                '<strong class="price-field">' .
+                    CurrencyFormat::format($item['summary']['total'], $item['currency']) .
+                '</strong>';
                 $products = array();
                 foreach ($item['items'] as $product) {
                     $products[] = $product['name'];
@@ -276,7 +280,7 @@ trait AbandonedCarts {
                     wireDate('Y-m-d H:i:s', $item['modificationDate']),
                     count($item['items']),
                     $productNames,
-                    CurrencyFormat::format($item['summary']['total'], $item['currency']),
+                    $total,
                 ));
             }
             $out = $table->render();

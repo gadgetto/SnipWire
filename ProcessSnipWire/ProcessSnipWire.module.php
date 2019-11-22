@@ -1185,7 +1185,7 @@ class ProcessSnipWire extends Process implements Module {
                         $item['invoiceNumber'] .
                 '</a>';
                 $total =
-                '<strong>' .
+                '<strong class="price-field">' .
                     CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
                 '</strong>';
                 $table->row(array(

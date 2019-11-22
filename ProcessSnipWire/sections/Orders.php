@@ -351,7 +351,7 @@ trait Orders {
                         wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
                 '</a>';
                 $total =
-                '<strong>' .
+                '<strong class="price-field">' .
                     CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
                 '</strong>';
                 $refundsAmount = $item['finalGrandTotal'] - $item['adjustedAmount'];
