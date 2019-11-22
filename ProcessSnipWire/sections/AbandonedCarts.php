@@ -260,7 +260,7 @@ trait AbandonedCarts {
             ));
 
             foreach ($items as $item) {
-                $panelLink =
+                $customerEmail =
                 '<a href="' . $this->snipWireRootUrl . 'abandoned-cart/' . $item['id'] . '"
                     class="pw-panel"
                     data-panel-width="70%">' .
@@ -272,7 +272,7 @@ trait AbandonedCarts {
                 }
                 $productNames = implode(',<br>', $products);
                 $table->row(array(
-                    $panelLink,
+                    $customerEmail,
                     wireDate('Y-m-d H:i:s', $item['modificationDate']),
                     count($item['items']),
                     $productNames,
