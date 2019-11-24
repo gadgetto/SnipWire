@@ -199,10 +199,9 @@ class SnipREST extends WireHttpExtended {
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
+            'currency' => $currency,
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
-        
-        // @todo: query Snipcart API for each currency separately and convert sales values to default currency
         
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataOrdersSales . $query);
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataOrdersCount . $query);
@@ -274,9 +273,8 @@ class SnipREST extends WireHttpExtended {
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
+            'currency' => $currency,
         );
-
-        // @todo: query Snipcart API for each currency separately and convert sales values to default currency
 
         $data[] = $this->getSalesCount($selector);
         $data[] = $this->getOrdersCount($selector);
@@ -1224,13 +1222,14 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
-     * Get the amount of sales from Snipcart dashboard as array.
+     * Get the sales (amount of sales by day) from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `from` (datetime) Will return only the performance after this date
-     *  - `to` (datetime) Will return only the performance before this date
+     *  - `from` (datetime) Will return only the sales after this date
+     *  - `to` (datetime) Will return only the sales before this date
+     *  - `currency` (string) Will return only sales with this currency
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
@@ -1242,7 +1241,7 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
-        $allowedOptions = array('from', 'to');
+        $allowedOptions = array('from', 'to', 'currency');
         $defaultOptions = array();
         $options = array_merge(
             $defaultOptions,
@@ -1273,13 +1272,14 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
-     * Get the number of orders from Snipcart dashboard as array.
+     * Get the order counts (number of orders by days) from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `from` (datetime) Will return only the performance after this date
-     *  - `to` (datetime) Will return only the performance before this date
+     *  - `from` (datetime) Will return only the order counts after this date
+     *  - `to` (datetime) Will return only the order counts before this date
+     *  - `currency` (string) Will return only order counts with this currency
      * @param mixed $expires Lifetime of this cache
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
@@ -1291,7 +1291,7 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
-        $allowedOptions = array('from', 'to');
+        $allowedOptions = array('from', 'to', 'currency');
         $defaultOptions = array();
         $options = array_merge(
             $defaultOptions,
