@@ -33,12 +33,16 @@ class SnipWireConfig extends ModuleConfig {
         'postepay',
     );
 
+    /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
+    protected $snipWireRootUrl = '';
+
     /**
      * Construct/initialize
      * 
      */
     public function __construct() {
         parent::__construct();
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
     }
 
     /**
@@ -225,7 +229,7 @@ class SnipWireConfig extends ModuleConfig {
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
             $btn->id = 'rest_test';
-            $btn->href = '../setup/snipwire/test-snipcart-rest-connection/?ret=' . $redirectUrl;
+            $btn->href = $this->snipWireRootUrl . 'test-snipcart-rest-connection/?ret=' . $redirectUrl;
             $btn->value = $this->_('Connection Test');
             $btn->icon = 'plug';
             $btn->setSecondary(true);
