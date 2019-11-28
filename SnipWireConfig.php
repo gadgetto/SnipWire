@@ -317,7 +317,7 @@ class SnipWireConfig extends ModuleConfig {
                 $this->_('Selected currency(s) will be used in your shop catalogue and in the Snipcart shopping-cart system during checkout.') . ' ' .
                 $this->_('As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [Snipcart Dashboard > Regional Settings](https://app.snipcart.com/dashboard/settings/regional).') . ' ' .
                 $this->_('Selecting a currency will also create a corresponding currency specific price input field and add it to the products template automatically.');
-            $f->notes = $this->_('Selecting more than one curency will enable Snipcart\'s multiple currencies payments feature. The first currency in the list will be the default one used in your product catalogue and in Snipcart shopping-cart.');
+            $f->notes = $this->_('Selecting more than one currency will enable Snipcart\'s multiple currencies payments feature. The first currency in the list will be the default one used in your product catalogue, Snipcart shopping-cart and SnipWire dashboard.');
     
             $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
             $currencies = array();
