@@ -267,8 +267,8 @@ trait Products {
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
-                    class="pw-panel"
-                    data-panel-width="70%">' .
+                    class="pw-panel pw-panel-links"
+                    data-panel-width="75%">' .
                         wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
                 '</a>';
                 $thumb = '<img src="' . $item['image'] . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
@@ -278,8 +278,8 @@ trait Products {
                     if ($product->editable()) {
                         $editLink =
                         '<a href="' . $product->editUrl . '"
-                            class="pw-panel"
-                            data-panel-width="70%">' .
+                            class="pw-panel pw-panel-links"
+                            data-panel-width="75%">' .
                                 wireIconMarkup('pencil-square-o') .
                         '</a>';
                     } else {
