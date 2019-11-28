@@ -129,4 +129,61 @@ class CurrencyFormat extends WireData {
         return $formattedPrice;
     }
 
+    /**
+     * Format the given prices array (multi currency).
+     *
+     * @param array $prices The prices array to format ("currency" => price)
+     * @param boolean $verbose Should the verbose currency name be added to output [default: false]
+     * @param string $separator The separator for each formatted currency string [default: '<br>']
+     * @return string The formatted prices (can be empty string if something goes wrong)
+     * 
+     */
+    public static function formatMulti($prices, $verbose = false, $separator = '<br>') {
+        if (empty($prices) || !is_array($prices)) return '';
+        if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
+
+        $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+
+        // $prices needs to be multi-currency
+        /*
+        {
+            "eur": 1199.0,
+            "usd": 1342.3,
+            ...
+        },
+        */
+
+        $formattedPrices = array();
+
+        foreach ($prices as $currency => $price) {
+            // Searches the static $currencys array for $currency tag and returns the corresponding key
+            $key = array_search(
+                $currency,
+                array_column(self::$currenciesCache, 'currency')
+            );
+            $currencyDefinition = self::$currenciesCache[$key];
+            
+            $floatPrice = (float) $price;
+            if ($floatPrice < 0) {
+                $numberFormatString = $currencyDefinition['negativeNumberFormat'];
+                $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
+            } else {
+                $numberFormatString = $currencyDefinition['numberFormat'];
+            }
+            $price = number_format(
+                $floatPrice,
+                (integer) $currencyDefinition['precision'],
+                (string) $currencyDefinition['decimalSeparator'],
+                (string) $currencyDefinition['thousandSeparator']
+            );
+            $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
+            $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
+
+            $formattedPrice = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
+            if ($verbose) $formattedPrice .= ' <small>' . $supportedCurrencies[$currency] . '</small>';
+            $formattedPrices[] = $formattedPrice;
+        }
+
+        return implode($separator, $formattedPrices);
+    }
 }
