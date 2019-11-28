@@ -248,7 +248,7 @@ trait Products {
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
             $table->setEncodeEntities(false);
-            $table->setID('snipwire-products-table');
+            $table->setID('ProductsTable');
             $table->setClass('ItemLister');
             $table->setSortable(false);
             $table->setResizable(true);
@@ -259,7 +259,8 @@ trait Products {
                 $this->_('Name'),
                 $this->_('Price'),
                 $this->_('# Sales'),
-                $this->_('Sales'),
+                //$this->_('Sales'), // not usable at the moment as Snipcart doesn't support multi currency for statistics
+                $this->_('Last modified'),
                 '&nbsp;',
             ));
 
@@ -305,7 +306,8 @@ trait Products {
                     $item['name'],
                     CurrencyFormat::format($item['price'], $currency),
                     $item['statistics']['numberOfSales'],
-                    CurrencyFormat::format($item['statistics']['totalSales'], 'usd'), // @todo: handle multi currency!
+                    //CurrencyFormat::format($item['statistics']['totalSales'], 'usd'),  // not usable at the moment as Snipcart doesn't support multi currency for statistics
+                    wireDate('Y-m-d H:i:s', $item['modificationDate']),
                     $editLink,
                 ));
             }
