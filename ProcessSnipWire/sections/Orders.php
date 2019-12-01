@@ -551,7 +551,7 @@ trait Orders {
 
                 /** @var InputfieldMarkup $f */
                 $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Debug infos');
+                $f->label = $this->_('Debug Infos');
                 $f->collapsed = Inputfield::collapsedYes;
                 $f->icon = self::iconDebug;
                 $f->value = '<pre>' . print_r($item, true) . '</pre>';
