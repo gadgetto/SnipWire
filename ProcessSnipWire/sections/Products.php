@@ -274,6 +274,7 @@ trait Products {
                 $this->_('SKU'),
                 $this->_('Thumb'),
                 $this->_('Name'),
+                $this->_('Stock'),
                 $this->_('Price'),
                 $this->_('# Sales'),
                 //$this->_('Sales'), // not usable at the moment as Snipcart doesn't support multi currency for statistics
@@ -317,10 +318,15 @@ trait Products {
                     '</span>';
                 }
 
+                $stock = isset($item['stock'])
+                    ? $item['stock']
+                    : '-';
+
                 $table->row(array(
                     $panelLink,
                     ($thumb ? $thumb : '-'),
                     $item['name'],
+                    $stock,
                     CurrencyFormat::format($item['price'], $currency),
                     $item['statistics']['numberOfSales'],
                     //CurrencyFormat::format($item['statistics']['totalSales'], 'usd'),  // not usable at the moment as Snipcart doesn't support multi currency for statistics
