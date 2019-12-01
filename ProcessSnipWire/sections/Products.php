@@ -288,7 +288,7 @@ trait Products {
                     data-panel-width="75%">' .
                         wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
                 '</a>';
-                $thumb = '<img src="' . $item['image'] . '" style="width: ' . $snipwireConfig['cart_image_width'] . 'px; height: ' . $snipwireConfig['cart_image_height'] . 'px;">';
+                $thumb = $this->getProductImg($item['image']);
 
                 $product = $pages->findOne('snipcart_item_id="' . $item['userDefinedId'] . '"');
                 if ($product->url) {
@@ -319,7 +319,7 @@ trait Products {
 
                 $table->row(array(
                     $panelLink,
-                    $thumb,
+                    ($thumb ? $thumb : '-'),
                     $item['name'],
                     CurrencyFormat::format($item['price'], $currency),
                     $item['statistics']['numberOfSales'],
