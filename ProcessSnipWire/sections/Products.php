@@ -52,9 +52,11 @@ trait Products {
 
         $userDefinedId = $sanitizer->text($input->userDefinedId);
         $keywords = $sanitizer->text($input->keywords);
+        $archived = $sanitizer->bool($input->archived);
         $filter = array(
             'userDefinedId' => $userDefinedId ? $userDefinedId : '',
             'keywords' => $keywords ? $keywords : '',
+            'archived' => $archived ? 'true' : 'false',
         );
 
         $defaultSelector = array(
@@ -192,7 +194,8 @@ trait Products {
             $fieldset->icon = 'search';
             if (
                 $filter['userDefinedId'] ||
-                $filter['keywords']
+                $filter['keywords'] ||
+                ($filter['archived'] && $filter['archived'] != 'false')
             ) {
                 $fieldset->collapsed = Inputfield::collapsedNo;
             } else {
@@ -205,7 +208,7 @@ trait Products {
                 $f->label = $this->_('SKU');
                 $f->value = $filter['userDefinedId'];
                 $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 50;
+                $f->columnWidth = 33;
 
             $fieldset->add($f);
 
@@ -215,7 +218,21 @@ trait Products {
                 $f->label = $this->_('Keywords');
                 $f->value = $filter['keywords'];
                 $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 50;
+                $f->columnWidth = 33;
+
+            $fieldset->add($f);
+
+                /** @var InputfieldSelect $f */
+                $f = $modules->get('InputfieldSelect');
+                $f->addClass('filter-form-select');
+                $f->attr('name', 'archived'); 
+                $f->label = $this->_('Status'); 
+                $f->value = $filter['archived'];
+                $f->collapsed = Inputfield::collapsedNever;
+                $f->columnWidth = 34;
+                $f->required = true;
+                $f->addOption('false', $this->_('Not archived'));
+                $f->addOption('true', $this->_('Archived'));
 
             $fieldset->add($f);
 
