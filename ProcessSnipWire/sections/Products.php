@@ -131,8 +131,6 @@ trait Products {
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
         
-        $id = $input->urlSegment(2); // Get Snipcart product id
-        
         $this->browserTitle($this->_('Snipcart Product'));
         $this->headline($this->_('Snipcart Product'));
 
@@ -144,7 +142,23 @@ trait Products {
             return '';
         }
         
-        $response = $sniprest->getProduct($id);
+        $id = $input->urlSegment(2); // Get Snipcart product id
+        $forceRefresh = false;
+
+        $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
+            $forceRefresh = true;
+        } elseif ($action == 'refresh_all') {
+            $sniprest->resetFullCache();
+            $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
+        }
+
+        $response = $sniprest->getProduct(
+            $id,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
         $product = isset($response[SnipRest::resPathProducts . '/' . $id][WireHttpExtended::resultKeyContent])
             ? $response[SnipRest::resPathProducts . '/' . $id][WireHttpExtended::resultKeyContent]
             : array();
@@ -354,17 +368,156 @@ trait Products {
     private function _renderDetailProduct($item) {
         $modules = $this->wire('modules');
 
-        if (!empty($item)) {
-
-
-            $out = '<pre>' . print_r($item, true) . '</pre>';
-
-
-        } else {
+        if (empty($item)) {
             $out =
             '<div class="snipwire-no-items">' . 
-                $this->_('No product selected') .
+                $this->_('No order selected') .
             '</div>';
+            return $out;
+        }
+        
+        $out = '';
+
+        $out .=
+        '<div class="ItemDetailHeader">' .
+            '<h2 class="ItemDetailTitle">' .
+                wireIconMarkup(self::iconProduct, 'fa-right-margin') .
+                $this->_('Product') . ': ' .
+                $item['name'] .
+            '</h2>' .
+            '<div class="ItemDetailActionButtons">' .
+                //$this->_getOrderDetailActionButtons($item['token'], $ret) .
+            '</div>' .
+        '</div>';
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->entityEncodeLabel = false;
+            $f->label = $this->_('Product Details');
+            if ($item['archived']) {
+                $f->label .= ' <span class="snipwire-badge snipwire-badge-warning">' . $this->_('archived') . '</span>';
+            }
+            $f->icon = self::iconProduct;
+            $f->value = $this->_renderProductInfo($item);
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        if ($this->snipwireConfig->snipwire_debug) {
+
+            /** @var InputfieldForm $wrapper */
+            $wrapper = $modules->get('InputfieldForm');
+
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Debug Infos');
+                $f->collapsed = Inputfield::collapsedYes;
+                $f->icon = self::iconDebug;
+                $f->value = '<pre>' . print_r($item, true) . '</pre>';
+                
+            $wrapper->add($f);
+
+            $out .= $wrapper->render();
+        }
+
+        return $out;
+    }
+
+    /**
+     * Render the product info block.
+     *
+     * @param array $item
+     * @return markup 
+     *
+     */
+    private function _renderProductInfo($item) {
+        $infoCaptions = array(
+            'sku' => $this->_('SKU'),
+            'name' => $this->_('Product name'),
+            'image' => $this->_('Product image'),
+            'image_path' => $this->_('Image path'),
+            'description' => $this->_('Product decription'),
+            'categories' => $this->_('Categories'),
+            'prices' => $this->_('Product price(s)'),
+            'stock' => $this->_('Stock'),
+            'creationDate' => $this->_('Created on'),
+            'modificationDate' => $this->_('Last modified'),
+        );
+
+        $itemData = array();
+        
+        $itemData['sku'] = $item['userDefinedId'];
+        $itemData['name'] = $item['name'];
+        $itemData['image'] = $this->getProductImg($item['image']);
+        $itemData['image_path'] = $item['image']
+            ? '<span style="word-break: break-all;">' . $item['image'] . '</span>'
+            : '';
+        $itemData['description'] = $item['description'];
+        $itemData['categories'] = (isset($item['categories']) && is_array($item['categories']))
+            ? implode(', ', $item['categories'])
+            : '';
+        $itemData['prices'] = is_array($item['price'])
+            ? CurrencyFormat::formatMulti($item['price'], true)
+            : CurrencyFormat::format($item['price'], $this->currencies[0]);
+        $itemData['stock'] = isset($item['stock'])
+            ? $item['stock']
+            : '';
+        $itemData['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $itemData['modificationDate'] = wireDate('Y-m-d H:i:s', $item['modificationDate']);
+
+        $data = array();
+        foreach ($infoCaptions as $key => $caption) {
+            $data[$caption] = !empty($itemData[$key]) ? $itemData[$key] : '-';
+        }
+
+        return $this->renderDataSheet($data);
+    }
+
+    /**
+     * Get product image markup based on Snipcart image url.
+     * (If image doesn't exist, provide a placeholder)
+     *
+     * @param string $url The image url from product item
+     * @return img markup | placeholder markup | empty string
+     *
+     */
+    public function getProductImg($url) {
+        $config = $this->wire('config');
+
+        $snipwireConfig = $this->snipwireConfig;
+        $absPath = rtrim($config->paths->root, '/');
+        
+        $width = $snipwireConfig['cart_image_width'];
+        $height = $snipwireConfig['cart_image_height'];
+
+        // UIKit "image" svg icon as placeholder
+        $placeholder =
+        '<div
+            style="width: ' . $width . 'px; height: ' . $height . 'px; padding: .75rem; background-color: #dfe6e9; border-radius: .25rem;"
+            class="pw-tooltip"
+            title="' . $this->_('Product image not found') . '">' .
+            '<svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' .
+                '<circle fill="#fff" cx="16.1" cy="6.1" r="1.1" />' .
+                '<rect fill="none" stroke="#fff" x="0.5" y="2.5" width="19" height="15" />' .
+                '<polyline fill="none" stroke="#fff" stroke-width="1.01" points="4,13 8,9 13,14" />' .
+                '<polyline fill="none" stroke="#fff" stroke-width="1.01" points="11,12 12.5,10.5 16,14" />' .
+            '</svg>' .
+        '</div>';
+
+        $out = $placeholder;
+
+        if (!empty($url)) {
+            $imgPath = parse_url($url, PHP_URL_PATH);
+            if (!empty($imgPath) && file_exists($absPath . $imgPath)) {
+                $out = '<img src="' . $imgPath . '" style="width: ' . $width . 'px; height: ' . $height . 'px; border-radius: .25rem;">';
+            }
+        } else {
+            // no product image set
+            $out = '';
         }
 
         return $out;
