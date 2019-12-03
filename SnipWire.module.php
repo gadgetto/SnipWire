@@ -89,6 +89,13 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookAfter('Pages::added', $this, 'presetProductFields');
         $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
+
+        // From PW version 3.0.137 we can also use multiple methods to hook in CSV string or array
+        // (currently we use single calls)
+        $this->addHookAfter('Pages::published', $this, 'publishSnipcartProduct');
+        $this->addHookAfter('Pages::restored', $this, 'publishSnipcartProduct');
+        $this->addHookAfter('Pages::unpublished', $this, 'unpublishSnipcartProduct');
+        $this->addHookAfter('Pages::trashed', $this, 'unpublishSnipcartProduct');
     }
 
     /**
@@ -232,6 +239,37 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $page->setAndSave('snipcart_item_taxable', 1);
             $page->setAndSave('snipcart_item_shippable', 1);
             $page->setAndSave('snipcart_item_stackable', 1);
+        }
+    }
+
+    /**
+     * Automatically creates/restores a Snipcart product by manually fetching URL (archived flag is set to false).
+     * (Method triggered after an unpublished page has just been published)
+     *
+     */
+    public function publishSnipcartProduct(HookEvent $event) {
+        $page = $event->arguments(0);
+        if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
+            $this->wire('sniprest')->postProduct($page->httpUrl);
+        }
+    }
+
+    /**
+     * Archive a Snipcart product so it won't be visible in the products listing anymore (archived flag is set to true).
+     * (Method triggered after a published page has just been unpublished)
+     *
+     */
+    public function unpublishSnipcartProduct(HookEvent $event) {
+        $sniprest = $this->wire('sniprest');
+        $page = $event->arguments(0);
+        if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
+            $snipcart_item_id = $page->snipcart_item_id;
+            if($id = $sniprest->getProductId($snipcart_item_id)) {
+                $sniprest->deleteProduct($id);
+                $this->message($this->_('Snipcart product archived.'));
+            } else {
+                $this->warning(sprintf($this->_('Could not archive Snipcart product! SKU [%s] not found.'), $snipcart_item_id));
+            }
         }
     }
 
