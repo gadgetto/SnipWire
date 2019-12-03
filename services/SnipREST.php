@@ -98,19 +98,19 @@ class SnipREST extends WireHttpExtended {
      */
     public static function getMessagesText($key) {
         $texts = array(
-            'no_headers' => __('Missing request headers for Snipcart REST connection.'),
+            'no_headers' => __('Missing request headers for Snipcart REST connection'),
             'connection_failed' => __('Connection to Snipcart failed'),
-            'cache_refreshed' => __('Snipcart cache for this section refreshed.'),
-            'full_cache_refreshed' => __('Full Snipcart cache refreshed.'),
-            'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without.'),
-            'no_order_token' => __('No order token provided.'),
-            'no_subscription_id' => __('No subscription ID provided.'),
-            'no_cart_id' => __('No cart ID provided.'),
-            'no_customer_id' => __('No customer ID provided.'),
-            'no_product_id' => __('No product ID provided.'),
-            'no_product_url' => __('No product URL provided.'),
-            'no_userdefined_id' => __('No userdefined ID provided.'),
-            'no_discount_id' => __('No discount ID provided.'),
+            'cache_refreshed' => __('Snipcart cache for this section refreshed'),
+            'full_cache_refreshed' => __('Full Snipcart cache refreshed'),
+            'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without'),
+            'no_order_token' => __('No order token provided'),
+            'no_subscription_id' => __('No subscription ID provided'),
+            'no_cart_id' => __('No cart ID provided'),
+            'no_customer_id' => __('No customer ID provided'),
+            'no_product_id' => __('No product ID provided'),
+            'no_product_url' => __('No product URL provided'),
+            'no_userdefined_id' => __('No userdefined ID provided'),
+            'no_discount_id' => __('No discount ID provided'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
