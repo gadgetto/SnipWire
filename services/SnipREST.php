@@ -108,6 +108,8 @@ class SnipREST extends WireHttpExtended {
             'no_cart_id' => __('No cart ID provided.'),
             'no_customer_id' => __('No customer ID provided.'),
             'no_product_id' => __('No product ID provided.'),
+            'no_product_url' => __('No product URL provided.'),
+            'no_userdefined_id' => __('No userdefined ID provided.'),
             'no_discount_id' => __('No discount ID provided.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
@@ -1087,6 +1089,152 @@ class SnipREST extends WireHttpExtended {
 
         if ($response === false) $response = array();
         $data[self::resPathProducts . '/' . $id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Get the id of a Snipcart product by it's userDefinedId.
+     *
+     * @param string $userDefinedId The user defined id of a product (SKU)
+     * @return boolean|string $id The Snipcart product id or false if not found or something went wrong
+     *
+     */
+    public function getProductID($userDefinedId) {
+        if (!$userDefinedId) {
+            $this->error(self::getMessagesText('no_userdefined_id'));
+            return false;
+        }
+        $options = array(
+            'offset' => 0,
+            'limit' => 2, // needs to be at least 2 otherwise we get back httpcode 0 on success
+            'orderBy' => '',
+            'userDefinedId' => $userDefinedId,
+        );
+        // Get a specific item
+        $data = $this->getProductsItems($options);
+
+        if ($data[self::resPathProducts][WireHttpExtended::resultKeyHttpCode] == 200) {
+            $id = $data[self::resPathProducts][WireHttpExtended::resultKeyContent][0]['id'];
+        } else {
+            $id = false;
+        }
+        return $id;
+    }
+
+    /**
+     * Fetch the URL passed in parameter and generate product(s) found on this page.
+     *
+     * @param string $url The URL of the page to be fetched
+     * @return array $data
+     * 
+     */
+    public function postProduct($url) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$url) {
+            $this->error(self::getMessagesText('no_product_url'));
+            return false;
+        }
+        // Add necessary header for POST request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $options = array(
+            'fetchUrl' => $url,
+        );
+        
+        $url = self::apiEndpoint . self::resPathProducts;
+        $requestbody = wireEncodeJSON($options);
+        
+        $response = $this->send($url, $requestbody, 'POST');
+
+        if ($response === false) $response = array();
+        $data[$url] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Update a specific product.
+     *
+     * @param string $id The Snipcart id of the product to be updated
+     * @param array $options An array of options that will be sent as POST params:
+     *  - `inventoryManagementMethod` (string) Specifies how inventory should be tracked for this product. (Possible values: Single, Variant)
+     *  - `variants` (array) Allows to set stock per product variant
+     *  - `stock` (integer) The number of items in stock. (Will be used when `inventoryManagementMethod` = Single)
+     *  - `allowOutOfStockPurchases` (boolean) Allow out-of-stock purchase.
+     * @return array $data
+     * 
+     */
+    public function putProduct($id, $options = array()) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_product_id'));
+            return false;
+        }
+        // Add necessary header for PUT request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $allowedOptions = array('inventoryManagementMethod', 'variants', 'stock', 'allowOutOfStockPurchases');
+        $defaultOptions = array();
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        
+        $url = self::apiEndpoint . self::resPathProducts . '/' . $id;
+        $requestbody = wireEncodeJSON($options);
+        
+        $response = $this->send($url, $requestbody, 'PUT');
+
+        if ($response === false) $response = array();
+        $data[$id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Delete a specific product.
+     * (the product isn't actually deleted, but it's "archived" flag is set to true)
+     *
+     * @param string $id The Snipcart id of the product to be deleted (archived)
+     * @return array $data
+     * 
+     */
+    public function deleteProduct($id) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_product_id'));
+            return false;
+        }
+        // Add necessary header for DELETE request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $url = self::apiEndpoint . self::resPathProducts . '/' . $id;
+        
+        $response = $this->send($url, array(), 'DELETE');
+
+        if ($response === false) $response = array();
+        $data[$id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
