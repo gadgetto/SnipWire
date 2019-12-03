@@ -1110,12 +1110,12 @@ class SnipREST extends WireHttpExtended {
         }
         $options = array(
             'offset' => 0,
-            'limit' => 2, // needs to be at least 2 otherwise we get back httpcode 0 on success
+            'limit' => 1,
             'orderBy' => '',
             'userDefinedId' => $userDefinedId,
         );
         // Get a specific item
-        $data = $this->getProductsItems($options);
+        $data = $this->getProductsItems($options, WireCache::expireNow); // Get uncached result
 
         if ($data[self::resPathProducts][WireHttpExtended::resultKeyHttpCode] == 200) {
             $id = $data[self::resPathProducts][WireHttpExtended::resultKeyContent][0]['id'];
