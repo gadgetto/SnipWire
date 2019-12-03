@@ -1103,7 +1103,7 @@ class SnipREST extends WireHttpExtended {
      * @return boolean|string $id The Snipcart product id or false if not found or something went wrong
      *
      */
-    public function getProductID($userDefinedId) {
+    public function getProductId($userDefinedId) {
         if (!$userDefinedId) {
             $this->error(self::getMessagesText('no_userdefined_id'));
             return false;
