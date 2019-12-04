@@ -93,8 +93,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
         // From PW version 3.0.137 we can also use multiple methods to hook in CSV string or array
         // (currently we use single calls)
-        $this->addHookAfter('Pages::published', $this, 'publishSnipcartProduct');
-        $this->addHookAfter('Pages::restored', $this, 'publishSnipcartProduct');
+        $this->addHookAfter('Pages::saved', $this, 'publishSnipcartProduct');
         $this->addHookAfter('Pages::unpublished', $this, 'unpublishSnipcartProduct');
         $this->addHookAfter('Pages::trashed', $this, 'unpublishSnipcartProduct');
     }
@@ -275,13 +274,16 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
     /**
      * Automatically creates/restores a Snipcart product by manually fetching URL (archived flag is set to false).
-     * (Method triggered after an unpublished page has just been published)
+     * (Method triggered after a page has just been saved)
      *
      */
     public function publishSnipcartProduct(HookEvent $event) {
         $page = $event->arguments(0);
         if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
-            $this->wire('sniprest')->postProduct($page->httpUrl);
+            if ($page->published) {
+                // Only fetch if published!
+                $this->wire('sniprest')->postProduct($page->httpUrl);
+            }
         }
     }
 
