@@ -88,6 +88,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->addHookBefore('Modules::saveConfig', $this, 'validateTaxesRepeater');
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookAfter('Pages::added', $this, 'presetProductFields');
+        $this->addHookAfter('Pages::saveReady', $this, 'checkSKUUnique');
         $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
 
         // From PW version 3.0.137 we can also use multiple methods to hook in CSV string or array
@@ -239,6 +240,36 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $page->setAndSave('snipcart_item_taxable', 1);
             $page->setAndSave('snipcart_item_shippable', 1);
             $page->setAndSave('snipcart_item_stackable', 1);
+        }
+    }
+
+    /**
+     * Check if the SKU value is unique across all product pages.
+     * (Method triggered after Pages saveReady -> just before page is saved)
+     *
+     * @throws WireException
+     *
+     */
+    public function checkSKUUnique(HookEvent $event) {
+        $page = $event->arguments(0);
+        if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
+            $field = $page->getField('snipcart_item_id');
+            $sku = $page->snipcart_item_id; // SKU field value
+            
+            if ($page->isChanged('snipcart_item_id')) {
+                $db = wire('db');
+                $table = $db->escapeTable($field->table);
+                $result = $db->query("SELECT COUNT(*) FROM `$table` WHERE data = '$sku'"); 
+                list($exists) = $result->fetch_row();
+                if ((int) $exists) {
+                    // value is not unique!
+                    $error = $this->_('SKU must be unique'); 
+                    $exception = sprintf($this->_('SKU "%s" is already in use'), $sku); 
+                    $inputfield = $page->getInputfield($field);
+                    $inputfield->error($error); 
+                    throw new WireException($exception); // Prevent saving of non-unique value!
+                }
+            }
         }
     }
 
