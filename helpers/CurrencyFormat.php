@@ -124,7 +124,7 @@ class CurrencyFormat extends WireData {
         $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
 
         $formattedPrice = sprintf($numberFormatString, $currencyDefinition['currencySymbol'], $price);
-        if ($info) $formattedPrice .= '<br><small>' . $info . '</small>';
+        if ($info) $formattedPrice .= '<br><small class="ui-priority-secondary">' . $info . '</small>';
 
         return $formattedPrice;
     }
