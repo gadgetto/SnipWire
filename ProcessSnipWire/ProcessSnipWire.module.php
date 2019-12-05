@@ -35,7 +35,7 @@ class ProcessSnipWire extends Process implements Module {
         return array(
             'title' => __('SnipWire Dashboard'),
             'summary' => __('Snipcart dashboard integration for ProcessWire.'),
-            'version' => 1, 
+            'version' => '0.5.0', 
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'permission' => 'snipwire-dashboard',
