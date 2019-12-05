@@ -1128,16 +1128,16 @@ class SnipREST extends WireHttpExtended {
     /**
      * Fetch the URL passed in parameter and generate product(s) found on this page.
      *
-     * @param string $url The URL of the page to be fetched
+     * @param string $fetchUrl The URL of the page to be fetched
      * @return array $data
      * 
      */
-    public function postProduct($url) {
+    public function postProduct($fetchUrl) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if (!$url) {
+        if (!$fetchUrl) {
             $this->error(self::getMessagesText('no_product_url'));
             return false;
         }
@@ -1145,7 +1145,7 @@ class SnipREST extends WireHttpExtended {
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
 
         $options = array(
-            'fetchUrl' => $url,
+            'fetchUrl' => $fetchUrl,
         );
         
         $url = self::apiEndpoint . self::resPathProducts;
@@ -1154,7 +1154,7 @@ class SnipREST extends WireHttpExtended {
         $response = $this->send($url, $requestbody, 'POST');
 
         if ($response === false) $response = array();
-        $data[$url] = array(
+        $data[$fetchUrl] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
