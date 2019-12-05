@@ -1151,7 +1151,7 @@ class SnipREST extends WireHttpExtended {
         $url = self::apiEndpoint . self::resPathProducts;
         $requestbody = wireEncodeJSON($options);
         
-        $response = $this->send($url, $requestbody, 'POST');
+        $response = json_decode($this->send($url, $requestbody, 'POST'), true);
 
         if ($response === false) $response = array();
         $data[$fetchUrl] = array(
@@ -1197,8 +1197,8 @@ class SnipREST extends WireHttpExtended {
         
         $url = self::apiEndpoint . self::resPathProducts . '/' . $id;
         $requestbody = wireEncodeJSON($options);
-        
-        $response = $this->send($url, $requestbody, 'PUT');
+
+        $response = json_decode($this->send($url, $requestbody, 'PUT'), true);
 
         if ($response === false) $response = array();
         $data[$id] = array(
@@ -1231,7 +1231,7 @@ class SnipREST extends WireHttpExtended {
 
         $url = self::apiEndpoint . self::resPathProducts . '/' . $id;
         
-        $response = $this->send($url, array(), 'DELETE');
+        $response = json_decode($this->send($url, array(), 'DELETE'), true);
 
         if ($response === false) $response = array();
         $data[$id] = array(
