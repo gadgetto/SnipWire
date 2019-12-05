@@ -117,20 +117,30 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $taxes = wireDecodeJSON($config['taxes']);
 
         if (!count($taxes)) {
-            $taxesField->error($this->_('Taxes repeater has no entries. At least 1 tax setting is required.'));
+            $taxesField->error(
+                $this->_('Taxes repeater has no entries. At least 1 tax setting is required.')
+            );
             return;
         }
         $productTaxes = 0;
         foreach ($taxes as $key => $tax) {
             if (empty($tax['name']) || empty($tax['rate'])) {
-                $taxesField->error(sprintf($this->_('Taxes repeater row [%s]: "Tax name" and "Rate" may not be empty'), $key + 1));
+                $taxesField->error(sprintf(
+                    $this->_('Taxes repeater row [%s]: "Tax name" and "Rate" may not be empty'),
+                    $key + 1
+                ));
             }
             if (!checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
-                $taxesField->error(sprintf($this->_('Taxes repeater row [%s]: "Rate" value needs to be float'), $key + 1));
+                $taxesField->error(sprintf(
+                    $this->_('Taxes repeater row [%s]: "Rate" value needs to be float'),
+                    $key + 1
+                ));
             }
             if (empty($tax['appliesOnShipping'][0])) $productTaxes += 1;
             if ($productTaxes < 1) {
-                $taxesField->error($this->_('Taxes repeater has only shipping taxes set. At least 1 product tax setting is required.'));
+                $taxesField->error(
+                    $this->_('Taxes repeater has only shipping taxes set. At least 1 product tax setting is required.')
+                );
             }
         }
     }
@@ -182,7 +192,10 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $f->pattern = $fieldTemplate['pattern'];
             $f->tags = $fieldTemplate['tags'];
             $f->save();
-            $this->message($this->_('Created currency specific field: ') . $fieldName);
+            $this->message(
+                $this->_('Created currency specific field:') . ' ' .
+                $fieldName
+            );
             $fieldsToTemplate[] = $fieldName;
         }
 
@@ -197,7 +210,11 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                         $fg->add($f);
                         $fg->save();
                     } else {
-                        $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist. Please install Snipcart products package first!"), $name, $tn);
+                        $out = sprintf(
+                            $this->_('Could not add field [%1$s] to template [%2$s]. The template does not exist. Please install Snipcart products package first!'),
+                            $name,
+                            $tn
+                        );
                         $this->warning($out);
                     }
                 }
@@ -263,7 +280,10 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 if ((int) $exists) {
                     // value is not unique!
                     $error = $this->_('SKU must be unique'); 
-                    $exception = sprintf($this->_('SKU "%s" is already in use'), $sku); 
+                    $exception = sprintf(
+                        $this->_('SKU "%s" is already in use'),
+                        $sku
+                    ); 
                     $inputfield = $page->getInputfield($field);
                     $inputfield->error($error); 
                     throw new WireException($exception); // Prevent saving of non-unique value!
@@ -294,9 +314,17 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 
                 if ($httpCode == 200 || $httpCode == 201) {
                     $id = isset($content[0]['id']) ? $content[0]['id'] : '';
-                    $message = sprintf($this->_('Fetched Snipcart product with SKU [%1$s] / ID [%2$s]'), $snipcart_item_id, $id);
+                    $message = sprintf(
+                        $this->_('Fetched Snipcart product with SKU [%1$s] / ID [%2$s]'),
+                        $snipcart_item_id,
+                        $id
+                    );
                 } else {
-                    $message = sprintf($this->_('Snipcart product with SKU [%1$s] could not be fetched. [%2$s]'), $snipcart_item_id, $error);
+                    $message = sprintf(
+                        $this->_('Snipcart product with SKU [%1$s] could not be fetched. [%2$s]'),
+                        $snipcart_item_id,
+                        $error
+                    );
                 }
                 $log->save(self::snipWireLogName, $message);
             }
@@ -323,12 +351,23 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 $error = $response[$id][WireHttpExtended::resultKeyError];
                 
                 if ($httpCode == 200 || $httpCode == 201) {
-                    $message = sprintf($this->_('Archived Snipcart product with SKU [%1$s] / ID [%2$s]'), $snipcart_item_id, $id);
+                    $message = sprintf(
+                        $this->_('Archived Snipcart product with SKU [%1$s] / ID [%2$s]'),
+                        $snipcart_item_id,
+                        $id
+                    );
                 } else {
-                    $message = sprintf($this->_('Snipcart product with SKU [%1$s] could not be archived. [%2$s]'), $snipcart_item_id, $error);
+                    $message = sprintf(
+                        $this->_('Snipcart product with SKU [%1$s] could not be archived. [%2$s]'),
+                        $snipcart_item_id,
+                        $error
+                    );
                 }
             } else {
-                $message = sprintf($this->_('Snipcart product could not be archived! SKU [%s] not found'), $snipcart_item_id);
+                $message = sprintf(
+                    $this->_('Snipcart product could not be archived! SKU [%s] not found'),
+                    $snipcart_item_id
+                );
             }
             $log->save(self::snipWireLogName, $message);
         }
