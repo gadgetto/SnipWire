@@ -278,11 +278,27 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      */
     public function publishSnipcartProduct(HookEvent $event) {
+        $sniprest = $this->wire('sniprest');
+        $log = $this->wire('log');
+
         $page = $event->arguments(0);
         if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
-            if ($page->published) {
-                // Only fetch if published!
-                $this->wire('sniprest')->postProduct($page->httpUrl);
+            if ($page->isPublic()) {
+                // Only fetch if published and viewable!
+                $snipcart_item_id = $page->snipcart_item_id;
+                $response = $sniprest->postProduct($page->httpUrl);
+                
+                $content = $response[$page->httpUrl][WireHttpExtended::resultKeyContent];
+                $httpCode = $response[$page->httpUrl][WireHttpExtended::resultKeyHttpCode];
+                $error = $response[$page->httpUrl][WireHttpExtended::resultKeyError];
+                
+                if ($httpCode == 200 || $httpCode == 201) {
+                    $id = isset($content[0]['id']) ? $content[0]['id'] : '';
+                    $message = sprintf($this->_('Fetched Snipcart product with SKU [%1$s] / ID [%2$s]'), $snipcart_item_id, $id);
+                } else {
+                    $message = sprintf($this->_('Snipcart product with SKU [%1$s] could not be fetched. [%2$s]'), $snipcart_item_id, $error);
+                }
+                $log->save(self::snipWireLogName, $message);
             }
         }
     }
@@ -294,15 +310,27 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      */
     public function unpublishSnipcartProduct(HookEvent $event) {
         $sniprest = $this->wire('sniprest');
+        $log = $this->wire('log');
+
         $page = $event->arguments(0);
         if ($page->template == MarkupSnipWire::snipcartProductTemplate) {
             $snipcart_item_id = $page->snipcart_item_id;
-            if($id = $sniprest->getProductId($snipcart_item_id)) {
-                $sniprest->deleteProduct($id);
-                $this->message($this->_('Snipcart product archived.'));
+            
+            if ($id = $sniprest->getProductId($snipcart_item_id)) {
+                $response = $sniprest->deleteProduct($id);
+
+                $httpCode = $response[$id][WireHttpExtended::resultKeyHttpCode];
+                $error = $response[$id][WireHttpExtended::resultKeyError];
+                
+                if ($httpCode == 200 || $httpCode == 201) {
+                    $message = sprintf($this->_('Archived Snipcart product with SKU [%1$s] / ID [%2$s]'), $snipcart_item_id, $id);
+                } else {
+                    $message = sprintf($this->_('Snipcart product with SKU [%1$s] could not be archived. [%2$s]'), $snipcart_item_id, $error);
+                }
             } else {
-                $this->warning(sprintf($this->_('Could not archive Snipcart product! SKU [%s] not found.'), $snipcart_item_id));
+                $message = sprintf($this->_('Snipcart product could not be archived! SKU [%s] not found'), $snipcart_item_id);
             }
+            $log->save(self::snipWireLogName, $message);
         }
     }
 
