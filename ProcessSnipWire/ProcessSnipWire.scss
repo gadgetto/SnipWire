@@ -18,6 +18,14 @@ $success-color-dark: #007E33;
 $info-color: #33b5e5;
 $info-color-dark: #0099CC;
 
+// Fix for unnecessary bottom margin on unused element
+// @todo: needs to fixed in PW core
+.modal {
+    
+    #pw-content-head-buttons {
+        display: none;
+    }
+}
 
 .ProcessSnipWire {
 
@@ -243,6 +251,12 @@ $info-color-dark: #0099CC;
 .ItemDetailHeader {
     overflow: hidden;
     padding: 1rem 0;
+}
+.modal {
+
+    .ItemDetailHeader {
+        padding-top: 0;
+    }
 }
 .ItemDetailTitle {
     font-size: 1.5rem !important;
