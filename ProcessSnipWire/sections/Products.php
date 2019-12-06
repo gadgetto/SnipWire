@@ -310,7 +310,8 @@ trait Products {
                     if ($product->editable()) {
                         $editLink =
                         '<a href="' . $product->editUrl . '"
-                            class="pw-panel pw-panel-links"
+                            class="pw-panel pw-panel-links pw-tooltip"
+                            title="' . $this->_('Edit product page') .'"
                             data-panel-width="75%">' .
                                 wireIconMarkup('pencil-square-o') .
                         '</a>';
