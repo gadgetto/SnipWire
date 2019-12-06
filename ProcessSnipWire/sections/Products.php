@@ -36,6 +36,8 @@ trait Products {
             return '';
         }
 
+        $modules->get('JqueryUI')->use('modal');
+
         $forceRefresh = false;
         $limit = 20;
         $offset = ($input->pageNum - 1) * $limit;
@@ -130,18 +132,20 @@ trait Products {
         $config = $this->wire('config');
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Product'));
         $this->headline($this->_('Snipcart Product'));
 
         $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
         $this->breadcrumb($this->snipWireRootUrl . 'products/', $this->_('Snipcart Products'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
-        
+
+        $modules->get('JqueryUI')->use('modal');
+
         $id = $input->urlSegment(2); // Get Snipcart product id
         $forceRefresh = false;
 
@@ -310,9 +314,8 @@ trait Products {
                     if ($product->editable()) {
                         $editLink =
                         '<a href="' . $product->editUrl . '"
-                            class="pw-panel pw-panel-links pw-tooltip"
-                            title="' . $this->_('Edit product page') .'"
-                            data-panel-width="75%">' .
+                            class="pw-tooltip pw-modal pw-modal-large"
+                            title="' . $this->_('Edit product page') .'">' .
                                 wireIconMarkup('pencil-square-o') .
                         '</a>';
                     } else {

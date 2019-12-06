@@ -274,6 +274,8 @@ class ProcessSnipWire extends Process implements Module {
             return '';
         }
         
+        $modules->get('JqueryUI')->use('modal');
+
         $this->_includeAssets(
             self::assetsIncludeDaterangePicker | 
             self::assetsIncludeCurrencyPicker | 
@@ -1101,8 +1103,8 @@ class ProcessSnipWire extends Process implements Module {
                     if ($product->editable()) {
                         $editLink =
                         '<a href="' . $product->editUrl . '"
-                            class="pw-panel"
-                            data-panel-width="75%">' .
+                            class="pw-tooltip pw-modal pw-modal-large"
+                            title="' . $this->_('Edit product page') .'">' .
                                 wireIconMarkup('pencil-square-o') .
                         '</a>';
                     } else {
