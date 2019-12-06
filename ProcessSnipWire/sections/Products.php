@@ -390,7 +390,7 @@ trait Products {
                 $item['name'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                //$this->_getOrderDetailActionButtons($item['token'], $ret) .
+                $this->_getProductDetailActionButtons($item['userDefinedId']) .
             '</div>' .
         '</div>';
 
@@ -426,6 +426,56 @@ trait Products {
             $wrapper->add($f);
 
             $out .= $wrapper->render();
+        }
+
+        return $out;
+    }
+
+    /**
+     * Render product detail action buttons.
+     *
+     * (Currently uses custom button markup as we need to simulate disabled buttons)
+     *
+     * @param $userDefinedId The user defined id (SKU) of the product
+     * @return buttons markup 
+     *
+     */
+    private function _getProductDetailActionButtons($userDefinedId) {
+        $pages = $this->wire('pages');
+
+        $out = '';
+
+        $product = $pages->findOne('snipcart_item_id="' . $userDefinedId . '"');
+        if ($product->url) {
+            if ($product->editable()) {
+                $out .=
+                '<a href="' . $product->editUrl .'"
+                    class="ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary pw-modal pw-modal-large"
+                    role="button">' .
+                        '<span class="ui-button-text">' .
+                            wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
+                        '</span>' .
+                '</a>';
+            } else {
+                $out .=
+                '<span
+                    class="ui-button ui-widget ui-corner-all ui-state-disabled ui-priority-secondary pw-tooltip"
+                    title="' . $this->_('Product not editable') .'">' .
+                        '<span class="ui-button-text">' .
+                            wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
+                        '</span>' .
+                '</span>';
+            }
+        } else {
+            // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
+            $out .=
+            '<span
+                class="ui-button ui-widget ui-corner-all ui-state-disabled ui-priority-secondary pw-tooltip"
+                title="' . $this->_('No matching ProcessWire page found') .'">' .
+                    '<span class="ui-button-text">' .
+                        wireIconMarkup('exclamation-triangle') . ' ' . $this->_('Edit product page') .
+                    '</span>' .
+            '</span>';
         }
 
         return $out;
