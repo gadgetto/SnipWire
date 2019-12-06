@@ -328,7 +328,7 @@ trait Products {
                     $editLink =
                     '<span
                         class="pw-tooltip"
-                        title="' . $this->_('No matching ProcessWire page found.') .'">' . 
+                        title="' . $this->_('No matching ProcessWire page found') .'">' . 
                             wireIconMarkup('exclamation-triangle') .
                     '</span>';
                 }
