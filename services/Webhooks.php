@@ -466,6 +466,7 @@ class Webhooks extends WireData {
                 'rate' => $taxesConfig['rate'],
                 'numberForInvoice' => $taxesConfig['numberForInvoice'],
                 'includedInPrice' => $hasTaxesIncluded,
+                'appliesOnShipping' => (empty($taxesConfig['appliesOnShipping'][0]) ? false : true),
             );
         }
         $taxes = array('taxes' => $taxesResponse);
