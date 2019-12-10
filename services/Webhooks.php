@@ -459,7 +459,7 @@ class Webhooks extends WireData {
         // Generate taxes response array for Snipcart
         $taxesResponse = array();
         foreach ($itemTaxes as $name => $value) {
-            $taxesConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeProducts, $name);
+            $taxesConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeAll, $name);
             $taxesResponse[] = array(
                 'name' => $name,
                 'amount' => Taxes::calculateTax($value, $taxesConfig['rate'], $hasTaxesIncluded, 2),
