@@ -122,7 +122,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             );
             return;
         }
-        $productTaxes = 0;
         foreach ($taxes as $key => $tax) {
             if (empty($tax['name']) || empty($tax['rate'])) {
                 $taxesField->error(sprintf(
@@ -135,12 +134,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                     $this->_('Taxes repeater row [%s]: "Rate" value needs to be float'),
                     $key + 1
                 ));
-            }
-            if (empty($tax['appliesOnShipping'][0])) $productTaxes += 1;
-            if ($productTaxes < 1) {
-                $taxesField->error(
-                    $this->_('Taxes repeater has only shipping taxes set. At least 1 product tax setting is required.')
-                );
             }
         }
     }
