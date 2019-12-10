@@ -460,14 +460,16 @@ class Webhooks extends WireData {
         $taxesResponse = array();
         foreach ($itemTaxes as $name => $value) {
             $taxesConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeAll, $name);
-            $taxesResponse[] = array(
-                'name' => $name,
-                'amount' => Taxes::calculateTax($value, $taxesConfig['rate'], $hasTaxesIncluded, 2),
-                'rate' => $taxesConfig['rate'],
-                'numberForInvoice' => $taxesConfig['numberForInvoice'],
-                'includedInPrice' => $hasTaxesIncluded,
-                'appliesOnShipping' => (empty($taxesConfig['appliesOnShipping'][0]) ? false : true),
-            );
+            if (!empty($taxesConfig)) {
+                $taxesResponse[] = array(
+                    'name' => $name,
+                    'amount' => Taxes::calculateTax($value, $taxesConfig['rate'], $hasTaxesIncluded, 2),
+                    'rate' => $taxesConfig['rate'],
+                    'numberForInvoice' => $taxesConfig['numberForInvoice'],
+                    'includedInPrice' => $hasTaxesIncluded,
+                    'appliesOnShipping' => (empty($taxesConfig['appliesOnShipping'][0]) ? false : true),
+                );
+            }
         }
         $taxes = array('taxes' => $taxesResponse);
         
