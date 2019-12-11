@@ -656,6 +656,13 @@ trait Orders {
             
             $fieldset->add($f);
 
+                /** @var InputfieldCheckbox $f */
+                $f = $modules->get('InputfieldCheckbox');
+                $f->name = 'notifyCustomer'; 
+                $f->label = $this->_('Send reason for refund with customer notification');
+    
+            $fieldset->add($f);
+
                 /** @var InputfieldButton $btn */
                 $btn = $modules->get('InputfieldButton');
                 $btn->id = 'SendRefundButton';
@@ -699,6 +706,9 @@ trait Orders {
             $amount->error($this->_('Maximum amount is') . ' ' . $maxAmountFormatted);
         }
 
+        $notifyCustomer = $form->get('notifyCustomer');
+        $notifyCustomerValue = !empty($notifyCustomer) ? 1 : 0;
+        
         $comment = $form->get('comment');
         $commentValue = $comment->value;
 
@@ -710,9 +720,10 @@ trait Orders {
         // Sanitize input
         $amountValue = $sanitizer->float($amountValue);
         $amountValueFormatted = CurrencyFormat::format($amountValue, $currency);
+        $notifyCustomerValue = $sanitizer->bool($notifyCustomerValue);
         $commentValue = $sanitizer->textarea($commentValue);
 
-        $success = $this->_refund($token, $amountValue, $amountValueFormatted, $commentValue);
+        $success = $this->_refund($token, $amountValue, $amountValueFormatted, $notifyCustomerValue, $commentValue);
         if ($success) {
             // Reset cache for this order and redirect to myself to display updated values
             $this->wire('sniprest')->deleteOrderCache($token);
@@ -1075,11 +1086,12 @@ trait Orders {
      * @param string $token The order token
      * @param float $amount The amount to be refunded #required
      * @param string $amountFormatted The formatted amount #required
+     * @param boolean $notifyCustomer Send reason for refund (textfield) with customer notification
      * @param string $comment The reason for the refund (internal note - not for customer)
      * @return boolean
      *
      */
-    private function _refund($token, $amount, $amountFormatted, $comment = '') {
+    private function _refund($token, $amount, $amountFormatted, $notifyCustomer, $comment = '') {
         $sniprest = $this->wire('sniprest');
 
         if (empty($token) || empty($amount)) return;
@@ -1087,6 +1099,7 @@ trait Orders {
         $options = array(
             'amount' => $amount,
             'comment' => $comment,
+            'notifyCustomer' => $notifyCustomer,
         );
 
         $refunded = false;
