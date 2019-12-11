@@ -516,6 +516,7 @@ class SnipREST extends WireHttpExtended {
      * @param array $options An array of options that will be sent as POST params:
      *  - `amount` (float) The amount to be refunded #required
      *  - `comment` (string) The reason for the refund (internal note - not for customer)
+     *  - `notifyCustomer` (boolean) Send reason for refund with customer notification
      * @return array $data
      * 
      */
@@ -531,7 +532,7 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
 
-        $allowedOptions = array('amount', 'comment');
+        $allowedOptions = array('amount', 'comment', 'notifyCustomer');
         $defaultOptions = array();
         $options = array_merge(
             $defaultOptions,
