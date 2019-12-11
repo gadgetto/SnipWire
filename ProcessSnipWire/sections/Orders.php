@@ -1018,15 +1018,19 @@ trait Orders {
         $table->setSortable(false);
         $table->setResizable(false);
         $table->headerRow(array(
-            $this->_('Created on'),
+            $this->_('Refunded on'),
             $this->_('Amount'),
-            $this->_('Comment'),
+            $this->_('Reason for refund'),
+            $this->_('Payment gateway'),
         ));
         foreach ($refunds as $refund) {
             $table->row(array(
                 wireDate('Y-m-d H:i:s', $refund['creationDate']),
                 CurrencyFormat::format($refund['amount'], $currency),
                 $refund['comment'],
+                $refund['refundedByPaymentGateway']
+                    ? $this->_('Refunded')
+                    : $this->_('Not refunded')
             ));
         }
 
