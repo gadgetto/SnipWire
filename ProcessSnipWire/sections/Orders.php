@@ -642,8 +642,7 @@ trait Orders {
                 $f->name = 'amount';
                 $f->label = $this->_('Amount');
                 $f->label .= ' (' . $currencyLabel . ')';
-                $f->description = $this->_('Enter the amount to be refunded.');
-                $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
+                $f->notes = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
                 $f->required = true;
                 $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
             
@@ -652,8 +651,7 @@ trait Orders {
                 /** @var InputfieldTextarea $f */
                 $f = $modules->get('InputfieldTextarea');
                 $f->name = 'comment';
-                $f->label = $this->_('Internal Note');
-                $f->detail = $this->_('This note is for your eyes only and won\'t be shown to your customer.');
+                $f->label = $this->_('Reason for refund');
                 $f->rows = 3;
             
             $fieldset->add($f);
