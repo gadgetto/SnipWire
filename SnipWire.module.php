@@ -314,7 +314,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                     );
                 } else {
                     $message = sprintf(
-                        $this->_('Snipcart product with SKU [%1$s] could not be fetched. [%2$s]'),
+                        $this->_('Snipcart product with SKU [%1$s] could not be fetched. %2$s'),
                         $snipcart_item_id,
                         $error
                     );
