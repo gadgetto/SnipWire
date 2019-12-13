@@ -1494,6 +1494,7 @@ class ProcessSnipWire extends Process implements Module {
         $modules = $this->wire('modules');
         $input = $this->wire('input');
         $sanitizer = $this->wire('sanitizer');
+        $sniprest = $this->wire('sniprest');
 
         $comeFromUrl = $sanitizer->url($input->get('ret'));
         $submitInstall = $input->post('submit_install');
@@ -1518,6 +1519,15 @@ class ProcessSnipWire extends Process implements Module {
         // Install
         } else {
 
+            $apiReady = true;
+            if (($result = $sniprest->testConnection()) !== true) {
+                $warningMessage = $this->_('SnipWire product package cannot be installed. Snipcart REST API connection failed! Please check your secret API keys.');
+                $this->warning($warningMessage);
+                $this->wire('session')->redirect($comeFromUrl);
+                // Should not get here - just to be sure!
+                $apiReady = false;
+            }
+
             /** @var InputfieldMarkup $f (info install) */
             $f = $modules->get('InputfieldMarkup');
             $f->icon = 'sign-in';
@@ -1525,12 +1535,14 @@ class ProcessSnipWire extends Process implements Module {
             $f->description = $this->_('Install the SnipWire product package? This will create product templates, files, fields and pages required by Snipcart.');
             $form->add($f);
             
-            /** @var InputfieldSubmit $f */
-            $f = $modules->get('InputfieldSubmit');
-            $f->attr('name', 'submit_install');
-            $f->attr('value', $this->_('Install'));
-            $f->icon = 'sign-in';
-            $form->add($f);
+            if ($apiReady) {
+                /** @var InputfieldSubmit $f */
+                $f = $modules->get('InputfieldSubmit');
+                $f->attr('name', 'submit_install');
+                $f->attr('value', $this->_('Install'));
+                $f->icon = 'sign-in';
+                $form->add($f);
+            }
 
             // Was the form submitted?
             if ($submitInstall) {
