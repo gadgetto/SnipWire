@@ -509,7 +509,8 @@ class MarkupSnipWire extends WireData implements Module {
         // Collect all price fields values
         $prices = array();
         foreach ($currencies as $currency) {
-            $prices[$currency] = (float) $product->get("snipcart_item_price_$currency");
+            $fieldval = $product->get("snipcart_item_price_$currency");
+            $prices[$currency] = floatval($fieldval); // cast to float (not locale aware! Snipcart always needs a . as separator)
         }
 
         // ===== unformatted price(s) =====
