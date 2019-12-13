@@ -107,7 +107,7 @@ class CurrencyFormat extends WireData {
         );
         $currencyDefinition = self::$currenciesCache[$key];
         
-        $floatPrice = (float) $price;
+        $floatPrice = wire('sanitizer')->float($price);
         if ($floatPrice < 0) {
             $numberFormatString = $currencyDefinition['negativeNumberFormat'];
             $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
@@ -163,7 +163,7 @@ class CurrencyFormat extends WireData {
             );
             $currencyDefinition = self::$currenciesCache[$key];
             
-            $floatPrice = (float) $price;
+            $floatPrice = wire('sanitizer')->float($price);
             if ($floatPrice < 0) {
                 $numberFormatString = $currencyDefinition['negativeNumberFormat'];
                 $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
