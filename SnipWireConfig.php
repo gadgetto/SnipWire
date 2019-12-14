@@ -695,7 +695,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldSelect'); 
             $f->attr('name', 'data_item_name_field'); 
             $f->label = $this->_('Set Field for Snipcart Product Name'); 
-            $f->notes = $this->_('Used as Snipcart anchor property `data-item-name`');
+            $f->notes = $this->_('Allowed field types: `FieldtypeText(Language)`, `FieldtypePageTitle(Language)`');
             $f->required = true;
             $f->columnWidth = 50;
     
@@ -718,7 +718,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldSelect'); 
             $f->attr('name', 'data_item_categories_field'); 
             $f->label = $this->_('Set Field for Snipcart Categories'); 
-            $f->notes = $this->_('Used as Snipcart anchor property `data-item-categories`');
+            $f->notes = $this->_('Allowed field types: `FieldtypePage`');
             $f->required = false;
             $f->columnWidth = 50;
 
