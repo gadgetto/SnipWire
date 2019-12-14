@@ -705,11 +705,9 @@ class SnipWireConfig extends ModuleConfig {
                 'FieldtypePageTitle',
                 'FieldtypePageTitleLanguage',
             );
-            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_name_field']);
-            foreach ($productTemplateFields as $field) {
-                if (in_array($field->type, $allowedFieldTypes)) {
-                    $f->addOption($field->name, $field->name, array());
-                }
+            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_name_field'], $allowedFieldTypes);
+            foreach ($productTemplateFields as $ptField) {
+                $f->addOption($ptField->name, $ptField->name, array());
             }
 
         $fsSnipWire->add($f);
@@ -725,11 +723,9 @@ class SnipWireConfig extends ModuleConfig {
             $allowedFieldTypes = array(
                 'FieldtypePage',
             );
-            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_categories_field']);
-            foreach ($productTemplateFields as $field) {
-                if (in_array($field->type, $allowedFieldTypes)) {
-                    $f->addOption($field->name, $field->name, array());
-                }
+            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_categories_field'], $allowedFieldTypes);
+            foreach ($productTemplateFields as $ptField) {
+                $f->addOption($ptField->name, $ptField->name, array());
             }
 
         $fsSnipWire->add($f);
@@ -840,21 +836,33 @@ class SnipWireConfig extends ModuleConfig {
      * Get all fields from product template
      * 
      * @param string $defaultFieldName
-     * @return WireArray $fields
+     * @param array $allowedFieldTypes
+     * @return WireArray $selectedFields
      * 
      */
-    private function _getProductTemplateFields($defaultFieldName) {
-        $fields = new WireArray();
+    private function _getProductTemplateFields($defaultFieldName, array $allowedFieldTypes = array()) {
+        $selectedFields = new WireArray();
         if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {
-            $fields = $productTemplate->fields;
+            $templateFields = $productTemplate->fields;
+            foreach ($templateFields as $field) {
+                if (in_array($field->type, $allowedFieldTypes)) {
+                    $selectedFields->add($field);
+                }
+            }
         } else {
-            $productTemplateFields = new FieldsArray();
             $defaultField = $this->wire('fields')->get($defaultFieldName);
-            $fields->add($defaultField);
+            if (!empty($defaultField->name)) {
+                $selectedFields->add($defaultField);
+            } else {
+                // Create a placeholder field
+                $placeholder = new Field();
+                $placeholder->type = $this->wire('modules')->get('FieldtypeText');
+                $placeholder->name = $defaultFieldName;
+                $selectedFields->add($placeholder);
+            }
         }
-        return $fields;
+        return $selectedFields;
     }
-
 
     /**
      * Include asset files for SnipWire config editor.
