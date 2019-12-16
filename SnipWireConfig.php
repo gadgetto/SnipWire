@@ -833,22 +833,20 @@ class SnipWireConfig extends ModuleConfig {
     }
 
     /**
-     * Get all fields from product template
+     * Get a selection of fields from product template.
      * 
-     * @param string $defaultFieldName
-     * @param array $allowedFieldTypes
+     * @param string $defaultFieldName Name of the field to be returned if product template doesn't exist
+     * @param array $allowedFieldTypes An array of allowed field types to be returned
+     * @param array $excludeFieldNames An array of field names to be excluded from result
      * @return WireArray $selectedFields
      * 
      */
-    private function _getProductTemplateFields($defaultFieldName, array $allowedFieldTypes = array()) {
+    private function _getProductTemplateFields($defaultFieldName, $allowedFieldTypes = array(), $excludeFieldNames = array()) {
         $selectedFields = new WireArray();
         if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {
-            $templateFields = $productTemplate->fields;
-            foreach ($templateFields as $field) {
-                if (in_array($field->type, $allowedFieldTypes)) {
-                    $selectedFields->add($field);
-                }
-            }
+            $selectedFields = $productTemplate->fields;
+            if (!empty($allowedFieldTypes)) $selectedFields = $selectedFields->find('type=' . implode('|', $allowedFieldTypes));
+            if (!empty($excludeFieldNames)) $selectedFields = $selectedFields->find('!name%=' . implode('|', $excludeFieldNames));
         } else {
             $defaultField = $this->wire('fields')->get($defaultFieldName);
             if (!empty($defaultField->name)) {
