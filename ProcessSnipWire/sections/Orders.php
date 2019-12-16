@@ -642,7 +642,7 @@ trait Orders {
                 $f->name = 'amount';
                 $f->label = $this->_('Amount');
                 $f->label .= ' (' . $currencyLabel . ')';
-                $f->notes = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
+                $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
                 $f->required = true;
                 $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
             
