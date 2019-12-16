@@ -596,14 +596,14 @@ trait Orders {
         $form->id = 'RefundForm';
         $form->action = $this->currentUrl;
 
-        if ($ret) {
-            /** @var InputfieldHidden $f */
-            $f = $modules->get('InputfieldHidden');
-            $f->name = 'ret';
-            $f->value = urlencode($ret);
-
-            $form->add($f);
-        }
+            if ($ret) {
+                /** @var InputfieldHidden $f */
+                $f = $modules->get('InputfieldHidden');
+                $f->name = 'ret';
+                $f->value = urlencode($ret);
+    
+                $form->add($f);
+            }
 
             $refundBadges = 
             ' <span class="snipwire-badge snipwire-badge-info">';
