@@ -705,7 +705,11 @@ class SnipWireConfig extends ModuleConfig {
                 'FieldtypePageTitle',
                 'FieldtypePageTitleLanguage',
             );
-            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_name_field'], $allowedFieldTypes);
+            $excludeFieldNames = array(
+                'snipcart_item_id',
+                'snipcart_item_price_',
+            );
+            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_name_field'], $allowedFieldTypes, $excludeFieldNames);
             foreach ($productTemplateFields as $ptField) {
                 $f->addOption($ptField->name, $ptField->name, array());
             }
