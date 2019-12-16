@@ -515,7 +515,7 @@ class SnipREST extends WireHttpExtended {
      * @param string $token The Snipcart token of the order
      * @param array $options An array of options that will be sent as POST params:
      *  - `amount` (float) The amount to be refunded #required
-     *  - `comment` (string) The reason for the refund (internal note - not for customer)
+     *  - `comment` (string) The reason for the refund
      *  - `notifyCustomer` (boolean) Send reason for refund with customer notification
      * @return array $data
      * 
