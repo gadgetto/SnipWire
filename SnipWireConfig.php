@@ -711,7 +711,7 @@ class SnipWireConfig extends ModuleConfig {
             );
             $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_name_field'], $allowedFieldTypes, $excludeFieldNames);
             foreach ($productTemplateFields as $ptField) {
-                $f->addOption($ptField->name, $ptField->name, array());
+                $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
             }
 
         $fsSnipWire->add($f);
@@ -721,15 +721,16 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'data_item_categories_field'); 
             $f->label = $this->_('Set Field for Snipcart Categories'); 
             $f->notes = $this->_('Allowed field types: `FieldtypePage`');
-            $f->required = false;
+            $f->required = true;
             $f->columnWidth = 50;
 
             $allowedFieldTypes = array(
                 'FieldtypePage',
             );
             $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_categories_field'], $allowedFieldTypes);
+            $f->addOption('', $this->_('(Categories disabled)'));
             foreach ($productTemplateFields as $ptField) {
-                $f->addOption($ptField->name, $ptField->name, array());
+                $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
             }
 
         $fsSnipWire->add($f);
