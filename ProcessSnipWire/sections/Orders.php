@@ -443,6 +443,7 @@ trait Orders {
         '</div>';
 
         $out .= $this->_processRefundForm($item, $ret);
+        $out .= $this->_processOrderStatusForm($item, $ret);
 
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
@@ -725,7 +726,166 @@ trait Orders {
 
         $success = $this->_refund($token, $amountValue, $amountValueFormatted, $notifyCustomerValue, $commentValue);
         if ($success) {
-            // Reset cache for this order and redirect to myself to display updated values
+            // Reset cache for this order and redirect to itself to display updated values
+            $this->wire('sniprest')->deleteOrderCache($token);
+            $redirectUrl = $this->currentUrl . '?modal=1';
+            if ($ret) $redirectUrl .= '&ret=' . urlencode($ret);
+            $session->redirect($redirectUrl);
+        }
+
+        return $form->render();
+    }
+
+    /**
+     * Render and process the order status form.
+     *
+     * @param array $item
+     * @param string $ret A return URL (optional)
+     * @return markup 
+     *
+     */
+    private function _processOrderStatusForm($item, $ret = '') {
+        $modules = $this->wire('modules');
+        $sanitizer = $this->wire('sanitizer');
+        $input = $this->wire('input');
+        $session = $this->wire('session');
+
+        $token = $item['token'];
+        
+        if ($input->post->send_orderstatus) {
+            $status = $input->post->status;
+            $paymentStatus = $input->post->paymentStatus;
+            $trackingNumber = $input->post->trackingNumber;
+            $trackingUrl = $input->post->trackingUrl;
+        } else {
+            $status = $item['status'];
+            $paymentStatus = $item['paymentStatus'];
+            $trackingNumber = $item['trackingNumber'];
+            $trackingUrl = $item['trackingUrl'];
+        }
+
+		/** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm');
+        $form->id = 'OrderStatusForm';
+        $form->action = $this->currentUrl;
+
+            if ($ret) {
+                /** @var InputfieldHidden $f */
+                $f = $modules->get('InputfieldHidden');
+                $f->name = 'ret';
+                $f->value = urlencode($ret);
+    
+                $form->add($f);
+            }
+
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->entityEncodeLabel = false;
+            $fieldset->label = $this->_('Update order status');
+            $fieldset->icon = self::iconEditOrderStatus;
+            $fieldset->collapsed = ($input->send_orderstatus)
+                ? Inputfield::collapsedNo
+                : Inputfield::collapsedYes;
+
+        $form->add($fieldset);
+
+            /** @var InputfieldSelect $f */
+            $f = $modules->get('InputfieldSelect');
+            $f->name = 'status';
+            $f->label = $this->_('Order status');
+            $f->value = $status;
+            $f->required = true;
+            $f->columnWidth = 50;
+            $f->addOptions($this->orderStatuses);
+
+        $fieldset->add($f);
+
+            /** @var InputfieldSelect $f */
+            $f = $modules->get('InputfieldSelect');
+            $f->name = 'paymentStatus';
+            $f->label = $this->_('Payment status');
+            $f->value = $paymentStatus;
+            $f->required = true;
+            $f->columnWidth = 50;
+            $f->addOptions($this->paymentStatuses);
+
+        $fieldset->add($f);
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->name = 'trackingNumber';
+            $f->label = $this->_('Tracking number');
+            $f->value = $trackingNumber;
+            $f->detail = $this->_('Enter the tracking number associated to the order');
+
+        $fieldset->add($f);
+
+            /** @var InputfieldURL $f */
+            $f = $modules->get('InputfieldURL');
+            $f->name = 'trackingUrl';
+            $f->label = $this->_('Tracking URL');
+            $f->value = $trackingUrl;
+            $f->detail = $this->_('Enter the URL where the customer will be able to track its order');
+            $f->noRelative = true;
+
+        $fieldset->add($f);
+
+            /*
+            metadata ...
+            */
+
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->id = 'UpdateOrderButton';
+            $btn->name = 'send_orderstatus';
+            $btn->value = $this->_('Update order');
+            $btn->icon = self::iconEditOrderStatus;
+            $btn->type = 'submit';
+            $btn->small = true;
+
+        $fieldset->add($btn);
+
+        // Render form without processing if not submitted
+        if (!$input->post->send_orderstatus) return $form->render();
+
+        $form->processInput($input->post);
+
+        // Validate input
+        $status = $form->get('status');
+        $statusValue = $status->value;
+        if (!$statusValue) {
+            $status->error($this->_('Please choose an order status'));
+        }
+
+        $paymentStatus = $form->get('paymentStatus');
+        $paymentStatusValue = $paymentStatus->value;
+        if (!$statusValue) {
+            $paymentStatus->error($this->_('Please choose a payment status'));
+        }
+
+        $trackingNumber = $form->get('trackingNumber');
+        $trackingNumberValue = $trackingNumber->value;
+
+        $trackingUrl = $form->get('trackingUrl');
+        $trackingUrlValue = $trackingUrl->value;
+
+        if (empty($trackingNumberValue) && !empty($trackingUrlValue)) {
+            $trackingNumber->error($this->_('Tracking number may not be empty if Tracking URL is set'));
+        }
+
+        if ($form->getErrors()) {
+            // The form is processed and populated but contains errors
+            return $form->render();
+        }
+
+        // Sanitize input for _updateOrderStatus
+        $statusValue = $sanitizer->text($statusValue);
+        $paymentStatusValue = $sanitizer->text($paymentStatusValue);
+        $trackingNumberValue = $sanitizer->text($trackingNumberValue);
+        $trackingUrlValue = $sanitizer->httpUrl($trackingUrlValue);
+
+        $success = $this->_updateOrderStatus($token, $statusValue, $paymentStatusValue, $trackingNumberValue, $trackingUrlValue);
+        if ($success) {
+            // Reset cache for this order and redirect to itself to display updated values
             $this->wire('sniprest')->deleteOrderCache($token);
             $redirectUrl = $this->currentUrl . '?modal=1';
             if ($ret) $redirectUrl .= '&ret=' . urlencode($ret);
@@ -1128,7 +1288,46 @@ trait Orders {
         }
         return $refunded;
     }
-    
+
+    /**
+     * Update the status of the specified order.
+     *
+     * @param string $token The order token
+     * @param string $status The order status
+     * @param string $paymentStatus The order payment status
+     * @param string $trackingNumber The tracking number associated to the order
+     * @param string $trackingUrl The URL where the customer will be able to track its order
+     * @return boolean
+     *
+     */
+    private function _updateOrderStatus($token, $status, $paymentStatus, $trackingNumber, $trackingUrl) {
+        $sniprest = $this->wire('sniprest');
+
+        if (empty($token)) return;
+
+        $options = array(
+            'status' => $status,
+            'paymentStatus' => $paymentStatus,
+            'trackingNumber' => $trackingNumber,
+            'trackingUrl' => $trackingUrl,
+        );
+
+        $updated = false;
+        $response = $sniprest->putOrderStatus($token, $options);
+        if (
+            $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+        ) {
+            $this->error(
+                $this->_('The order status could not be updated! The following error occurred: ') .
+                $response[$token][WireHttpExtended::resultKeyError]);
+        } else {
+            $this->message($this->_('The order status has been updated.'));
+            $updated = true;
+        }
+        return $updated;
+    }
+
     /**
      * Set JS config values for order pages.
      *
