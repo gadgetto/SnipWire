@@ -83,10 +83,7 @@ trait AbandonedCarts {
 
         $out = $this->_buildAbandonedCartsFilter($filter);
 
-        $timerangeLabel = array_key_exists($timeRange, $this->abandonedCartsTimeRanges)
-            ? $this->abandonedCartsTimeRanges[$timeRange]
-            : '-';
-        $headline = $this->_('Abandoned Carts') . ': ' . $timerangeLabel;
+        $headline = $this->_('Abandoned Carts') . ': ' . $this->getAbandonedCartsTimeRange($timeRange);
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -196,7 +193,7 @@ trait AbandonedCarts {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
                 $f->required = true;
-                $f->addOptions($this->abandonedCartsTimeRanges);
+                $f->addOptions($this->getAbandonedCartsTimeRanges());
 
             $fieldset->add($f);
 

@@ -252,7 +252,221 @@ class ProcessSnipWire extends Process implements Module {
             'CartContainsSomeSpecifiedProducts' => $this->_('Cart contains some of specified products'),
             'CartContainsAtLeastAllSpecifiedProducts' => $this->_('Cart contains at least all specified products'),
         );
-    }    
+    }
+
+    /**
+     * Get all pre-translated order statuses.
+     *
+     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @return array
+     *
+     */
+	public function getOrderStatuses($includeAllKey = true) {
+		if ($includeAllKey) return $this->orderStatuses;
+		$orderStatuses = $this->orderStatuses;
+		array_shift($orderStatuses);
+		return $orderStatuses;
+	}
+
+    /**
+     * Get a pre-translated order status by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getOrderStatus($key) {
+		return isset($this->orderStatuses[$key])
+		    ? $this->orderStatuses[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated payment statuses.
+     *
+     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @return array
+     *
+     */
+	public function getPaymentStatuses($includeAllKey = true) {
+		if ($includeAllKey) return $this->paymentStatuses;
+		$paymentStatuses = $this->paymentStatuses;
+		array_shift($paymentStatuses);
+		return $paymentStatuses;
+	}
+
+    /**
+     * Get a pre-translated payment status by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getPaymentStatus($key) {
+		return isset($this->paymentStatuses[$key])
+		    ? $this->paymentStatuses[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated payment methods.
+     *
+     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @return array
+     *
+     */
+	public function getPaymentMethods($includeAllKey = true) {
+		if ($includeAllKey) return $this->paymentMethods;
+		$paymentMethods = $this->paymentMethods;
+		array_shift($paymentMethods);
+		return $paymentMethods;
+	}
+
+    /**
+     * Get a pre-translated payment method by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getPaymentMethod($key) {
+		return isset($this->paymentMethods[$key])
+		    ? $this->paymentMethods[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated abandoned carts time-ranges.
+     *
+     * @return array
+     *
+     */
+	public function getAbandonedCartsTimeRanges() {
+		return $this->abandonedCartsTimeRanges;
+	}
+
+    /**
+     * Get a pre-translated abandoned carts time-range by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getAbandonedCartsTimeRange($key) {
+		return isset($this->abandonedCartsTimeRanges[$key])
+		    ? $this->abandonedCartsTimeRanges[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated customer address-labels.
+     *
+     * @return array
+     *
+     */
+	public function getCustomerAddressLabels() {
+		return $this->customerAddressLabels;
+	}
+
+    /**
+     * Get all pre-translated customer statuses.
+     *
+     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @return array
+     *
+     */
+	public function getCustomerStatuses($includeAllKey = true) {
+		if ($includeAllKey) return $this->customerStatuses;
+		$customerStatuses = $this->customerStatuses;
+		array_shift($customerStatuses);
+		return $customerStatuses;
+	}
+
+    /**
+     * Get a pre-translated customer status by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getCustomerStatus($key) {
+		return isset($this->customerStatuses[$key])
+		    ? $this->customerStatuses[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated discounts statuses.
+     *
+     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @return array
+     *
+     */
+	public function getDiscountsStatuses($includeAllKey = true) {
+		if ($includeAllKey) return $this->discountsStatuses;
+		$discountsStatuses = $this->discountsStatuses;
+		array_shift($discountsStatuses);
+		return $discountsStatuses;
+	}
+
+    /**
+     * Get a pre-translated discounts status by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getDiscountsStatus($key) {
+		return isset($this->discountsStatuses[$key])
+		    ? $this->discountsStatuses[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated discounts types.
+     *
+     * @return array
+     *
+     */
+	public function getDiscountsTypes() {
+		return $this->discountsTypes;
+	}
+
+    /**
+     * Get a pre-translated discounts type by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getDiscountsType($key) {
+		return isset($this->discountsTypes[$key])
+		    ? $this->discountsTypes[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated discounts triggers.
+     *
+     * @return array
+     *
+     */
+	public function getDiscountsTriggers() {
+		return $this->discountsTriggers;
+	}
+
+    /**
+     * Get a pre-translated discounts trigger by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getDiscountsTrigger($key) {
+		return isset($this->discountsTriggers[$key])
+		    ? $this->discountsTriggers[$key]
+		    : $this->_('-- unknown --');
+	}
 
     /**
      * The SnipWire Dashboard page.

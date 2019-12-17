@@ -246,7 +246,7 @@ trait Orders {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 50;
                 $f->required = true;
-                $f->addOptions($this->orderStatuses);
+                $f->addOptions($this->getOrderStatuses());
 
             $fieldset->add($f);
 
@@ -259,7 +259,7 @@ trait Orders {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 50;
                 $f->required = true;
-                $f->addOptions($this->paymentStatuses);
+                $f->addOptions($this->getPaymentStatuses());
 
             $fieldset->add($f);
 
@@ -378,9 +378,9 @@ trait Orders {
                     $panelLink,
                     wireDate('relative', $item['completionDate']),
                     $item['placedBy'],
-                    $this->orderStatuses[$item['status']],
-                    $this->paymentStatuses[$item['paymentStatus']],
-                    $this->paymentMethods[$item['paymentMethod']],
+                    $this->getOrderStatus($item['status']),
+                    $this->getPaymentStatus($item['paymentStatus']),
+                    $this->getPaymentMethod($item['paymentMethod']),
                     $total,
                     $refunded,
                     $downloadLink,
@@ -488,7 +488,7 @@ trait Orders {
 
             $address = $item['user']['billingAddress'];
             $data = array();
-            foreach ($this->customerAddressLabels as $key => $caption) {
+            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
             }
 
@@ -503,7 +503,7 @@ trait Orders {
 
             $address = $item['user']['shippingAddress'];
             $data = array();
-            foreach ($this->customerAddressLabels as $key => $caption) {
+            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
             }
 
@@ -795,7 +795,7 @@ trait Orders {
             $f->value = $status;
             $f->required = true;
             $f->columnWidth = 50;
-            $f->addOptions($this->orderStatuses);
+            $f->addOptions($this->getOrderStatuses(false));
 
         $fieldset->add($f);
 
@@ -806,7 +806,7 @@ trait Orders {
             $f->value = $paymentStatus;
             $f->required = true;
             $f->columnWidth = 50;
-            $f->addOptions($this->paymentStatuses);
+            $f->addOptions($this->getPaymentStatuses(false));
 
         $fieldset->add($f);
 
@@ -964,7 +964,7 @@ trait Orders {
                 $item['email'] .
         '</a>';
         $itemData['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
-        $itemData['status'] = $this->orderStatuses[$item['status']];
+        $itemData['status'] = $this->getOrderStatus($item['status']);
         $itemData['shippingMethod'] = $item['shippingMethod'];
         $itemData['shippingProvider'] = $item['shippingProvider'];
 
@@ -1007,9 +1007,7 @@ trait Orders {
 
         $itemData = array();
         
-        $itemData['paymentMethod'] = isset($this->paymentMethods[$item['paymentMethod']])
-            ? $this->paymentMethods[$item['paymentMethod']]
-            : $item['paymentMethod'];
+        $itemData['paymentMethod'] = $this->getPaymentMethod($item['paymentMethod']);
 
         $itemData['creditCardLast4Digits'] = !empty($item['creditCardLast4Digits'])
             ? '****&nbsp;****&nbsp;****&nbsp;' . $item['creditCardLast4Digits']
@@ -1020,9 +1018,7 @@ trait Orders {
             ? $supportedCurrencies[$item['currency']]
             : $item['currency'];
 
-        $itemData['paymentStatus'] = isset($this->paymentStatuses[$item['paymentStatus']])
-            ? $this->paymentStatuses[$item['paymentStatus']]
-            : $item['paymentStatus'];
+        $itemData['paymentStatus'] = $this->getPaymentStatus($item['paymentStatus']);
 
         $data = array();
         foreach ($infoCaptions as $key => $caption) {

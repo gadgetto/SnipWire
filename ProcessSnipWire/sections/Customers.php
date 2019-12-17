@@ -226,7 +226,7 @@ trait Customers {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
                 $f->required = true;
-                $f->addOptions($this->customerStatuses);
+                $f->addOptions($this->getCustomerStatuses());
 
             $fieldset->add($f);
 
@@ -303,7 +303,7 @@ trait Customers {
                     wireDate('relative', $item['creationDate']),
                     $item['statistics']['ordersCount'],
                     $item['statistics']['subscriptionsCount'],
-                    $this->customerStatuses[$item['status']],
+                    $this->getCustomerStatus($item['status']),
                 ));
             }
             $out = $table->render();
@@ -372,7 +372,7 @@ trait Customers {
 
             $address = $item['billingAddress'];
             $data = array();
-            foreach ($this->customerAddressLabels as $key => $caption) {
+            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
             }
 
@@ -387,7 +387,7 @@ trait Customers {
 
             $address = $item['shippingAddress'];
             $data = array();
-            foreach ($this->customerAddressLabels as $key => $caption) {
+            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
             }
 
@@ -560,9 +560,9 @@ trait Customers {
                     $invoiceNumber,
                     wireDate('relative', $item['creationDate']),
                     $item['billingAddressCountry'],
-                    $this->orderStatuses[$item['status']],
-                    $this->paymentStatuses[$item['paymentStatus']],
-                    $this->paymentMethods[$item['paymentMethod']],
+                    $this->getOrderStatus($item['status']),
+                    $this->getPaymentStatus($item['paymentStatus']),
+                    $this->getPaymentMethod($item['paymentMethod']),
                     $total,
                     //$refunded,
                     $downloadLink,

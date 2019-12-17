@@ -203,7 +203,7 @@ trait Discounts {
                 $f->collapsed = Inputfield::collapsedNever;
                 $f->columnWidth = 33;
                 $f->required = true;
-                $f->addOptions($this->discountsStatuses);
+                $f->addOptions($this->getDiscountsStatuses());
 
             $fieldset->add($f);
 
@@ -278,12 +278,12 @@ trait Discounts {
 
                 $currency = !empty($item['currency']) ? $item['currency'] : '-';
 
-                $condition = $this->discountsTriggers[$item['trigger']];
+                $condition = $this->getDiscountsTrigger($item['trigger']);
                 if ($item['trigger'] == 'Total') {
                     $condition .= ': <strong>' . CurrencyFormat::format($item['totalToReach'], $currency) . '</strong>';
                 }
                 
-                $action = $this->discountsTypes[$item['type']];
+                $action = $this->getDiscountsType($item['type']);
                 if (strpos(strtolower($item['type']), 'amount') !== false) {
                     $amount = $item['amount']
                         ? CurrencyFormat::format($item['amount'], $currency)
