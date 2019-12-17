@@ -797,7 +797,12 @@ trait Orders {
         $itemData = array();
         
         $itemData['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'];
-        $itemData['email'] = '<a href="mailto:' . $item['email'] . '">' . $item['email'] .'</a>';
+        $itemData['email'] =
+        '<a href="mailto:' . $item['email'] . '"
+            class="pw-tooltip"
+            title="' . $this->_('Send email to customer') .'">' .
+                $item['email'] .
+        '</a>';
         $itemData['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
         $itemData['status'] = $this->orderStatuses[$item['status']];
         $itemData['shippingMethod'] = $item['shippingMethod'];
@@ -805,7 +810,13 @@ trait Orders {
 
         $trackingNumber = $item['trackingNumber'];
         if ($item['trackingUrl'] && $item['trackingNumber']) {
-            $trackingNumber = '<a href="' . $item['trackingUrl'] . '" target="_blank">' . $trackingNumber . '</a>';
+            $trackingNumber =
+            '<a href="' . $item['trackingUrl'] . '"
+                target="_blank"
+                class="pw-tooltip"
+                title="' . $this->_('Open tracking URL') .'">' .
+                    $trackingNumber .
+            '</a>';
         }
         $itemData['trackingNumber'] = $trackingNumber;
         
