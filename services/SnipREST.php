@@ -559,6 +559,55 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
+     * Updates the status of an order.
+     *
+     * (Includes sending some information to your customer or generating automatic emails)
+     *
+     * @param string $token The Snipcart token of the order
+     * @param array $options An array of options that will be sent as POST params:
+     *  - `status` (string) The order status  #required (Possible values: InProgress, Processed, Disputed, Shipped, Delivered, Pending, Cancelled)
+     *  - `paymentStatus` (string) The order payment status (Possible values: Paid, Deferred, PaidDeferred, ChargedBack, Refunded, Paidout, Failed, Pending, Expired, Cancelled, Open, Authorized)
+     *  - `trackingNumber` (string) The tracking number associated to the order
+     *  - `trackingUrl` (string) The URL where the customer will be able to track its order
+     * @return array $data
+     * 
+     */
+    public function putOrderStatus($token = '', $options = array()) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$token) {
+            $this->error(self::getMessagesText('no_order_token'));
+            return false;
+        }
+        // Add necessary header for PUT request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $allowedOptions = array('status', 'paymentStatus', 'trackingNumber', 'trackingUrl');
+        $defaultOptions = array();
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+
+        $url = self::apiEndpoint . self::resPathOrders. '/' . $token;
+        $requestbody = wireEncodeJSON($options, true);
+
+        $response = $this->send($url, $requestbody, 'PUT');
+
+        if ($response === false) $response = array();
+        $data[$token] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
      * Get all subscriptions from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
