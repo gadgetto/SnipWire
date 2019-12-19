@@ -202,6 +202,22 @@
 		"oAP": "/FieldtypeSnipWireTaxSelector/FieldtypeSnipWireTaxSelector.module.php",
 		"oF": 0
 		},
+	"/helpers/Countries.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/helpers/Countries.php",
+		"oF": 0
+		},
+	"/helpers/CountriesTable.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/helpers/CountriesTable.php",
+		"oF": 0
+		},
 	"/helpers/CurrenciesTable.php": {
 		"cB": 0,
 		"ft": 8192,
