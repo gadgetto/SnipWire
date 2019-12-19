@@ -373,7 +373,9 @@ trait Customers {
             $address = $item['billingAddress'];
             $data = array();
             foreach ($this->getCustomerAddressLabels() as $key => $caption) {
-                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+                $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
+                if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
+                if (empty($data[$caption])) $data[$caption] = '-';
             }
 
             /** @var InputfieldMarkup $f */
@@ -388,7 +390,9 @@ trait Customers {
             $address = $item['shippingAddress'];
             $data = array();
             foreach ($this->getCustomerAddressLabels() as $key => $caption) {
-                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+                $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
+                if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
+                if (empty($data[$caption])) $data[$caption] = '-';
             }
 
             /** @var InputfieldMarkup $f */
@@ -559,7 +563,7 @@ trait Customers {
                 $table->row(array(
                     $invoiceNumber,
                     wireDate('relative', $item['creationDate']),
-                    $item['billingAddressCountry'],
+                    Countries::getCountry($item['billingAddressCountry']),
                     $this->getOrderStatus($item['status']),
                     $this->getPaymentStatus($item['paymentStatus']),
                     $this->getPaymentMethod($item['paymentMethod']),
