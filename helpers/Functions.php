@@ -12,6 +12,14 @@
  *
  */
 
+/**
+ * Check a string against a regex pattern.
+ *
+ * @param string $value The string to be checked
+ * @param string $pattern The pattern to be used for check
+ * @return boolean
+ *
+ */
 function checkPattern($value, $pattern) {
 	$regex = '#' . str_replace('#', '\#', $pattern) . '#';
 	return preg_match($regex, $value) ? true : false;
