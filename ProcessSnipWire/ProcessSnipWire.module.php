@@ -168,6 +168,13 @@ class ProcessSnipWire extends Process implements Module {
     public function init() {
         parent::init();
         
+        $modules = $this->wire('modules');
+
+        $modules->get('JqueryWireTabs');
+        $modules->get('JqueryUI')->use('panel');
+        $modules->get('JqueryUI')->use('modal');
+        $modules->get('JqueryUI')->use('vex');
+
         // Get SnipWire module config.
         // (Holds merged data from DB and default config. 
         // This works because of using the ModuleConfig class)
@@ -489,8 +496,6 @@ class ProcessSnipWire extends Process implements Module {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
-        
-        $modules->get('JqueryUI')->use('modal');
 
         $this->_includeAssets(
             self::assetsIncludeDaterangePicker | 
@@ -733,9 +738,6 @@ class ProcessSnipWire extends Process implements Module {
         if ($input->get('modal')) {
             return '<div id="SnipWireDashboardModal">' . $out . '</div>';
         }
-
-        /** @var JqueryWireTabs $wireTabs */
-        $wireTabs = $modules->get('JqueryWireTabs');
 
         $options = array(
             'id' => 'SnipWireTabs',
