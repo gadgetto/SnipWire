@@ -630,7 +630,7 @@ trait Orders {
             $fieldset->label = $this->_('Refund an amount');
             $fieldset->label .= $refundBadges;
             $fieldset->icon = self::iconRefund;
-            $fieldset->collapsed = ($input->send_refund)
+            $fieldset->collapsed = ($input->refunding_active)
                 ? Inputfield::collapsedNo
                 : Inputfield::collapsedYes;
 
@@ -664,13 +664,19 @@ trait Orders {
     
             $fieldset->add($f);
 
-                /** @var InputfieldButton $btn */
-                $btn = $modules->get('InputfieldButton');
+                /** @var InputfieldHidden $f */
+        		$f = $modules->get('InputfieldHidden');
+        		$f->name = 'refunding_active';
+        		$f->value = true;
+
+            $fieldset->add($f);
+
+                /** @var InputfieldSubmit $btn */
+                $btn = $modules->get('InputfieldSubmit');
                 $btn->id = 'SendRefundButton';
                 $btn->name = 'send_refund';
                 $btn->value = $this->_('Send refund');
                 $btn->icon = self::iconRefund;
-                $btn->type = 'submit';
                 $btn->small = true;
     
             $fieldset->add($btn);
@@ -692,7 +698,7 @@ trait Orders {
         }
 
         // Render form without processing if not submitted
-        if (!$input->post->send_refund) return $form->render();
+        if (!$input->post->refunding_active) return $form->render();
 
         $form->processInput($input->post);
 
@@ -752,7 +758,7 @@ trait Orders {
 
         $token = $item['token'];
         
-        if ($input->post->send_orderstatus) {
+        if ($input->post->updating_orderstatus_active) {
             $status = $input->post->status;
             $paymentStatus = $input->post->paymentStatus;
             $trackingNumber = $input->post->trackingNumber;
@@ -782,7 +788,7 @@ trait Orders {
             $fieldset->entityEncodeLabel = false;
             $fieldset->label = $this->_('Update order status');
             $fieldset->icon = self::iconEditOrderStatus;
-            $fieldset->collapsed = ($input->send_orderstatus)
+            $fieldset->collapsed = ($input->updating_orderstatus_active)
                 ? Inputfield::collapsedNo
                 : Inputfield::collapsedYes;
 
@@ -833,19 +839,25 @@ trait Orders {
             metadata ...
             */
 
-            /** @var InputfieldButton $btn */
-            $btn = $modules->get('InputfieldButton');
+            /** @var InputfieldHidden $f */
+    		$f = $modules->get('InputfieldHidden');
+    		$f->name = 'updating_orderstatus_active';
+    		$f->value = true;
+
+        $fieldset->add($f);
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldSubmit');
             $btn->id = 'UpdateOrderButton';
             $btn->name = 'send_orderstatus';
             $btn->value = $this->_('Update order');
             $btn->icon = self::iconEditOrderStatus;
-            $btn->type = 'submit';
             $btn->small = true;
 
         $fieldset->add($btn);
 
         // Render form without processing if not submitted
-        if (!$input->post->send_orderstatus) return $form->render();
+        if (!$input->post->updating_orderstatus_active) return $form->render();
 
         $form->processInput($input->post);
 

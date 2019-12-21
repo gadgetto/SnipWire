@@ -40,10 +40,26 @@ jQuery(document).ready(function() {
     });
 
     var orderActionStrings = config.orderActionStrings;
-    $('.ResendInvoiceButton').on('click', function() {
-        return window.confirm(orderActionStrings.confirm_resend_invoice);
+
+    $('.ResendInvoiceButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            orderActionStrings.confirm_resend_invoice,
+            function() {
+                // dialogue OK click
+                window.location.href = a_href;
+            }
+        );
     });
-    $('#SendRefundButton').on('click', function() {
-        return window.confirm(orderActionStrings.confirm_send_refund);
+    $('#SendRefundButton').on('click', function(e) {
+        e.preventDefault();
+        ProcessWire.confirm(
+            orderActionStrings.confirm_send_refund,
+            function() {
+                // dialogue OK click
+                $('#RefundForm').submit();
+            }
+        );
     });
 });
