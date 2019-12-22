@@ -108,8 +108,8 @@ class ProcessSnipWire extends Process implements Module {
     const iconDiscount = 'scissors';
     const iconInfo = 'info-circle';
     const iconPayment = 'credit-card-alt';
-    const iconRefund = 'thumbs-o-up';
-    const iconEditOrderStatus = 'sliders';
+    const iconRefund = 'thumbs-up';
+    const iconComment = 'comment';
     const iconOrderStatus = 'question-circle';
     const iconSettings = 'gear';
     const iconDebug = 'bug';
