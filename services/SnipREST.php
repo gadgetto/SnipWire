@@ -451,6 +451,72 @@ class SnipREST extends WireHttpExtended {
         }
         $cacheName = self::cacheNamePrefixOrderDetail . '.' . md5($token);
         $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        
+        $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token);
+        $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+    }
+
+    /**
+     * Get all notifications of an order from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $token The Snipcart token of the order
+     * @param array $options An array of filter options that will be sent as URL params:
+     *  - `offset` (int) Number of results to skip. [default = 0] #required
+     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getOrderNotifications($token, $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$token) {
+            $this->error(self::getMessagesText('no_order_token'));
+            return false;
+        }
+
+        $url = wirePopulateStringTags(
+            self::apiEndpoint . self::resPathOrdersNotifications,
+            array('token' => $token)
+        );
+
+        $allowedOptions = array('offset', 'limit');
+        $defaultOptions = array(
+            'offset' => 0,
+            'limit' => 20,
+        );
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        $query = '';
+        if (!empty($options)) $query = '?' . http_build_query($options);
+
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token); // @todo: currently query is not used for cache name
+
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($url, $query) {
+            return $this->getJSON($url . $query);
+        });
+
+        if ($response === false) $response = array();
+        $dataKey = self::cacheNamePrefixOrdersNotifications . '.' . $token;
+        $data[$dataKey] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
     }
 
     /**
