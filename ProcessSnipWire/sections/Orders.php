@@ -676,7 +676,6 @@ trait Orders {
                 $btn->id = 'SendRefundButton';
                 $btn->name = 'send_refund';
                 $btn->value = $this->_('Send refund');
-                $btn->icon = self::iconRefund;
                 $btn->small = true;
     
             $fieldset->add($btn);
@@ -851,7 +850,6 @@ trait Orders {
             $btn->id = 'UpdateOrderButton';
             $btn->name = 'send_orderstatus';
             $btn->value = $this->_('Update order');
-            $btn->icon = self::iconEditOrderStatus;
             $btn->small = true;
 
         $fieldset->add($btn);
