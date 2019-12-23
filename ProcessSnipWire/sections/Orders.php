@@ -786,7 +786,7 @@ trait Orders {
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->entityEncodeLabel = false;
             $fieldset->label = $this->_('Update order status');
-            $fieldset->icon = self::iconEditOrderStatus;
+            $fieldset->icon = self::iconOrderStatus;
             $fieldset->collapsed = ($input->updating_orderstatus_active)
                 ? Inputfield::collapsedNo
                 : Inputfield::collapsedYes;
