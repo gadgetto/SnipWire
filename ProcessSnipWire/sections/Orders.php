@@ -177,9 +177,27 @@ trait Orders {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $order = isset($response[SnipRest::resPathOrders . '/' . $token][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathOrders . '/' . $token][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipRest::resPathOrders . '/' . $token;
+        $order = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
+        unset($response, $dataKey);
+
+        $defaultSelector = array(
+            'offset' => 0,
+            'limit' => 100, // should be enough (@todo: currently no pagination)
+        );
+        $response = $sniprest->getOrderNotifications(
+            $token,
+            $defaultSelector,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
+        $dataKey = SnipREST::cacheNamePrefixOrdersNotifications . '.' . $token;
+        $notifications = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
+            : array();
+        unset($response, $dataKey);
 
         $out = '';
 
@@ -188,7 +206,7 @@ trait Orders {
         $f->label = $this->_('Snipcart Order');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = self::iconOrder;
-        $f->value = $this->_renderDetailOrder($order, $ret);
+        $f->value = $this->_renderDetailOrder($order, $notifications, $ret);
         $f->collapsed = Inputfield::collapsedNever;
 
         $out .= $f->render();
@@ -399,13 +417,15 @@ trait Orders {
     /**
      * Render the order detail view.
      *
-     * @param array $item
+     * @param array $item The order item
+     * @param array $notifications The order comments and notifications
      * @param string $ret A return URL (optional)
      * @return markup 
      *
      */
-    private function _renderDetailOrder($item, $ret = '') {
+    private function _renderDetailOrder($item, $notifications, $ret = '') {
         $modules = $this->wire('modules');
+        $sniprest = $this->wire('sniprest');
 
         if (empty($item)) {
             $out =
@@ -415,7 +435,9 @@ trait Orders {
             return $out;
         }
 
+        $token = $item['token'];
         $refundsCount = count($item['refunds']);
+        $notificationsCount = $notifications['totalItems'];
 
         $out = '';
 
@@ -438,7 +460,7 @@ trait Orders {
                 $item['invoiceNumber'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                $this->_getOrderDetailActionButtons($item['token'], $ret) .
+                $this->_getOrderDetailActionButtons($token, $ret) .
             '</div>' .
         '</div>';
 
@@ -544,6 +566,27 @@ trait Orders {
     
             $out .= $wrapper->render();
         }
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            $notificationsBadge = 
+            ' <span class="snipwire-badge snipwire-badge-info">' .
+                sprintf(_n("%d notification", "%d notifications", $notificationsCount), $notificationsCount) .
+            '</span>';
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->entityEncodeLabel = false;
+            $f->label = $this->_('Notifications');
+            $f->label .= $notificationsBadge;
+            $f->icon = self::iconComment;
+            $f->value = $this->_renderTableNotifications($notifications);
+            $f->collapsed = Inputfield::collapsedYes;
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
 
         if ($this->snipwireConfig->snipwire_debug) {
 
@@ -1223,6 +1266,108 @@ trait Orders {
         }
 
         $out = $table->render();            
+
+        return $out;
+    }
+
+    /**
+     * Render the order notifications table.
+     *
+     * @param array $notifications The order comments and notifications
+     * @return markup MarkupAdminDataTable 
+     *
+     */
+    private function _renderTableNotifications($notifications) {
+        $modules = $this->wire('modules');
+
+        /*
+        Comment item object can be this:
+        {
+            "id": "8dc30be8-1cea-4923-adfa-bae3e4542eee",
+            "creationDate": "2019-12-21T11:14:13.563Z",
+            "type": "OrderStatusChanged",
+            "deliveryMethod": "None",
+            "message": "Order status changed from 'Disputed' to 'Processed'."
+        }
+        
+        or this:
+        {
+            "id": "6fd7ebbc-7f3a-4135-8d63-c14f084b47fb",
+            "creationDate": "2019-12-20T18:19:31.017Z",
+            "type": "Invoice",
+            "deliveryMethod": "Email",
+            "body": "... (can be HTML) ...",
+            "message": "", 
+            "subject": "Order SNIP-1071 on bitego",
+            "sentOn": "2019-12-22T15:53:34.4740987Z" 
+        }
+        */
+
+        /** @var MarkupAdminDataTable $table */
+        $table = $modules->get('MarkupAdminDataTable');
+        $table->setEncodeEntities(false);
+        $table->id = 'CommentsSummaryTable';
+        $table->setSortable(false);
+        $table->setResizable(false);
+        $table->headerRow(array(
+            $this->_('Created on'),
+            $this->_('Notification'),            
+        ));
+        foreach ($notifications['items'] as $notification) {
+
+            switch ($notification['type']) {
+                case 'Comment':
+                    $message = $notification['message'];
+                    break;
+
+                case 'OrderStatusChanged':
+                    $messageParts = explode("'", $notification['message']);
+                    $message = sprintf(
+                        $this->_('Order status changed from \'%1$s\' to \'%2$s\'.'),
+                        $this->getOrderStatus($messageParts[1]),
+                        $this->getOrderStatus($messageParts[3])
+                    );
+                    break;
+
+                case 'OrderShipped':
+                    $message = $this->_('Order has been shipped to customer.');
+                    break;
+
+                case 'OrderCancelled':
+                    $message = $this->_('Order has been cancelled.');
+                    break;
+
+                case 'TrackingNumber':
+                    $message = $this->_('Tracking number has been set.');
+                    break;
+
+                case 'Invoice':
+                    $message = $this->_('Customer invoice has been sent.');
+                    $message .= '<br><small class="ui-priority-secondary tooltip" title="';
+                    $message .= wireDate('Y-m-d H:i:s', $notification['sentOn']);
+                    $message .= '">';
+                    $message .= sprintf(
+                        $this->_('%s via email'),
+                        wireDate('relative', $notification['sentOn'])
+                    );
+                    $message .= '</small>';
+                    break;
+
+                case 'Refund':
+                    $message = $this->_('An amount has been refunded.');
+                    break;
+
+                default:
+                    $message = $this->_('-- unknown --');
+            }
+
+            $table->row(array(
+                wireDate('Y-m-d H:i:s', $notification['creationDate']),
+                $message,
+            ));
+        }
+
+        $out = $table->render(); 
 
         return $out;
     }
