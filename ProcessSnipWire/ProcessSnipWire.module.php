@@ -132,6 +132,9 @@ class ProcessSnipWire extends Process implements Module {
     /**var array $orderStatuses The order statuses */
     public $orderStatuses = array();
 
+    /**var array $commentTypes The comment types */
+    public $commentTypes = array();
+
     /**var array $paymentStatuses The payment statuses */
     public $paymentStatuses = array();
 
@@ -197,6 +200,15 @@ class ProcessSnipWire extends Process implements Module {
             'Delivered' => $this->_('Delivered'),
             'Pending' => $this->_('Pending'),
             'Cancelled' => $this->_('Cancelled'),
+        );
+        $this->commentTypes = array(
+            'Comment' => $this->_('Comment'),
+            'OrderStatusChanged' => $this->_('Status changed'),
+            'OrderShipped' => $this->_('Order shipped'),
+            'OrderCancelled' =>  $this->_('Order cancelled'),
+            'TrackingNumber' => $this->_('Tracking number'),
+            'Invoice' => $this->_('Invoice sent'),
+            'Refund' => $this->_('Refunded amount')
         );
         $this->paymentStatuses = array(
             'All' =>  $this->_('All Orders'),
@@ -287,6 +299,29 @@ class ProcessSnipWire extends Process implements Module {
 	public function getOrderStatus($key) {
 		return isset($this->orderStatuses[$key])
 		    ? $this->orderStatuses[$key]
+		    : $this->_('-- unknown --');
+	}
+
+    /**
+     * Get all pre-translated comment types.
+     *
+     * @return array
+     *
+     */
+	public function getCommentTypes() {
+		return $this->commentTypes;
+	}
+
+    /**
+     * Get a pre-translated comment type by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+	public function getCommentType($key) {
+		return isset($this->commentTypes[$key])
+		    ? $this->commentTypes[$key]
 		    : $this->_('-- unknown --');
 	}
 
