@@ -400,6 +400,14 @@
 		"oAP": "/ProcessSnipWire/sections/Customers.php",
 		"oF": 0
 		},
+	"/ProcessSnipWire/sections/Dashboard.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/ProcessSnipWire/sections/Dashboard.php",
+		"oF": 0
+		},
 	"/ProcessSnipWire/sections/Discounts.php": {
 		"cB": 0,
 		"ft": 8192,
