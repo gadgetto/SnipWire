@@ -191,15 +191,21 @@ class ProcessSnipWire extends Process implements Module {
         $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
         $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . '/';
 
-        $this->orderStatuses = array(
-            'All' =>  $this->_('All Orders'),
-            'InProgress' => $this->_('In Progress'),
+        $this->orderStatusesSelectable = array(
             'Processed' => $this->_('Processed'),
             'Disputed' => $this->_('Disputed'),
             'Shipped' => $this->_('Shipped'),
             'Delivered' => $this->_('Delivered'),
             'Pending' => $this->_('Pending'),
             'Cancelled' => $this->_('Cancelled'),
+            'Dispatched' => $this->_('Dispatched'),
+        );
+        $this->orderStatuses = array_merge(
+            array(
+                'All' =>  $this->_('All Orders'),
+                'InProgress' => $this->_('In Progress'),
+            ),
+            $this->orderStatusesSelectable
         );
         $this->commentTypes = array(
             'Comment' => $this->_('Comment'),
@@ -287,6 +293,16 @@ class ProcessSnipWire extends Process implements Module {
 		$orderStatuses = $this->orderStatuses;
 		array_shift($orderStatuses);
 		return $orderStatuses;
+	}
+
+    /**
+     * Get all selectable pre-translated order statuses.
+     *
+     * @return array
+     *
+     */
+	public function getOrderStatusesSelectable() {
+		return $this->orderStatusesSelectable;
 	}
 
     /**

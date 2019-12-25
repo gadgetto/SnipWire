@@ -802,12 +802,10 @@ trait Orders {
         
         if ($input->post->updating_orderstatus_active) {
             $status = $input->post->status;
-            $paymentStatus = $input->post->paymentStatus;
             $trackingNumber = $input->post->trackingNumber;
             $trackingUrl = $input->post->trackingUrl;
         } else {
             $status = $item['status'];
-            $paymentStatus = $item['paymentStatus'];
             $trackingNumber = $item['trackingNumber'];
             $trackingUrl = $item['trackingUrl'];
         }
@@ -842,19 +840,7 @@ trait Orders {
             $f->label = $this->_('Order status');
             $f->value = $status;
             $f->required = true;
-            $f->columnWidth = 50;
-            $f->addOptions($this->getOrderStatuses(false));
-
-        $fieldset->add($f);
-
-            /** @var InputfieldSelect $f */
-            $f = $modules->get('InputfieldSelect');
-            $f->name = 'paymentStatus';
-            $f->label = $this->_('Payment status');
-            $f->value = $paymentStatus;
-            $f->required = true;
-            $f->columnWidth = 50;
-            $f->addOptions($this->getPaymentStatuses(false));
+            $f->addOptions($this->getOrderStatusesSelectable());
 
         $fieldset->add($f);
 
@@ -909,12 +895,6 @@ trait Orders {
             $status->error($this->_('Please choose an order status'));
         }
 
-        $paymentStatus = $form->get('paymentStatus');
-        $paymentStatusValue = $paymentStatus->value;
-        if (!$statusValue) {
-            $paymentStatus->error($this->_('Please choose a payment status'));
-        }
-
         $trackingNumber = $form->get('trackingNumber');
         $trackingNumberValue = $trackingNumber->value;
 
@@ -932,11 +912,10 @@ trait Orders {
 
         // Sanitize input for _updateOrderStatus
         $statusValue = $sanitizer->text($statusValue);
-        $paymentStatusValue = $sanitizer->text($paymentStatusValue);
         $trackingNumberValue = $sanitizer->text($trackingNumberValue);
         $trackingUrlValue = $sanitizer->httpUrl($trackingUrlValue);
 
-        $success = $this->_updateOrderStatus($token, $statusValue, $paymentStatusValue, $trackingNumberValue, $trackingUrlValue);
+        $success = $this->_updateOrderStatus($token, $statusValue, $trackingNumberValue, $trackingUrlValue);
         if ($success) {
             // Reset cache for this order and redirect to itself to display updated values
             $this->wire('sniprest')->deleteOrderCache($token);
@@ -1445,20 +1424,18 @@ trait Orders {
      *
      * @param string $token The order token
      * @param string $status The order status
-     * @param string $paymentStatus The order payment status
      * @param string $trackingNumber The tracking number associated to the order
      * @param string $trackingUrl The URL where the customer will be able to track its order
      * @return boolean
      *
      */
-    private function _updateOrderStatus($token, $status, $paymentStatus, $trackingNumber, $trackingUrl) {
+    private function _updateOrderStatus($token, $status, $trackingNumber, $trackingUrl) {
         $sniprest = $this->wire('sniprest');
 
         if (empty($token)) return;
 
         $options = array(
             'status' => $status,
-            'paymentStatus' => $paymentStatus,
             'trackingNumber' => $trackingNumber,
             'trackingUrl' => $trackingUrl,
         );
