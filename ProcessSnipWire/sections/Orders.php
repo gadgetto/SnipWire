@@ -824,9 +824,15 @@ trait Orders {
                 $form->add($f);
             }
 
+            $statusBadges = 
+            ' <span class="snipwire-badge snipwire-badge-info">' .
+                $this->getOrderStatus($item['status']) .
+            '</span>';
+
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->entityEncodeLabel = false;
             $fieldset->label = $this->_('Update order status');
+            $fieldset->label .= $statusBadges;
             $fieldset->icon = self::iconOrderStatus;
             $fieldset->collapsed = ($input->updating_orderstatus_active)
                 ? Inputfield::collapsedNo
