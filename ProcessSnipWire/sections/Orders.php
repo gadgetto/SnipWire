@@ -1383,6 +1383,8 @@ trait Orders {
                 $this->_('The invoice could not be sent to customer! The following error occurred: ') .
                 $response[$token][WireHttpExtended::resultKeyError]);
         } else {
+            // Reset cache for this order
+            $sniprest->deleteOrderCache($token);
             $this->message($this->_('The invoice has been sent to customer.'));
         }
     }
