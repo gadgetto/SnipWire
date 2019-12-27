@@ -800,6 +800,7 @@ trait Orders {
         $session = $this->wire('session');
 
         $token = $item['token'];
+        $oldStatus = $item['status'];
         
         if ($input->post->updating_orderstatus_active) {
             $status = $input->post->status;
@@ -855,8 +856,11 @@ trait Orders {
             $f = $modules->get('InputfieldText');
             $f->name = 'trackingNumber';
             $f->label = $this->_('Tracking number');
+            $f->required = true;
             $f->value = $trackingNumber;
             $f->detail = $this->_('Enter the tracking number associated to the order');
+            $f->showIf = 'status=Shipped';
+            $f->requiredIf = 'trackingUrl!=""';
 
         $fieldset->add($f);
 
@@ -865,13 +869,26 @@ trait Orders {
             $f->name = 'trackingUrl';
             $f->label = $this->_('Tracking URL');
             $f->value = $trackingUrl;
-            $f->detail = $this->_('Enter the URL where the customer will be able to track its order');
+            $f->detail = $this->_('Optionally enter the URL where the customer will be able to track its order');
             $f->noRelative = true;
+            $f->showIf = 'status=Shipped';
+
+        $fieldset->add($f);
+
+            /** @var InputfieldRadios $f */
+            $f = $modules->get('InputfieldRadios');
+            $f->name = 'deliveryMethod'; 
+            $f->label = $this->_('No tracking number set. Notify customer anyway?');
+            $f->optionColumns = 1;
+            $f->addOption('Email', $this->_('Yes'));
+            $f->addOption('None', $this->_('No'));
+            $f->value = $input->post->deliveryMethod ? $input->post->deliveryMethod : 'None';
+            $f->showIf = 'status=Shipped, trackingNumber=""';
 
         $fieldset->add($f);
 
             /*
-            metadata ...
+            @todo: metadata ...
             */
 
             /** @var InputfieldHidden $f */
@@ -908,6 +925,9 @@ trait Orders {
         $trackingUrl = $form->get('trackingUrl');
         $trackingUrlValue = $trackingUrl->value;
 
+        $deliveryMethod = $form->get('deliveryMethod');
+        $deliveryMethodValue = $deliveryMethod->value;
+
         if (empty($trackingNumberValue) && !empty($trackingUrlValue)) {
             $trackingNumber->error($this->_('Tracking number may not be empty if Tracking URL is set'));
         }
@@ -921,8 +941,9 @@ trait Orders {
         $statusValue = $sanitizer->text($statusValue);
         $trackingNumberValue = $sanitizer->text($trackingNumberValue);
         $trackingUrlValue = $sanitizer->httpUrl($trackingUrlValue);
+        $deliveryMethodValue = $sanitizer->option($deliveryMethodValue, array('Email', 'None'));
 
-        $success = $this->_updateOrderStatus($token, $statusValue, $trackingNumberValue, $trackingUrlValue);
+        $success = $this->_updateOrderStatus($token, $statusValue, $oldStatus, $trackingNumberValue, $trackingUrlValue, $deliveryMethodValue);
         if ($success) {
             // Reset cache for this order and redirect to itself to display updated values
             $this->wire('sniprest')->deleteOrderCache($token);
@@ -977,6 +998,7 @@ trait Orders {
             $f = $modules->get('InputfieldTextarea');
             $f->name = 'message';
             $f->label = $this->_('Comment');
+            $f->detail = $this->_('You need to define a [Snipcart **Order Comment** email template](https://app.snipcart.com/dashboard/email-templates) before using this form. Your Comment will populate the {{{ message }}} variable in your template.');
             $f->rows = 4;
 
         $fieldset->add($f);
@@ -986,8 +1008,8 @@ trait Orders {
             $f->name = 'deliveryMethod'; 
             $f->label = $this->_('Send this comment to your customer via email or keep it private?');
             $f->optionColumns = 1;
-            $f->addOption('Email', 'Email');
-            $f->addOption('None', 'Private');
+            $f->addOption('Email', $this->_('Email'));
+            $f->addOption('None', $this->_('Private'));
             $f->value = $input->post->deliveryMethod ? $input->post->deliveryMethod : 'Email';
 
         $fieldset->add($f);
@@ -1030,7 +1052,6 @@ trait Orders {
 
         // Sanitize input
         $messageValue = $sanitizer->textarea($messageValue);
-        $deliveryMethodValue = $sanitizer->text($deliveryMethodValue);
         $deliveryMethodValue = $sanitizer->option($deliveryMethodValue, array('Email', 'None'));
 
         $success = $this->_addOrderComment($token, $messageValue, $deliveryMethodValue);
@@ -1408,7 +1429,8 @@ trait Orders {
         $table->setResizable(false);
         $table->headerRow(array(
             $this->_('Created on'),
-            $this->_('Notification'),            
+            $this->_('Notification'),   
+            $this->_('Email sent on'),         
         ));
         foreach ($notifications['items'] as $notification) {
 
@@ -1445,14 +1467,6 @@ trait Orders {
 
                 case 'Invoice':
                     $message = $this->_('Customer invoice has been sent.');
-                    $message .= '<br><small class="ui-priority-secondary tooltip" title="';
-                    $message .= wireDate('Y-m-d H:i:s', $notification['sentOn']);
-                    $message .= '">';
-                    $message .= sprintf(
-                        $this->_('%s via email'),
-                        wireDate('relative', $notification['sentOn'])
-                    );
-                    $message .= '</small>';
                     break;
 
                 case 'Refund':
@@ -1462,10 +1476,21 @@ trait Orders {
                 default:
                     $message = $this->_('-- unknown --');
             }
+            
+            if ($notification['deliveryMethod'] == 'Email') {
+                $emailSent = '<span class="ui-priority-secondary tooltip" title="';
+                $emailSent .= wireDate('Y-m-d H:i:s', $notification['sentOn']);
+                $emailSent .= '">';
+                $emailSent .= wireDate('relative', $notification['sentOn']);
+                $emailSent .= '</span>';
+            } else {
+                $emailSent = '-';
+            }
 
             $table->row(array(
                 wireDate('Y-m-d H:i:s', $notification['creationDate']),
                 $message,
+                $emailSent,
             ));
         }
 
@@ -1545,16 +1570,18 @@ trait Orders {
     }
 
     /**
-     * Update the status of the specified order.
+     * Update the status of the specified order and trigger a notification if necessary.
      *
      * @param string $token The order token
      * @param string $status The order status
-     * @param string $trackingNumber The tracking number associated to the order
-     * @param string $trackingUrl The URL where the customer will be able to track its order
+     * @param string $oldStatus The previous order status (before change)
+     * @param string $trackingNumber The tracking number associated to the order (used by putOrderStatus)
+     * @param string $trackingUrl The URL where the customer will be able to track its order (used by putOrderStatus)
+     * @param string $deliveryMethod The delivery method ('Email' or 'None') (used by postOrderNotification)
      * @return boolean
      *
      */
-    private function _updateOrderStatus($token, $status, $trackingNumber, $trackingUrl) {
+    private function _updateOrderStatus($token, $status, $oldStatus, $trackingNumber, $trackingUrl, $deliveryMethod) {
         $sniprest = $this->wire('sniprest');
 
         if (empty($token)) return;
@@ -1577,6 +1604,47 @@ trait Orders {
         } else {
             $this->message($this->_('The order status has been updated.'));
             $updated = true;
+            
+            //
+            // After status has been changed successfully, trigger a notification.
+            // Posssible statuses: 'Processed', 'Disputed', 'Shipped', 'Delivered', 'Pending', 'Cancelled'
+            // Notification types: 'OrderStatusChanged', 'OrderShipped', 'TrackingNumber' ('Invoice' and 'Comment' are handled separately)
+            //
+            // @todo: Currently only uses status 'Shipped' - as no email is sent when type is 'OrderStatusChanged'
+            //        Snipcart problem or my misunderstanding?
+            //
+            if ($status == 'Shipped') {
+                if (!empty($trackingNumber)) {
+                    $options = array(
+                        'type' => 'TrackingNumber',
+                        'deliveryMethod' => 'Email',
+                    );
+                } elseif (empty($trackingNumber) && $deliveryMethod == 'Email') {
+                    $options = array(
+                        'type' => 'OrderShipped',
+                        'deliveryMethod' => 'Email',
+                    );
+                } else {
+                    $options = array(
+                        'type' => 'OrderShipped',
+                        'deliveryMethod' => 'None',
+                    );
+                }
+
+                $response = $sniprest->postOrderNotification($token, $options);
+                if (
+                    $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
+                    $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+                ) {
+                    $this->error(
+                        $this->_('The notification could not be sent! The following error occurred: ') .
+                        $response[$token][WireHttpExtended::resultKeyError]);
+                } else {
+                    // Reset cache for this order
+                    $sniprest->deleteOrderCache($token);
+                    $this->message($this->_('The notification has been sent.'));
+                }
+            }
         }
         return $updated;
     }
