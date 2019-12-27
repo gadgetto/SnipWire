@@ -466,6 +466,7 @@ trait Orders {
 
         $out .= $this->_processRefundForm($item, $ret);
         $out .= $this->_processOrderStatusForm($item, $ret);
+        $out .= $this->_processOrderCommentForm($item, $ret);
 
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
@@ -922,6 +923,117 @@ trait Orders {
         $trackingUrlValue = $sanitizer->httpUrl($trackingUrlValue);
 
         $success = $this->_updateOrderStatus($token, $statusValue, $trackingNumberValue, $trackingUrlValue);
+        if ($success) {
+            // Reset cache for this order and redirect to itself to display updated values
+            $this->wire('sniprest')->deleteOrderCache($token);
+            $redirectUrl = $this->currentUrl . '?modal=1';
+            if ($ret) $redirectUrl .= '&ret=' . urlencode($ret);
+            $session->redirect($redirectUrl);
+        }
+
+        return $form->render();
+    }
+
+    /**
+     * Render and process the order comment form.
+     *
+     * @param array $item
+     * @param string $ret A return URL (optional)
+     * @return markup 
+     *
+     */
+    private function _processOrderCommentForm($item, $ret = '') {
+        $modules = $this->wire('modules');
+        $sanitizer = $this->wire('sanitizer');
+        $input = $this->wire('input');
+        $session = $this->wire('session');
+
+        $token = $item['token'];
+
+		/** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm');
+        $form->id = 'OrderCommentForm';
+        $form->action = $this->currentUrl;
+
+            if ($ret) {
+                /** @var InputfieldHidden $f */
+                $f = $modules->get('InputfieldHidden');
+                $f->name = 'ret';
+                $f->value = urlencode($ret);
+    
+                $form->add($f);
+            }
+
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->label = $this->_('Add a comment');
+            $fieldset->icon = self::iconComment;
+            $fieldset->collapsed = ($input->sending_ordercomment_active)
+                ? Inputfield::collapsedNo
+                : Inputfield::collapsedYes;
+
+        $form->add($fieldset);
+
+            /** @var InputfieldTextarea $f */
+            $f = $modules->get('InputfieldTextarea');
+            $f->name = 'message';
+            $f->label = $this->_('Comment');
+            $f->rows = 4;
+
+        $fieldset->add($f);
+
+            /** @var InputfieldRadios $f */
+            $f = $modules->get('InputfieldRadios');
+            $f->name = 'deliveryMethod'; 
+            $f->label = $this->_('Send this comment to your customer via email or keep it private?');
+            $f->optionColumns = 1;
+            $f->addOption('Email', 'Email');
+            $f->addOption('None', 'Private');
+            $f->value = $input->post->deliveryMethod ? $input->post->deliveryMethod : 'Email';
+
+        $fieldset->add($f);
+
+            /** @var InputfieldHidden $f */
+    		$f = $modules->get('InputfieldHidden');
+    		$f->name = 'sending_ordercomment_active';
+    		$f->value = true;
+
+        $fieldset->add($f);
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldSubmit');
+            $btn->id = 'UpdateOrderButton';
+            $btn->name = 'send_ordercomment';
+            $btn->value = $this->_('Add comment');
+            $btn->small = true;
+
+        $fieldset->add($btn);
+
+        // Render form without processing if not submitted
+        if (!$input->post->sending_ordercomment_active) return $form->render();
+
+        $form->processInput($input->post);
+
+        // Validate input
+        $message = $form->get('message');
+        $messageValue = $message->value;
+        if (!$messageValue) {
+            $message->error($this->_('Please enter a comment text'));
+        }
+
+        $deliveryMethod = $form->get('deliveryMethod');
+        $deliveryMethodValue = $deliveryMethod->value;
+
+        if ($form->getErrors()) {
+            // The form is processed and populated but contains errors
+            return $form->render();
+        }
+
+        // Sanitize input
+        $messageValue = $sanitizer->textarea($messageValue);
+        $deliveryMethodValue = $sanitizer->text($deliveryMethodValue);
+        $deliveryMethodValue = $sanitizer->option($deliveryMethodValue, array('Email', 'None'));
+
+        $success = $this->_addOrderComment($token, $messageValue, $deliveryMethodValue);
         if ($success) {
             // Reset cache for this order and redirect to itself to display updated values
             $this->wire('sniprest')->deleteOrderCache($token);
@@ -1462,6 +1574,42 @@ trait Orders {
             $updated = true;
         }
         return $updated;
+    }
+
+    /**
+     * Add a comment to the specified order.
+     *
+     * @param string $token The order token
+     * @param string $message The comment text
+     * @param string $deliveryMethod The delivery method ('Email' or 'None')
+     * @return boolean
+     *
+     */
+    private function _addOrderComment($token, $message, $deliveryMethod) {
+        $sniprest = $this->wire('sniprest');
+
+        if (empty($token)) return;
+
+        $options = array(
+            'type' => 'Comment',
+            'message' => $message,
+            'deliveryMethod' => $deliveryMethod,
+        );
+
+        $added = false;
+        $response = $sniprest->postOrderNotification($token, $options);
+        if (
+            $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+        ) {
+            $this->error(
+                $this->_('The order comment could not added! The following error occurred: ') .
+                $response[$token][WireHttpExtended::resultKeyError]);
+        } else {
+            $this->message($this->_('The order comment has been added.'));
+            $added = true;
+        }
+        return $added;
     }
 
     /**
