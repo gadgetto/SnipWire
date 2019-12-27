@@ -1418,12 +1418,17 @@ trait Orders {
                     break;
 
                 case 'OrderStatusChanged':
+                    // Try to parse the Snipcart message (@todo: find a better method to get required parts)
                     $messageParts = explode("'", $notification['message']);
-                    $message = sprintf(
-                        $this->_('Order status changed from \'%1$s\' to \'%2$s\'.'),
-                        $this->getOrderStatus($messageParts[1]),
-                        $this->getOrderStatus($messageParts[3])
-                    );
+                    if (!empty($messageParts && isset($messageParts[1]) && isset($messageParts[3]))) {
+                        $message = sprintf(
+                            $this->_('Order status changed from \'%1$s\' to \'%2$s\'.'),
+                            $this->getOrderStatus($messageParts[1]),
+                            $this->getOrderStatus($messageParts[3])
+                        );
+                    } else {
+                        $message = $notification['message'];
+                    }
                     break;
 
                 case 'OrderShipped':
