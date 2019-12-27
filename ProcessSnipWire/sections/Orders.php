@@ -1676,7 +1676,7 @@ trait Orders {
             $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
-                $this->_('The order comment could not added! The following error occurred: ') .
+                $this->_('The order comment could not be added! The following error occurred: ') .
                 $response[$token][WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The order comment has been added.'));
