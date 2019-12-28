@@ -306,9 +306,15 @@ trait Subscriptions {
                     data-panel-width="70%">' .
                         $item['user']['email'] .
                 '</a>';
+                $creationDate = '<span class="tooltip" title="';
+                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= '">';
+                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= '</span>';
+
                 $table->row(array(
                     $panelLink,
-                    wireDate('relative', $item['creationDate']),
+                    $creationDate,
                     $panelLink2,
                     $item['status'],
                     //$item['paymentStatus'],

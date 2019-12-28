@@ -391,10 +391,15 @@ trait Orders {
                     title="' . $this->_('Download invoice') .'">' .
                         wireIconMarkup('download') .
                 '</a>';
+                $completionDate = '<span class="tooltip" title="';
+                $completionDate .= wireDate('Y-m-d H:i:s', $item['completionDate']);
+                $completionDate .= '">';
+                $completionDate .= wireDate('relative', $item['completionDate']);
+                $completionDate .= '</span>';
 
                 $table->row(array(
                     $panelLink,
-                    wireDate('relative', $item['completionDate']),
+                    $completionDate,
                     $item['placedBy'],
                     $this->getOrderStatus($item['status']),
                     $this->getPaymentStatus($item['paymentStatus']),

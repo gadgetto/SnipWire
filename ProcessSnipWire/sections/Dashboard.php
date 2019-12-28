@@ -768,9 +768,15 @@ trait Dashboard {
                 '<strong class="price-field">' .
                     CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
                 '</strong>';
+                $completionDate = '<span class="tooltip" title="';
+                $completionDate .= wireDate('Y-m-d H:i:s', $item['completionDate']);
+                $completionDate .= '">';
+                $completionDate .= wireDate('relative', $item['completionDate']);
+                $completionDate .= '</span>';
+
                 $table->row(array(
                     $panelLink,
-                    wireDate('relative', $item['completionDate']),
+                    $completionDate,
                     $item['placedBy'],
                     $this->orderStatuses[$item['status']],
                     $this->paymentStatuses[$item['paymentStatus']],

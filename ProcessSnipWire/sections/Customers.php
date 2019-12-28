@@ -297,10 +297,16 @@ trait Customers {
                     data-panel-width="75%">' .
                         wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
                 '</a>';
+                $creationDate = '<span class="tooltip" title="';
+                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= '">';
+                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= '</span>';
+
                 $table->row(array(
                     $panelLink,
                     $item['email'],
-                    wireDate('relative', $item['creationDate']),
+                    $creationDate,
                     $item['statistics']['ordersCount'],
                     $item['statistics']['subscriptionsCount'],
                     $this->getCustomerStatus($item['status']),
@@ -559,10 +565,15 @@ trait Customers {
                     title="' . $this->_('Download invoice') .'">' .
                         wireIconMarkup('download') .
                 '</a>';
+                $creationDate = '<span class="tooltip" title="';
+                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= '">';
+                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= '</span>';
 
                 $table->row(array(
                     $invoiceNumber,
-                    wireDate('relative', $item['creationDate']),
+                    $creationDate,
                     Countries::getCountry($item['billingAddressCountry']),
                     $this->getOrderStatus($item['status']),
                     $this->getPaymentStatus($item['paymentStatus']),
@@ -614,9 +625,15 @@ trait Customers {
                     class="pw-panel-links">' .
                         wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
                 '</a>';
+                $creationDate = '<span class="tooltip" title="';
+                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= '">';
+                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= '</span>';
+
                 $table->row(array(
                     $plan,
-                    wireDate('relative', $item['creationDate']),
+                    $creationDate,
                     $item['status'],
                 ));
             }
