@@ -1129,20 +1129,16 @@ trait Orders {
             'shippingProvider' => $this->_('Shipping provider'),
             'trackingNumber' => $this->_('Tracking number'),
         );
-
-        $itemData = array();
         
-        $itemData['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'];
-        $itemData['email'] =
+        $item['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'];
+        $item['email'] =
         '<a href="mailto:' . $item['email'] . '"
             class="pw-tooltip"
             title="' . $this->_('Send email to customer') .'">' .
                 $item['email'] .
         '</a>';
-        $itemData['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
-        $itemData['status'] = $this->getOrderStatus($item['status']);
-        $itemData['shippingMethod'] = $item['shippingMethod'];
-        $itemData['shippingProvider'] = $item['shippingProvider'];
+        $item['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $item['status'] = $this->getOrderStatus($item['status']);
 
         $trackingNumber = $item['trackingNumber'];
         if ($item['trackingUrl'] && $item['trackingNumber']) {
@@ -1154,11 +1150,11 @@ trait Orders {
                     $trackingNumber .
             '</a>';
         }
-        $itemData['trackingNumber'] = $trackingNumber;
+        $item['trackingNumber'] = $trackingNumber;
         
         $data = array();
         foreach ($infoCaptions as $key => $caption) {
-            $data[$caption] = !empty($itemData[$key]) ? $itemData[$key] : '-';
+            $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
         }
 
         return $this->renderDataSheet($data);
@@ -1180,25 +1176,23 @@ trait Orders {
             'currency' => $this->_('Currency'),
             'paymentStatus' => $this->_('Payment Status'),
         );
-
-        $itemData = array();
         
-        $itemData['paymentMethod'] = $this->getPaymentMethod($item['paymentMethod']);
+        $item['paymentMethod'] = $this->getPaymentMethod($item['paymentMethod']);
 
-        $itemData['creditCardLast4Digits'] = !empty($item['creditCardLast4Digits'])
+        $item['creditCardLast4Digits'] = !empty($item['creditCardLast4Digits'])
             ? '****&nbsp;****&nbsp;****&nbsp;' . $item['creditCardLast4Digits']
             : '';
 
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
-        $itemData['currency'] = isset($supportedCurrencies[$item['currency']])
+        $item['currency'] = isset($supportedCurrencies[$item['currency']])
             ? $supportedCurrencies[$item['currency']]
             : $item['currency'];
 
-        $itemData['paymentStatus'] = $this->getPaymentStatus($item['paymentStatus']);
+        $item['paymentStatus'] = $this->getPaymentStatus($item['paymentStatus']);
 
         $data = array();
         foreach ($infoCaptions as $key => $caption) {
-            $data[$caption] = !empty($itemData[$key]) ? $itemData[$key] : '-';
+            $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
         }
 
         return $this->renderDataSheet($data);
