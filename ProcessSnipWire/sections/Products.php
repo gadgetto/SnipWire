@@ -493,7 +493,6 @@ trait Products {
             'sku' => $this->_('SKU'),
             'name' => $this->_('Product name'),
             'image' => $this->_('Product image'),
-            'image_path' => $this->_('Image path'),
             'description' => $this->_('Product decription'),
             'categories' => $this->_('Categories'),
             'prices' => $this->_('Product price(s)'),
@@ -501,31 +500,28 @@ trait Products {
             'creationDate' => $this->_('Created on'),
             'modificationDate' => $this->_('Last modified'),
         );
-
-        $itemData = array();
         
-        $itemData['sku'] = $item['userDefinedId'];
-        $itemData['name'] = $item['name'];
-        $itemData['image'] = $this->getProductImg($item['image']);
-        $itemData['image_path'] = $item['image']
-            ? '<span style="word-break: break-all;">' . $item['image'] . '</span>'
+        $item['sku'] = $item['userDefinedId'];
+        $item['image_path'] = $item['image']
+            ? '<small style="word-break: break-all;" class="ui-priority-secondary">' . $item['image'] . '</small>'
             : '';
-        $itemData['description'] = $item['description'];
-        $itemData['categories'] = (isset($item['categories']) && is_array($item['categories']))
+        $item['image'] = $this->getProductImg($item['image']) . '<br>' .
+            $item['image_path'];
+        $item['categories'] = (isset($item['categories']) && is_array($item['categories']))
             ? implode(', ', $item['categories'])
             : '';
-        $itemData['prices'] = is_array($item['price'])
+        $item['prices'] = is_array($item['price'])
             ? CurrencyFormat::formatMulti($item['price'], true)
             : CurrencyFormat::format($item['price'], $this->currencies[0]);
-        $itemData['stock'] = isset($item['stock'])
+        $item['stock'] = isset($item['stock'])
             ? $item['stock']
             : '';
-        $itemData['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
-        $itemData['modificationDate'] = wireDate('Y-m-d H:i:s', $item['modificationDate']);
+        $item['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $item['modificationDate'] = wireDate('Y-m-d H:i:s', $item['modificationDate']);
 
         $data = array();
         foreach ($infoCaptions as $key => $caption) {
-            $data[$caption] = !empty($itemData[$key]) ? $itemData[$key] : '-';
+            $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
         }
 
         return $this->renderDataSheet($data);
