@@ -882,6 +882,7 @@ trait Orders {
 
             /** @var InputfieldRadios $f */
             $f = $modules->get('InputfieldRadios');
+            $f->id = 'OrderStatusForm_deliveryMethod'; // needed to prevent duplicate HTML id
             $f->name = 'deliveryMethod'; 
             $f->label = $this->_('No tracking number set. Notify customer anyway?');
             $f->optionColumns = 1;
@@ -1010,6 +1011,7 @@ trait Orders {
 
             /** @var InputfieldRadios $f */
             $f = $modules->get('InputfieldRadios');
+            $f->id = 'OrderCommentForm_deliveryMethod'; // needed to prevent duplicate HTML id
             $f->name = 'deliveryMethod'; 
             $f->label = $this->_('Send this comment to your customer via email or keep it private?');
             $f->optionColumns = 1;
@@ -1028,7 +1030,7 @@ trait Orders {
 
             /** @var InputfieldSubmit $btn */
             $btn = $modules->get('InputfieldSubmit');
-            $btn->id = 'UpdateOrderButton';
+            $btn->id = 'AddCommentButton';
             $btn->name = 'send_ordercomment';
             $btn->value = $this->_('Add comment');
             $btn->small = true;
