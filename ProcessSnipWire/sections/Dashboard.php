@@ -35,7 +35,7 @@ trait Dashboard {
         }
 
         $this->_includeAssets(
-            self::assetsIncludeDaterangePicker | 
+            self::assetsIncludeDateRangePicker | 
             self::assetsIncludeCurrencyPicker | 
             self::assetsIncludeApexCharts
         );
@@ -272,97 +272,105 @@ trait Dashboard {
     private function _buildDashboardFilter($start = '', $end = '', $currency = '') {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
+        $input = $this->wire('input');
+        
+        $periodDateFormat = 'Y-m-d';
+        $periodPlaceholder = 'YYYY-MM-DD';
 
-        // Define "Last 30 days" if no $startDate and/or $endDate properties provided
+        // Define "Last 30 days" if no $start and/or $end properties provided
         if (!$start || !$end) {
             $start = date('Y-m-d', strtotime('-29 days'));
             $end = date('Y-m-d');
         }
 
-        $filterSettings = array(
+        $pickerSettings = array(
             'form' => '#StorePerformanceFilterForm',
-            'pickerElement' => '#period-picker',
-            'pickerDisplay' => '#period-display',
-            'fieldFrom' => '#period-from',
-            'fieldTo' => '#period-to',
+            'resetButton' => '#DateRangeReset',
+            'fieldSelect' => '#periodSelect',
+            'fieldFrom' => '#periodFrom',
+            'fieldTo' => '#periodTo',
             'fieldCurrency' => '#currency-picker',
             'startDate' => $start,
             'endDate' => $end,
             'currency' => $currency,
+            'dateFormat' => 'YYYY-MM-DD', // for moment.js
         );
 
-        $pickerLocale = array(
-            'format' => $this->_('YYYY-MM-DD'), // display format (based on `moment.js`)
-            'separator' => '&nbsp;&nbsp;' . wireIconMarkup('arrows-h') .'&nbsp;&nbsp;',
-            'applyLabel' => $this->_('Apply'),
-            'cancelLabel' => $this->_('Chancel'),
-            'fromLabel' => $this->_('From'),
-            'toLabel' => $this->_('To'),
-            'customRangeLabel' => $this->_('Custom Range'),
-            'weekLabel' => $this->_('W'),
-            'daysOfWeek' => array(
-                $this->_('Su'),
-                $this->_('Mo'),
-                $this->_('Tu'),
-                $this->_('We'),
-                $this->_('Th'),
-                $this->_('Fr'),
-                $this->_('Sa'),
-            ),
-            'monthNames' => array(
-                $this->_('January'),
-                $this->_('February'),
-                $this->_('March'),
-                $this->_('April'),
-                $this->_('Mai'),
-                $this->_('June'),
-                $this->_('July'),
-                $this->_('August'),
-                $this->_('September'),
-                $this->_('October'),
-                $this->_('November'),
-                $this->_('December'),
-            ),
-        );
-
-        $pickerRangeLabels = array(
+        $perioRangeLabels = array(
             'today' => $this->_('Today'),
             'yesterday' => $this->_('Yesterday'),
             'last7days' => $this->_('Last 7 Days'),
             'last30days' => $this->_('Last 30 Days'),
             'thismonth' => $this->_('This Month'),
             'lastmonth' => $this->_('Last Month'),
+            'custom' =>  $this->_('Custom range'),
         );
 
+        $pickerMessages = array(
+            'fromAfterTo' => $this->_('Period from can\'t be after Period to'),
+            'yearAfterNow' => $this->_('The chosen year lies in the future'),
+        );
+
+        $periodRanges = array(
+            'today' => array(
+                'start' => date('Y-m-d'),
+                'end' => date('Y-m-d'),
+            ),
+            'yesterday' => array(
+                'start' => date('Y-m-d', strtotime('-1 day')),
+                'end' => date('Y-m-d', strtotime('-1 day')),
+            ),
+            'last7days' => array(
+                'start' => date('Y-m-d', strtotime('-6 day')),
+                'end' => date('Y-m-d'),
+            ),
+            'last30days' => array(
+                'start' => date('Y-m-d', strtotime('-29 day')),
+                'end' => date('Y-m-d'),
+            ),
+            'thismonth' => array(
+                'start' => date('Y-m-d', strtotime('first day of this month')),
+                'end' => date('Y-m-d', strtotime('last day of this month')),
+            ),
+            'lastmonth' => array(
+                'start' => date('Y-m-d', strtotime('first day of last month')),
+                'end' => date('Y-m-d', strtotime('last day of last month')),
+            ),
+            'custom' => array(
+                'start' => '',
+                'end' => '',
+            ),
+        );
+
+        // Determine if this is one of the predefined ranges
+        $knownRange = 'custom';
+        foreach ($periodRanges as $range => $date) {
+            if ($date['start'] == $start && $date['end'] == $end) {
+                $knownRange = $range;
+                break;
+            }
+        }
+
         // Hand over configuration to JS
-        $config->js('filterSettings', $filterSettings);
-        $config->js('pickerLocale', $pickerLocale);
-        $config->js('pickerRangeLabels', $pickerRangeLabels);
-        
+        $config->js('filterSettings', $pickerSettings);
+        $config->js('periodRanges', $periodRanges);
+        $config->js('pickerMessages', $pickerMessages);
+
         /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm'); 
         $form->attr('id', 'StorePerformanceFilterForm');
         $form->method = 'get';
         $form->action = $this->currentUrl;
 
-            // Period date range picker with hidden form fields
-            $markup =
-            '<input type="hidden" id="period-from" name="periodFrom" value="' . $start . '">' .
-            '<input type="hidden" id="period-to" name="periodTo" value="' . $end . '">' .
-            '<div id="PeriodPickerSelect">' .
-                '<div id="period-picker" aria-label="' . $this->_('Store performance date range selector') .'">' .
-                    wireIconMarkup('calendar') . 
-                    '<span id="period-display">' .
-                        $this->_('Preparing data...') .
-                    '</span>' . 
-                    wireIconMarkup('caret-down') .
-                '</div>' .
+            $dateRangeDisplay = 
+            '<div id="DateRangeDisplay">' .
+                '<em>' . $start . '</em>' . wireIconMarkup('arrows-h') . '<em>' . $end . '</em>' .
             '</div>';
-            
-            // Reset button
-            $markup .= 
+
+            // Date range reset button
+            $dateRangeReset = 
             '<a href="' . $this->currentUrl . '?action=reset"
-                id="PeriodPickerReset"
+                id="DateRangeReset"
                 class="ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary pw-tooltip"
                 role="button"
                 title="' . $this->_('Reset date range to default') .'">' .
@@ -371,27 +379,70 @@ trait Dashboard {
                     '</span>' .
             '</a>';
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->wrapClass = 'PeriodPickerContainer';
-            $f->label = $this->_('Date Range Picker');
-            $f->skipLabel = Inputfield::skipLabelHeader;
-            $f->value = $markup;
-            $f->collapsed = Inputfield::collapsedNever;
-            $f->columnWidth = 75;
+            /** @var InputfieldFieldset $fieldset */
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->label = '<span class="hidable-inputfield-label">';
+            $fieldset->label .= $this->_('Store performance');
+            $fieldset->label .= '</span>';
+            $fieldset->label .= $dateRangeDisplay;
+            $fieldset->label .= $dateRangeReset;
+            $fieldset->icon = 'calendar';
+            $fieldset->entityEncodeLabel = false;
 
-        $form->add($f);  
+        $form->add($fieldset);
+
+            /** @var InputfieldSelect $f */
+            $f = $modules->get('InputfieldSelect');
+            $f->attr('id+name', 'periodSelect');
+            $f->attr('value', $knownRange);
+            $f->addClass('InputfieldMaxWidth');
+            $f->label = $this->_('Predefined period');
+            $f->required = true;
+            $f->columnWidth = 40;
+            $f->collapsed = Inputfield::collapsedNever;
+            $f->addOptions($perioRangeLabels);
+
+        $fieldset->add($f);
+
+            /** @var InputfieldDatetime $f */
+            $f = $modules->get('InputfieldDatetime');
+            $f->attr('id+name', 'periodFrom');
+            $f->attr('value', $start);
+            $f->attr('placeholder', $periodPlaceholder);
+            $f->addClass('InputfieldMaxWidth');
+            $f->label = $this->_('Period from');
+            $f->datepicker = InputfieldDatetime::datepickerFocus;
+            $f->dateInputFormat = $periodDateFormat;
+            $f->yearRange = '-15:+0';
+            $f->collapsed = Inputfield::collapsedNever;
+            $f->columnWidth = 20;
+
+        $fieldset->add($f);
+
+            /** @var InputfieldDatetime $f */
+            $f = $modules->get('InputfieldDatetime');
+            $f->attr('id+name', 'periodTo');
+            $f->attr('value', $end);
+            $f->attr('placeholder', $periodPlaceholder);
+            $f->addClass('InputfieldMaxWidth');
+            $f->label = $this->_('Period to');
+            $f->datepicker = InputfieldDatetime::datepickerFocus;
+            $f->dateInputFormat = $periodDateFormat;
+            $f->yearRange = '-15:+0';
+            $f->collapsed = Inputfield::collapsedNever;
+            $f->columnWidth = 20;
+
+        $fieldset->add($f);
 
             /** @var InputfieldSelect $f */
             $f = $modules->get('InputfieldSelect'); 
             $f->attr('id', 'currency-picker'); 
             $f->attr('name', 'currency'); 
             $f->wrapClass = 'CurrencyPickerContainer';
-            $f->label = $this->_('Currency Picker'); 
-            $f->skipLabel = Inputfield::skipLabelHeader;
+            $f->label = $this->_('Currency'); 
             $f->value = $currency;
             $f->collapsed = Inputfield::collapsedNever;
-            $f->columnWidth = 25;
+            $f->columnWidth = 20;
             $f->required = true;
 
             $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
@@ -402,7 +453,7 @@ trait Dashboard {
                 $f->addOption($currencyOption, $currencyLabel);
             }
 
-        $form->add($f);            
+        $fieldset->add($f);            
 
         return $form->render(); 
     }

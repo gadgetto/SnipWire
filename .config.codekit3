@@ -59,6 +59,28 @@
 		"sC": 3,
 		"tS": 0
 		},
+	"/assets/scripts/DateRangePicker.js": {
+		"bF": 0,
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "/assets/scripts/DateRangePicker.min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
+	"/assets/scripts/DateRangePicker.min.js": {
+		"bF": 0,
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "/assets/scripts/DateRangePicker.min.min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
 	"/assets/scripts/PerformanceChart.js": {
 		"bF": 0,
 		"ft": 64,
@@ -77,28 +99,6 @@
 		"mi": 1,
 		"oA": 0,
 		"oAP": "/assets/scripts/PerformanceChart.min.min.js",
-		"oF": 0,
-		"sC": 3,
-		"tS": 0
-		},
-	"/assets/scripts/PerformanceRangePicker.js": {
-		"bF": 0,
-		"ft": 64,
-		"ma": 0,
-		"mi": 1,
-		"oA": 0,
-		"oAP": "/assets/scripts/PerformanceRangePicker.min.js",
-		"oF": 0,
-		"sC": 3,
-		"tS": 0
-		},
-	"/assets/scripts/PerformanceRangePicker.min.js": {
-		"bF": 0,
-		"ft": 64,
-		"ma": 0,
-		"mi": 1,
-		"oA": 0,
-		"oAP": "/assets/scripts/PerformanceRangePicker.min.min.js",
 		"oF": 0,
 		"sC": 3,
 		"tS": 0
@@ -144,29 +144,6 @@
 		"ma": 0,
 		"oA": 0,
 		"oAP": "/assets/styles/PerformanceChart.css",
-		"oF": 0,
-		"oS": 3,
-		"uL": 1
-		},
-	"/assets/styles/PerformanceRangePicker.css": {
-		"aP": 1,
-		"bl": 0,
-		"ft": 16,
-		"ma": 0,
-		"oA": 1,
-		"oAP": "/assets/styles/PerformanceRangePicker-min.css",
-		"oF": 0,
-		"oS": 3
-		},
-	"/assets/styles/PerformanceRangePicker.scss": {
-		"aP": 1,
-		"bl": 0,
-		"dP": 10,
-		"dS": 0,
-		"ft": 4,
-		"ma": 0,
-		"oA": 0,
-		"oAP": "/assets/styles/PerformanceRangePicker.css",
 		"oF": 0,
 		"oS": 3,
 		"uL": 1
@@ -651,57 +628,6 @@
 		"oF": 0,
 		"oO": 0,
 		"oS": 1
-		},
-	"/vendor/daterangepicker.js/daterangepicker.css": {
-		"aP": 1,
-		"bl": 0,
-		"ft": 16,
-		"ma": 0,
-		"oA": 1,
-		"oAP": "/vendor/daterangepicker.js/daterangepicker-min.css",
-		"oF": 0,
-		"oS": 3
-		},
-	"/vendor/daterangepicker.js/daterangepicker.js": {
-		"bF": 0,
-		"ft": 64,
-		"ma": 0,
-		"mi": 1,
-		"oA": 0,
-		"oAP": "/vendor/daterangepicker.js/daterangepicker.min.js",
-		"oF": 0,
-		"sC": 3,
-		"tS": 0
-		},
-	"/vendor/daterangepicker.js/daterangepicker.min.js": {
-		"bF": 0,
-		"ft": 64,
-		"ma": 0,
-		"mi": 1,
-		"oA": 0,
-		"oAP": "/vendor/daterangepicker.js/daterangepicker.min.min.js",
-		"oF": 0,
-		"sC": 3,
-		"tS": 0
-		},
-	"/vendor/daterangepicker.js/README.md": {
-		"cB": 0,
-		"cS": 0,
-		"eF": 1,
-		"eL": 1,
-		"ema": 1,
-		"eSQ": 1,
-		"ft": 4096,
-		"hM": 0,
-		"oA": 0,
-		"oAP": "/vendor/daterangepicker.js/README.html",
-		"oF": 0,
-		"oFM": 0,
-		"oS": 0,
-		"pHT": 0,
-		"pME": 1,
-		"rFN": 0,
-		"uCM": 0
 		},
 	"/vendor/jquery.repeater.js/jquery.repeater.js": {
 		"bF": 0,

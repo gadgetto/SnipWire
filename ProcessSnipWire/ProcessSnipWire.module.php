@@ -93,7 +93,7 @@ class ProcessSnipWire extends Process implements Module {
         );
     }
 
-    const assetsIncludeDaterangePicker = 1;
+    const assetsIncludeDateRangePicker = 1;
     const assetsIncludeCurrencyPicker = 2;
     const assetsIncludeApexCharts = 4;
     const assetsIncludeItemLister = 8;
@@ -889,16 +889,13 @@ class ProcessSnipWire extends Process implements Module {
         $version = (int) isset($info['version']) ? $info['version'] : 0;
         $versionAdd = "?v=$version";
 
-        if ($mode & self::assetsIncludeDaterangePicker || $mode & self::assetsIncludeApexCharts) {
+        if ($mode & self::assetsIncludeDateRangePicker || $mode & self::assetsIncludeApexCharts) {
             // Include moment.js JS assets
             $config->scripts->add($config->urls->SnipWire . 'vendor/moment.js/moment.min.js?v=2.24.0');
         }
-        if ($mode & self::assetsIncludeDaterangePicker) {
+        if ($mode & self::assetsIncludeDateRangePicker) {
             // Include daterangepicker CSS/JS assets
-            $config->styles->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.css?v=3.0.5');
-            $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceRangePicker.css' . $versionAdd);
-            $config->scripts->add($config->urls->SnipWire . 'vendor/daterangepicker.js/daterangepicker.min.js?v=3.0.5');
-            $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceRangePicker.min.js' . $versionAdd);
+            $config->scripts->add($config->urls->SnipWire . 'assets/scripts/DateRangePicker.min.js' . $versionAdd);
         }
         if ($mode & self::assetsIncludeCurrencyPicker) {
             // Include currency picker JS assets

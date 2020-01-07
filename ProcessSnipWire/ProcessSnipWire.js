@@ -9,6 +9,32 @@
  *
  */
 
+/**
+ * Show a runtime message notification
+ *
+ * @param string message
+ * @param string type
+ * @return void
+ *
+ */
+function RuntimeNotification(message, type) {
+    if(typeof type == 'undefined') type = 'warning';
+
+    var $msg = $('<div class="RuntimeNotification"></div>').append($('<span>' + message + '</span>').text());
+    if (type === 'error') {
+        $msg.addClass('NoticeError');
+    } else if (type === 'warning') {
+        $msg.addClass('NoticeWarning');
+    }
+    $msg.fadeTo(500, 0.9).fadeTo(500, 0.3).fadeTo(500, 0.9);
+    $msg.prependTo($('body'));
+
+	setTimeout(function() {
+        $msg.remove();
+	}, 5000); 
+}
+
+
 jQuery(document).ready(function() {
     var tabsOptions = config.tabsOptions;
     if (tabsOptions) {
@@ -27,7 +53,7 @@ jQuery(document).ready(function() {
             });
         }
     }
-    
+
     // Items filter form - selector form submit
     $('.filter-form-select').on('change', function() {
         $(this).closest('form').submit();
