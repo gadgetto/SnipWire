@@ -486,10 +486,12 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated discounts types.
      *
+     * @param boolean $keysonly Whether to return only the array keys
      * @return array
      *
      */
-	public function getDiscountsTypes() {
+	public function getDiscountsTypes($keysonly = false) {
+    	if ($keysonly) return array_keys($this->discountsTypes);
 		return $this->discountsTypes;
 	}
 
@@ -509,10 +511,12 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated discounts triggers.
      *
+     * @param boolean $keysonly Whether to return only the array keys
      * @return array
      *
      */
-	public function getDiscountsTriggers() {
+	public function getDiscountsTriggers($keysonly = false) {
+    	if ($keysonly) return array_keys($this->discountsTriggers);
 		return $this->discountsTriggers;
 	}
 
