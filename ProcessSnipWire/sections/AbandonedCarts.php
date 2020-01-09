@@ -45,7 +45,7 @@ trait AbandonedCarts {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         } elseif ($action == 'refresh_all') {
-            $sniprest->resetFullCache();
+            $sniprest->deleteFullCache();
             $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
         }
 

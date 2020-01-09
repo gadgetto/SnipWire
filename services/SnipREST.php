@@ -1601,12 +1601,12 @@ class SnipREST extends WireHttpExtended {
     }
     
     /**
-     * Reset the full Snipcart cache for all sections.
+     * Delete the full Snipcart cache for all sections.
      *
      * @return boolean
      * 
      */
-    public function resetFullCache() {
+    public function deleteFullCache() {
         return $this->wire('cache')->deleteFor(self::cacheNamespace);
     }
     

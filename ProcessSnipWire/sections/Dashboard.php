@@ -46,7 +46,7 @@ trait Dashboard {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
             $forceRefresh = true;
         } elseif ($action == 'refresh_all') {
-            $sniprest->resetFullCache();
+            $sniprest->deleteFullCache();
             $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
         } elseif ($action == 'reset') {
             $this->message($this->_('Store performance date range set to default.'));
