@@ -357,6 +357,7 @@ trait Discounts {
                 
                 $code = $item['code'] ? $item['code'] : '-';
                 $usages = $item['numberOfUsages'] . ' ' . $this->_('of') . ' ' . $item['maxNumberOfUsages'];
+                $expires = $item['expires'] ? wireDate('Y-m-d', $item['expires']) : '-';
 
                 $table->row(array(
                     $panelLink,
@@ -365,7 +366,7 @@ trait Discounts {
                     $currencyLabel,
                     $code,
                     $usages,
-                    wireDate('Y-m-d', $item['expires']),
+                    $expires,
                 ));
             }
             $out = $table->render();
@@ -614,7 +615,7 @@ trait Discounts {
             /** @var InputfieldInteger $f */
             $f = $modules->get('InputfieldInteger');
             $f->attr('name', 'maxNumberOfUsages');
-            $f->label = $this->_('Maximum number of usages');
+            $f->label = $this->_('Max. number of usages');
             $f->detail = $this->_('Leave empty to enable unlimited usage');
             $f->size = 100;
             $f->min = 1;
@@ -1121,15 +1122,15 @@ trait Discounts {
         $fieldValues = array(
             'name' => $sanitizer->sanitize($nameValue, 'text, entities'),
             
-            'expires' => $sanitizer->date($expiresValue, $expiresDateFormat) . 'T23:00:00Z',
+            'expires' => ($expiresValue ? $sanitizer->date($expiresValue, $expiresDateFormat) . 'T23:00:00Z' : ''),
             
             // already sanitized (integer or empty)
-            'maxNumberOfUsages' => $maxNumberOfUsagesValue ? $maxNumberOfUsagesValue : '',
+            'maxNumberOfUsages' => ($maxNumberOfUsagesValue ? $maxNumberOfUsagesValue : ''),
             
             'currency' => $sanitizer->sanitize($currencyValue, 'text, entities'),
             
              // checkbox
-            'combinable' => $combinableValue ? true : false,
+            'combinable' => ($combinableValue ? true : false),
             
              // already sanitized
             'type' => $typeValue,
@@ -1148,20 +1149,20 @@ trait Discounts {
             'shippingCost' => $sanitizer->sanitize($shippingCostValue, 'text, entities'),
             
             // already sanitized (integer or empty)
-            'shippingGuaranteedDaysToDelivery' => $shippingGuaranteedDaysToDeliveryValue ? $shippingGuaranteedDaysToDeliveryValue : '',
+            'shippingGuaranteedDaysToDelivery' => ($shippingGuaranteedDaysToDeliveryValue ? $shippingGuaranteedDaysToDeliveryValue : ''),
             
             'productIds' => $sanitizer->text($productIdsValue),
             
             // already sanitized (integer or empty)
-            'maxDiscountsPerItem' => $maxDiscountsPerItemValue ? $maxDiscountsPerItemValue : '',
+            'maxDiscountsPerItem' => ($maxDiscountsPerItemValue ? $maxDiscountsPerItemValue : ''),
             
             'categories' => $sanitizer->text($categoriesValue),
             
             // already sanitized (integer or empty)
-            'numberOfItemsRequired' => $numberOfItemsRequiredValue ? $numberOfItemsRequiredValue : '',
+            'numberOfItemsRequired' => ($numberOfItemsRequiredValue ? $numberOfItemsRequiredValue : ''),
             
             // already sanitized (integer or empty)
-            'numberOfFreeItems' => $numberOfFreeItemsValue ? $numberOfFreeItemsValue : '',
+            'numberOfFreeItems' => ($numberOfFreeItemsValue ? $numberOfFreeItemsValue : ''),
             
             // already sanitized
             'trigger' => $triggerValue,
@@ -1177,16 +1178,16 @@ trait Discounts {
             'maxAmountToReach' => $sanitizer->sanitize($maxAmountToReachValue, 'text, entities'),
             
             // checkbox
-            'quantityInterval' => $quantityIntervalValue ? true : false,
+            'quantityInterval' => ($quantityIntervalValue ? true : false),
             
             // already sanitized
-            'quantityOfAProduct' => $quantityOfAProductValue ? $quantityOfAProductValue : '',
+            'quantityOfAProduct' => ($quantityOfAProductValue ? $quantityOfAProductValue : ''),
             
             // already sanitized
-            'maxQuantityOfAProduct' => $maxQuantityOfAProductValue ? $maxQuantityOfAProductValue : '',
+            'maxQuantityOfAProduct' => ($maxQuantityOfAProductValue ? $maxQuantityOfAProductValue : ''),
             
             // checkbox
-            'onlyOnSameProducts' => $onlyOnSameProductsValue ? true : false,
+            'onlyOnSameProducts' => ($onlyOnSameProductsValue ? true : false),
             
             'quantityOfProductIds' => $sanitizer->text($quantityOfProductIdsValue),
             
