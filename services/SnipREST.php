@@ -1439,6 +1439,87 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
+     * Updates a Snipcart discount.
+     *
+     * @param string $id The Snipcart id of the discount
+     * @param array $options An array of options that will be sent as PUT params:
+     *  - `id` (string) The Snipcart id of the discount #required
+     *  - `name` (string) The discount frienly name #required
+     *  - `expires` (date) The date when this discount should expire
+     *  - `maxNumberOfUsages` (integer) The max. number of usages for the discount / if null, discount never expires
+     *  - `currency` (string) The currency for amounts
+     *  - `combinable` (boolean) Whether the discount should be combinable with other discounts
+     *  - `type` (string) The type of action that the discount will apply (Possible values: FixedAmount, Rate, AlternatePrice, Shipping, FixedAmountOnItems, RateOnItems, FixedAmountOnCategory, RateOnCategory, GetFreeItems, AmountOnSubscription, RateOnSubscription)
+     *  - `amount` (decimal) The amount that will be deducted from order total
+     *  - `rate` (decimal) The rate in percentage that will be deducted from order total
+     *  - `alternatePrice` (string) The name of the alternate price list to use
+     *  - `shippingDescription` (string) The shipping method name that will be displayed to your customers
+     *  - `shippingCost` (decimal) The shipping amount that will be available to your customers
+     *  - `shippingGuaranteedDaysToDelivery` (integer) The number of days it will take for shipping
+     *  - `productIds` (string) Comma separated list of product IDs (SKUs) #required if "trigger" is "QuantityOfAProduct" and "onlyOnSameProducts" is "true"
+     *  - `maxDiscountsPerItem` (integer)
+     *  - `categories` (string) Comma separated list of product categories
+     *  - `numberOfItemsRequired` (integer) Number of items required #required if "type" is "GetFreeItems"
+     *  - `numberOfFreeItems` (integer) Number of free items #required if "type" is "GetFreeItems"
+     *  - `trigger` (string) Condition that will trigger the discount #required (Possible values: Code, Product, Total, QuantityOfAProduct, CartContainsOnlySpecifiedProducts, CartContainsSomeSpecifiedProducts, CartContainsAtLeastAllSpecifiedProducts)
+     *  - `code` (string) The code that will need to be entered by the customer #required if "trigger" is "Code"
+     *  - `itemId` (string) The unique ID (SKU) of your product 
+     *  - `totalToReach` (decimal) The min. order amount
+     *  - `maxAmountToReach` (decimal) The max. order amount
+     *  - `quantityInterval` (boolean)
+     *  - `quantityOfAProduct` (integer)
+     *  - `maxQuantityOfAProduct` (integer)
+     *  - `onlyOnSameProducts` (boolean)
+     *  - `quantityOfProductIds` (string) Comma separated list of unique product IDs (SKUs)
+     *  - `productIds___XXX` (string) @todo: this field occurs twice in SnipCart discount editor - which seems to be a bug!
+     *  - `archived` (boolean) Whether the discount is archived or not
+     * @return array $data
+     * 
+     */
+    public function putDiscount($id, array $options) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_discount_id'));
+            return false;
+        }
+        // Add necessary header for PUT request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        // @todo: field "productIds" occurs twice in SnipCart discount editor - which seems to be a bug!
+        $allowedOptions = array(
+            'id', 'name', 'expires', 'maxNumberOfUsages', 'currency', 'combinable',
+            'type', 'amount', 'rate', 'alternatePrice', 'shippingDescription', 'shippingCost',
+            'shippingGuaranteedDaysToDelivery', 'productIds', 'maxDiscountsPerItem', 'categories',
+            'numberOfItemsRequired', 'numberOfFreeItems', 'trigger', 'code', 'itemId', 'totalToReach',
+            'maxAmountToReach', 'quantityInterval', 'quantityOfAProduct', 'maxQuantityOfAProduct',
+            'onlyOnSameProducts', 'quantityOfProductIds', 'productIds___XXX', 'archived',
+        );
+        $defaultOptions = array();
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+
+        $url = self::apiEndpoint . self::resPathDiscounts. '/' . $id;
+        $requestbody = wireEncodeJSON($options, true);
+
+        $response = $this->send($url, $requestbody, 'PUT');
+
+        if ($response === false) $response = array();
+        $data[$id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
      * Get the store performance from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
