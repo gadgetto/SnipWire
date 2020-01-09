@@ -1520,6 +1520,24 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
+     * Delete a single or the lister discount cache (WireCache).
+     *
+     * @param string $id The Snipcart $id of the discount (if no id provided, the lister discount cache is deleted)
+     * @return void
+     *
+     */
+    public function deleteDiscountCache($id = '') {
+        if (!$id) {
+            // This works without segmentation as we have no pagination in discounts
+            $cacheName = self::cacheNamePrefixDiscounts;
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        } else {
+            $cacheName = self::cacheNamePrefixDiscountDetail . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        }
+    }
+
+    /**
      * Get the store performance from Snipcart dashboard as array.
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
