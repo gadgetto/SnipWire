@@ -297,13 +297,13 @@ trait Subscriptions {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="85%">' .
                         wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
                 '</a>';
                 $panelLink2 =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="85%">' .
                         $item['user']['email'] .
                 '</a>';
                 $creationDate = '<span class="tooltip" title="';

@@ -367,7 +367,7 @@ trait Orders {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
                     class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
+                    data-panel-width="85%">' .
                         wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
                 '</a>';
                 $total =

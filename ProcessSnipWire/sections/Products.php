@@ -304,7 +304,7 @@ trait Products {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
+                    data-panel-width="85%">' .
                         wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
                 '</a>';
                 $thumb = $this->getProductImg($item['image']);

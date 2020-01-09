@@ -294,7 +294,7 @@ trait Customers {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
+                    data-panel-width="85%">' .
                         wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
                 '</a>';
                 $creationDate = '<span class="tooltip" title="';

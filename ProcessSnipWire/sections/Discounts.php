@@ -326,7 +326,7 @@ trait Discounts {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'discount-edit/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
+                    data-panel-width="85%">' .
                         wireIconMarkup(self::iconDiscount, 'fa-right-margin') . $item['name'] .
                 '</a>';
 

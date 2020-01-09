@@ -664,7 +664,7 @@ trait Dashboard {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
+                    data-panel-width="85%">' .
                         $item['billingAddress']['fullName'] .
                 '</a>';
                 $table->row(array(
@@ -723,7 +723,7 @@ trait Dashboard {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
+                    data-panel-width="85%">' .
                         $item['name'] .
                 '</a>';
 
@@ -812,7 +812,7 @@ trait Dashboard {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
                     class="pw-panel pw-panel-links"
-                    data-panel-width="75%">' .
+                    data-panel-width="85%">' .
                         $item['invoiceNumber'] .
                 '</a>';
                 $total =

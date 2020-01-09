@@ -261,7 +261,7 @@ trait AbandonedCarts {
                 $customerEmail =
                 '<a href="' . $this->snipWireRootUrl . 'abandoned-cart/' . $item['id'] . '"
                     class="pw-panel"
-                    data-panel-width="70%">' .
+                    data-panel-width="85%">' .
                         wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
                 '</a>';
                 $total =
