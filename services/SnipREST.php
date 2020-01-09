@@ -438,22 +438,24 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
-     * Delete a single order cache (WireCache).
+     * Delete a single or the lister order cache (WireCache).
      *
-     * @param string $token The Snipcart $token of the order
+     * @param string $token The Snipcart $token of the order (if no token provided, the lister order cache is deleted)
      * @return void
      *
      */
-    public function deleteOrderCache($token) {
+    public function deleteOrderCache($token = '') {
         if (!$token) {
-            $this->error(self::getMessagesText('no_order_token'));
-            return false;
+            // @todo: the lister cache is semgented (pagination!) so we need to finde all order segments!
+            //        In the meantime the full Snipcart cache is deleted instead.
+            $this->deleteFullCache();
+        } else {
+            $cacheName = self::cacheNamePrefixOrderDetail . '.' . md5($token);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+            
+            $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
         }
-        $cacheName = self::cacheNamePrefixOrderDetail . '.' . md5($token);
-        $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-        
-        $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token);
-        $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
     }
 
     /**
