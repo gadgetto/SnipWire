@@ -36,7 +36,7 @@ trait Orders {
             return '';
         }
 
-        $this->_setJSConfigValues();
+        $this->_setOrderJSConfigValues();
         
         $out = '';
 
@@ -152,7 +152,7 @@ trait Orders {
             return '';
         }
 
-        $this->_setJSConfigValues();
+        $this->_setOrderJSConfigValues();
 
         // Determine if request comes from within another page in a modal panel.
         // In this case there will be an input param "ret" (can be GET or POST) which holds the return URL.
@@ -1692,7 +1692,7 @@ trait Orders {
      * @return void 
      *
      */
-    private function _setJSConfigValues() {
+    private function _setOrderJSConfigValues() {
         $this->wire('config')->js('orderActionStrings', array(
             'info_download_invoice' => $this->_("To download an invoice, you first need to login to your Snipcart dashboard.\nAlso please be sure your browser allows popups from this site.\n\nStart download now?"),
             'confirm_resend_invoice' => $this->_('Do you want to resend this invoice?'),
