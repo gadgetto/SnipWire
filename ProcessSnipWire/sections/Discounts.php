@@ -36,9 +36,7 @@ trait Discounts {
             return '';
         }
 
-        $this->wire('config')->js('discountActionStrings', array(
-            'confirm_delete_discount' => $this->_('Do you want to delete this discount?'),
-        ));
+        $this->_setDiscountJSConfigValues();
 
         $forceRefresh = false;
 
@@ -1308,5 +1306,17 @@ trait Discounts {
             $deleted = true;
         }
         return $deleted;
+    }
+
+    /**
+     * Set JS config values for discount pages.
+     *
+     * @return void 
+     *
+     */
+    private function _setDiscountJSConfigValues() {
+        $this->wire('config')->js('discountActionStrings', array(
+            'confirm_delete_discount' => $this->_('Do you want to delete this discount?'),
+        ));
     }
 }
