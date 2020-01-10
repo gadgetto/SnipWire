@@ -357,7 +357,9 @@ trait Discounts {
                 
                 $code = $item['code'] ? $item['code'] : '-';
                 $usages = $item['numberOfUsages'] . ' ' . $this->_('of') . ' ' . $item['maxNumberOfUsages'];
-                $expires = $item['expires'] ? wireDate('Y-m-d', $item['expires']) : '-';
+                $expires = $item['expires']
+                    ? wireDate('Y-m-d', $item['expires'])
+                    : $this->_('Never');
 
                 $table->row(array(
                     $panelLink,
