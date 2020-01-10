@@ -1518,6 +1518,38 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
+     * Deletes a Snipcart discount.
+     *
+     * @param string $id The Snipcart id of the discount
+     * @return array $data
+     * 
+     */
+    public function deleteDiscount($id) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_discount_id'));
+            return false;
+        }
+        // Add necessary header for PUT request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $url = self::apiEndpoint . self::resPathDiscounts . '/' . $id;
+
+        $response = json_decode($this->send($url, array(), 'DELETE'), true);
+
+        if ($response === false) $response = array();
+        $data[$id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
      * Delete a single or the lister discount cache (WireCache).
      *
      * @param string $id The Snipcart $id of the discount (if no id provided, the lister discount cache is deleted)
