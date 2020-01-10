@@ -1471,7 +1471,6 @@ class SnipREST extends WireHttpExtended {
      *  - `maxQuantityOfAProduct` (integer)
      *  - `onlyOnSameProducts` (boolean)
      *  - `quantityOfProductIds` (string) Comma separated list of unique product IDs (SKUs)
-     *  - `productIds___XXX` (string) @todo: this field occurs twice in SnipCart discount editor - which seems to be a bug!
      *  - `archived` (boolean) Whether the discount is archived or not
      * @return array $data
      * 
@@ -1488,14 +1487,13 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
 
-        // @todo: field "productIds" occurs twice in SnipCart discount editor - which seems to be a bug!
         $allowedOptions = array(
             'id', 'name', 'expires', 'maxNumberOfUsages', 'currency', 'combinable',
             'type', 'amount', 'rate', 'alternatePrice', 'shippingDescription', 'shippingCost',
             'shippingGuaranteedDaysToDelivery', 'productIds', 'maxDiscountsPerItem', 'categories',
             'numberOfItemsRequired', 'numberOfFreeItems', 'trigger', 'code', 'itemId', 'totalToReach',
             'maxAmountToReach', 'quantityInterval', 'quantityOfAProduct', 'maxQuantityOfAProduct',
-            'onlyOnSameProducts', 'quantityOfProductIds', 'productIds___XXX', 'archived',
+            'onlyOnSameProducts', 'quantityOfProductIds', 'archived',
         );
         $defaultOptions = array();
         $options = array_merge(

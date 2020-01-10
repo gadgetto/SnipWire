@@ -502,6 +502,7 @@ trait Discounts {
                     'shippingCost' => $item['shippingCost'],
                     'shippingGuaranteedDaysToDelivery' => $item['shippingGuaranteedDaysToDelivery'],
                     'productIds' => $item['productIds'],
+                    'productIds_2' => $item['productIds'], // helper field
                     'maxDiscountsPerItem' => $item['maxDiscountsPerItem'],
                     'categories' => $item['categories'],
                     'numberOfItemsRequired' => $item['numberOfItemsRequired'],
@@ -517,7 +518,6 @@ trait Discounts {
                     'maxQuantityOfAProduct' => $item['maxQuantityOfAProduct'],
                     'onlyOnSameProducts' => $item['onlyOnSameProducts'],
                     'quantityOfProductIds' => $item['quantityOfProductIds'],
-                    'productIds___XXX' => '', // @todo: this field occurs twice in SnipCart discount editor - which seems to be a bug!
                 );
             } else {
                 // Set default values (if action = add)
@@ -536,6 +536,7 @@ trait Discounts {
                     'shippingCost' => '',
                     'shippingGuaranteedDaysToDelivery' => '',
                     'productIds' => '',
+                    'productIds_2' => '', // helper field
                     'maxDiscountsPerItem' => '',
                     'categories' => '',
                     'numberOfItemsRequired' => '',
@@ -550,7 +551,6 @@ trait Discounts {
                     'maxQuantityOfAProduct' => '',
                     'onlyOnSameProducts' => '',
                     'quantityOfProductIds' => '',
-                    'productIds___XXX' => '', // @todo: this field occurs twice in SnipCart discount editor - which seems to be a bug!
                 );
             }
         }
@@ -947,16 +947,17 @@ trait Discounts {
 
         $fieldset->add($f);
 
-            // @todo: this field occurs twice in SnipCart discount editor - which seems to be a bug!
+            // This is a "companion" field for "productIds" field. Either this or the other one
+            // will be shown, but both will set the value for "productIds" in payload sent to Snipcart.
             
             /** @var InputfieldText $f */
             $f = $modules->get('InputfieldText');
-            $f->attr('name', 'productIds___XXX');
+            $f->attr('name', 'productIds_2');
             $f->label = $this->_('Product IDs (SKUs)');
             $f->detail = $this->_('Enter the specific product ids (SKUs) separated by a comma if there is more than one');
             $f->required = true;
-            $f->showIf = 'trigger=Product|CartContainsOnlySpecifiedProducts|CartContainsSomeSpecifiedProducts|CartContainsAtLeastAllSpecifiedProducts';
-            $f->requiredIf = 'trigger=Product|CartContainsOnlySpecifiedProducts|CartContainsSomeSpecifiedProducts|CartContainsAtLeastAllSpecifiedProducts';
+            $f->showIf = 'trigger=Product|CartContainsOnlySpecifiedProducts|CartContainsSomeSpecifiedProducts|CartContainsAtLeastAllSpecifiedProducts,type!=FixedAmountOnItems|RateOnItems|AmountOnSubscription|RateOnSubscription';
+            $f->requiredIf = 'trigger=Product|CartContainsOnlySpecifiedProducts|CartContainsSomeSpecifiedProducts|CartContainsAtLeastAllSpecifiedProducts,type!=FixedAmountOnItems|RateOnItems|AmountOnSubscription|RateOnSubscription';
 
         $fieldset->add($f);
 
@@ -1040,6 +1041,18 @@ trait Discounts {
 
         $productIds = $form->get('productIds');
         $productIdsValue = $productIds->value;
+        
+        // "Companion" field for productIds
+        // (on Snipcart website this is handled by using 2 fields with the same name which is not valid in HTML forms)
+        $productIds_2 = $form->get('productIds_2');
+        $productIds_2Value = $productIds_2->value;
+
+        // productIds will inherit the value from productIds_2 if necessary
+        if ($productIds_2Value) {
+            $productIdsValue = $productIds_2Value;
+        } else {
+            $productIds_2Value = $productIdsValue;
+        }
 
         $maxDiscountsPerItem = $form->get('maxDiscountsPerItem');
         $maxDiscountsPerItemValue = $sanitizer->int($maxDiscountsPerItem->value);
@@ -1106,10 +1119,6 @@ trait Discounts {
 
         $quantityOfProductIds = $form->get('quantityOfProductIds');
         $quantityOfProductIdsValue = $quantityOfProductIds->value;
-
-        // @todo: this field occurs twice in SnipCart discount editor - which seems to be a bug!
-        $productIds___XXX = $form->get('productIds___XXX');
-        $productIdsValue___XXX = $productIds___XXX->value;
 
 
         // The form is processed and populated but contains errors
@@ -1190,9 +1199,6 @@ trait Discounts {
             'onlyOnSameProducts' => ($onlyOnSameProductsValue ? true : false),
             
             'quantityOfProductIds' => $sanitizer->text($quantityOfProductIdsValue),
-            
-            // @todo: this field occurs twice in SnipCart discount editor - which seems to be a bug!
-            'productIds___XXX' => $sanitizer->text($productIdsValue___XXX),
         );
 
         if ($mode == 'edit') {
