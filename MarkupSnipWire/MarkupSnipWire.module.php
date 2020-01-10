@@ -26,7 +26,7 @@ class MarkupSnipWire extends WireData implements Module {
             'singular' => true, 
             'autoload' => true, 
             'requires' => array(
-                'ProcessWire>=3.0.123',
+                'ProcessWire>=3.0.148',
                 'SnipWire',
              )
         );
