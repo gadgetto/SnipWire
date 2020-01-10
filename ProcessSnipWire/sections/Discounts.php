@@ -36,8 +36,13 @@ trait Discounts {
             return '';
         }
 
+        $this->wire('config')->js('discountActionStrings', array(
+            'confirm_delete_discount' => $this->_('Do you want to delete this discount?'),
+        ));
+
         $forceRefresh = false;
 
+        $id = $sanitizer->text($input->id); // Get Snipcart discount id
         $action = $this->_getInputAction();
         if ($action == 'refresh') {
             $this->message(SnipREST::getMessagesText('cache_refreshed'));
@@ -45,6 +50,14 @@ trait Discounts {
         } elseif ($action == 'refresh_all') {
             $sniprest->deleteFullCache();
             $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
+        } elseif ($action == 'delete_discount' && !empty($id)) {
+            $success = $this->_deleteDiscount($id);
+            if ($success) {
+                // Reset full discounts cache and redirect to itself to remove url params
+                $this->wire('sniprest')->deleteDiscountCache();
+                $redirectUrl = $this->currentUrl;
+                $session->redirect($redirectUrl);
+            }
         }
 
         $status = $sanitizer->text($input->status);
@@ -320,6 +333,7 @@ trait Discounts {
                 $this->_('Code'),
                 $this->_('Usages'),
                 $this->_('Expires'),
+                '&nbsp;',
             ));
 
             foreach ($items as $item) {
@@ -361,6 +375,14 @@ trait Discounts {
                     ? wireDate('Y-m-d', $item['expires'])
                     : $this->_('Never');
 
+                $deleteUrl = $this->currentUrl . '?id=' . $item['id'] . '&action=delete_discount';
+                $deleteLink =
+                '<a href="' . $deleteUrl . '"
+                    class="DeleteDiscountButton pw-tooltip"
+                    title="' . $this->_('Delete discount') .'">' .
+                        wireIconMarkup('trash') .
+                '</a>';
+
                 $table->row(array(
                     $panelLink,
                     $condition,
@@ -369,6 +391,7 @@ trait Discounts {
                     $code,
                     $usages,
                     $expires,
+                    $deleteLink,
                 ));
             }
             $out = $table->render();
@@ -1258,8 +1281,32 @@ trait Discounts {
      */
     private function _createDiscount($options) {
         
-        bd($values);
 
         return true;
+    }
+
+    /**
+     * Triggers the deletion of a Snipcart discount.
+     *
+     * @param string $id The discount id
+     * @return boolean
+     *
+     */
+    private function _deleteDiscount($id) {
+        $sniprest = $this->wire('sniprest');
+
+        $deleted = false;
+        $response = $sniprest->deleteDiscount($id);
+        if (
+            $response[$id][WireHttpExtended::resultKeyHttpCode] != 204 // DELETE http response code
+        ) {
+            $this->error(
+                $this->_('The discount could not be deleted! The following error occurred: ') .
+                $response[$id][WireHttpExtended::resultKeyError]);
+        } else {
+            $this->message($this->_('The discount has been deleted.'));
+            $deleted = true;
+        }
+        return $deleted;
     }
 }

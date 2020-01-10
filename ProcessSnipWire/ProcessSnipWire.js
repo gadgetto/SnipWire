@@ -66,6 +66,7 @@ jQuery(document).ready(function() {
     });
 
     var orderActionStrings = config.orderActionStrings;
+    var discountActionStrings = config.discountActionStrings;
 
     $('.ResendInvoiceButton').on('click', function(e) {
         e.preventDefault();
@@ -88,4 +89,16 @@ jQuery(document).ready(function() {
             }
         );
     });
+    $('.DeleteDiscountButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            discountActionStrings.confirm_delete_discount,
+            function() {
+                // dialogue OK click
+                window.location.href = a_href;
+            }
+        );
+    });
+
 });
