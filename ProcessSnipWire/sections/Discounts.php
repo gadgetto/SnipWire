@@ -182,8 +182,6 @@ trait Discounts {
 
         $out = $f->render();
 
-        //$out .= $this->_renderActionButtons();
-
         return $this->_wrapDashboardOutput($out);
     }
 
@@ -211,14 +209,6 @@ trait Discounts {
             return '';
         }
 
-        // Determine if request comes from within another page in a modal panel.
-        // In this case there will be an input param "ret" (can be GET or POST) which holds the return URL.
-        $ret = urldecode($input->ret);
-
-
-
-
-
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Discount');
@@ -228,8 +218,6 @@ trait Discounts {
         $f->collapsed = Inputfield::collapsedNever;
 
         $out = $f->render();
-
-        $out .= $this->_renderActionButtons();
 
         return $this->_wrapDashboardOutput($out);
     }
@@ -434,9 +422,6 @@ trait Discounts {
             return $out;
         }
 
-        $out = '';
-
-        $out .=
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
                 wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
@@ -444,7 +429,6 @@ trait Discounts {
                 $item['name'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                //$this->_getDiscountDetailActionButtons($item['id']) .
             '</div>' .
         '</div>';
 
@@ -479,17 +463,12 @@ trait Discounts {
     private function _renderAddDiscount() {
         $modules = $this->wire('modules');
 
-        $out = '';
-
-        $out .=
+        $out =
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
                 wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
                 $this->_('Add a Discount') .
             '</h2>' .
-            '<div class="ItemDetailActionButtons">' .
-                //$this->_getDiscountDetailActionButtons($item['id']) .
-            '</div>' .
         '</div>';
 
         $out .= $this->_processDiscountForm(null, $ret);
