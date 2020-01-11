@@ -423,6 +423,17 @@ trait Discounts {
             return $out;
         }
 
+        /** @var InputfieldSubmit $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->attr('name', 'delete_discount');
+        $btn->addClass('ui-priority-danger');
+        $btn->href = $this->snipWireRootUrl . 'discounts/?id=' . $item['id'] . '&action=delete_discount';
+        $btn->aclass = 'DeleteDiscountButton';
+        $btn->text = $this->_('Delete discount');
+        $btn->icon = 'trash';
+        $deleteButton = $btn->render();
+
+        $out =
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
                 wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
@@ -430,6 +441,7 @@ trait Discounts {
                 $item['name'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
+                $deleteButton .
             '</div>' .
         '</div>';
 
