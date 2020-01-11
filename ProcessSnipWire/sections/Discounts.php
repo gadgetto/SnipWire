@@ -51,11 +51,12 @@ trait Discounts {
         } elseif ($action == 'delete_discount' && !empty($id)) {
             $success = $this->_deleteDiscount($id);
             if ($success) {
-                // Reset full discounts cache and redirect to itself to remove url params
+                // Reset full discounts cache
                 $this->wire('sniprest')->deleteDiscountCache();
-                $redirectUrl = $this->currentUrl;
-                $session->redirect($redirectUrl);
             }
+            // Redirect to itself to remove url params
+            $redirectUrl = $this->currentUrl;
+            $session->redirect($redirectUrl);
         }
 
         $status = $sanitizer->text($input->status);
