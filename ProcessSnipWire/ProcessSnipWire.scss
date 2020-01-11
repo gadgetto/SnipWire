@@ -223,6 +223,19 @@ $info-color-dark: #0099CC;
     }
 }
 
+// Custom red colored "danger" action button (for delete actions)
+.ui-button.ui-priority-danger,
+.ui-button.ui-state-default.ui-priority-danger,
+.ui-button.ui-state-hover.ui-priority-danger {
+    background: #e83561;
+    color: #fff;
+}
+.ui-button.ui-state-hover.ui-priority-danger,
+.ui-button:hover.ui-priority-danger {
+    background: #3eb998;
+    color: #fff;
+}
+
 .ActionButtonsWrapper {
     overflow: hidden;
     margin: 20px 0 20px 0;
