@@ -375,13 +375,23 @@ trait Discounts {
                     ? wireDate('Y-m-d', $item['expires'])
                     : $this->_('Never');
 
-                $deleteUrl = $this->currentUrl . '?id=' . $item['id'] . '&action=delete_discount';
-                $deleteLink =
-                '<a href="' . $deleteUrl . '"
-                    class="DeleteDiscountButton pw-tooltip"
-                    title="' . $this->_('Delete discount') .'">' .
-                        wireIconMarkup('trash') .
-                '</a>';
+                if ($item['numberOfUsages'] > 0) {
+                    $deleteLink =
+                    '<span
+                        class="pw-tooltip"
+                        title="' . $this->_('Discount has been already used') .'">' .
+                            wireIconMarkup('trash') .
+                    '</span>';
+                } else {
+                    $deleteUrl = $this->currentUrl . '?id=' . $item['id'] . '&action=delete_discount';
+                    $deleteLink =
+                    '<a href="' . $deleteUrl . '"
+                        class="DeleteDiscountButton pw-tooltip"
+                        title="' . $this->_('Delete discount') .'">' .
+                            wireIconMarkup('trash') .
+                    '</a>';
+                    
+                }
 
                 $table->row(array(
                     $panelLink,
@@ -423,14 +433,25 @@ trait Discounts {
             return $out;
         }
 
-        /** @var InputfieldSubmit $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->attr('name', 'delete_discount');
-        $btn->addClass('ui-priority-danger');
-        $btn->href = $this->snipWireRootUrl . 'discounts/?id=' . $item['id'] . '&action=delete_discount';
-        $btn->aclass = 'DeleteDiscountButton';
-        $btn->text = $this->_('Delete discount');
-        $btn->icon = 'trash';
+        if ($item['numberOfUsages'] > 0) {
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->attr('name', 'delete_discount');
+            $btn->attr('disabled', 'disabled');
+            $btn->attr('title', $this->_('Discount has been already used'));
+            $btn->addClass('ui-state-disabled');
+            $btn->text = $this->_('Delete discount');
+            $btn->icon = 'trash';
+        } else {
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->attr('name', 'delete_discount');
+            $btn->addClass('ui-priority-danger');
+            $btn->href = $this->snipWireRootUrl . 'discounts/?id=' . $item['id'] . '&action=delete_discount';
+            $btn->aclass = 'DeleteDiscountButton';
+            $btn->text = $this->_('Delete discount');
+            $btn->icon = 'trash';
+        }
         $deleteButton = $btn->render();
 
         $out =
