@@ -617,6 +617,7 @@ trait Discounts {
             $f = $modules->get('InputfieldText');
             $f->attr('name', 'name');
             $f->label = $this->_('Discount name');
+            $f->detail = $this->_('Friendly name for this discount');
             $f->required = true;
             $f->columnWidth = 50;
 
@@ -670,7 +671,7 @@ trait Discounts {
 
             /** @var InputfieldFieldset $fieldset */
             $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Choose Discount Actions');
+            $fieldset->label = $this->_('Set Discount Actions');
             $fieldset->icon = 'cogs';
             $fieldset->set('themeOffset', 1);
 
@@ -844,7 +845,7 @@ trait Discounts {
 
             /** @var InputfieldFieldset $fieldset */
             $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Choose Discount Conditions');
+            $fieldset->label = $this->_('Set Discount Conditions');
             $fieldset->icon = 'scissors';
 
         $form->add($fieldset);
@@ -878,7 +879,7 @@ trait Discounts {
             $f = $modules->get('InputfieldText');
             $f->attr('name', 'code');
             $f->label = $this->_('Code');
-            $f->detail = $this->_('The code that will need to be entered by the customer');
+            $f->detail = $this->_('The discount code that will need to be entered by the customer');
             $f->required = true;
             $f->showIf = 'trigger=Code';
             $f->requiredIf = 'trigger=Code';
