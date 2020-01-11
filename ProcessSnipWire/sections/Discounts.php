@@ -378,7 +378,7 @@ trait Discounts {
                 if ($item['numberOfUsages'] > 0) {
                     $deleteLink =
                     '<span
-                        class="pw-tooltip"
+                        class="ui-priority-secondary pw-tooltip"
                         title="' . $this->_('Discount has been already used') .'">' .
                             wireIconMarkup('trash') .
                     '</span>';
