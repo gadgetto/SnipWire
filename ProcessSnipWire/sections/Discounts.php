@@ -116,7 +116,18 @@ trait Discounts {
 
         $out .= $f->render();
 
-        $out .= $this->_renderActionButtons();
+        /** @var InputfieldButton $btn */
+        $btn = $modules->get('InputfieldButton');
+        $btn->addClass('pw-panel pw-panel-links');
+        $btn->attr('data-href', $this->snipWireRootUrl . 'discount-add');
+        $btn->attr('data-panel-width', '85%');
+        $btn->value = $this->_('Add new discount');
+        $btn->icon = 'plus-circle';
+        $btn->showInHeader();
+
+        $addDiscountButton = $btn->render();
+
+        $out .= $this->_renderActionButtons(true, $addDiscountButton);
 
         return $this->_wrapDashboardOutput($out);
     }
