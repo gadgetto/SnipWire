@@ -214,7 +214,7 @@ trait Discounts {
         $f->label = $this->_('Snipcart Discount');
         $f->skipLabel = Inputfield::skipLabelHeader;
         $f->icon = self::iconDiscount;
-        $f->value = $this->_renderAddDiscount($discount, $ret);
+        $f->value = $this->_renderAddDiscount();
         $f->collapsed = Inputfield::collapsedNever;
 
         $out = $f->render();
@@ -467,11 +467,11 @@ trait Discounts {
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
                 wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
-                $this->_('Add a Discount') .
+                $this->_('Add New Discount') .
             '</h2>' .
         '</div>';
 
-        $out .= $this->_processDiscountForm(null, $ret);
+        $out .= $this->_processDiscountForm();
 
         return $out;
     }
@@ -982,7 +982,10 @@ trait Discounts {
             $btn = $modules->get('InputfieldSubmit');
             $btn->attr('id', 'SaveDiscountButton');
             $btn->attr('name', 'save_discount');
-            $btn->attr('value', $this->_('Save discount'));
+            $btnLabel = ($mode == 'edit')
+                ? $this->_('Update discount')
+                : $this->_('Add discount');
+            $btn->attr('value', $btnLabel);
 
         $form->add($btn);
 
@@ -1272,9 +1275,22 @@ trait Discounts {
      *
      */
     private function _createDiscount($options) {
-        
+        $sniprest = $this->wire('sniprest');
 
-        return true;
+        $created = false;
+        $response = $sniprest->postDiscount($options);
+        if (
+            $response[WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[WireHttpExtended::resultKeyHttpCode] != 201
+        ) {
+            $this->error(
+                $this->_('The discount could not be created! The following error occurred: ') .
+                $response[$token][WireHttpExtended::resultKeyError]);
+        } else {
+            $this->message($this->_('The discount has been created.'));
+            $created = true;
+        }
+        return $created;
     }
 
     /**
