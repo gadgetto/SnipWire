@@ -1444,7 +1444,7 @@ class SnipREST extends WireHttpExtended {
      * @param string $id The Snipcart id of the discount
      * @param array $options An array of options that will be sent as PUT params:
      *  - `id` (string) The Snipcart id of the discount #required
-     *  - `name` (string) The discount frienly name #required
+     *  - `name` (string) The discount friendly name #required
      *  - `expires` (date) The date when this discount should expire
      *  - `maxNumberOfUsages` (integer) The max. number of usages for the discount / if null, discount never expires
      *  - `currency` (string) The currency for amounts
