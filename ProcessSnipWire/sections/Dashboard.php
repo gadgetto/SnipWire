@@ -409,6 +409,7 @@ trait Dashboard {
             $f->attr('id+name', 'periodFrom');
             $f->attr('value', $start);
             $f->attr('placeholder', $periodPlaceholder);
+            $f->attr('autocomplete', 'off');
             $f->addClass('InputfieldMaxWidth');
             $f->label = $this->_('Period from');
             $f->datepicker = InputfieldDatetime::datepickerFocus;
@@ -424,6 +425,7 @@ trait Dashboard {
             $f->attr('id+name', 'periodTo');
             $f->attr('value', $end);
             $f->attr('placeholder', $periodPlaceholder);
+            $f->attr('autocomplete', 'off');
             $f->addClass('InputfieldMaxWidth');
             $f->label = $this->_('Period to');
             $f->datepicker = InputfieldDatetime::datepickerFocus;
