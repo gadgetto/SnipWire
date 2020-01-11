@@ -638,6 +638,7 @@ trait Discounts {
             $f = $modules->get('InputfieldDatetime');
             $f->attr('name', 'expires');
             $f->attr('placeholder', $expiresPlaceholder);
+            $f->attr('autocomplete', 'off');
             $f->label = $this->_('Expires');
             $f->detail = $this->_('Leave empty to never expire');
             $f->size = 100;
