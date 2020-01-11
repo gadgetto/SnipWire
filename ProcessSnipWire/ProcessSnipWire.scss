@@ -224,8 +224,23 @@ $info-color-dark: #0099CC;
 }
 
 .ActionButtonsWrapper {
-    display: inline-block;
+    overflow: hidden;
     margin: 20px 0 20px 0;
+
+    .AdditionalButtonsWrapper {
+        float: left;
+    } 
+    .RefreshButtonsWrapper {
+        
+        &.wrapper-right {
+            float: right;
+            
+            .ui-button {
+                margin-right: 0;
+                margin-left: 10px;
+            }
+        }
+    }
 }
 
 .ItemListerTable {

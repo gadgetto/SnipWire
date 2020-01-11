@@ -678,36 +678,50 @@ class ProcessSnipWire extends Process implements Module {
      * Render action buttons with wrapper.
      * (used below item listers and detail pages)
      *
+     * @param boolean $showRefreshButtons Whether to display refresh cache buttons [default=true]
+     * @param string $buttons Pre-rendered additional action buttons markup [default='']
      * @return markup
      *
      */
-    private function _renderActionButtons() {
+    private function _renderActionButtons($showRefreshButtons = true, $buttons = '') {
         $modules = $this->wire('modules');
         $input = $this->wire('input');
+        
+        $additionalButtons = '';
+        if ($buttons) {
+            $additionalButtons = '<div class="AdditionalButtonsWrapper">' . $buttons . '</div>';
+        }
 
-        $modal = ($input->get('modal')) ? '&modal=1' : '';
+        $refreshButtons = '';
+        if ($showRefreshButtons) {
+            $modal = ($input->get('modal')) ? '&modal=1' : '';
+            $right = $additionalButtons ? ' wrapper-right' : '';
 
-        /** @var InputfieldButton $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->href = $this->currentUrl . '?action=refresh' . $modal;
-        $btn->value = $this->_('Refresh');
-        $btn->icon = 'refresh';
-        $btn->showInHeader();
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = $this->currentUrl . '?action=refresh' . $modal;
+            $btn->value = $this->_('Refresh');
+            $btn->icon = 'refresh';
+            $btn->secondary = true;
+            $btn->showInHeader();
+    
+            $refreshButtons = $btn->render();
+    
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->href = $this->currentUrl . '?action=refresh_all' . $modal;
+            $btn->value = $this->_('Refresh all');
+            $btn->icon = 'refresh';
+            $btn->secondary = true;
+            $btn->attr('title', $this->_('Refresh the complete Snipcart cache for all sections'));
+            $btn->addClass('pw-tooltip');
+    
+            $refreshButtons .= $btn->render();
+            $refreshButtons = '<div class="RefreshButtonsWrapper' . $right . '">' . $refreshButtons . '</div>';
+        }
 
-        $actionButtons = $btn->render();
-
-        /** @var InputfieldButton $btn */
-        $btn = $modules->get('InputfieldButton');
-        $btn->href = $this->currentUrl . '?action=refresh_all' . $modal;
-        $btn->value = $this->_('Refresh all');
-        $btn->icon = 'refresh';
-        $btn->secondary = true;
-        $btn->attr('title', $this->_('Refresh the complete Snipcart cache for all sections'));
-        $btn->addClass('pw-tooltip');
-
-        $actionButtons .= $btn->render();
-
-        return '<div class="ActionButtonsWrapper">' . $actionButtons . '</div>';
+        $out = '<div class="ActionButtonsWrapper">' . $additionalButtons . $refreshButtons . '</div>';
+        return $out;
     }
 
     /**
