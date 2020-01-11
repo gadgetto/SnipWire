@@ -156,6 +156,8 @@ trait Discounts {
             return '';
         }
 
+        $this->_setDiscountJSConfigValues();
+
         // Determine if request comes from within another page in a modal panel.
         // In this case there will be an input param "ret" (can be GET or POST) which holds the return URL.
         $ret = urldecode($input->ret);
