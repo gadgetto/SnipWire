@@ -96,7 +96,7 @@ jQuery(document).ready(function() {
             discountActionStrings.confirm_delete_discount,
             function() {
                 // dialogue OK click
-                window.location.href = a_href;
+                window.parent.document.location.href = a_href; // will work in panels and in main window
             }
         );
     });
