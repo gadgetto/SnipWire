@@ -1319,7 +1319,7 @@ trait Discounts {
         ) {
             $this->error(
                 $this->_('The discount could not be created! The following error occurred: ') .
-                $response[$token][WireHttpExtended::resultKeyError]);
+                $response[WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The discount has been created.'));
             $created = true;
