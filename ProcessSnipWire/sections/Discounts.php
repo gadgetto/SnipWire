@@ -1293,7 +1293,7 @@ trait Discounts {
         ) {
             $this->error(
                 $this->_('The discount could not be updated! The following error occurred: ') .
-                $response[$token][WireHttpExtended::resultKeyError]);
+                $response[$id][WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The discount has been updated.'));
             $updated = true;
