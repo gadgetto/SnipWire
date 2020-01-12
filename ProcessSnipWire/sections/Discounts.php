@@ -574,6 +574,7 @@ trait Discounts {
                 // Get values from payload
                 $discount = array(
                     'id' => $item['id'],
+                    'archived' => $item['archived'], // not editable in form (only with "Archive" and "Restore" buttons)!
                     'name' => $item['name'],
                     'expires' => $item['expires'],
                     'maxNumberOfUsages' => $item['maxNumberOfUsages'],
@@ -609,6 +610,7 @@ trait Discounts {
                 // Set default values (if action = add)
                 $discount = array(
                     'id' => '',
+                    'archived' => false,
                     'name' => '',
                     'expires' => '',
                     'maxNumberOfUsages' => 1,
@@ -669,11 +671,19 @@ trait Discounts {
 
         $form->add($f);
 
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->attr('name', 'archived');
+
+        $form->add($f);
+
             /** @var InputfieldFieldset $fieldset */
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->label = $this->_('General Information');
-            $fieldset->entityEncodeLabel = false;
-            $fieldset->label .= $archivedFlag;
+            if (!empty($archivedFlag)) {
+                $fieldset->entityEncodeLabel = false;
+                $fieldset->label .= $archivedFlag;
+            }
             $fieldset->icon = 'info-circle';
 
         $form->add($fieldset);
@@ -1081,6 +1091,9 @@ trait Discounts {
         $id = $form->get('id');
         $idValue = $id->value;
 
+        $archived = $form->get('archived');
+        $archivedValue = $archived->value;
+
         $name = $form->get('name');
         $nameValue = $name->value;
 
@@ -1222,6 +1235,9 @@ trait Discounts {
         //
 
         $fieldValues = array(
+            // Not editable in form (hidden field!)
+            'archived' => ($archivedValue ? true : false),
+
             'name' => $sanitizer->sanitize($nameValue, 'text, entities'),
             
             'expires' => ($expiresValue ? $sanitizer->date($expiresValue, $expiresDateFormat) . 'T23:00:00Z' : ''),
