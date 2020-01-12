@@ -57,13 +57,30 @@ trait Discounts {
             // Redirect to itself to remove url params
             $redirectUrl = $this->currentUrl;
             $session->redirect($redirectUrl);
+        } elseif ($action == 'archive_discount' && !empty($id)) {
+            $success = $this->_archiveDiscount($id);
+            if ($success) {
+                $sniprest->deleteDiscountCache();
+            }
+            // Redirect to itself to remove url params
+            $redirectUrl = $this->currentUrl;
+            $session->redirect($redirectUrl);
+        } elseif ($action == 'restore_discount' && !empty($id)) {
+            $success = $this->_restoreDiscount($id);
+            if ($success) {
+                $sniprest->deleteDiscountCache();
+            }
+            // Redirect to itself to remove url params
+            $redirectUrl = $this->currentUrl;
+            $session->redirect($redirectUrl);
         }
 
         $status = $sanitizer->text($input->status);
+        if (!$status) $status = 'Active';
         $name = $sanitizer->text($input->name);
         $code = $sanitizer->text($input->code);
         $filter = array(
-            'status' => $status ? $status : 'All',
+            'status' => $status ? $status : 'Active',
             'name' => $name ? $name : '',
             'code' => $code ? $code : '',
         );
@@ -252,7 +269,7 @@ trait Discounts {
             $fieldset->label = $this->_('Search for Discounts');
             $fieldset->icon = 'search';
             if (
-                ($filter['status'] && $filter['status'] != 'All') ||
+                ($filter['status'] && $filter['status'] != 'Active') ||
                 $filter['name'] ||
                 $filter['code']
             ) {
@@ -375,22 +392,30 @@ trait Discounts {
                     ? wireDate('Y-m-d', $item['expires'])
                     : $this->_('Never');
 
-                if ($item['numberOfUsages'] > 0) {
-                    $deleteLink =
+                // Archive or delete?
+                if ($item['numberOfUsages'] > 0 && !$item['archived']) {
+                    $archiveUrl = $this->currentUrl . '?id=' . $item['id'] . '&action=archive_discount';
+                    $actionLink =
+                    '<a href="' . $archiveUrl . '"
+                        class="ArchiveDiscountButton pw-tooltip"
+                        title="' . $this->_('Archive discount') .'">' .
+                            wireIconMarkup('check-square-o') .
+                    '</a>';
+                } elseif ($item['numberOfUsages'] > 0 && $item['archived']) {
+                    $actionLink =
                     '<span
-                        class="ui-priority-secondary pw-tooltip"
-                        title="' . $this->_('Discount has been already used') .'">' .
-                            wireIconMarkup('trash') .
+                        class="pw-tooltip"
+                        title="' . $this->_('Archived') .'">' .
+                            wireIconMarkup('check-square-o') .
                     '</span>';
                 } else {
                     $deleteUrl = $this->currentUrl . '?id=' . $item['id'] . '&action=delete_discount';
-                    $deleteLink =
+                    $actionLink =
                     '<a href="' . $deleteUrl . '"
                         class="DeleteDiscountButton pw-tooltip"
                         title="' . $this->_('Delete discount') .'">' .
                             wireIconMarkup('trash') .
                     '</a>';
-                    
                 }
 
                 $table->row(array(
@@ -401,7 +426,7 @@ trait Discounts {
                     $code,
                     $usages,
                     $expires,
-                    $deleteLink,
+                    $actionLink,
                 ));
             }
             $out = $table->render();
@@ -433,15 +458,23 @@ trait Discounts {
             return $out;
         }
 
-        if ($item['numberOfUsages'] > 0) {
+        // Archive, restore or delete?
+        if ($item['numberOfUsages'] > 0 && !$item['archived']) {
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
-            $btn->attr('name', 'delete_discount');
-            $btn->attr('disabled', 'disabled');
-            $btn->attr('title', $this->_('Discount has been already used'));
-            $btn->addClass('ui-state-disabled');
-            $btn->text = $this->_('Delete discount');
-            $btn->icon = 'trash';
+            $btn->attr('name', 'archive_discount');
+            $btn->href = $this->snipWireRootUrl . 'discounts/?id=' . $item['id'] . '&action=archive_discount';
+            $btn->aclass = 'ArchiveDiscountButton';
+            $btn->text = $this->_('Archive discount');
+            $btn->icon = 'check-square-o';
+        } elseif ($item['numberOfUsages'] > 0 && $item['archived']) {
+            /** @var InputfieldButton $btn */
+            $btn = $modules->get('InputfieldButton');
+            $btn->attr('name', 'restore_discount');
+            $btn->href = $this->snipWireRootUrl . 'discounts/?id=' . $item['id'] . '&action=restore_discount';
+            $btn->aclass = 'RestoreDiscountButton';
+            $btn->text = $this->_('Restore discount');
+            $btn->icon = 'check-square-o';
         } else {
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
@@ -452,7 +485,7 @@ trait Discounts {
             $btn->text = $this->_('Delete discount');
             $btn->icon = 'trash';
         }
-        $deleteButton = $btn->render();
+        $actionButton = $btn->render();
 
         $out =
         '<div class="ItemDetailHeader">' .
@@ -462,7 +495,7 @@ trait Discounts {
                 $item['name'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                $deleteButton .
+                $actionButton .
             '</div>' .
         '</div>';
 
@@ -534,6 +567,10 @@ trait Discounts {
         if (!$input->post->saving_discount_active) {
 
             if ($mode == 'edit') {
+                $archivedFlag = $item['archived']
+                    ? ' <span class="snipwire-badge snipwire-badge-warning">' . $this->_('Archived') . '</span>'
+                    : '';
+
                 // Get values from payload
                 $discount = array(
                     'id' => $item['id'],
@@ -635,6 +672,8 @@ trait Discounts {
             /** @var InputfieldFieldset $fieldset */
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->label = $this->_('General Information');
+            $fieldset->entityEncodeLabel = false;
+            $fieldset->label .= $archivedFlag;
             $fieldset->icon = 'info-circle';
 
         $form->add($fieldset);
@@ -1302,6 +1341,102 @@ trait Discounts {
     }
 
     /**
+     * Triggers an "archive" for a Snipcart discount.
+     *
+     * @param string $id The discount id
+     * @return boolean
+     *
+     */
+    private function _archiveDiscount($id) {
+        $sniprest = $this->wire('sniprest');
+        $sanitizer = $this->wire('sanitizer');
+
+        // Get the full discount from REST API as we need all necessary fields (Snipcart requirement!)
+        $response = $sniprest->getDiscount(
+            $id,
+            WireCache::expireNow
+        );
+        $discount = isset($response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+            : array();
+
+        if (empty($discount)) {
+            $this->error(
+                $this->_('The discount could not be archived! ID not found: ') .
+                $id
+            );
+            return false;
+        }
+
+        // Add archived flag
+        // (Unneeded keys are removed by putDiscount method!)
+        $discount['archived'] = true;
+
+        $updated = false;
+        $response = $sniprest->putDiscount($id, $discount);
+        if (
+            $response[$id][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$id][WireHttpExtended::resultKeyHttpCode] != 201
+        ) {
+            $this->error(
+                $this->_('The discount could not be archived! The following error occurred: ') .
+                $response[$id][WireHttpExtended::resultKeyError]);
+        } else {
+            $this->message($this->_('The discount has been archived.'));
+            $updated = true;
+        }
+        return $updated;
+    }
+
+    /**
+     * Triggers an "restore" (unarchive) for a Snipcart discount.
+     *
+     * @param string $id The discount id
+     * @return boolean
+     *
+     */
+    private function _restoreDiscount($id) {
+        $sniprest = $this->wire('sniprest');
+        $sanitizer = $this->wire('sanitizer');
+
+        // Get the full discount from REST API as we need all necessary fields (Snipcart requirement!)
+        $response = $sniprest->getDiscount(
+            $id,
+            WireCache::expireNow
+        );
+        $discount = isset($response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
+            ? $response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+            : array();
+
+        if (empty($discount)) {
+            $this->error(
+                $this->_('The discount could not be restored! ID not found: ') .
+                $id
+            );
+            return false;
+        }
+
+        // Remove archived flag
+        // (Unneeded keys are removed by putDiscount method!)
+        $discount['archived'] = false;
+
+        $updated = false;
+        $response = $sniprest->putDiscount($id, $discount);
+        if (
+            $response[$id][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$id][WireHttpExtended::resultKeyHttpCode] != 201
+        ) {
+            $this->error(
+                $this->_('The discount could not be restored! The following error occurred: ') .
+                $response[$id][WireHttpExtended::resultKeyError]);
+        } else {
+            $this->message($this->_('The discount has been restored.'));
+            $updated = true;
+        }
+        return $updated;
+    }
+
+    /**
      * Triggers the creation of a Snipcart discount.
      *
      * @param array $options The discount values as array
@@ -1361,6 +1496,8 @@ trait Discounts {
     private function _setDiscountJSConfigValues() {
         $this->wire('config')->js('discountActionStrings', array(
             'confirm_delete_discount' => $this->_('Do you want to delete this discount?'),
+            'confirm_archive_discount' => $this->_('Do you want to archive this discount?'),
+            'confirm_restore_discount' => $this->_('Do you want to restore this discount?'),
         ));
     }
 }

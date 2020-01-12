@@ -100,5 +100,26 @@ jQuery(document).ready(function() {
             }
         );
     });
-
+    $('.ArchiveDiscountButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            discountActionStrings.confirm_archive_discount,
+            function() {
+                // dialogue OK click
+                window.parent.document.location.href = a_href; // will work in panels and in main window
+            }
+        );
+    });
+    $('.RestoreDiscountButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            discountActionStrings.confirm_restore_discount,
+            function() {
+                // dialogue OK click
+                window.parent.document.location.href = a_href; // will work in panels and in main window
+            }
+        );
+    });
 });
