@@ -1511,7 +1511,7 @@ trait Discounts {
      */
     private function _setDiscountJSConfigValues() {
         $this->wire('config')->js('discountActionStrings', array(
-            'confirm_delete_discount' => $this->_('Do you want to delete this discount?'),
+            'confirm_delete_discount' => $this->_('Do you want to delete this discount? This can not be undone!'),
             'confirm_archive_discount' => $this->_('Do you want to archive this discount?'),
             'confirm_restore_discount' => $this->_('Do you want to restore this discount?'),
         ));
