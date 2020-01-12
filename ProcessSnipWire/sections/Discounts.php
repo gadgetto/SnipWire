@@ -354,11 +354,13 @@ trait Discounts {
             ));
 
             foreach ($items as $item) {
+                // Mark archived items
+                $itemName = $item['archived'] ? '<s>' . $item['name'] . '</s>' : $item['name'];
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'discount-edit/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        wireIconMarkup(self::iconDiscount, 'fa-right-margin') . $item['name'] .
+                        wireIconMarkup(self::iconDiscount, 'fa-right-margin') . $itemName .
                 '</a>';
 
                 $currency = !empty($item['currency']) ? $item['currency'] : '-';
@@ -387,7 +389,12 @@ trait Discounts {
                     : $currency;
                 
                 $code = $item['code'] ? $item['code'] : '-';
-                $usages = $item['numberOfUsages'] . ' ' . $this->_('of') . ' ' . $item['maxNumberOfUsages'];
+
+                $usages = '<strong>' . $item['numberOfUsages'] . '</strong> ' . $this->_('of') . ' <strong>' . $item['maxNumberOfUsages'] . '</strong>';
+                $usages = $item['numberOfUsages'] >= $item['maxNumberOfUsages']
+                    ? '<span class="success-color">' . $usages . '</span>'
+                    : $usages;
+
                 $expires = $item['expires']
                     ? wireDate('Y-m-d', $item['expires'])
                     : $this->_('Never');
