@@ -66,6 +66,10 @@ $info-color-dark: #0099CC;
         vertical-align: middle;
         border-radius: .25rem;
 
+        &.snipwire-badge-large {
+            font-size: 1em;
+            line-height: 1.5;
+        }
         &.snipwire-badge-success {
             color: #fff;
             background-color: $success-color-dark;
