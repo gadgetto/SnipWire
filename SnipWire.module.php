@@ -251,7 +251,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      */
     public function presetProductFields(HookEvent $event) {
         $page = $event->arguments(0);
-        if ($this->isProductTemplate($page->template)) {
+        if ($this->wire('snipwire')->isProductTemplate($page->template)) {
             $page->setAndSave('snipcart_item_id', $page->id);
             $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
             $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
@@ -270,7 +270,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      */
     public function checkSKUUnique(HookEvent $event) {
         $page = $event->arguments(0);
-        if ($this->isProductTemplate($page->template)) {
+        if ($this->wire('snipwire')->isProductTemplate($page->template)) {
             $field = $page->getField('snipcart_item_id');
             $sku = $page->snipcart_item_id; // SKU field value
             
@@ -304,7 +304,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $log = $this->wire('log');
 
         $page = $event->arguments(0);
-        if ($snipwire->isProductTemplate($page->template)) {
+        if ($this->wire('snipwire')->isProductTemplate($page->template)) {
             if ($page->isPublic()) {
                 // Only fetch if published and viewable!
                 $snipcart_item_id = $page->snipcart_item_id;
@@ -343,7 +343,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $log = $this->wire('log');
 
         $page = $event->arguments(0);
-        if ($this->isProductTemplate($page->template)) {
+        if ($this->wire('snipwire')->isProductTemplate($page->template)) {
             $snipcart_item_id = $page->snipcart_item_id;
             
             if ($id = $sniprest->getProductId($snipcart_item_id)) {
