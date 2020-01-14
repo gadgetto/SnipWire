@@ -34,7 +34,6 @@ class MarkupSnipWire extends WireData implements Module {
 
     const snicpartAnchorTypeButton = 1;
     const snicpartAnchorTypeLink = 2;
-    const snipcartProductTemplate = 'snipcart-product';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = array();
@@ -304,7 +303,7 @@ class MarkupSnipWire extends WireData implements Module {
     public function anchor(Page $product, $options = array()) {
 
         // Return early if $product (Page) is not a Snipcart product
-        if ($product->template != self::snipcartProductTemplate) return '';
+        if (!$this->isProductTemplate($product->template)) return '';
 
         $defaults = array(
             'type' => self::snicpartAnchorTypeButton,
@@ -449,7 +448,7 @@ class MarkupSnipWire extends WireData implements Module {
      */
     public function getProductName(Page $product, $snipwireConfig = array()) {
         // Check if $product (Page) is a Snipcart product
-        if ($product->template != self::snipcartProductTemplate) return '';
+        if (!$this->isProductTemplate($product->template)) return '';
         
         if (empty($snipwireConfig)) $snipwireConfig = $this->snipwireConfig;
         if (!$product->hasField($snipwireConfig->data_item_name_field) || empty($product->{$snipwireConfig->data_item_name_field})) {
@@ -471,7 +470,7 @@ class MarkupSnipWire extends WireData implements Module {
      */
     public function getProductUrl(Page $product, $snipwireConfig = array()) {
         // Check if $product (Page) is a Snipcart product
-        if ($product->template != self::snipcartProductTemplate) return '';
+        if (!$this->isProductTemplate($product->template)) return '';
 
         if (empty($snipwireConfig)) $snipwireConfig = $this->snipwireConfig;
         if ($snipwireConfig->single_page_shop) {
@@ -497,7 +496,7 @@ class MarkupSnipWire extends WireData implements Module {
      *
      */
     public function getProductPrice(Page $product, $snipwireConfig = array(), $currencySelected = '', $formatted = false) {
-        if ($product->template != self::snipcartProductTemplate) return '';
+        if (!$this->isProductTemplate($product->template)) return '';
         
         if (empty($snipwireConfig) || !is_array($snipwireConfig)) {
             $currencies = $this->snipwireConfig->currencies;
@@ -571,7 +570,7 @@ class MarkupSnipWire extends WireData implements Module {
      */
     public function getProductThumb(Page $product, $snipwireConfig = array()) {
         // Check if $product (Page) is a Snipcart product
-        if ($product->template != self::snipcartProductTemplate) return null;
+        if (!$this->isProductTemplate($product->template)) return null;
 
         if (empty($snipwireConfig)) $snipwireConfig = $this->snipwireConfig;
         $productThumb = null;
@@ -598,7 +597,7 @@ class MarkupSnipWire extends WireData implements Module {
      */
     public function getProductCategories(Page $product, $snipwireConfig = array(), $array = true) {
         // Check if $product (Page) is a Snipcart product
-        if ($product->template != self::snipcartProductTemplate) return null;
+        if (!$this->isProductTemplate($product->template)) return null;
 
         if (empty($snipwireConfig)) $snipwireConfig = $this->snipwireConfig;
 
@@ -622,6 +621,84 @@ class MarkupSnipWire extends WireData implements Module {
      */
     public function getProductCategoriesString(Page $product, $snipwireConfig = array()) {
         return $this->getProductCategories($product, $snipwireConfig, false);
+    }
+
+    /**
+     * Get an array of SnipWire product templates (defined in module settings).
+     *
+     * @param boolean $objects Whether to return an array of objects or object names only
+     * @return array|WireArray A array of template objects or template names (if $objects = true) [default=true]
+     *
+     */
+    public function getProductTemplates($objects = true) {
+        $templates = $this->snipwireConfig->product_templates;
+        if ($objects) {
+            $productTemplates = new WireArray();
+            foreach ($templates as $template) {
+                $productTemplates->add($this->wire('templates')->get($template));
+            }
+        } else {
+            $productTemplates = $templates;
+        }
+        return !empty($productTemplates) ? $productTemplates : array();
+    }
+
+    /**
+     * Check if this is a SnipWire product template.
+     *
+     * @param string|Template $template Template name or ProcessWire Template object
+     * @return boolean
+     *
+     */
+    public function isProductTemplate($template) {
+        if (is_object($template) && ($template instanceof Template)) {
+            $templateName = $template->name;
+        } elseif (is_string($template)) {
+            $templateName = $template;
+        } else {
+            return false;
+        } 
+        $productTemplates = $this->snipwireConfig->product_templates;
+        return (in_array($templateName, $productTemplates)) ? true : false;
+    }
+
+    /**
+     * Get a selection of fields from SnipWire product templates (defined in module config).
+     * 
+     * @param string $defaultFieldName Name of the field to be returned if no product templates available
+     * @param array $allowedFieldTypes An array of allowed field types to be returned [optional]
+     * @param array $excludeFieldNames An array of field names to be excluded from result [optional]
+     * @return WireArray $selectedFields
+     * 
+     */
+    public function getProductTemplateFields($defaultFieldName, $allowedFieldTypes = array(), $excludeFieldNames = array()) {
+        $selectedFields = new WireArray();
+        
+        // Collect fields from all product templates and make unique
+        $productTemplates = $this->getProductTemplates();
+        foreach ($productTemplates as $productTemplate) {
+            foreach ($productTemplate->fields as $field) {
+                $selectedFields->add($field);
+            }
+        }
+        $selectedFields = $selectedFields->unique(); // remove duplicates
+
+        if (!empty($selectedFields)) {
+            if (!empty($allowedFieldTypes)) $selectedFields = $selectedFields->find('type=' . implode('|', $allowedFieldTypes));
+            if (!empty($excludeFieldNames)) $selectedFields = $selectedFields->find('!name%=' . implode('|', $excludeFieldNames));
+        } else {
+            $defaultField = $this->wire('fields')->get($defaultFieldName);
+            if (!empty($defaultField->name)) {
+                $selectedFields->add($defaultField);
+            } else {
+                // Create a placeholder field
+                $placeholder = new Field();
+                $placeholder->type = $this->wire('modules')->get('FieldtypeText');
+                $placeholder->name = $defaultFieldName;
+                $selectedFields->add($placeholder);
+            }
+        }
+        return $selectedFields;
     }
 
     /**

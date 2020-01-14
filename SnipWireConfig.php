@@ -18,6 +18,8 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEP
 
 class SnipWireConfig extends ModuleConfig {
 
+    const defaultProductTemplate = 'snipcart-product';
+
     /** @var array $availableCreditCards Available creditcard types */
     protected $availableCreditCards = array(            
         'visa',
@@ -108,6 +110,7 @@ class SnipWireConfig extends ModuleConfig {
             'cart_image_hidpi' => 1,
             'cart_image_hidpiQuality' => 50,
             'webhooks_endpoint' =>  '/webhooks/snipcart',
+            'product_templates' => array(self::defaultProductTemplate),
             'data_item_name_field' => 'title',
             'data_item_categories_field' => 'snipcart_item_categories',
             'snipwire_debug' => false,
@@ -126,6 +129,7 @@ class SnipWireConfig extends ModuleConfig {
     public function getInputfields() {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
+        $snipwire = $this->wire('snipwire');
         $sniprest = $this->wire('sniprest');
         $defaults = $this->getDefaults();
 
@@ -574,7 +578,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = 'Exclude Templates from Snipcart Integration';
             $f->description = $this->_('The chosen templates will be excluded from Snipcart scripts (JS) and styles (CSS) integration.');
             $f->notes = $this->_('Leave empty for no limitation. Please note: system templates (admin, user, language, ...) are always excluded!');
-            foreach ($this->getTemplates() as $t) {
+            foreach ($this->_getTemplates() as $t) {
                 $name = $t->name;
                 $label = !empty($t->label) ? $t->label . ' [' . $name. ']' :  $name;
                 $f->addOption($name, $label);
@@ -690,6 +694,20 @@ class SnipWireConfig extends ModuleConfig {
             $f->pattern = '^\/(?!.*\/\/)([a-zA-Z-\/]+)$';
 
         $fsSnipWire->add($f);
+
+            /** @var InputfieldAsmSelect $f */
+            $f = $modules->get('InputfieldAsmSelect');
+            $f->attr('name', 'product_templates');
+            $f->label = 'SnipWire Product Templates';
+            $f->description = $this->_('The chosen templates will be enabled as SnipWire product templates.');
+            $f->required = true;
+            foreach ($this->_getTemplates() as $t) {
+                $name = $t->name;
+                $label = !empty($t->label) ? $t->label . ' [' . $name. ']' :  $name;
+                $f->addOption($name, $label);
+            }
+
+        $fsSnipWire->add($f);
     
             /** @var InputfieldSelect $f */
             $f = $modules->get('InputfieldSelect'); 
@@ -709,7 +727,7 @@ class SnipWireConfig extends ModuleConfig {
                 'snipcart_item_id',
                 'snipcart_item_price_',
             );
-            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_name_field'], $allowedFieldTypes, $excludeFieldNames);
+            $productTemplateFields = $snipwire->getProductTemplateFields($defaults['data_item_name_field'], $allowedFieldTypes, $excludeFieldNames);
             foreach ($productTemplateFields as $ptField) {
                 $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
             }
@@ -727,7 +745,7 @@ class SnipWireConfig extends ModuleConfig {
             $allowedFieldTypes = array(
                 'FieldtypePage',
             );
-            $productTemplateFields = $this->_getProductTemplateFields($defaults['data_item_categories_field'], $allowedFieldTypes);
+            $productTemplateFields = $snipwire->getProductTemplateFields($defaults['data_item_categories_field'], $allowedFieldTypes);
             $f->addOption('', $this->_('(Categories disabled)'));
             foreach ($productTemplateFields as $ptField) {
                 $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
@@ -826,7 +844,7 @@ class SnipWireConfig extends ModuleConfig {
      * @return WireArray $templates
      * 
      */
-    public function getTemplates() {
+    private function _getTemplates() {
         $templates = new WireArray();
         foreach ($this->wire('templates') as $t) {
             if (!($t->flags & Template::flagSystem)) {
@@ -835,36 +853,6 @@ class SnipWireConfig extends ModuleConfig {
         }
     
         return $templates;
-    }
-
-    /**
-     * Get a selection of fields from product template.
-     * 
-     * @param string $defaultFieldName Name of the field to be returned if product template doesn't exist
-     * @param array $allowedFieldTypes An array of allowed field types to be returned
-     * @param array $excludeFieldNames An array of field names to be excluded from result
-     * @return WireArray $selectedFields
-     * 
-     */
-    private function _getProductTemplateFields($defaultFieldName, $allowedFieldTypes = array(), $excludeFieldNames = array()) {
-        $selectedFields = new WireArray();
-        if ($productTemplate = $this->wire('templates')->get(MarkupSnipWire::snipcartProductTemplate)) {
-            $selectedFields = $productTemplate->fields;
-            if (!empty($allowedFieldTypes)) $selectedFields = $selectedFields->find('type=' . implode('|', $allowedFieldTypes));
-            if (!empty($excludeFieldNames)) $selectedFields = $selectedFields->find('!name%=' . implode('|', $excludeFieldNames));
-        } else {
-            $defaultField = $this->wire('fields')->get($defaultFieldName);
-            if (!empty($defaultField->name)) {
-                $selectedFields->add($defaultField);
-            } else {
-                // Create a placeholder field
-                $placeholder = new Field();
-                $placeholder->type = $this->wire('modules')->get('FieldtypeText');
-                $placeholder->name = $defaultFieldName;
-                $selectedFields->add($placeholder);
-            }
-        }
-        return $selectedFields;
     }
 
     /**
