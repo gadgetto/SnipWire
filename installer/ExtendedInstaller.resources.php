@@ -248,7 +248,7 @@ $resources = array(
             'description' => __('Select the tax which should be applied.'),
             'required' => false,
             'tags' => 'Snipcart',
-            'taxesType' => 3, // = taxesTypeAll
+            'taxesType' => 1, // = taxesTypeProducts
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
         'snipcart_item_shippable' => array(
