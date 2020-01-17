@@ -1285,10 +1285,9 @@ trait Orders {
 
         // Taxes rows
         foreach ($taxes as $tax) {
-            $included = $tax['includedInPrice'] ? ' (' . $this->_('included') . ')' : '';
             $table->row(array(
                 '',
-                $tax['taxName'] . $included,
+                $tax['taxName'],
                 '',
                 '',
                 CurrencyFormat::format($tax['amount'], $currency),
