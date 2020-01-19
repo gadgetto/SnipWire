@@ -20,6 +20,11 @@ class Taxes {
     const taxesTypeShipping = 2;
     const taxesTypeAll = 3;
 
+    const shippingTaxesNone = 1;
+    const shippingTaxesFixedRate = 2;
+    const shippingTaxesHighestRate = 3;
+    const shippingTaxesSplittedRate = 4;
+
     /**
      * Get the default taxes definition.
      *
@@ -117,6 +122,17 @@ class Taxes {
         return $taxesIncluded ? true : false;
     }
 
+    /**
+     * Get the shipping_taxes_type setting from module config.
+     *
+     * @return integer
+     * 
+     */
+    public static function getShippingTaxesTypeConfig() {
+        $shippingTaxesType = wire('modules')->getConfig('SnipWire', 'shipping_taxes_type');
+        if (empty($shippingTaxesType)) $shippingTaxesType = self::shippingTaxesHighestRate; // default
+        return $shippingTaxesType;
+    }
 
     /**
      * Calculate the tax on a given price.
