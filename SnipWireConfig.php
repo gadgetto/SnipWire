@@ -251,9 +251,9 @@ class SnipWireConfig extends ModuleConfig {
             
             /** @var InputfieldButton $btn */
             $btn = $modules->get('InputfieldButton');
-            $btn->id = 'rest_test';
-            $btn->href = $this->snipWireRootUrl . 'test-snipcart-rest-connection/?ret=' . $redirectUrl;
-            $btn->value = $this->_('Connection Test');
+            $btn->attr('id', 'rest_test');
+            $btn->attr('href', $this->snipWireRootUrl . 'test-snipcart-rest-connection/?ret=' . $redirectUrl);
+            $btn->text = $this->_('Connection Test');
             $btn->icon = 'plug';
             $btn->setSecondary(true);
             $btn->set('small', true);
@@ -276,7 +276,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('Snipcart Public API Key');
             $f->description = $this->_('The public API key is used to access the public Snipcart `JavaScript API`.');
             $f->notes = $this->_('This key can be shared without security issues.');
-            $f->required = true; // needs to be set when using requiredIf
+            $f->required = true;
             $f->columnWidth = 50;
             $f->requiredIf = 'snipcart_environment=1';
             $f->showIf = 'snipcart_environment=1';
@@ -289,7 +289,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('Snipcart Secret API Key');
             $f->description = $this->_('The secret API key is used to access your Snipcart account via `REST API`.');
             $f->notes = $this->_('This key should never be visible to anyone!');
-            $f->required = true; // needs to be set when using requiredIf
+            $f->required = true;
             $f->columnWidth = 50;
             $f->requiredIf = 'snipcart_environment=1';
             $f->showIf = 'snipcart_environment=1';
@@ -302,7 +302,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('Snipcart Public API Key (Test)');
             $f->description = $this->_('The public API key is used to access the public Snipcart `JavaScript API`.');
             $f->notes = $this->_('This key can be shared without security issues.');
-            $f->required = true; // needs to be set when using requiredIf
+            $f->required = true;
             $f->columnWidth = 50;
             $f->requiredIf = 'snipcart_environment=0';
             $f->showIf = 'snipcart_environment=0';
@@ -315,7 +315,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('Snipcart Secret API Key (Test)');
             $f->description = $this->_('The secret API key is used to access your Snipcart account via `REST API`.');
             $f->notes = $this->_('This key should never be visible to anyone!');
-            $f->required = true; // needs to be set when using requiredIf
+            $f->required = true;
             $f->columnWidth = 50;
             $f->requiredIf = 'snipcart_environment=0';
             $f->showIf = 'snipcart_environment=0';
@@ -340,11 +340,11 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldAsmSelect');
             $f->attr('name', 'currencies'); 
             $f->label = $this->_('Set Currencies'); 
-            $f->description = 
-                $this->_('Selected currency(s) will be used in your shop catalogue and in the Snipcart shopping-cart system during checkout.') . ' ' .
-                $this->_('As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [Snipcart Dashboard > Regional Settings](https://app.snipcart.com/dashboard/settings/regional).') . ' ' .
-                $this->_('Selecting a currency will also create a corresponding currency specific price input field and add it to the products template automatically.');
-            $f->notes = $this->_('Selecting more than one currency will enable Snipcart\'s multiple currencies payments feature. The first currency in the list will be the default one used in your product catalogue, Snipcart shopping-cart and SnipWire dashboard.');
+            $f->description =        $this->_('Selected currency(s) will be used in your shop catalogue and in the Snipcart shopping-cart system during checkout.');
+            $f->description .= ' ' . $this->_('As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [Snipcart Dashboard > Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
+            $f->description .= ' ' . $this->_('Selecting a currency will also create a corresponding currency specific price input field and add it to the products template automatically.');
+            $f->notes =        $this->_('Selecting more than one currency will enable Snipcart\'s multiple currencies payments feature.');
+            $f->notes .= ' ' . $this->_('The first currency in the list will be the default one used in your product catalogue, Snipcart shopping-cart and SnipWire dashboard.');
     
             $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
             $currencies = array();
@@ -387,7 +387,8 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'show_continue_shopping'); 
             $f->label = $this->_('Continue shopping Button');
             $f->label2 = $this->_('Show the `Continue shopping` button');
-            $f->description = $this->_('Use this setting if you want to show the `Continue shopping` button. This button will appear just beside the `Close cart` button.');
+            $f->description =        $this->_('Use this setting if you want to show the `Continue shopping` button.');
+            $f->description .= ' ' . $this->_('This button will appear just beside the `Close cart` button.');
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
@@ -578,7 +579,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldText');
             $f->attr('name', 'snipcart_css_path');
             $f->label = $this->_('Path to Snipcart CSS File');
-            $f->required = true; // needs to be set when using requiredIf
+            $f->required = true;
             $f->columnWidth = 60;
             $f->requiredIf = 'include_snipcart_css=1';
             $f->showIf = 'include_snipcart_css=1';
@@ -616,7 +617,8 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'include_jquery'); 
             $f->label = $this->_('Include jQuery');
             $f->label2 = $this->_('Include jQuery');
-            $f->description = $this->_('Whether SnipWire should add the jQuery library to your output or not. If jQuery is already included in your template, you should not include it twice, so you can uncheck this option.');
+            $f->description =        $this->_('Whether SnipWire should add the jQuery library to your output or not.');
+            $f->description .= ' ' . $this->_('If jQuery is already included in your template, you should not include it twice, so you can uncheck this option.');
             $f->notes = $this->_('Snipcart uses [jQuery](https://jquery.com/), so you need to make sure it is included in your output!');
 
         $fsMarkup->add($f);
@@ -625,7 +627,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldText');
             $f->attr('name', 'jquery_js_path');
             $f->label = $this->_('Path to jQuery JS File');
-            $f->required = true; // needs to be set when using requiredIf
+            $f->required = true;
             $f->columnWidth = 60;
             $f->requiredIf = 'include_jquery=1';
             $f->showIf = 'include_jquery=1';
@@ -665,7 +667,9 @@ class SnipWireConfig extends ModuleConfig {
         $fsCartImage = $modules->get('InputfieldFieldset');
         $fsCartImage->icon = 'picture-o';
         $fsCartImage->label = $this->_('Cart thumbnail sizing');
-        $fsCartImage->description = $this->_('Snipcart uses the first image from preinstalled `snipcart_item_image` PageField as cart thumbnail. The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions. Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
+        $fsCartImage->description =        $this->_('Snipcart uses the first image from preinstalled `snipcart_item_image` PageField as cart thumbnail.');
+        $fsCartImage->description .= ' ' . $this->_('The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions.');
+        $fsCartImage->description .= ' ' . $this->_('Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
         $fsCartImage->set('themeOffset', true);
         
             /** @var InputfieldInteger $f */
@@ -761,8 +765,10 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('SnipWire Webhooks Endpoint');
             $f->maxlength = 128;
             $f->required = true;
-            $f->description = $this->_('To allow Snipcart to send webhooks POST requests to SnipWire, you must define the endpoint where your webhooks will be reachable. After that, enter the absolute URL from the second field below in your Snipcart Dashboard under [Account > Webhooks section](https://app.snipcart.com/dashboard/webhooks).');
-            $f->notes = $this->_('The endpoint you provide must be relative to your site root with leading slash, e.g. /webhooks/snipcart. Please note that the webhooks path is only a virtual path and shouldn\'t point to an existing page!');
+            $f->description =        $this->_('To allow Snipcart to send webhooks POST requests to SnipWire, you must define the endpoint where your webhooks will be reachable.');
+            $f->description .= ' ' . $this->_('After that, enter the absolute URL from the second field below in your Snipcart Dashboard under [Account > Webhooks section](https://app.snipcart.com/dashboard/webhooks).');
+            $f->notes =        $this->_('The endpoint you provide must be relative to your site root with leading slash, e.g. /webhooks/snipcart.');
+            $f->notes .= ' ' . $this->_('Please note that the webhooks path is only a virtual path and shouldn\'t point to an existing page!');
             $f->appendMarkup = $webhooksEndpointUrlMarkup;
             $f->pattern = '^\/(?!.*\/\/)([a-zA-Z-\/]+)$';
 
