@@ -1,7 +1,11 @@
-# SnipWire vs Snipcart vs ProcessWire
+# SnipWire - ProcessWire Plugin
 [Snipcart](https://snipcart.com) is a powerful, developer-first 3rd party HTML/JavaScript shopping cart platform. **SnipWire** is the missing link between Snipcart and the content management framework [ProcessWire](https://processwire.com).
 
 With **SnipWire**, you can quickly turn any **ProcessWire** site into a Snipcart online shop. The SnipWire plugin helps you to get your store up and running in no time. Detailed knowledge of the Snipcart system is not required.
+
+SnipWire is free and open source! It would be nice if you could donate an amount to support further development:
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YUY4298PPWPXY)
 
 ## Plugin Key Features
 - Fast and simple store setup
@@ -18,13 +22,6 @@ With **SnipWire**, you can quickly turn any **ProcessWire** site into a Snipcart
 - [SnipWire in ProcessWire support forums](https://processwire.com/talk/topic/21554-snipwire-snipcart-integration-for-processwire/)
 - [ProcessWire website](https://processwire.com/)
 
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="YUY4298PPWPXY">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal">
-<img alt="" border="0" src="https://www.paypal.com/en_AT/i/scr/pixel.gif" width="1" height="1">
-</form>
-
 <hr>
 
-*SnipWire is free and open source! Copyright by bitego/Martin Gartner (@gadgetto) 2019 - 2020 licensed under MPL 2.0*
+*SnipWire is free and open source! Copyright by bitego/Martin Gartner (@gadgetto) 2019 - 2020 | Licensed under MPL 2.0*
