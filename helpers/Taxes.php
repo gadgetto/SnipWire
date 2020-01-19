@@ -41,9 +41,15 @@ class Taxes {
                 'appliesOnShipping' => array(), // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
             ),
              array(
-                'name' => '10% VAT (Shipping)',
+                'name' => '10% VAT',
                 'numberForInvoice' => '',
                 'rate' => '0.10',
+                'appliesOnShipping' => array() // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
+            ),            
+             array(
+                'name' => '20% VAT',
+                'numberForInvoice' => '',
+                'rate' => '0.20',
                 'appliesOnShipping' => array(1) // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
             ),            
        );
