@@ -18,6 +18,13 @@ With **SnipWire**, you can quickly turn any **ProcessWire** site into a Snipcart
 - [SnipWire in ProcessWire support forums](https://processwire.com/talk/topic/21554-snipwire-snipcart-integration-for-processwire/)
 - [ProcessWire website](https://processwire.com/)
 
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="YUY4298PPWPXY">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal">
+<img alt="" border="0" src="https://www.paypal.com/en_AT/i/scr/pixel.gif" width="1" height="1">
+</form>
+
 <hr>
 
 *SnipWire is free and open source! Copyright by bitego/Martin Gartner (@gadgetto) 2019 - 2020 licensed under MPL 2.0*
