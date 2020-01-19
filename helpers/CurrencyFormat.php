@@ -63,6 +63,32 @@ class CurrencyFormat extends WireData {
         return ($json) ? wireEncodeJSON($defaultCurrency, true) : $defaultCurrency;
     }
 
+    /**
+     * Get a specific currency definition by it's currency tag.
+     *
+     * @param string $currency The currency tag [default: `eur`]
+     * @param string $key The array key to be returned [default: ``]
+     * @param boolean $json Wether to return as JSON formatted string and not array (ignored if $key param is set) [default: false]
+     * @return array|json|string|boolean
+     * 
+     */
+    public static function getCurrencyDefinition($currency = 'eur', $key = '', $json = false) {
+        if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
+
+        // Searches the static $currencys array for $currency tag and returns the corresponding key
+        $cacheKey = array_search(
+            $currency,
+            array_column(self::$currenciesCache, 'currency')
+        );
+        if ($cacheKey === false) return false;
+        
+        $currencyDefinition = self::$currenciesCache[$cacheKey];
+        if ($key && isset($currencyDefinition[$key])) {
+            $currencyDefinition = $currencyDefinition[$key];
+            $json = false;
+        }
+        return ($json) ? wireEncodeJSON($currencyDefinition, true) : $currencyDefinition;
+    }
 
     /**
      * Format the given price based on selected currency.
@@ -74,7 +100,7 @@ class CurrencyFormat extends WireData {
      */
     public static function format($price, $currency = 'eur') {
         if (empty($price)) $price = 0.0;
-        if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
+        $currencyDefinition = self::getCurrencyDefinition($currency);
 
         // $price can be single or multi-currency
         /*
@@ -100,13 +126,6 @@ class CurrencyFormat extends WireData {
             $price = $price[$currency];
         }
 
-        // Searches the static $currencys array for $currency tag and returns the corresponding key
-        $key = array_search(
-            $currency,
-            array_column(self::$currenciesCache, 'currency')
-        );
-        $currencyDefinition = self::$currenciesCache[$key];
-        
         $floatPrice = wire('sanitizer')->float($price);
         if ($floatPrice < 0) {
             $numberFormatString = $currencyDefinition['negativeNumberFormat'];
@@ -140,8 +159,6 @@ class CurrencyFormat extends WireData {
      */
     public static function formatMulti($prices, $verbose = false, $separator = '<br>') {
         if (empty($prices) || !is_array($prices)) return '';
-        if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
-
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
 
         // $prices needs to be multi-currency
@@ -156,12 +173,7 @@ class CurrencyFormat extends WireData {
         $formattedPrices = array();
 
         foreach ($prices as $currency => $price) {
-            // Searches the static $currencys array for $currency tag and returns the corresponding key
-            $key = array_search(
-                $currency,
-                array_column(self::$currenciesCache, 'currency')
-            );
-            $currencyDefinition = self::$currenciesCache[$key];
+            $currencyDefinition = self::getCurrencyDefinition($currency);
             
             $floatPrice = wire('sanitizer')->float($price);
             if ($floatPrice < 0) {
