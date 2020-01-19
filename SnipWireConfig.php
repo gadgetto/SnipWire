@@ -70,6 +70,19 @@ class SnipWireConfig extends ModuleConfig {
     }
 
     /**
+     * Returns an array of taxes provider labels, indexed by provider
+     * 
+     * @return array
+     * 
+     */
+    public static function getTaxesProviderLabels() {
+        return array(
+            'snipcart' => __('Snipcart'),
+            'integrated' => __('Integrated (SnipWire)'),
+        );
+    }
+
+    /**
      * Default config
      * (overriding the method from parent class)
      *
@@ -91,9 +104,11 @@ class SnipWireConfig extends ModuleConfig {
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
+            'snipcart_debug' => 1,
+            'taxes_provider' => 'integrated',
             'taxes' => Taxes::getDefaultTaxesConfig(true), // JSON
             'taxes_included' => 1,
-            'snipcart_debug' => 1,
+            'shipping_taxes_type' => Taxes::shippingTaxesHighestRate,
             'include_snipcart_css' => 1,
             'snipcart_css_path' => 'https://cdn.snipcart.com/themes/2.0/base/snipcart.min.css',
             'snipcart_css_integrity' => '',
@@ -136,7 +151,9 @@ class SnipWireConfig extends ModuleConfig {
         $this->_includeAssets();
         $inputfields = parent::getInputfields();
 
+        //
         // ---- Additional steps ----
+        //
 
         $redirectUrl = urlencode($_SERVER['REQUEST_URI']);
 
@@ -209,7 +226,9 @@ class SnipWireConfig extends ModuleConfig {
             $inputfields->add($f);
         }
 
+        //
         // ---- Snipcart API configuration ----
+        //
 
         /** @var InputfieldFieldset $fsAPI */
         $fsAPI = $modules->get('InputfieldFieldset');
@@ -316,7 +335,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->required = true;
 
         $fsAPI->add($f);
-        
+
             /** @var InputfieldAsmSelect $f */
             $f = $modules->get('InputfieldAsmSelect');
             $f->attr('name', 'currencies'); 
@@ -342,7 +361,91 @@ class SnipWireConfig extends ModuleConfig {
             $f->required = true;
 
         $fsAPI->add($f);
-            
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'show_cart_automatically'); 
+            $f->label = $this->_('Show Shopping Cart Automatically');
+            $f->label2 = $this->_('Show cart automatically');
+            $f->description = $this->_('If you want to prevent the cart from showing up everytime a product is added, you can disable it.');
+            $f->columnWidth = 50;
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'shipping_same_as_billing'); 
+            $f->label = $this->_('Use Billing Address for Shipping');
+            $f->label2 = $this->_('Use billing address for shipping preselected');
+            $f->description = $this->_('Whether the `Use this address for shipping` option on the billing address tab is pre-selected or not.');
+            $f->columnWidth = 50;
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'show_continue_shopping'); 
+            $f->label = $this->_('Continue shopping Button');
+            $f->label2 = $this->_('Show the `Continue shopping` button');
+            $f->description = $this->_('Use this setting if you want to show the `Continue shopping` button. This button will appear just beside the `Close cart` button.');
+            $f->columnWidth = 50;
+
+        $fsAPI->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'split_firstname_and_lastname'); 
+            $f->label = $this->_('Split First Name and Last Name');
+            $f->label2 = $this->_('Split the First name and Last name');
+            $f->description = $this->_('Use this setting to split the First name and Last name in billing address and shipping address forms.');
+            $f->columnWidth = 50;
+
+        $fsAPI->add($f);
+        
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'snipcart_debug'); 
+            $f->label = $this->_('Snipcart JavaScript Debug Mode');
+            $f->label2 = $this->_('Enable Snipcart JavaScript debug mode');
+            $f->description = $this->_('This will allow you to see JavaScript errors on your site, failing requests and logs from the services you use in your browsers developer console.');
+            $f->notes = $this->_('All logs from the Snipcart script will be prefixed with `Snipcart:`');
+            $f->columnWidth = 100;
+
+        $fsAPI->add($f);
+
+        $inputfields->add($fsAPI);
+
+        //
+        // ---- Taxes configuration ----
+        //
+
+        /** @var InputfieldFieldset $fsAPI */
+        $fsTaxes = $modules->get('InputfieldFieldset');
+        $fsTaxes->icon = 'percent';
+        $fsTaxes->label = $this->_('Taxes Configuration');
+        $fsTaxes->set('themeOffset', true);
+
+            /** @var InputfieldSelect $f */
+            $f = $modules->get('InputfieldSelect');
+            $f->attr('name', 'taxes_provider'); 
+            $f->label = $this->_('Taxes Provider');
+            $f->description = $this->_('Select the taxes provider which should be used.');
+            $f->required = true;
+            $f->columnWidth = 50;
+            $f->addOptions(self::getTaxesProviderLabels());
+
+        $fsTaxes->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->attr('name', 'taxes_included'); 
+            $f->label = $this->_('Taxes Included in Prices');
+            $f->label2 = $this->_('Taxes are included in product prices');
+            $f->description = $this->_('Use this setting if the taxes are included in your product prices.');
+            $f->columnWidth = 50;
+
+        $fsTaxes->add($f);
+
             $languageStrings = array(
                 'tax_name' => $this->_('Tax name'),
                 'number_for_invoice' => $this->_('Number for Invoice'),
@@ -407,7 +510,8 @@ class SnipWireConfig extends ModuleConfig {
             
             $notes =
             '<p class="notes">' .
-                $this->_('At least 1 tax setting is required. Therefore, the last available setting cannot be removed. The first set in the list will be used as default tax when creating a new product.') .
+                $this->_('The first (none shipping) set in the list will be used as default tax when creating new products.') . 
+                ' ' . $this->_('The first set in the list with a "Shipping" marker will be used as default shipping tax when "Shipping Taxes Handling" is set to "Apply a fixed tax rate".') .
             '</p>';
 
             // This text field (HTML input hidden by CSS) will be filled with jSON formatted taxes array provided by jquery.repeater.
@@ -418,77 +522,40 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('id+name', 'taxes');
             $f->attr('class', 'hiddenTaxesInput');
             $f->label = $this->_('Taxes Configuration');
-            $f->description = $this->_('SnipWire acts as a taxes provider for Snipcart. You first need to configure the taxes provider webhook in [Snipcart Dashboard > Taxes](https://app.snipcart.com/dashboard/taxes). After that, define the tax rates here to be used by the Snipcart shop-system. While processing an order, Snipcart will send a Webhook request to your server and SnipWire will return the applicable taxes.');
-            $f->columnWidth = 100;
-            $f->maxlength = 4096;
+            $f->description =        $this->_('If activated, SnipWire acts as a taxes provider for Snipcart.');
+            $f->description .= ' ' . $this->_('You first need to configure the taxes provider webhook in [Snipcart Dashboard > Taxes](https://app.snipcart.com/dashboard/taxes).');
+            $f->description .= ' ' . $this->_('After that, define the tax rates here to be used by the Snipcart shop-system.');
+            $f->maxlength = 1024 * 32;
+            $f->showIf = 'taxes_provider=integrated';
+            $f->requiredIf = 'taxes_provider=integrated';
             $f->appendMarkup = $taxesRepeaterMarkup . $notes;
 
-        $fsAPI->add($f);
+        $fsTaxes->add($f);
 
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'taxes_included'); 
-            $f->label = $this->_('Taxes Included in Prices');
-            $f->label2 = $this->_('Taxes are included in product prices');
-            $f->description = $this->_('Use this setting if the taxes are included in your product prices.');
+            /** @var InputfieldSelect $f */
+            $f = $modules->get('InputfieldSelect');
+            $f->attr('name', 'shipping_taxes_type');
+            $f->addClass('InputfieldMaxWidth');
+            $f->label = $this->_('Shipping Taxes Handling');
+            $f->description = $this->_('Select how shipping taxes should be calculated and applied.');
+            $f->required = true;
             $f->columnWidth = 100;
+            $f->showIf = 'taxes_provider=integrated';
+            $f->requiredIf = 'taxes_provider=integrated';
+            $f->addOptions(array(
+                Taxes::shippingTaxesNone => $this->_('No shipping taxes'),
+                Taxes::shippingTaxesFixedRate => $this->_('Apply a fixed tax rate'),
+                Taxes::shippingTaxesHighestRate => $this->_('Apply predominant tax rate'),
+                Taxes::shippingTaxesSplittedRate => $this->_('Proportionally split and apply tax rates'),
+            ));   
 
-        $fsAPI->add($f);
+        $fsTaxes->add($f);
 
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'show_cart_automatically'); 
-            $f->label = $this->_('Show Shopping Cart Automatically');
-            $f->label2 = $this->_('Show cart automatically');
-            $f->description = $this->_('If you want to prevent the cart from showing up everytime a product is added, you can disable it.');
-            $f->columnWidth = 50;
+        $inputfields->add($fsTaxes);
 
-        $fsAPI->add($f);
-
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'shipping_same_as_billing'); 
-            $f->label = $this->_('Use Billing Address for Shipping');
-            $f->label2 = $this->_('Use billing address for shipping preselected');
-            $f->description = $this->_('Whether the `Use this address for shipping` option on the billing address tab is pre-selected or not.');
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
-
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'show_continue_shopping'); 
-            $f->label = $this->_('Continue shopping Button');
-            $f->label2 = $this->_('Show the `Continue shopping` button');
-            $f->description = $this->_('Use this setting if you want to show the `Continue shopping` button. This button will appear just beside the `Close cart` button.');
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
-
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'split_firstname_and_lastname'); 
-            $f->label = $this->_('Split First Name and Last Name');
-            $f->label2 = $this->_('Split the First name and Last name');
-            $f->description = $this->_('Use this setting to split the First name and Last name in billing address and shipping address forms.');
-            $f->columnWidth = 50;
-
-        $fsAPI->add($f);
-        
-            /** @var InputfieldCheckbox $f */
-            $f = $modules->get('InputfieldCheckbox');
-            $f->attr('name', 'snipcart_debug'); 
-            $f->label = $this->_('Snipcart JavaScript Debug Mode');
-            $f->label2 = $this->_('Enable Snipcart JavaScript debug mode');
-            $f->description = $this->_('This will allow you to see JavaScript errors on your site, failing requests and logs from the services you use in your browsers developer console.');
-            $f->notes = $this->_('All logs from the Snipcart script will be prefixed with `Snipcart:`');
-            $f->columnWidth = 100;
-
-        $fsAPI->add($f);
-
-        $inputfields->add($fsAPI);
-
+        //
         // ---- Markup configuration ----
+        //
 
         /** @var InputfieldFieldset $fsMarkup */
         $fsMarkup = $modules->get('InputfieldFieldset');
@@ -590,7 +657,9 @@ class SnipWireConfig extends ModuleConfig {
         
         $inputfields->add($fsMarkup);
 
+        //
         // ---- Cart image configuration ----
+        //
         
         /** @var InputfieldFieldset $fsCartImage */
         $fsCartImage = $modules->get('InputfieldFieldset');
@@ -654,9 +723,11 @@ class SnipWireConfig extends ModuleConfig {
         $fsCartImage->add($f);
 
         $inputfields->add($fsCartImage);
-        
+
+        //
         // ---- SnipWire API configuration ----
-        
+        //
+
         /** @var InputfieldFieldset $fsSnipWire */
         $fsSnipWire = $modules->get('InputfieldFieldset');
         $fsSnipWire->icon = 'plug';
