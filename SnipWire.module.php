@@ -94,7 +94,10 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         // This works because of using the ModuleConfig class)
         $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
 
-        $this->addHookBefore('Modules::saveConfig', $this, 'validateTaxesRepeater');
+        if ($this->snipwireConfig->taxes_provider == 'integrated') {
+            $this->addHookBefore('Modules::saveConfig', $this, 'validateTaxesRepeater');
+            $this->addHookAfter('Pages::added', $this, 'presetProductTaxesField');
+        }
         $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookAfter('Pages::added', $this, 'presetProductFields');
         $this->addHookAfter('Pages::saveReady', $this, 'checkSKUUnique');
@@ -253,11 +256,22 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $page = $event->arguments(0);
         if ($this->wire('snipwire')->isProductTemplate($page->template)) {
             $page->setAndSave('snipcart_item_id', $page->id);
-            $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
-            $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
             $page->setAndSave('snipcart_item_taxable', 1);
             $page->setAndSave('snipcart_item_shippable', 1);
             $page->setAndSave('snipcart_item_stackable', 1);
+        }
+    }
+
+    /**
+     * Preset value of field snipcart_item_taxes (VAT) with first element of taxes config.
+     * (Method triggered after Pages added)
+     *
+     */
+    public function presetProductTaxesField(HookEvent $event) {
+        $page = $event->arguments(0);
+        if ($this->wire('snipwire')->isProductTemplate($page->template)) {
+            $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
+            $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
         }
     }
 
