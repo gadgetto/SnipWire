@@ -501,7 +501,9 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'include_snipcart_css'); 
             $f->label = $this->_('Include Snipcart CSS');
             $f->label2 = $this->_('Include Snipcart CSS');
-            $f->description = $this->_('Whether SnipWire should add the defined Snipcart stylesheet from the field below to your output or not. To change the Cart theme, you can also include your own stylesheet using one of your preferred methods. Check the [Snipcart Theme Repository](https://github.com/snipcart/snipcart-theme) on GitHub for more info.');
+            $f->description =        $this->_('Whether SnipWire should add the defined Snipcart stylesheet from the field below to your output or not.');
+            $f->description .= ' ' . $this->_('To change the Cart theme, you can also include your own stylesheet using one of your preferred methods.');
+            $f->description .= ' ' . $this->_('Check the [Snipcart Theme Repository](https://github.com/snipcart/snipcart-theme) on GitHub for more info.');
 
         $fsMarkup->add($f);
 
