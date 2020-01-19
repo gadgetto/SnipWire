@@ -12,12 +12,12 @@ With **SnipWire**, you can quickly turn any **ProcessWire** site into a Snipcart
 - Integrated taxes provider (which is more flexible then Snipcart own provider)
 
 ## Documentation
-[SnipWire Docs](https://docs.bitego.com/snipwire/)  
-(Please note that the documentation is a work in progress)
+[SnipWire Docs](https://docs.bitego.com/snipwire/) (Please note that the documentation is a work in progress)
 
 ## Support and Links
 - [SnipWire in ProcessWire support forums](https://processwire.com/talk/topic/21554-snipwire-snipcart-integration-for-processwire/)
 - [ProcessWire website](https://processwire.com/)
 
 <hr>
+
 *SnipWire is free and open source! Copyright by bitego/Martin Gartner (@gadgetto) 2019 - 2020 licensed under MPL 2.0*
