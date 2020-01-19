@@ -15,6 +15,7 @@
  *
  */
 
+require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
 
 class Webhooks extends WireData {
@@ -38,6 +39,9 @@ class Webhooks extends WireData {
     
     const webhookModeLive = 'Live';
     const webhookModeTest = 'Test';
+
+    /** @var array $snipwireConfig The module config of SnipWire module */
+    protected $snipwireConfig = array();
 
     /** @var boolean Turn on/off debug mode for Webhooks class */
     private $debug = false;
@@ -85,8 +89,8 @@ class Webhooks extends WireData {
         // Get SnipWire module config.
         // (Holds merged data from DB and default config. 
         // This works because of using the ModuleConfig class)
-        $snipwireConfig = $this->wire('modules')->get('SnipWire');
-        $this->debug = $snipwireConfig->snipwire_debug;
+        $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
+        $this->debug = $this->snipwireConfig->snipwire_debug;
 
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Cache-Control: post-check=0, pre-check=0', false);
@@ -426,51 +430,175 @@ class Webhooks extends WireData {
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleTaxesCalculate'
         );
-        
+
+        // No taxes handling if taxes provider is other then "integrated"
+        if ($this->snipwireConfig->taxes_provider != 'integrated') {
+            $log->save(
+                self::snipWireWebhooksLogName,
+                $this->_('Webhooks request: handleTaxesCalculate - the integrated taxes provider is disabled in module settings')
+            );
+            $this->responseStatus = 204; // No Content
+            return;
+        }
+
         // Sample payload array: https://docs.snipcart.com/webhooks/taxes
         
         $payload = $this->payload;
-        $content = $payload['content'];
-        $items = isset($content['items']) ? $content['items'] : null;
+        $content = isset($payload['content']) ? $payload['content'] : null;
+        if ($content) {
+            $items = isset($content['items']) ? $content['items'] : null;
+            $shippingInformation = isset($content['shippingInformation']) ? $content['shippingInformation'] : null;
+            $itemsTotal = isset($content['itemsTotal']) ? $content['itemsTotal'] : null;
+            $currency = isset($content['currency']) ? $content['currency'] : null;
+        }
         
-        if (!$items) {
+        if (!$items || !$shippingInformation || !$itemsTotal || !$currency) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Webhooks request: invalid request data for taxes calculation - missing items'
+                $this->_('Webhooks request: handleTaxesCalculate - invalid request data for taxes calculation')
             );
             $this->responseStatus = 400; // Bad Request
             return;
         }
 
-        // Collect all taxes and calculate total prices from payload
+        $hasTaxesIncluded = Taxes::getTaxesIncludedConfig();
+        $shippingTaxesType = Taxes::getShippingTaxesTypeConfig();
+        $currencyPrecision = CurrencyFormat::getCurrencyDefinition($currency, 'precision');
+        if (!$currencyPrecision) $currencyPrecision = 2;
+
+        $taxNamePrefix = $hasTaxesIncluded
+            ? $this->_('incl.') // Tax name prefix if taxes included in price (keep it short)
+            : '+';
+        $taxNamePrefix .= ' ';
+
+        // Collect and group all tax names and total prices (before taxes) from items in payload
         $itemTaxes = array();
         foreach ($items as $item) {
             if (!$item['taxable']) continue;
             $taxName = $item['taxes'][0]; // we currently only support a single tax per product!
             if (!isset($itemTaxes[$taxName])) {
-                $itemTaxes[$taxName] = $item['totalPriceWithoutTaxes'];
-            } else {
-                $itemTaxes[$taxName] += $item['totalPriceWithoutTaxes'];
-            }
-        }
-        
-        $hasTaxesIncluded = Taxes::getTaxesIncludedConfig();
-
-        // Generate taxes response array for Snipcart
-        $taxesResponse = array();
-        foreach ($itemTaxes as $name => $value) {
-            $taxesConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeAll, $name);
-            if (!empty($taxesConfig)) {
-                $taxesResponse[] = array(
-                    'name' => $name,
-                    'amount' => Taxes::calculateTax($value, $taxesConfig['rate'], $hasTaxesIncluded, 2),
-                    'rate' => $taxesConfig['rate'],
-                    'numberForInvoice' => $taxesConfig['numberForInvoice'],
-                    'includedInPrice' => $hasTaxesIncluded,
-                    'appliesOnShipping' => (empty($taxesConfig['appliesOnShipping'][0]) ? false : true),
+                // add new array entry
+                $itemTaxes[$taxName] = array(
+                    'sumPrices' => $item['totalPriceWithoutTaxes'],
+                    'splitRatio' => 0, // is calculatet later
                 );
+            } else {
+                // add price to existing sumPrices
+                $itemTaxes[$taxName]['sumPrices'] += $item['totalPriceWithoutTaxes'];
             }
         }
+
+        // Calculate and add proportional ratio (for splittet shipping tax calculation)
+        foreach ($itemTaxes as $name => $values) {
+            $itemTaxes[$name]['splitRatio'] = round(($values['sumPrices'] / $itemsTotal), 2); // e.g. 0.35 = 35%
+        }
+        unset($name, $values);
+
+        /*
+        Results in $itemTaxes (sample) array:
+        
+        array(
+            '20% VAT' => array(
+                "sumPrices' => 300
+                'splitRatio' => 0.67
+            )
+            '10% VAT' => array(
+                'sumPrices' => 150
+                'splitRatio' => 0.33
+            )
+        )
+        
+        Sample splitRatio calculation: 300 / (300 + 150) = 0.67 = 67%
+        */
+
+        //
+        // Prepare item & shipping taxes response
+        //
+
+        $taxesResponse = array();
+        $taxConfigMax = array();
+        $maxRate = 0;
+
+        foreach ($itemTaxes as $name => $values) {
+            $taxConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeProducts, $name);
+            if (!empty($taxConfig)) {
+                $taxesResponse[] = array(
+                    'name' => $taxNamePrefix . $name,
+                    'amount' => Taxes::calculateTax($values['sumPrices'], $taxConfig['rate'], $hasTaxesIncluded, $currencyPrecision),
+                    'rate' => $taxConfig['rate'],
+                    'numberForInvoice' => $taxConfig['numberForInvoice'],
+                    'includedInPrice' => $hasTaxesIncluded,
+                    //'appliesOnShipping' // not needed,
+                );
+
+                // Get tax config with highest rate (for shipping tax calculation)
+                if ($shippingTaxesType == Taxes::shippingTaxesHighestRate) {
+                    if ($taxConfig['rate'] > $maxRate) {
+                        $maxRate = $taxConfig['rate'];
+                        $taxConfigMax = $taxConfig;
+                    }
+                }
+            }
+        }
+        unset($name, $values);
+
+        if ($shippingTaxesType != Taxes::shippingTaxesNone) {
+            $shippingFees = isset($shippingInformation['fees'])
+                ? $shippingInformation['fees']
+                : 0;
+            $shippingMethod = isset($shippingInformation['method'])
+                ? ' (' . $shippingInformation['method'] . ')'
+                : '';
+
+            if ($shippingFees > 0) {
+                switch ($shippingTaxesType) {
+                    case Taxes::shippingTaxesFixedRate :
+                        $taxConfig = Taxes::getFirstTax(false, Taxes::taxesTypeShipping);
+                        if (!empty($taxConfig)) {
+                            $taxesResponse[] = array(
+                                'name' => $taxNamePrefix . $taxConfig['name'] . $shippingMethod,
+                                'amount' => Taxes::calculateTax($shippingFees, $taxConfig['rate'], $hasTaxesIncluded, $currencyPrecision),
+                                'rate' => $taxConfig['rate'],
+                                'numberForInvoice' => $taxConfig['numberForInvoice'],
+                                'includedInPrice' => $hasTaxesIncluded,
+                                //'appliesOnShipping' // not needed,
+                            );
+                        }
+                        break;
+
+                    case Taxes::shippingTaxesHighestRate :
+                        if (!empty($taxConfigMax)) {
+                            $taxesResponse[] = array(
+                                'name' => $taxNamePrefix . $taxConfigMax['name'] . $shippingMethod,
+                                'amount' => Taxes::calculateTax($shippingFees, $taxConfigMax['rate'], $hasTaxesIncluded, $currencyPrecision),
+                                'rate' => $taxConfigMax['rate'],
+                                'numberForInvoice' => $taxConfigMax['numberForInvoice'],
+                                'includedInPrice' => $hasTaxesIncluded,
+                                //'appliesOnShipping' // not needed,
+                            );
+                        }
+                        break;
+
+                    case Taxes::shippingTaxesSplittedRate :
+                        foreach ($itemTaxes as $name => $values) {
+                            $shippingFeesSplit = round(($shippingFees * $values['splitRatio']), 2);
+                            $taxConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeProducts, $name);
+                            if (!empty($taxConfig)) {
+                                $taxesResponse[] = array(
+                                    'name' => $taxNamePrefix . $taxConfig['name'] . $shippingMethod,
+                                    'amount' => Taxes::calculateTax($shippingFeesSplit, $taxConfig['rate'], $hasTaxesIncluded, $currencyPrecision),
+                                    'rate' => $taxConfig['rate'],
+                                    'numberForInvoice' => $taxConfig['numberForInvoice'],
+                                    'includedInPrice' => $hasTaxesIncluded,
+                                    //'appliesOnShipping' // not needed,
+                                );
+                            }
+                        }
+                        break;                
+                }
+            }
+        }
+
         $taxes = array('taxes' => $taxesResponse);
         
         $this->responseStatus = 202; // Accepted
