@@ -175,14 +175,14 @@ class Webhooks extends WireData {
         ) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Invalid webhooks request: no POST data or content not json'
+                $this->_('Invalid webhooks request: no POST data or content not json')
             );
             return false;
         }
         if (($requestToken = $this->getServerVar(self::snipcartRequestTokenServerVar)) === false) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Invalid webhooks request: no request token'
+                $this->_('Invalid webhooks request: no request token')
             );
             return false;
         }
@@ -190,14 +190,14 @@ class Webhooks extends WireData {
         if (($handshake = $sniprest->get($handshakeUrl)) === false) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Snipcart REST connection for checking request token failed: ' . $sniprest->getError()
+                $this->_('Snipcart REST connection for checking request token failed:') . ' ' . $sniprest->getError()
             );
             return false;
         }
         if (empty($handshake) || $sniprest->getHttpCode(false) != 200) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Invalid webhooks request: no response'
+                $this->_('Invalid webhooks request: no response')
             );
             return false;
         }
@@ -205,14 +205,14 @@ class Webhooks extends WireData {
         if (!$json) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Invalid webhooks request: response not json'
+                $this->_('Invalid webhooks request: response not json')
             );
             return false;
         }
         if (!isset($json['token']) || $json['token'] !== $requestToken) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Invalid webhooks request: invalid token'
+                $this->_('Invalid webhooks request: invalid token')
             );
             return false;
         }
@@ -235,31 +235,31 @@ class Webhooks extends WireData {
         if (is_null($payload) || !is_array($payload)) {
             $log->save(
                 self::snipWireWebhooksLogName, 
-                'Webhooks request: invalid request data - not an array'
+                $this->_('Webhooks request: invalid request data - not an array')
             );
         
         } elseif (!isset($payload['eventName'])) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Webhooks request: invalid request data - key eventName missing'
+                $this->_('Webhooks request: invalid request data - key eventName missing')
             );
             
         } elseif (!array_key_exists($payload['eventName'], $this->webhookEventsIndex)) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Webhooks request: invalid request data - unknown event'
+                $this->_('Webhooks request: invalid request data - unknown event')
             );
             
         } elseif (!isset($payload['mode']) || !in_array($payload['mode'], array(self::webhookModeLive, self::webhookModeTest))) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Webhooks request: invalid request data - wrong or missing mode'
+                $this->_('Webhooks request: invalid request data - wrong or missing mode')
             );
             
         } elseif (!isset($payload['content'])) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                'Webhooks request: invalid request data - missing content'
+                $this->_('Webhooks request: invalid request data - missing content')
             );
             
         } else {
@@ -280,7 +280,7 @@ class Webhooks extends WireData {
         if (empty($this->event)) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                '_handleWebhookData: $this->event not set'
+                $this->_('_handleWebhookData: $this->event not set')
             );
             $this->responseStatus = 500; // Internal Server Error
             return;
@@ -289,7 +289,7 @@ class Webhooks extends WireData {
         if (!method_exists($this, '___' . $methodName)) {
             $log->save(
                 self::snipWireWebhooksLogName,
-                '_handleWebhookData: method does not exist ' . $methodName
+                $this->_('_handleWebhookData: method does not exist') . ' ' . $methodName
             );
             $this->responseStatus = 500; // Internal Server Error
             return;
