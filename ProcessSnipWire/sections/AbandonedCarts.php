@@ -260,7 +260,7 @@ trait AbandonedCarts {
             foreach ($items as $item) {
                 $customerEmail =
                 '<a href="' . $this->snipWireRootUrl . 'abandoned-cart/' . $item['id'] . '"
-                    class="pw-panel"
+                    class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
                         wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
                 '</a>';
