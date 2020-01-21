@@ -37,7 +37,7 @@ trait AbandonedCarts {
         }
 
         $forceRefresh = false;
-        $limit = 50;
+        $limit = 50; // current limit for abandoned carts list
         $continuationToken = null;
 
         $action = $this->_getInputAction();
