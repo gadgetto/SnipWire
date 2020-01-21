@@ -114,8 +114,6 @@ trait AbandonedCarts {
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
         
-        $id = $input->urlSegment(2); // Get Snipcart cart id
-        
         $this->browserTitle($this->_('Snipcart Abandoned Cart'));
         $this->headline($this->_('Snipcart Abandoned Cart'));
 
@@ -126,11 +124,30 @@ trait AbandonedCarts {
             $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
-        
-        $response = $sniprest->getAbandonedCart($id);
-        $cart = isset($response[SnipRest::resPathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathCartsAbandoned . '/' . $id][WireHttpExtended::resultKeyContent]
+
+        $id = $input->urlSegment(2); // Get Snipcart cart id
+        $forceRefresh = false;
+
+        $action = $this->_getInputAction();
+        if ($action == 'refresh') {
+            $this->message(SnipREST::getMessagesText('cache_refreshed'));
+            $forceRefresh = true;
+        } elseif ($action == 'refresh_all') {
+            $sniprest->deleteFullCache();
+            $this->message(SnipREST::getMessagesText('full_cache_refreshed'));
+        }
+
+        $response = $sniprest->getAbandonedCart(
+            $id,
+            SnipREST::cacheExpireDefault,
+            $forceRefresh
+        );
+        $dataKey = SnipRest::resPathCartsAbandoned . '/' . $id;
+        $cart = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
+
+        $out = '';
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -140,7 +157,7 @@ trait AbandonedCarts {
         $f->value = $this->_renderDetailAbandonedCart($cart);
         $f->collapsed = Inputfield::collapsedNever;
 
-        $out = $f->render();
+        $out .= $f->render();
 
         $out .= $this->_renderActionButtons();
 
@@ -295,24 +312,240 @@ trait AbandonedCarts {
      * Render the abandoned cart detail view.
      *
      * @param array $item
+     * @param string $ret A return URL (optional)
      * @return markup 
      *
      */
-    private function _renderDetailAbandonedCart($item) {
+    private function _renderDetailAbandonedCart($item, $ret = '') {
         $modules = $this->wire('modules');
+        $sniprest = $this->wire('sniprest');
 
-        if (!empty($item)) {
-
-
-            $out = '<pre>' . print_r($item, true) . '</pre>';
-
-
-        } else {
+        if (empty($item)) {
             $out =
             '<div class="snipwire-no-items">' . 
-                $this->_('No product selected') .
+                $this->_('No cart selected') .
             '</div>';
+            return $out;
         }
+
+        $id = $item['id'];
+
+        $out =
+        '<div class="ItemDetailHeader">' .
+            '<h2 class="ItemDetailTitle">' .
+                wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') .
+                $this->_('Cart') . ': ' .
+                $item['email'] .
+            '</h2>' .
+        '</div>';
+
+        //$out .= $this->_processCartCommentForm($item, $ret);
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Cart Info');
+            $f->icon = self::iconInfo;
+            $f->value = $this->_renderCartInfo($item);
+            $f->columnWidth = 50;
+            
+        $wrapper->add($f);
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Customer Info');
+            $f->icon = self::iconCustomer;
+            $f->value = $this->_renderCustomerInfo($item);
+            $f->columnWidth = 50;
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Cart Details');
+            $f->icon = self::iconAbandonedCart;
+            $f->value = $this->_renderTableCartSummary($item);
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        if ($this->snipwireConfig->snipwire_debug) {
+
+            /** @var InputfieldForm $wrapper */
+            $wrapper = $modules->get('InputfieldForm');
+
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Debug Infos');
+                $f->collapsed = Inputfield::collapsedYes;
+                $f->icon = self::iconDebug;
+                $f->value = '<pre>' . print_r($item, true) . '</pre>';
+                
+            $wrapper->add($f);
+
+            $out .= $wrapper->render();
+        }
+
+        return $out;
+    }
+
+    /**
+     * Render the cart info block.
+     *
+     * @param array $item
+     * @return markup 
+     *
+     */
+    private function _renderCartInfo($item) {
+        $infoCaptions = array(
+            'status' => $this->_('Cart status'),
+            'creationDate' => $this->_('Created on'),
+            'modificationDate' => $this->_('Modified on'),
+            'shippingMethod' => $this->_('Shipping method'),
+            'currency' => $this->_('Currency'),
+        );
+
+        $item['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $item['modificationDate'] = wireDate('Y-m-d H:i:s', $item['modificationDate']);
+        $item['shippingMethod'] = $item['shippingInformation']['method'];
+
+        $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+        $item['currency'] = isset($supportedCurrencies[$item['currency']])
+            ? $supportedCurrencies[$item['currency']]
+            : $item['currency'];
+
+        $data = array();
+        foreach ($infoCaptions as $key => $caption) {
+            $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
+        }
+
+        return $this->renderDataSheet($data);
+    }
+
+    /**
+     * Render the customer info block.
+     *
+     * @param array $item
+     * @return markup 
+     *
+     */
+    private function _renderCustomerInfo($item) {
+        $infoCaptions = array(
+            'email' => $this->_('Email'),
+            'firstName' => $this->_('First Name'),
+            'name' => $this->_('Last Name'),
+            'country' => $this->_('Country'),
+            'lang' => $this->_('Language'),
+        );
+
+        $customerInfos = array();
+
+        if (!empty($item['email'])) {
+            $customerInfos['email'] =
+            '<a href="mailto:' . $item['email'] . '"
+                class="pw-tooltip"
+                title="' . $this->_('Send email to customer') .'">' .
+                    $item['email'] .
+            '</a>';
+        } else {
+            $customerInfos['email'] = '';
+        }
+        $customerInfos['firstName'] = $item['billingAddress']['firstName'];
+        $customerInfos['name'] = $item['billingAddress']['name'];
+        $customerInfos['country'] = !empty($item['billingAddress']['country'])
+            ? Countries::getCountry($item['billingAddress']['country'])
+            : '';
+        $customerInfos['lang'] = $item['lang'];
+
+        $data = array();
+        foreach ($infoCaptions as $key => $caption) {
+            $data[$caption] = !empty($customerInfos[$key]) ? $customerInfos[$key] : '-';
+        }
+
+        return $this->renderDataSheet($data);
+    }
+
+    /**
+     * Render the cart summmary table.
+     *
+     * @param array $item
+     * @return markup MarkupAdminDataTable 
+     *
+     */
+    private function _renderTablecartSummary($item) {
+        $modules = $this->wire('modules');
+
+        $products = $item['items'];
+        $shipping = $item['shippingInformation'];
+        $summary = $item['summary'];
+        $currency = $item['currency'];
+
+        /** @var MarkupAdminDataTable $table */
+        $table = $modules->get('MarkupAdminDataTable');
+        $table->setEncodeEntities(false);
+        $table->id = 'CartSummaryTable';
+        $table->setSortable(false);
+        $table->setResizable(false);
+        $table->headerRow(array(
+            $this->_('SKU'),
+            $this->_('Name'),
+            $this->_('Quantity'),
+            $this->_('Price'),
+            $this->_('Total'),
+        ));
+        foreach ($products as $product) {
+            $table->row(array(
+                $product['id'],
+                $product['name'],
+                $product['quantity'],
+                CurrencyFormat::format($product['price'], $currency),
+                CurrencyFormat::format($product['totalPrice'], $currency),
+            ));
+        }
+
+        // Subtotal row
+        $table->row(array(
+            '',
+            '<span class="subtotal-label">' . $this->_('Subtotal') . '</span>',
+            '',
+            '',
+            '<span class="subtotal-value">' . CurrencyFormat::format($summary['subtotal'], $currency) . '</span>',
+        ), array(
+            'class' => 'row-summary-subtotal',
+        ));
+        
+        // Shipping row
+        $shippingMethod = $shipping['method'] ? ' (' . $shipping['method'] . ')' : '';
+        $table->row(array(
+            '',
+            $this->_('Shipping') . $shippingMethod,
+            '',
+            '',
+            CurrencyFormat::format($shipping['fees'], $currency),
+        ), array(
+            'class' => 'row-summary-shipping',
+        ));
+
+        // Total row
+        $table->row(array(
+            '',
+            '<span class="total-label">' . $this->_('Total') . '</span>',
+            '',
+            '',
+            '<span class="total-value">' . CurrencyFormat::format($summary['total'], $currency) . '</span>',
+        ), array(
+            'class' => 'row-summary-total',
+        ));
+
+        $out = $table->render();            
 
         return $out;
     }
