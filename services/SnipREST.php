@@ -311,7 +311,7 @@ class SnipREST extends WireHttpExtended {
             'to' => $end,
             'format' => 'Excerpt',
         );
-        $data[] = $$this->getOrders($selector);
+        $data[] = $this->getOrders($selector);
         
         return $data;
     }
