@@ -55,6 +55,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixSubscriptions = 'Subscriptions';
     const cacheNamePrefixSubscriptionDetail = 'SubscriptionDetail';
     const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
+    const cacheNamePrefixCartAbandonedNotifications = 'CartAbandonedNotifications';
     const cacheNamePrefixCartAbandonedDetail = 'CartAbandonedDetail';
     const cacheNamePrefixCustomers = 'Customers';
     const cacheNamePrefixCustomersOrders = 'CustomersOrders';
@@ -925,6 +926,27 @@ class SnipREST extends WireHttpExtended {
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
+    }
+
+    /**
+     * Delete a single or the lister abandoned cart cache (WireCache).
+     *
+     * @param string $id The Snipcart $id of the abandoned cart (if no id provided, the lister cache is deleted)
+     * @return void
+     *
+     */
+    public function deleteAbandonedCartsCache($id = '') {
+        if (!$id) {
+            // @todo: the lister cache is semgented (pagination!) so we need to find all segments!
+            //        In the meantime the full Snipcart cache is deleted instead.
+            $this->deleteFullCache();
+        } else {
+            $cacheName = self::cacheNamePrefixCartAbandonedDetail . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+            
+            $cacheName = self::cacheNamePrefixCartAbandonedNotifications . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        }
     }
 
     /**
