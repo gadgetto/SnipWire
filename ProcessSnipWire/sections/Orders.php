@@ -431,7 +431,6 @@ trait Orders {
     private function _renderDetailOrder($item, $notifications, $ret = '') {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
-        $sniprest = $this->wire('sniprest');
 
         if (empty($item)) {
             $out =
