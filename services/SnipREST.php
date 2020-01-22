@@ -30,6 +30,7 @@ class SnipREST extends WireHttpExtended {
     const resPathOrdersRefunds = 'orders/{token}/refunds';
     const resPathSubscriptions = 'subscriptions';
     const resPathCartsAbandoned = 'carts/abandoned';
+    const resPathCartsAbandonedNotifications = 'carts/{id}/notifications';
     const resPathCustomers = 'customers';
     const resPathCustomersOrders = 'customers/{id}/orders';
     const resPathProducts = 'products';
@@ -919,6 +920,60 @@ class SnipREST extends WireHttpExtended {
 
         if ($response === false) $response = array();
         $data[self::resPathCartsAbandoned . '/' . $id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
+    /**
+     * Creates a new notification on a specified abandoned cart.
+     *
+     * (Includes sending some information to your customer or generating automatic emails)
+     *
+     * @param string $token The Snipcart id of the abandoned cart [#required]
+     * @param array $options An array of options that will be sent as POST params:
+     *  - `type` (string) Type of notification. (Possible values: Comment) #required
+     *  - `deliveryMethod` (string) 'Email' send by email, 'None' keep it private. #required
+     *  - `message` (string) Message of the notification
+     * @return array $data
+     * 
+     */
+    public function postAbandonedCartNotification($id, $options = array()) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_cart_id'));
+            return false;
+        }
+        // Add necessary header for POST request
+		$this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $allowedOptions = array('type', 'deliveryMethod', 'message');
+        $defaultOptions = array(
+            'type' => 'Comment',
+            'deliveryMethod' => 'Email',
+        );
+        $options = array_merge(
+            $defaultOptions,
+            array_intersect_key(
+                $options, array_flip($allowedOptions)
+            )
+        );
+        
+        $url = wirePopulateStringTags(
+            self::apiEndpoint . self::resPathCartsAbandonedNotifications,
+            array('id' => $id)
+        );
+        $requestbody = wireEncodeJSON($options);
+        
+        $response = $this->post($url, $requestbody);
+
+        if ($response === false) $response = array();
+        $data[$id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
