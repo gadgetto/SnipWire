@@ -371,6 +371,7 @@ trait Products {
      */
     private function _renderDetailProduct($item) {
         $modules = $this->wire('modules');
+        $sanitizer = $this->wire('sanitizer');
 
         if (empty($item)) {
             $out =
@@ -421,7 +422,7 @@ trait Products {
                 $f->label = $this->_('Debug Infos');
                 $f->collapsed = Inputfield::collapsedYes;
                 $f->icon = self::iconDebug;
-                $f->value = '<pre>' . print_r($item, true) . '</pre>';
+                $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
                 
             $wrapper->add($f);
 

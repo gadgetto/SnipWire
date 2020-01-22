@@ -340,11 +340,12 @@ trait Subscriptions {
      */
     private function _renderDetailSubscription($item) {
         $modules = $this->wire('modules');
+        $sanitizer = $this->wire('sanitizer');
 
         if (!empty($item)) {
 
 
-            $out = '<pre>' . print_r($item, true) . '</pre>';
+            $out = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
 
 
         } else {

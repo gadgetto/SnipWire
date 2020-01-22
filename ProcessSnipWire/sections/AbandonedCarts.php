@@ -318,8 +318,8 @@ trait AbandonedCarts {
      */
     private function _renderDetailAbandonedCart($item, $ret = '') {
         $modules = $this->wire('modules');
-        $sniprest = $this->wire('sniprest');
         $sanitizer = $this->wire('sanitizer');
+        $sniprest = $this->wire('sniprest');
 
         if (empty($item)) {
             $out =
