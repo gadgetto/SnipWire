@@ -319,6 +319,7 @@ trait AbandonedCarts {
     private function _renderDetailAbandonedCart($item, $ret = '') {
         $modules = $this->wire('modules');
         $sniprest = $this->wire('sniprest');
+        $sanitizer = $this->wire('sanitizer');
 
         if (empty($item)) {
             $out =
@@ -339,7 +340,7 @@ trait AbandonedCarts {
             '</h2>' .
         '</div>';
 
-        //$out .= $this->_processCartCommentForm($item, $ret);
+        $out .= $this->_processCartNotificationForm($item, $ret);
 
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
@@ -387,7 +388,7 @@ trait AbandonedCarts {
                 $f->label = $this->_('Debug Infos');
                 $f->collapsed = Inputfield::collapsedYes;
                 $f->icon = self::iconDebug;
-                $f->value = '<pre>' . print_r($item, true) . '</pre>';
+                $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
                 
             $wrapper->add($f);
 
@@ -395,6 +396,102 @@ trait AbandonedCarts {
         }
 
         return $out;
+    }
+
+    /**
+     * Render and process the abandoned cart notification form.
+     *
+     * @param array $item
+     * @param string $ret A return URL (optional)
+     * @return markup 
+     *
+     */
+    private function _processCartNotificationForm($item, $ret = '') {
+        $modules = $this->wire('modules');
+        $sanitizer = $this->wire('sanitizer');
+        $input = $this->wire('input');
+        $session = $this->wire('session');
+
+        $id = $item['id'];
+
+		/** @var InputfieldForm $form */
+        $form = $modules->get('InputfieldForm');
+        $form->id = 'CartNotificationForm';
+        $form->action = $this->currentUrl;
+
+            if ($ret) {
+                /** @var InputfieldHidden $f */
+                $f = $modules->get('InputfieldHidden');
+                $f->name = 'ret';
+                $f->value = urlencode($ret);
+    
+                $form->add($f);
+            }
+
+            $fieldset = $modules->get('InputfieldFieldset');
+            $fieldset->label = $this->_('Send message to customer');
+            $fieldset->icon = self::iconComment;
+            $fieldset->collapsed = ($input->sending_cartnotification_active)
+                ? Inputfield::collapsedNo
+                : Inputfield::collapsedYes;
+
+        $form->add($fieldset);
+
+            /** @var InputfieldTextarea $f */
+            $f = $modules->get('InputfieldTextarea');
+            $f->name = 'message';
+            $f->label = $this->_('Message');
+            $f->detail = $this->_('You need to define a [Snipcart **Abandoned Cart** email template](https://app.snipcart.com/dashboard/email-templates) before using this form. Your Message will populate the {{{ message }}} variable in your template.');
+            $f->rows = 4;
+
+        $fieldset->add($f);
+
+            /** @var InputfieldHidden $f */
+    		$f = $modules->get('InputfieldHidden');
+    		$f->name = 'sending_cartnotification_active';
+    		$f->value = true;
+
+        $fieldset->add($f);
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldSubmit');
+            $btn->id = 'SendMessageButton';
+            $btn->name = 'send_cartnotification';
+            $btn->value = $this->_('Send message');
+            $btn->small = true;
+
+        $fieldset->add($btn);
+
+        // Render form without processing if not submitted
+        if (!$input->post->sending_cartnotification_active) return $form->render();
+
+        $form->processInput($input->post);
+
+        // Validate input
+        $message = $form->get('message');
+        $messageValue = $message->value;
+        if (!$messageValue) {
+            $message->error($this->_('Please enter a message text'));
+        }
+
+        if ($form->getErrors()) {
+            // The form is processed and populated but contains errors
+            return $form->render();
+        }
+
+        // Sanitize input
+        $messageValue = $sanitizer->textarea($messageValue);
+
+        $success = $this->_addCartNotification($id, $messageValue);
+        if ($success) {
+            // Reset cache for this cart and redirect to itself to display updated values
+            $this->wire('sniprest')->deleteAbandonedCartsCache($id);
+            $redirectUrl = $this->currentUrl . '?modal=1';
+            if ($ret) $redirectUrl .= '&ret=' . urlencode($ret);
+            $session->redirect($redirectUrl);
+        }
+
+        return $form->render();
     }
 
     /**
@@ -548,5 +645,42 @@ trait AbandonedCarts {
         $out = $table->render();            
 
         return $out;
+    }
+
+    /**
+     * Add a notification to the specified abandoned cart.
+     * (this will send an email to the customer)
+     *
+     * @param string $id The abandoned cart id
+     * @param string $message The message text
+     * @param string $deliveryMethod The delivery method [default: 'Email']
+     * @return boolean
+     *
+     */
+    private function _addCartNotification($id, $message, $deliveryMethod = 'Email') {
+        $sniprest = $this->wire('sniprest');
+
+        if (empty($id)) return;
+
+        $options = array(
+            'type' => 'Comment',
+            'message' => $message,
+            'deliveryMethod' => $deliveryMethod,
+        );
+
+        $added = false;
+        $response = $sniprest->postAbandonedCartNotification($id, $options);
+        if (
+            $response[$id][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$id][WireHttpExtended::resultKeyHttpCode] != 201
+        ) {
+            $this->error(
+                $this->_('The cart message could not be sent! The following error occurred: ') .
+                $response[$id][WireHttpExtended::resultKeyError]);
+        } else {
+            $this->message($this->_('The cart message has been sent.'));
+            $added = true;
+        }
+        return $added;
     }
 }
