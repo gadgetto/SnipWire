@@ -146,9 +146,9 @@ class SnipREST extends WireHttpExtended {
     /**
      * Get all dashboard results using cURL multi (fallback to single requests if cURL not available)
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
-     * @param string $currency Currency string
+     * @param string $start ISO 8601 date format string [#required]
+     * @param string $end ISO 8601 date format string [#required]
+     * @param string $currency Currency string [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return mixed Dashboard data as array (each package indexed by full URL)
@@ -177,9 +177,9 @@ class SnipREST extends WireHttpExtended {
     /**
      * Get all dashboard results using multi cURL requests
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
-     * @param string $currency Currency string
+     * @param string $start ISO 8601 date format string [#required]
+     * @param string $end ISO 8601 date format string [#required]
+     * @param string $currency Currency string [#required]
      * @return array $data Dashboard data as array (indexed by `resPath...`)
      *
      */
@@ -250,9 +250,9 @@ class SnipREST extends WireHttpExtended {
     /**
      * Get all dashboard results using single requests
      *
-     * @param string $start ISO 8601 date format string
-     * @param string $end ISO 8601 date format string
-     * @param string $currency Currency string
+     * @param string $start ISO 8601 date format string [#required]
+     * @param string $end ISO 8601 date format string [#required]
+     * @param string $currency Currency string [#required]
      * @return array $data Dashboard data as array (indexed by `resPath...`)
      *
      */
@@ -404,13 +404,13 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $token The Snipcart $token of the order to be returned
+     * @param string $token The Snipcart $token of the order to be returned [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
-    public function getOrder($token = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getOrder($token, $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -442,7 +442,7 @@ class SnipREST extends WireHttpExtended {
     /**
      * Delete a single or the lister order cache (WireCache).
      *
-     * @param string $token The Snipcart $token of the order (if no token provided, the lister order cache is deleted)
+     * @param string $token The Snipcart $token of the order (if no token provided, the lister order cache is deleted) [#required]
      * @return void
      *
      */
@@ -465,10 +465,10 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $token The Snipcart token of the order
+     * @param string $token The Snipcart token of the order [#required]
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `offset` (int) Number of results to skip. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 20]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
@@ -528,15 +528,15 @@ class SnipREST extends WireHttpExtended {
      *
      * (Includes sending some information to your customer or generating automatic emails)
      *
-     * @param string $token The Snipcart token of the order
+     * @param string $token The Snipcart token of the order [#required]
      * @param array $options An array of options that will be sent as POST params:
-     *  - `type` (string) Type of notification. (Possible values: Comment, OrderStatusChanged, OrderShipped, TrackingNumber, Invoice) #required
-     *  - `deliveryMethod` (string) 'Email' send by email, 'None' keep it private. #required
+     *  - `type` (string) Type of notification. (Possible values: Comment, OrderStatusChanged, OrderShipped, TrackingNumber, Invoice) [default: TrackingNumber]
+     *  - `deliveryMethod` (string) 'Email' send by email, 'None' keep it private. [default: Email]
      *  - `message` (string) Message of the notification. Optional when used with type 'TrackingNumber'.
      * @return array $data
      * 
      */
-    public function postOrderNotification($token = '', $options = array()) {
+    public function postOrderNotification($token, $options = array()) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -582,15 +582,15 @@ class SnipREST extends WireHttpExtended {
      *
      * (Includes sending some information to your customer or generating automatic emails)
      *
-     * @param string $token The Snipcart token of the order
+     * @param string $token The Snipcart token of the order [#required]
      * @param array $options An array of options that will be sent as POST params:
-     *  - `amount` (float) The amount to be refunded #required
+     *  - `amount` (float) The amount to be refunded
      *  - `comment` (string) The reason for the refund
      *  - `notifyCustomer` (boolean) Send reason for refund with customer notification
      * @return array $data
      * 
      */
-    public function postOrderRefund($token = '', $options = array()) {
+    public function postOrderRefund($token, $options = array()) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -633,16 +633,16 @@ class SnipREST extends WireHttpExtended {
      *
      * (Includes sending some information to your customer or generating automatic emails)
      *
-     * @param string $token The Snipcart token of the order
+     * @param string $token The Snipcart token of the order [#required]
      * @param array $options An array of options that will be sent as POST params:
-     *  - `status` (string) The order status  #required (Possible values: InProgress, Processed, Disputed, Shipped, Delivered, Pending, Cancelled)
+     *  - `status` (string) The order status (Possible values: InProgress, Processed, Disputed, Shipped, Delivered, Pending, Cancelled)
      *  - `paymentStatus` (string) The order payment status (Possible values: Paid, Deferred, PaidDeferred, ChargedBack, Refunded, Paidout, Failed, Pending, Expired, Cancelled, Open, Authorized)
      *  - `trackingNumber` (string) The tracking number associated to the order
      *  - `trackingUrl` (string) The URL where the customer will be able to track its order
      * @return array $data
      * 
      */
-    public function putOrderStatus($token = '', $options = array()) {
+    public function putOrderStatus($token, $options = array()) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -684,8 +684,8 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $key The array key to be returned
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `offset` (int) Number of results to skip. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 20]
      *  - `status` (string) A criteria to return items having the specified status. (Possible values: Active, Paused, Canceled)
      *  - `userDefinedPlanName` (string) A criteria to return items matching the specified plan name.
      *  - `userDefinedCustomerNameOrEmail` (string) A criteria to return items belonging to the specified customer name or email.
@@ -740,8 +740,8 @@ class SnipREST extends WireHttpExtended {
      * Get subscriptions items from Snipcart dashboard.
      *
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `offset` (int) Number of results to skip. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 20]
      *  - `status` (string) A criteria to return items having the specified status. (Possible values: Active, Paused, Canceled)
      *  - `userDefinedPlanName` (string) A criteria to return items matching the specified plan name.
      *  - `userDefinedCustomerNameOrEmail` (string) A criteria to return items belonging to the specified customer name or email.
@@ -761,13 +761,13 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $id The Snipcart item id of the subscription to be returned
+     * @param string $id The Snipcart item id of the subscription to be returned [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
-    public function getSubscription($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getSubscription($id, $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -874,8 +874,8 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $key The array key to be returned
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `limit` (int) Number of results to fetch. [default = 50]
+     *  - `continuationToken` (string) The contionuation token for abandoned cart pager [default = null]
      *  - `timeRange` (string) A time range criteria for abandoned carts. (Possible values: Anytime, LessThan4Hours, LessThanADay, LessThanAWeek, LessThanAMonth)
      *  - `minimalValue` (float) The minimum total cart value of results to fetch
      *  - `email` (string) The email of the customer who placed the order
@@ -893,13 +893,13 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $id The Snipcart id of the cart to be returned
+     * @param string $id The Snipcart id of the cart to be returned [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
-    public function getAbandonedCart($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getAbandonedCart($id, $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -956,8 +956,8 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $token The Snipcart id of the abandoned cart [#required]
      * @param array $options An array of options that will be sent as POST params:
-     *  - `type` (string) Type of notification. (Possible values: Comment) #required
-     *  - `deliveryMethod` (string) 'Email' send by email, 'None' keep it private. #required
+     *  - `type` (string) Type of notification. (Possible values: Comment)
+     *  - `deliveryMethod` (string) 'Email' send by email, 'None' keep it private.
      *  - `message` (string) Message of the notification
      * @return array $data
      * 
@@ -1010,8 +1010,8 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $key The array key to be returned
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `offset` (int) Number of results to skip. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 20]
      *  - `status` (string) A status criteria for your customers collection. (Possible values: Confirmed = created an account, Unconfirmed = checked out as guests)
      *  - `email` (string) The email of the customer who placed the order
      *  - `name` (string) The name of the customer who placed the order
@@ -1066,8 +1066,8 @@ class SnipREST extends WireHttpExtended {
      * Get customers items from Snipcart dashboard.
      *
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `offset` (int) Number of results to skip. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 20]
      *  - `status` (string) A status criteria for your customers collection. (Possible values: Confirmed = created an account, Unconfirmed = checked out as guests)
      *  - `email` (string) The email of the customer who placed the order
      *  - `name` (string) The name of the customer who placed the order
@@ -1087,7 +1087,7 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $id The Snipcart id of the customer
+     * @param string $id The Snipcart id of the customer [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
@@ -1132,13 +1132,13 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $id The Snipcart id of the customer to be returned
+     * @param string $id The Snipcart id of the customer to be returned [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
-    public function getCustomer($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getCustomer($id, $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -1174,8 +1174,8 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $key The array key to be returned
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `offset` (int) Number of results to skip. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 20]
      *  - `userDefinedId` string The custom product ID
      *  - `keywords` string A keyword to search for
      *  - `archived` boolean (as string) "true" or "false" (undocumented!)
@@ -1234,8 +1234,8 @@ class SnipREST extends WireHttpExtended {
      *
      * @param string $key The array key to be returned
      * @param array $options An array of filter options that will be sent as URL params:
-     *  - `offset` (int) Number of results to skip. [default = 0] #required
-     *  - `limit` (int) Number of results to fetch. [default = 20] #required
+     *  - `offset` (int) Number of results to skip. [default = 0]
+     *  - `limit` (int) Number of results to fetch. [default = 20]
      *  - `userDefinedId` string The custom product ID
      *  - `archived` boolean (as string) "true" or "false" (undocumented!)
      *  - `excludeZeroSales`  boolean (as string) "true" or "false"  (undocumented!)
@@ -1256,13 +1256,13 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $id The Snipcart id of the product to be returned
+     * @param string $id The Snipcart id of the product to be returned [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
-    public function getProduct($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getProduct($id, $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -1294,7 +1294,7 @@ class SnipREST extends WireHttpExtended {
     /**
      * Get the id of a Snipcart product by it's userDefinedId.
      *
-     * @param string $userDefinedId The user defined id of a product (SKU)
+     * @param string $userDefinedId The user defined id of a product (SKU) [#required]
      * @return boolean|string $id The Snipcart product id or false if not found or something went wrong
      *
      */
@@ -1323,7 +1323,7 @@ class SnipREST extends WireHttpExtended {
     /**
      * Fetch the URL passed in parameter and generate product(s) found on this page.
      *
-     * @param string $fetchUrl The URL of the page to be fetched
+     * @param string $fetchUrl The URL of the page to be fetched [#required]
      * @return array $data
      * 
      */
@@ -1360,7 +1360,7 @@ class SnipREST extends WireHttpExtended {
     /**
      * Update a specific product.
      *
-     * @param string $id The Snipcart id of the product to be updated
+     * @param string $id The Snipcart id of the product to be updated [#required]
      * @param array $options An array of options that will be sent as POST params:
      *  - `inventoryManagementMethod` (string) Specifies how inventory should be tracked for this product. (Possible values: Single, Variant)
      *  - `variants` (array) Allows to set stock per product variant
@@ -1408,7 +1408,7 @@ class SnipREST extends WireHttpExtended {
      * Delete a specific product.
      * (the product isn't actually deleted, but it's "archived" flag is set to true)
      *
-     * @param string $id The Snipcart id of the product to be deleted (archived)
+     * @param string $id The Snipcart id of the product to be deleted (archived) [#required]
      * @return array $data
      * 
      */
@@ -1480,13 +1480,13 @@ class SnipREST extends WireHttpExtended {
      *
      * Uses WireCache to prevent reloading Snipcart data on each request.
      *
-     * @param string $id The Snipcart id of the discount to be returned
+     * @param string $id The Snipcart id of the discount to be returned [#required]
      * @param mixed $expires Lifetime of this cache, in seconds
      * @param boolean $forceRefresh Wether to refresh this cache
      * @return array $data
      *
      */
-    public function getDiscount($id = '', $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getDiscount($id, $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -1518,10 +1518,10 @@ class SnipREST extends WireHttpExtended {
     /**
      * Updates a Snipcart discount.
      *
-     * @param string $id The Snipcart id of the discount
+     * @param string $id The Snipcart id of the discount [#required]
      * @param array $options An array of options that will be sent as PUT params:
-     *  - `id` (string) The Snipcart id of the discount #required
-     *  - `name` (string) The discount friendly name #required
+     *  - `id` (string) The Snipcart id of the discount
+     *  - `name` (string) The discount friendly name
      *  - `expires` (date) The date when this discount should expire
      *  - `maxNumberOfUsages` (integer) The max. number of usages for the discount / if null, discount never expires
      *  - `currency` (string) The currency for amounts
@@ -1598,8 +1598,8 @@ class SnipREST extends WireHttpExtended {
      * Creates a Snipcart discount.
      *
      * @param string $id The Snipcart id of the discount
-     * @param array $options An array of options that will be sent as PUT params:
-     *  - `name` (string) The discount friendly name #required
+     * @param array $options An array of options that will be sent as PUT params: [#required]
+     *  - `name` (string) The discount friendly name
      *  - `expires` (date) The date when this discount should expire
      *  - `maxNumberOfUsages` (integer) The max. number of usages for the discount / if null, discount never expires
      *  - `currency` (string) The currency for amounts
@@ -1671,7 +1671,7 @@ class SnipREST extends WireHttpExtended {
     /**
      * Deletes a Snipcart discount.
      *
-     * @param string $id The Snipcart id of the discount
+     * @param string $id The Snipcart id of the discount [#required]
      * @return array $data
      * 
      */
