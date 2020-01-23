@@ -623,7 +623,7 @@ trait AbandonedCarts {
      * @return markup MarkupAdminDataTable 
      *
      */
-    private function _renderTablecartSummary($item) {
+    private function _renderTableCartSummary($item) {
         $modules = $this->wire('modules');
 
         $products = $item['items'];
