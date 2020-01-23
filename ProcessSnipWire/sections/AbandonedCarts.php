@@ -281,21 +281,45 @@ trait AbandonedCarts {
                     data-panel-width="85%">' .
                         wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
                 '</a>';
-                $total =
-                '<strong class="price-field">' .
-                    CurrencyFormat::format($item['summary']['total'], $item['currency']) .
-                '</strong>';
+
+                if(!empty($item['modificationDate'])) {
+                    $modificationDate = '<span class="tooltip" title="';
+                    $modificationDate .= wireDate('Y-m-d H:i:s', $item['modificationDate']);
+                    $modificationDate .= '">';
+                    $modificationDate .= wireDate('relative', $item['modificationDate']);
+                    $modificationDate .= '</span>';
+                } else {
+                    $modificationDate = '-';
+                }
+
+                $itemsCount = count($item['items']);
+                
                 $products = array();
                 foreach ($item['items'] as $product) {
                     $products[] = $product['name'];
                 }
                 $productNames = implode(',<br>', $products);
+                
+                $total =
+                '<strong class="price-field">' .
+                    CurrencyFormat::format($item['summary']['total'], $item['currency']) .
+                '</strong>';
+                
+                $notifications = isset($item['notifications']) ? $item['notifications'] : array();
+                $notificationsCount = count($notifications);
+                if ($notificationsCount) {
+                    $customerContacted = '<span class="success-color">' . $this->_('Yes') . '</span>';
+                } else {
+                    $customerContacted = '<span class="ui-priority-secondary">' . $this->_('No') . '</span>';
+                }
+                
                 $table->row(array(
                     $customerEmail,
-                    wireDate('Y-m-d H:i:s', $item['modificationDate']),
-                    count($item['items']),
+                    $modificationDate,
+                    $itemsCount,
                     $productNames,
                     $total,
+                    $customerContacted,
                 ));
             }
             $out = $table->render();
@@ -678,6 +702,7 @@ trait AbandonedCarts {
      */
     private function _renderTableCartNotifications($notifications) {
         $modules = $this->wire('modules');
+        $sanitizer = $this->wire('sanitizer');
 
         /*
         Sample notification item:
@@ -714,7 +739,7 @@ trait AbandonedCarts {
 
         foreach ($notifications as $notification) {            
             if (!empty($notification['sentOn'])) {
-                $sentOn = '<span class="ui-priority-secondary tooltip" title="';
+                $sentOn = '<span class="tooltip" title="';
                 $sentOn .= wireDate('Y-m-d H:i:s', $notification['sentOn']);
                 $sentOn .= '">';
                 $sentOn .= wireDate('relative', $notification['sentOn']);
@@ -724,10 +749,14 @@ trait AbandonedCarts {
             }
 
             $to = $notification['to'] ? $notification['to'] : '-';
-            $message = $notification['message'] ? $notification['message'] : '-';
+            
+            $message = $notification['message']
+                ? $sanitizer->truncate($notification['message'], 100)
+                : '-';
+            $message = $sanitizer->entities($message);
 
             if (!empty($notification['seenOn'])) {
-                $seenOn = '<span class="ui-priority-secondary tooltip" title="';
+                $seenOn = '<span class="tooltip" title="';
                 $seenOn .= wireDate('Y-m-d H:i:s', $notification['seenOn']);
                 $seenOn .= '">';
                 $seenOn .= wireDate('relative', $notification['seenOn']);
