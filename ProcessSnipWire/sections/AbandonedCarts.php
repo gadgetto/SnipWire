@@ -272,6 +272,7 @@ trait AbandonedCarts {
                 $this->_('# Items'),
                 $this->_('Items'),
                 $this->_('Value'),
+                $this->_('Contacted'),
             ));
 
             foreach ($items as $item) {
