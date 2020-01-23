@@ -587,7 +587,7 @@ trait Orders {
             $f->label = $this->_('Notifications');
             $f->label .= $notificationsBadge;
             $f->icon = self::iconComment;
-            $f->value = $this->_renderTableNotifications($notifications);
+            $f->value = $this->_renderTableOrderNotifications($notifications);
             $f->collapsed = Inputfield::collapsedYes;
             
         $wrapper->add($f);
@@ -1395,7 +1395,7 @@ trait Orders {
      * @return markup MarkupAdminDataTable 
      *
      */
-    private function _renderTableNotifications($notifications) {
+    private function _renderTableOrderNotifications($notifications) {
         $modules = $this->wire('modules');
 
         /*
