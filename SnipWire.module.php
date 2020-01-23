@@ -141,7 +141,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                     $key + 1
                 ));
             }
-            if (!checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
+            if (!empty($tax['rate']) && !checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
                 $taxesField->error(sprintf(
                     $this->_('Taxes repeater row [%s]: "Rate" value needs to be float'),
                     $key + 1
