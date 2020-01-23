@@ -329,6 +329,8 @@ trait AbandonedCarts {
         }
 
         $id = $item['id'];
+        $notifications = isset($item['notifications']) ? $item['notifications'] : array();
+        $notificationsCount = count($notifications);
 
         $out =
         '<div class="ItemDetailHeader">' .
@@ -372,6 +374,27 @@ trait AbandonedCarts {
             $f->label = $this->_('Cart Details');
             $f->icon = self::iconAbandonedCart;
             $f->value = $this->_renderTableCartSummary($item);
+            
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+            $notificationsBadge = 
+            ' <span class="snipwire-badge snipwire-badge-info">' .
+                sprintf(_n("%d message", "%d messages", $notificationsCount), $notificationsCount) .
+            '</span>';
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->entityEncodeLabel = false;
+            $f->label = $this->_('Customer messages');
+            $f->label .= $notificationsBadge;
+            $f->icon = self::iconComment;
+            $f->value = $this->_renderTableCartNotifications($notifications);
+            $f->collapsed = Inputfield::collapsedYes;
             
         $wrapper->add($f);
 
@@ -642,6 +665,86 @@ trait AbandonedCarts {
         ));
 
         $out = $table->render();            
+
+        return $out;
+    }
+
+    /**
+     * Render the abandoned cart notifications table.
+     *
+     * @param array $notifications The notifications array
+     * @return markup MarkupAdminDataTable 
+     *
+     */
+    private function _renderTableCartNotifications($notifications) {
+        $modules = $this->wire('modules');
+
+        /*
+        Sample notification item:
+        
+        array(
+            "sentOn" => "2020-01-22T17:43:26.7572848Z",
+            "seenOn" => "",
+            "type" => "Comment",
+            "deliveryMethod" => "Email",
+            "to" => "martin.gartner@me.com",
+            "body" => "<html>...</html>",
+            "message" => "Message text ...",
+            "resourceUrl" => "",
+            "subject" => "Some items are still in your cart on bitego!",
+            "creationDate" => "1579715005",
+            "cartId" => "f8de173d-e333-4302-9e47-f5b0359c87f9",
+            "accountId" => "52084",
+            "mode" => "Test",
+        )
+        */
+
+        /** @var MarkupAdminDataTable $table */
+        $table = $modules->get('MarkupAdminDataTable');
+        $table->setEncodeEntities(false);
+        $table->id = 'CartCommentsSummaryTable';
+        $table->setSortable(false);
+        $table->setResizable(false);
+        $table->headerRow(array(
+            $this->_('Email sent on'),
+            $this->_('Email sent to'),
+            $this->_('Message'),
+            $this->_('Email seen on'),
+        ));
+
+        foreach ($notifications as $notification) {            
+            if (!empty($notification['sentOn'])) {
+                $sentOn = '<span class="ui-priority-secondary tooltip" title="';
+                $sentOn .= wireDate('Y-m-d H:i:s', $notification['sentOn']);
+                $sentOn .= '">';
+                $sentOn .= wireDate('relative', $notification['sentOn']);
+                $sentOn .= '</span>';
+            } else {
+                $sentOn = '-';
+            }
+
+            $to = $notification['to'] ? $notification['to'] : '-';
+            $message = $notification['message'] ? $notification['message'] : '-';
+
+            if (!empty($notification['seenOn'])) {
+                $seenOn = '<span class="ui-priority-secondary tooltip" title="';
+                $seenOn .= wireDate('Y-m-d H:i:s', $notification['seenOn']);
+                $seenOn .= '">';
+                $seenOn .= wireDate('relative', $notification['seenOn']);
+                $seenOn .= '</span>';
+            } else {
+                $seenOn = '-';
+            }
+
+            $table->row(array(
+                $sentOn,
+                $to,
+                $message,
+                $seenOn,
+            ));
+        }
+
+        $out = $table->render(); 
 
         return $out;
     }
