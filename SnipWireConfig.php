@@ -148,6 +148,8 @@ class SnipWireConfig extends ModuleConfig {
         $sniprest = $this->wire('sniprest');
         $defaults = $this->getDefaults();
 
+        $modules->get('JqueryUI')->use('vex');
+
         $this->_includeAssets();
         $inputfields = parent::getInputfields();
 

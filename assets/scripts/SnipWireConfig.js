@@ -118,9 +118,14 @@ jQuery(document).ready(function($) {
         // to the server, etc.  If a hide callback is not given the item
         // will be deleted.
         hide: function (deleteElement) {
-            if (confirm(languageStrings.confirm_delete)) {
-                $(this).slideUp(deleteElement);
-            }
+            var $this = $(this);
+            ProcessWire.confirm(
+                languageStrings.confirm_delete,
+                function() {
+                    // dialogue OK click
+                    $this.slideUp(deleteElement);
+                }
+            );
         },
         
         // (Optional)
