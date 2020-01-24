@@ -831,9 +831,9 @@ trait Dashboard {
                     $panelLink,
                     $completionDate,
                     $item['placedBy'],
-                    $this->orderStatuses[$item['status']],
-                    $this->paymentStatuses[$item['paymentStatus']],
-                    $this->paymentMethods[$item['paymentMethod']],
+                    $this->getOrderStatus($item['status']),
+                    $this->getPaymentStatus($item['paymentStatus']),
+                    $this->getPaymentMethod($item['paymentMethod']),
                     $total,
                 ));
             }
