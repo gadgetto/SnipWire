@@ -221,7 +221,16 @@ class ProcessSnipWire extends Process implements Module {
             'All' =>  $this->_('All Orders'),
             'Paid' => $this->_('Paid'),
             'PaidDeferred' => $this->_('Paid (deferred)'),
-            'Deferred' => $this->_('Not paid'),
+            'Deferred' => $this->_('Not paid (deferred)'),
+            'ChargedBack' => $this->_('Charged back'),
+            'Refunded' => $this->_('Refunded'),
+            'Paidout' => $this->_('Paid out'),
+            'Failed' => $this->_('Failed'),
+            'Pending' => $this->_('Pending'),
+            'Expired' => $this->_('Expired'),
+            'Cancelled' => $this->_('Cancelled'),
+            'Open' => $this->_('Open'),
+            'Authorized' => $this->_('Authorized'),
         );
         $this->paymentMethods = array(
             'All' =>  $this->_('All Methods'),
