@@ -20,7 +20,7 @@ $resources = array(
         'snipcart-product' => array(
             'name' => 'snipcart-product',
             'label' => 'Snipcart Product',
-            'icon' => 'cube', 
+            'icon' => 'tag', 
             'noChildren' => 1,
             'tags' => 'Snipcart',
             '_allowedParentTemplates' => 'snipcart-shop', // comma separated list of allowed parent template names
@@ -261,6 +261,8 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         ),
+
+        
     ),
 
     'pages' => array(

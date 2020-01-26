@@ -21,6 +21,12 @@ class ExtendedInstaller extends Wire {
     const installerModeFiles = 16;
     const installerModeAll = 31;
 
+    /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
+    protected $snipWireRootUrl = '';
+
+    /** @var string $resourcesFile Name of file which holds installer resources */
+    protected $resourcesFile = '';
+    
     /** @var array $resources Installation resources */
     protected $resources = array();
     
@@ -31,37 +37,52 @@ class ExtendedInstaller extends Wire {
      * 
      */
     public function __construct() {
-        $this->getInstallResourcesExternal();
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
         parent::__construct();
     }
 
     /**
-     * Retrieve extended installation resources from [ClassName].resources.php
-     * (multidimensional array)
+     * Retrieve extended installation resources from file.
+     * (file needs to be in same folder as this class file)
      * 
+     * @param string $fileName The name of the resources file
      * @return array
      * @throws WireException
      * 
      */
-    protected function getInstallResourcesExternal() {
-        // Wire method
-        $className = $this->className();
-        $resources = $className . '.resources.php';
-        $path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $resources;
+    public function setResourcesFile($fileName) {
+        $path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $fileName;
         if (file_exists($path)) {
             include $path;
             if (!is_array($resources) || !count($resources)) {
-                $out = sprintf($this->_("Installation aborted. Invalid [%s] file"), $resources);
+                $out = sprintf($this->_('Installation aborted. Invalid resources array in file [%s].'), $resources);
                 throw new WireException($out);
             }
         } else  {
-            $out = sprintf($this->_("Installation aborted. Missing [%s] file."), $resources);
+            $out = sprintf($this->_('Installation aborted. File [%s] not found.'), $resources);
             throw new WireException($out);
         }
         $this->resources = $resources;
         return $this->resources;
     }
 
+    /**
+     * Set installation resources from array.
+     * (multidimensional array)
+     * 
+     * @param array $resources Installation resources array
+     * @return array
+     * @throws WireException
+     * 
+     */
+    public function setResources($resources) {
+        if (!is_array($resources) || !count($resources)) {
+            $out = $this->_('Installation aborted. Invalid resources array.');
+            throw new WireException($out);
+        }
+        $this->resources = $resources;
+        return $this->resources;
+    }
 
     /**
      * Installer for extended resources from [ClassName].resources.php.
@@ -78,6 +99,11 @@ class ExtendedInstaller extends Wire {
         $permissions = $this->wire('permissions');
         $modules     = $this->wire('modules');
         $config      = $this->wire('config');
+        
+        if (!$this->resources) {
+            $out = $this->_('Installation aborted. No resources array provided. Please use "setResourcesFile" or "setResources" method to provide a resources array.');
+            throw new WireException($out);
+        }
         
         $sourceDir = dirname(__FILE__) . '/';
         
@@ -98,11 +124,12 @@ class ExtendedInstaller extends Wire {
                     $t->label = $item['label'];
                     if (isset($item['icon'])) $t->setIcon($item['icon']);
                     if (isset($item['noChildren'])) $t->noChildren = $item['noChildren'];
+                    if (isset($item['noParents'])) $t->noParents = $item['noParents'];
                     if (isset($item['tags'])) $t->tags = $item['tags'];
                     $t->save();
                     $this->message($this->_('Installed Template: ') . $item['name']);
                 } else {
-                    $this->message(sprintf($this->_("Template [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_("Template [%s] already exists. Skipped installation."), $item['name']));
                 }
             }
             
@@ -138,10 +165,10 @@ class ExtendedInstaller extends Wire {
                     if ($this->wire('files')->copy($source, $destination)) {
                         $this->message(sprintf($this->_('Installed file [%1$s] to [%2$s].'), $source, $destination));
                     } else {
-                        $this->warning(sprintf($this->_('Could not copy file from [%1$s] to [%2$s]. Please copy manually.'), $source, $destination));
+                        $this->error(sprintf($this->_('Could not copy file from [%1$s] to [%2$s]. Please copy manually.'), $source, $destination));
                     }
                 } else {
-                    $this->message(sprintf($this->_('File [%2$s] already exists. If necessary please copy manually from [%1$s]. Skipped installation.'), $source, $destination));
+                    $this->warning(sprintf($this->_('File [%2$s] already exists. If necessary please copy manually from [%1$s]. Skipped installation.'), $source, $destination));
                 }
             }
         }
@@ -153,7 +180,7 @@ class ExtendedInstaller extends Wire {
                 if (!$fields->get($item['name'])) {
                     $f = new Field();
                     if (!$f->type = $modules->get($item['type'])) {
-                        $this->message(sprintf($this->_("Field [%s] could not be installed. Fieldtype [%s] not available. Skipped installation."), $item['name'], $item['type']));
+                        $this->error(sprintf($this->_("Field [%s] could not be installed. Fieldtype [%s] not available. Skipped installation."), $item['name'], $item['type']));
                         continue;
                     }
                     $f->name = $item['name'];
@@ -200,7 +227,7 @@ class ExtendedInstaller extends Wire {
                     $f->save();
                     $this->message($this->_('Installed Field: ') . $item['name']);
                 } else {
-                    $this->message(sprintf($this->_("Field [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_("Field [%s] already exists. Skipped installation."), $item['name']));
                 }
 
             }
@@ -253,14 +280,20 @@ class ExtendedInstaller extends Wire {
         if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
             foreach ($this->resources['pages'] as $item) {
 
+                // Page "parent" key may have "string tags"
+                $parent = wirePopulateStringTags(
+                    $item['parent'],
+                    array('snipWireRootUrl' => $this->snipWireRootUrl)
+                );
+
                 if (!$t = $templates->get($item['template'])) {
                     $out = sprintf($this->_("Skipped installation of page [%s]. The template [%s] to be assigned does not exist!"), $item['name'], $item['template']);
-                    $this->warning($out);
+                    $this->error($out);
                     continue;
                 }
-                if (!$this->wire('pages')->get($item['parent'])) {
-                    $out = sprintf($this->_("Skipped installation of page [%s]. The parent [%s] to be set does not exist!"), $item['name'], $item['parent']);
-                    $this->warning($out);
+                if (!$this->wire('pages')->get($parent)) {
+                    $out = sprintf($this->_("Skipped installation of page [%s]. The parent [%s] to be set does not exist!"), $item['name'], $parent);
+                    $this->error($out);
                     continue;
                 }
                 
@@ -268,9 +301,10 @@ class ExtendedInstaller extends Wire {
                     $page = new Page();
                     $page->name = $item['name'];
                     $page->template = $item['template'];
-                    $page->parent = $item['parent'];
+                    $page->parent = $parent;
                     $page->process = $this;
                     $page->title = $item['title'];
+                    if (isset($item['status'])) $f->status = $item['status'];
                     $page->save();
                     $this->message($this->_('Installed Page: ') . $page->path);
                     
@@ -290,7 +324,7 @@ class ExtendedInstaller extends Wire {
                     }
                     $page->save();
                 } else {
-                    $this->message(sprintf($this->_("Page [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_("Page [%s] already exists. Skipped installation."), $item['name']));
                 }
             }
         }
@@ -306,11 +340,11 @@ class ExtendedInstaller extends Wire {
                     $p->save();
                     $this->message($this->_('Installed Permission: ') . $item['name']);
                 } else {
-                    $this->message(sprintf($this->_("Permission [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_("Permission [%s] already exists. Skipped installation."), $item['name']));
                 }
             }
         }
         
-        return ($this->wire('notices')->hasWarnings() or $this->wire('notices')->hasErrors()) ? false : true;    
+        return ($this->wire('notices')->hasErrors()) ? false : true;    
     }
 }

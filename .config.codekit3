@@ -235,12 +235,12 @@
 		"oAP": "/installer/ExtendedInstaller.php",
 		"oF": 0
 		},
-	"/installer/ExtendedInstaller.resources.php": {
+	"/installer/ProductsPackage.php": {
 		"cB": 0,
 		"ft": 8192,
 		"hM": 0,
 		"oA": 0,
-		"oAP": "/installer/ExtendedInstaller.resources.php",
+		"oAP": "/installer/ProductsPackage.php",
 		"oF": 0
 		},
 	"/installer/sample_images/beer1.jpg": {

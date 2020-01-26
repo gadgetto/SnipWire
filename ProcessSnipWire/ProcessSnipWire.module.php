@@ -1068,9 +1068,10 @@ class ProcessSnipWire extends Process implements Module {
             if ($submitInstall) {
                 /** @var ExstendedInstaller $installer */
                 $installer = $this->wire(new ExtendedInstaller());
+                $installer->setResourcesFile('ProductsPackage.php');
                 $installResources = $installer->installResources(ExtendedInstaller::installerModeAll);
                 if (!$installResources) {                        
-                    $this->warning($this->_('Installation of SnipWire product package not completet. Please check the warnings...'));
+                    $this->warning($this->_('Installation of SnipWire product package not completet. Please check for errors and warnings...'));
                 } else {
                     // Update SnipWire module config to tell system that product package is installed
                     $snipwireConfig['product_package'] = true;
