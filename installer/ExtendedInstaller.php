@@ -304,7 +304,7 @@ class ExtendedInstaller extends Wire {
                     $page->parent = $parent;
                     $page->process = $this;
                     $page->title = $item['title'];
-                    if (isset($item['status'])) $f->status = $item['status'];
+                    if (isset($item['status'])) $page->status = $item['status'];
                     $page->save();
                     $this->message($this->_('Installed Page: ') . $page->path);
                     
