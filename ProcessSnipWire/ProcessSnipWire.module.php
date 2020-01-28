@@ -1105,7 +1105,7 @@ class ProcessSnipWire extends Process implements Module {
                 'snipcart-cart' => array(
                     'name' => 'snipcart-cart',
                     'label' => 'Snipcart Cart (System)',
-                    'icon' => 'shopping-cart',
+                    'icon' => 'gear',
                     'noChildren' => 1,
                     'noParents' => 1,
                     'tags' => 'Snipcart',
@@ -1116,6 +1116,7 @@ class ProcessSnipWire extends Process implements Module {
                     'name' => 'snipcart_cart_custom_fields',
                     'type' => 'FieldtypeTextarea',
                     'label' => $this->_('Custom Cart Fields Setup'),
+                    'icon' => 'code',
                     'description' => $this->_('You can add custom fields to the checkout process. Whenever you define custom cart fields, a new tab/step called `Order infos` will be inserted before the `Billing address` during the checkout process.'),
                     'notes' => $this->_('For detailed infos about custom cart fields setup, please visit [Snipcart v2.0 Custom Fields](https://docs.snipcart.com/v2/configuration/custom-fields).'),
                     'rows' => 12,
