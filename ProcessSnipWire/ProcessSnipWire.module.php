@@ -1087,13 +1087,93 @@ class ProcessSnipWire extends Process implements Module {
         //$out .= '<script>window.onunload = refreshParent; function refreshParent() { window.opener.location.reload(); }</script>';            
         return $out;
     }
-    
+
+    /**
+     * Install additional SnipWire system resources.
+     *
+     * @return boolean
+     *
+     */
+    private function _installSystemResources() {
+
+        $cartCustomVal  = 'data-cart-custom1-name="By checking this box, I have read and agree to the <a href=\'https://www.domain.com/terms-and-conditions\' class=\'js-real-link\' target=\'_blank\'>Terms &amp; Conditions</a>"' . PHP_EOL;
+        $cartCustomVal .= 'data-cart-custom1-options="true|false"' . PHP_EOL;
+        $cartCustomVal .= 'data-cart-custom1-required="true"';
+
+        $resources = array(
+            'templates' => array(
+                'snipcart-cart' => array(
+                    'name' => 'snipcart-cart',
+                    'label' => 'Snipcart Cart (System)',
+                    'icon' => 'shopping-cart',
+                    'noChildren' => 1,
+                    'noParents' => 1,
+                    'tags' => 'Snipcart',
+                ),
+            ),
+            'fields' => array(
+                'snipcart_cart_custom_fields' => array(
+                    'name' => 'snipcart_cart_custom_fields',
+                    'type' => 'FieldtypeTextarea',
+                    'label' => $this->_('Custom Cart Fields Setup'),
+                    'description' => $this->_('You can add custom fields to the checkout process. Whenever you define custom cart fields, a new tab/step called `Order infos` will be inserted before the `Billing address` during the checkout process.'),
+                    'notes' => $this->_('For detailed infos about custom cart fields setup, please visit [Snipcart v2.0 Custom Fields](https://docs.snipcart.com/v2/configuration/custom-fields).'),
+                    'rows' => 12,
+                    'tags' => 'Snipcart',
+                    '_addToTemplates' => 'snipcart-cart', // comma separated list of template names
+                ),
+            ),            
+            'pages' => array(
+                'snipcart-cart' => array(
+                    'name' => 'snipcart-cart',
+                    'title' => 'Custom Cart Fields',
+                    'template' => 'snipcart-cart',
+                    'parent' => '{snipWireRootUrl}', // needs to be page path (in this case we use a "string tag" which will be resolved by installer)
+                    'status' => 1024, // Page::statusHidden
+                    'fields' => array(
+                        'snipcart_cart_custom_fields' => $cartCustomVal,
+                    ),
+                    '_uninstall' => 'trash', // "trash" or "delete" or "no"
+                ),
+            ),
+        );
+
+        /** @var ExstendedInstaller $installer */
+        $installer = $this->wire(new ExtendedInstaller());
+        $installer->setResources($resources);
+        return $installer->installResources(ExtendedInstaller::installerModeAll);        
+    }
+
     /**
      * Called on module install
+     *
+     * @throws WireException if installation fails
      *
      */
     public function ___install() {
         parent::___install();
+        if (!$this->_installSystemResources()) {                        
+            $out = $this->_('Installation of SnipWire system resources failed.');
+            throw new WireException($out);
+        }
+    }
+
+    /**
+     * Called on module version change
+     * 
+     * @param int|string $fromVersion Previous version
+     * @param int|string $toVersion New version
+     * @throws WireException if upgrade fails
+     * 
+     */
+    public function ___upgrade($fromVersion, $toVersion) {
+        // Add custom product fields and custom oder fields support since v 0.7.1
+		if (version_compare($fromVersion, '0.7.0', '<=')) {
+            if (!$this->_installSystemResources()) {                        
+                $out = $this->_('Installation of SnipWire system resources failed while upgrading the module.');
+                throw new WireException($out);
+            }
+        }
     }
 
     /**
@@ -1103,5 +1183,4 @@ class ProcessSnipWire extends Process implements Module {
     public function ___uninstall() {
         parent::___uninstall();
     }
-
 }
