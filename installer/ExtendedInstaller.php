@@ -188,6 +188,7 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['label2'])) $f->label2 = $item['label2'];
                     if (isset($item['description'])) $f->description = $item['description'];
                     if (isset($item['notes'])) $f->notes = $item['notes'];
+                    if (isset($item['icon'])) $f->setIcon($item['icon']);
                     if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
                     if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
                     if (isset($item['rows'])) $f->rows = $item['rows'];
