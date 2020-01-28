@@ -1124,8 +1124,8 @@ class ProcessSnipWire extends Process implements Module {
                 ),
             ),            
             'pages' => array(
-                'snipcart-cart' => array(
-                    'name' => 'snipcart-cart',
+                'custom-cart-fields' => array(
+                    'name' => 'custom-cart-fields',
                     'title' => 'Custom Cart Fields',
                     'template' => 'snipcart-cart',
                     'parent' => '{snipWireRootUrl}', // needs to be page path (in this case we use a "string tag" which will be resolved by installer)
