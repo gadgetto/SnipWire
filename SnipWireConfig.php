@@ -104,6 +104,7 @@ class SnipWireConfig extends ModuleConfig {
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
             'split_firstname_and_lastname' => 1,
+            'cart_custom_fields_enabled' => 1,
             'snipcart_debug' => 1,
             'taxes_provider' => 'integrated',
             'taxes' => Taxes::getDefaultTaxesConfig(true), // JSON
@@ -404,7 +405,42 @@ class SnipWireConfig extends ModuleConfig {
             $f->columnWidth = 50;
 
         $fsAPI->add($f);
-        
+
+            $customCartFieldsPage = $this->wire('pages')->findOne('name=custom-cart-fields, template=snipcart-cart, include=hidden');
+            if ($customCartFieldsPage->editable()) {
+                $customCartFieldsPageEditUrl = $customCartFieldsPage->editUrl;
+            }
+
+            if ($customCartFieldsPageEditUrl) {
+                /** @var InputfieldButton $btn */
+                $btn = $modules->get('InputfieldButton');
+                $btn->attr('href', $customCartFieldsPageEditUrl);
+                $btn->addClass('pw-modal');
+                $btn->text = $this->_('Custom Cart Fields');
+                $btn->icon = 'gear';
+                $btn->setSecondary(true);
+                $btn->set('small', true);
+
+                /** @var InputfieldMarkup $f */
+                $f = $modules->get('InputfieldMarkup');
+                $f->label = $this->_('Custom Cart Fields Configuration');
+                $f->description = $this->_('Those fields will be automatically added to your checkout process as new tab/step called `Order infos`.');
+                $f->value = $btn->render();
+                $f->columnWidth = 50;
+
+                $fsAPI->add($f);
+
+                /** @var InputfieldCheckbox $f */
+                $f = $modules->get('InputfieldCheckbox');
+                $f->attr('name', 'cart_custom_fields_enabled'); 
+                $f->label = $this->_('Enable/Disable Custom Cart Fields');
+                $f->label2 = $this->_('Custom cart fields enabled');
+                $f->description = $this->_('Use this setting to select whether custom cart fields should be enabled for checkout process.');
+                $f->columnWidth = 50;
+    
+                $fsAPI->add($f);
+            }
+
             /** @var InputfieldCheckbox $f */
             $f = $modules->get('InputfieldCheckbox');
             $f->attr('name', 'snipcart_debug'); 

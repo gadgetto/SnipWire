@@ -199,7 +199,7 @@ class MarkupSnipWire extends WireData implements Module {
         $out  = '<script';
         $out .= ' id="snipcart"';
         $out .= ' data-api-key="' . $snipcartAPIKey . '"';
-        $out .= (!empty($this->cartCustomFields) ? ' ' . $this->cartCustomFields : '');
+        $out .= (!empty($this->cartCustomFields) && $this->snipwireConfig->cart_custom_fields_enabled ? ' ' . $this->cartCustomFields : '');
         $out .= ' src="' . $this->snipwireConfig->snipcart_js_path . '"';
         $out .= (!empty($this->snipwireConfig->snipcart_js_integrity) ? ' integrity="' . $this->snipwireConfig->snipcart_js_integrity . '"' : '');
         $out .= '></script>';
