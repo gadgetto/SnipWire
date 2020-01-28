@@ -41,6 +41,12 @@ class MarkupSnipWire extends WireData implements Module {
     /** @var string $currency The currency to be used in cart and catalogue ('eur' or 'usd' or 'cad' ...) */
     private $currency = '';
 
+    /** @var Page $customCartFieldsPage The "Custom Cart Fields" page */
+    protected $customCartFieldsPage = array();
+
+    /** @var string $cartCustomFields The content of the "snipcart_cart_custom_fields" field */
+    protected $cartCustomFields = '';
+
     /**
      * Snipcart JS API configuration properties.
      *
@@ -81,6 +87,14 @@ class MarkupSnipWire extends WireData implements Module {
 
         // Init $currency with first currency from SnipWire module config
         $this->currency = $this->snipwireConfig->currencies[0];
+
+        // Get the "Custom Cart Fields" page (the corresponding template only allows one single page)
+        $this->customCartFieldsPage = $this->wire('pages')->findOne('name=custom-cart-fields, template=snipcart-cart, include=hidden');
+        
+        // Get the "snipcart_cart_custom_fields" field content
+        if ($this->customCartFieldsPage->hasField('snipcart_cart_custom_fields')) {
+            $this->cartCustomFields = $this->customCartFieldsPage->snipcart_cart_custom_fields;
+        }
     }
 
     /**
@@ -161,29 +175,35 @@ class MarkupSnipWire extends WireData implements Module {
         $jsResources = array();
 
         // Add Snipcart CSS resource
+        $cssResources[] = $environmentStatus;
         if ($this->snipwireConfig->include_snipcart_css) {
-            $cssResources[] = 
-              '<link rel="stylesheet" href="' . $this->snipwireConfig->snipcart_css_path . '"'
-            . (!empty($this->snipwireConfig->snipcart_css_integrity) ? ' integrity="' . $this->snipwireConfig->snipcart_css_integrity . '"' : '')
-            . '>';
+            $out  = '<link';
+            $out .= ' rel="stylesheet"';
+            $out .= ' href="' . $this->snipwireConfig->snipcart_css_path . '"';
+            $out .= (!empty($this->snipwireConfig->snipcart_css_integrity) ? ' integrity="' . $this->snipwireConfig->snipcart_css_integrity . '"' : '');
+            $out .= '>';
+            $cssResources[] = $out;
         }
         
         // Add jQuery JS resource
         if ($this->snipwireConfig->include_jquery) {
-            $jsResources[] = 
-              '<script src="' . $this->snipwireConfig->jquery_js_path . '"'
-            . (!empty($this->snipwireConfig->jquery_js_integrity) ? ' integrity="' . $this->snipwireConfig->jquery_js_integrity . '"' : '')
-            . '></script>';
+            $out  = '<script';
+            $out .= ' src="' . $this->snipwireConfig->jquery_js_path . '"';
+            $out .= (!empty($this->snipwireConfig->jquery_js_integrity) ? ' integrity="' . $this->snipwireConfig->jquery_js_integrity . '"' : '');
+            $out .= '></script>';
+            $jsResources[] = $out;
         }
         
-        // Add Snipcart JS resource
+        // Add Snipcart JS resource + custom cart fields (if any)
         $jsResources[] = $environmentStatus;
-        $jsResources[] = 
-              '<script src="' . $this->snipwireConfig->snipcart_js_path . '"'
-            . (!empty($this->snipwireConfig->snipcart_js_integrity) ? ' integrity="' . $this->snipwireConfig->snipcart_js_integrity . '"' : '')
-            . ' data-api-key="' . $snipcartAPIKey . '"'
-            . ' id="snipcart"'
-            . '></script>';
+        $out  = '<script';
+        $out .= ' id="snipcart"';
+        $out .= ' data-api-key="' . $snipcartAPIKey . '"';
+        $out .= (!empty($this->cartCustomFields) ? ' ' . $this->cartCustomFields : '');
+        $out .= ' src="' . $this->snipwireConfig->snipcart_js_path . '"';
+        $out .= (!empty($this->snipwireConfig->snipcart_js_integrity) ? ' integrity="' . $this->snipwireConfig->snipcart_js_integrity . '"' : '');
+        $out .= '></script>';
+        $jsResources[] = $out;
 
         // Pick available Snipcart JS API properties from module config for API output
         $snipcartAPI = array();
@@ -194,7 +214,7 @@ class MarkupSnipWire extends WireData implements Module {
         }
 
         // Add Snipcart JS API config
-        $out = '<script>' . PHP_EOL;
+        $out  = '<script>' . PHP_EOL;
         $out .= 'Snipcart.api';
         foreach ($snipcartAPI as $key => $value) {
             if ($key == 'credit_cards') $value = $this->addCreditCardLabels($value);
@@ -205,13 +225,13 @@ class MarkupSnipWire extends WireData implements Module {
             }
             $out .= '.configure("' . $key . '",' . $value . ')';
         }
-        $out .= ';' . PHP_EOL;
+        $out .= ';';
 
         $out .= 'document.addEventListener("snipcart.ready",function() {' . PHP_EOL;
         $out .= 'Snipcart.api.cart.currency("' . $this->currency . '");' . PHP_EOL;
         $out .= 'Snipcart.DEBUG = ' . ($this->snipwireConfig->snipcart_debug ? 'true' : 'false') . ';' . PHP_EOL;
         $out .= '});' . PHP_EOL;
-        $out .= '</script>' . PHP_EOL;
+        $out .= '</script>';
         $jsResources[] = $out;
         
         // Output CSSJS
