@@ -112,7 +112,7 @@ class ProcessSnipWire extends Process implements Module {
     const iconRefund = 'thumbs-up';
     const iconComment = 'comment';
     const iconOrderStatus = 'question-circle';
-    const iconSettings = 'gear';
+    const iconSettings = 'cog';
     const iconDebug = 'bug';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
@@ -962,7 +962,7 @@ class ProcessSnipWire extends Process implements Module {
         $btn = $this->wire('modules')->get('InputfieldButton');
         $btn->href = $redirectTo;
         $btn->value = $this->_('Settings');
-        $btn->icon = 'gear';
+        $btn->icon = 'cog';
         
         $out = $btn->render();
         return $out;
@@ -1105,7 +1105,7 @@ class ProcessSnipWire extends Process implements Module {
                 'snipcart-cart' => array(
                     'name' => 'snipcart-cart',
                     'label' => 'Snipcart Cart (System)',
-                    'icon' => 'gear',
+                    'icon' => 'cog',
                     'noChildren' => 1,
                     'noParents' => 1,
                     'tags' => 'Snipcart',

@@ -417,7 +417,7 @@ class SnipWireConfig extends ModuleConfig {
                 $btn->attr('href', $customCartFieldsPageEditUrl);
                 $btn->addClass('pw-modal');
                 $btn->text = $this->_('Custom Cart Fields');
-                $btn->icon = 'gear';
+                $btn->icon = 'cog';
                 $btn->setSecondary(true);
                 $btn->set('small', true);
 
