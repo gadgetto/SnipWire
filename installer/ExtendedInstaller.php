@@ -262,6 +262,7 @@ class ExtendedInstaller extends Wire {
                                 if (isset($options['label'])) $f->label = $options['label'];
                                 if (isset($options['notes'])) $f->notes = $options['notes'];
                                 if (isset($options['columnWidth'])) $f->columnWidth = $options['columnWidth'];
+                                if (isset($options['collapsed'])) $f->collapsed = $options['collapsed'];
                                 $fields->saveFieldgroupContext($f, $fg);
                             } else {
                                 $out = sprintf($this->_("Could not configure options of field [%s] in template context [%s]. The field is not assigned to template!"), $item['name'], $tn);
