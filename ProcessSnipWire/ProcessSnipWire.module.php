@@ -1130,7 +1130,7 @@ class ProcessSnipWire extends Process implements Module {
                     'title' => 'Custom Cart Fields',
                     'template' => 'snipcart-cart',
                     'parent' => '{snipWireRootUrl}', // needs to be page path (in this case we use a "string tag" which will be resolved by installer)
-                    'status' => 1024, // Page::statusHidden
+                    'status' => Page::statusSystem | Page::statusHidden,
                     'fields' => array(
                         'snipcart_cart_custom_fields' => $cartCustomVal,
                     ),
