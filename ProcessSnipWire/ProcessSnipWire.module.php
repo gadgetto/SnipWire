@@ -1112,6 +1112,15 @@ class ProcessSnipWire extends Process implements Module {
                 ),
             ),
             'fields' => array(
+                // `title` is an alredy available field which only needs to be configured in template context
+                'title' => array(
+                    'name' => 'title',
+                    '_templateFieldOptions' => array(
+                        'snipcart-cart' => array(
+                            'collapsed' => Inputfield::collapsedHidden,
+                        ),
+                    ),
+                ),
                 'snipcart_cart_custom_fields' => array(
                     'name' => 'snipcart_cart_custom_fields',
                     'type' => 'FieldtypeTextarea',
