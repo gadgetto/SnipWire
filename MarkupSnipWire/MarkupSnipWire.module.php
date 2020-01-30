@@ -449,6 +449,14 @@ class MarkupSnipWire extends WireData implements Module {
         }
         $out .= ' data-item-shippable="' . $shippable . '"';
 
+        // Get the "snipcart_item_custom_fields" field content
+        if ($product->hasField('snipcart_item_custom_fields')) {
+            $customFields = $product->snipcart_item_custom_fields;
+            if ($customFields) {
+                $out .= ' ' . $customFields;
+            }
+        }
+
         $out .= '>';
         $out .= $options['label'];
         $out .= $close;

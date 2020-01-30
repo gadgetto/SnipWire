@@ -1132,6 +1132,18 @@ class ProcessSnipWire extends Process implements Module {
                     'tags' => 'Snipcart',
                     '_addToTemplates' => 'snipcart-cart', // comma separated list of template names
                 ),
+                // This field will be preinstalled only and needs to be added manually to the desired product template(s)
+                'snipcart_item_custom_fields' => array(
+                    'name' => 'snipcart_item_custom_fields',
+                    'type' => 'FieldtypeTextarea',
+                    'label' => $this->_('Custom Product Fields Setup'),
+                    'icon' => 'code',
+                    'description' => $this->_('You can add custom fields to this product. Whenever you define custom fields, a new input element will be added to each of these products in cart.'),
+                    'notes' => $this->_('For detailed infos about custom fields setup, please visit [Snipcart v2.0 Custom Fields](https://docs.snipcart.com/v2/configuration/custom-fields).'),
+                    'rows' => 12,
+                    'collapsed' => Inputfield::collapsedYes,
+                    'tags' => 'Snipcart',
+                ),
             ),            
             'pages' => array(
                 'custom-cart-fields' => array(
@@ -1177,8 +1189,9 @@ class ProcessSnipWire extends Process implements Module {
      * 
      */
     public function ___upgrade($fromVersion, $toVersion) {
-        // Add custom product fields and custom oder fields support since v 0.7.1
-		if (version_compare($fromVersion, '0.7.0', '<=')) {
+        // added since v 0.7.1: custom cart fields support
+        // added since v 0.7.2: custom product fields support
+		if (version_compare($fromVersion, '0.7.1', '<=')) {
             if (!$this->_installSystemResources()) {                        
                 $out = $this->_('Installation of SnipWire system resources failed while upgrading the module.');
                 throw new WireException($out);
