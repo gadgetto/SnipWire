@@ -22,7 +22,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         return array(
             'title' => __('SnipWire Fieldtype TaxSelector'), // Module Title
             'summary' => __('Fieldtype which fetches taxes setting from SnipWire module config and builds a dropdown list.'), // Module Summary
-            'version' => '1.0.0',
+            'version' => '0.8.0',
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'requires' => array(
