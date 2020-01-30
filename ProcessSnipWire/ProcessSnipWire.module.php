@@ -626,21 +626,11 @@ class ProcessSnipWire extends Process implements Module {
         '<div id="SnipWireDashboard">' . $out . '</div>';
 
         $moduleInfoSnipWire = $modules->getModuleInfoVerbose('SnipWire');
-        $moduleInfoProcessSnipWire = $modules->getModuleInfoVerbose('ProcessSnipWire');
-        $moduleInfoMarkupSnipWire = $modules->getModuleInfoVerbose('MarkupSnipWire');
         $out .= 
         '<p class="footer-version-info">' .
             $moduleInfoSnipWire['title'] .
             '<small>' .
-                $moduleInfoSnipWire['versionStr'] .
-            '</small> | ' .
-            $moduleInfoProcessSnipWire['title'] .
-            '<small>' .
-                $moduleInfoProcessSnipWire['versionStr'] .
-            '</small> | ' .
-            $moduleInfoMarkupSnipWire['title'] .
-            '<small>' .
-                $moduleInfoMarkupSnipWire['versionStr'] .
+                $moduleInfoSnipWire['versionStr'] . ' &copy; ' . date('Y') .
             '</small>' .
         '</p>';
 
