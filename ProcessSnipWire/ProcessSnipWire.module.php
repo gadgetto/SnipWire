@@ -1190,8 +1190,8 @@ class ProcessSnipWire extends Process implements Module {
      */
     public function ___upgrade($fromVersion, $toVersion) {
         // added since v 0.7.1: custom cart fields support
-        // added since v 0.7.2: custom product fields support
-		if (version_compare($fromVersion, '0.7.1', '<=')) {
+        // added since v 0.8.0: custom product fields support
+		if (version_compare($fromVersion, '0.7.9', '<=')) {
             if (!$this->_installSystemResources()) {                        
                 $out = $this->_('Installation of SnipWire system resources failed while upgrading the module.');
                 throw new WireException($out);
