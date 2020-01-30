@@ -299,7 +299,7 @@ class ExtendedInstaller extends Wire {
                     continue;
                 }
                 
-                if (!$pages->findOne('name=' . $item['name'])->id) {
+                if (!$pages->findOne('name=' . $item['name'] . ', include=hidden')->id) {
                     $page = new Page();
                     $page->name = $item['name'];
                     $page->template = $item['template'];
