@@ -21,8 +21,7 @@ SnipWire is free and open source! It would be nice if you could donate an amount
 [SnipWire Docs](https://docs.bitego.com/snipwire/) (Please note that the documentation is a work in progress)
 
 ## Support and Links
-- SnipWire in PW modules directory (coming soon)
-- [SnipWire Docs](https://docs.bitego.com/snipwire/) (please note that the documentation is a work in progress)
+- [SnipWire in PW modules directory](https://modules.processwire.com/modules/snip-wire/)
 - [SnipWire in ProcessWire support forums](https://processwire.com/talk/topic/21554-snipwire-snipcart-integration-for-processwire/)
 - [Snipcart Website](https://snipcart.com/)
 - [ProcessWire website](https://processwire.com/)
