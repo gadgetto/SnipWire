@@ -668,12 +668,15 @@ trait AbandonedCarts {
         
         // Shipping row
         $shippingMethod = $shipping['method'] ? ' (' . $shipping['method'] . ')' : '';
+        $fees = isset($shipping['fees']) ? $shipping['fees'] : 0;
+        $shippingFees = CurrencyFormat::format($fees, $currency);
+
         $table->row(array(
             '',
             $this->_('Shipping') . $shippingMethod,
             '',
             '',
-            CurrencyFormat::format($shipping['fees'], $currency),
+            $shippingFees,
         ), array(
             'class' => 'row-summary-shipping',
         ));
