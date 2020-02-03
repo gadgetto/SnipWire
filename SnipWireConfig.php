@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace ProcessWire;
 
 /**
  * SnipWireConfig - Config file for SnipWire.
@@ -15,6 +16,9 @@
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Functions.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Helpers\Taxes;
 
 class SnipWireConfig extends ModuleConfig {
 

@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Customers trait - sections file for ProcessSnipWire.module.php.
@@ -11,6 +12,12 @@
  * https://processwire.com
  *
  */
+
+use SnipWire\Helpers\Countries;
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\WireHttpExtended;
+use ProcessWire\Inputfield;
 
 trait Customers {
     /**
@@ -295,12 +302,12 @@ trait Customers {
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
+                        \ProcessWire\wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
                 '</a>';
                 $creationDate = '<span class="tooltip" title="';
-                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
                 $creationDate .= '">';
-                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('relative', $item['creationDate']);
                 $creationDate .= '</span>';
 
                 $table->row(array(
@@ -350,7 +357,7 @@ trait Customers {
         $out =
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                wireIconMarkup(self::iconCustomer, 'fa-right-margin') .
+                \ProcessWire\wireIconMarkup(self::iconCustomer, 'fa-right-margin') .
                 $this->_('Customer') . ': ' .
                 $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'] .
             '</h2>' .
@@ -422,7 +429,7 @@ trait Customers {
 
             $ordersBadge = 
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf(_n("%d order", "%d orders", $ordersCount), $ordersCount) .
+                sprintf($this->_n("%d order", "%d orders", $ordersCount), $ordersCount) .
             '</span>';
 
             /** @var InputfieldMarkup $f */
@@ -443,7 +450,7 @@ trait Customers {
 
             $subscriptionsBadge = 
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf(_n("%d subscription", "%d subscriptions", $subscriptionsCount), $subscriptionsCount) .
+                sprintf($this->_n("%d subscription", "%d subscriptions", $subscriptionsCount), $subscriptionsCount) .
             '</span>';
 
             /** @var InputfieldMarkup $f */
@@ -497,7 +504,7 @@ trait Customers {
             class="SendCustomerEmailButton ui-button ui-widget ui-corner-all ui-state-default"
             role="button">' .
                 '<span class="ui-button-text ui-button-text-email">' .
-                    wireIconMarkup('envelope') . ' ' . $email .
+                    \ProcessWire\wireIconMarkup('envelope') . ' ' . $email .
                 '</span>' .
         '</a>';                    
 
@@ -543,7 +550,7 @@ trait Customers {
                 $invoiceNumber =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '?modal=1&ret=' . $ret . '"
                     class="pw-panel-links">' .
-                        wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
+                        \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
                 '</a>';
                 $total =
                 '<strong>' .
@@ -555,7 +562,7 @@ trait Customers {
                           CurrencyFormat::format($item['refundsAmount'], $item['currency']) .
                       '</span>'
                     : '-';
-                $downloadUrl = wirePopulateStringTags(
+                $downloadUrl = \ProcessWire\wirePopulateStringTags(
                     SnipREST::snipcartInvoiceUrl,
                     array('token' => $item['token'])
                 );
@@ -564,12 +571,12 @@ trait Customers {
                     target="' . $item['token'] . '"
                     class="DownloadInvoiceButton pw-tooltip"
                     title="' . $this->_('Download invoice') .'">' .
-                        wireIconMarkup('download') .
+                        \ProcessWire\wireIconMarkup('download') .
                 '</a>';
                 $creationDate = '<span class="tooltip" title="';
-                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
                 $creationDate .= '">';
-                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('relative', $item['creationDate']);
                 $creationDate .= '</span>';
 
                 $table->row(array(
@@ -624,12 +631,12 @@ trait Customers {
                 $plan =
                 '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '"
                     class="pw-panel-links">' .
-                        wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
+                        \ProcessWire\wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
                 '</a>';
                 $creationDate = '<span class="tooltip" title="';
-                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
                 $creationDate .= '">';
-                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('relative', $item['creationDate']);
                 $creationDate .= '</span>';
 
                 $table->row(array(

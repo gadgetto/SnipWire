@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Dashboard trait - sections file for ProcessSnipWire.module.php.
@@ -11,6 +12,12 @@
  * https://processwire.com
  *
  */
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\WireHttpExtended;
+use ProcessWire\Inputfield;
+use ProcessWire\InputfieldDatetime;
 
 trait Dashboard {
     /**
@@ -364,7 +371,7 @@ trait Dashboard {
 
             $dateRangeDisplay = 
             '<div id="DateRangeDisplay">' .
-                '<em>' . $start . '</em>' . wireIconMarkup('arrows-h') . '<em>' . $end . '</em>' .
+                '<em>' . $start . '</em>' . \ProcessWire\wireIconMarkup('arrows-h') . '<em>' . $end . '</em>' .
             '</div>';
 
             // Date range reset button
@@ -375,7 +382,7 @@ trait Dashboard {
                 role="button"
                 title="' . $this->_('Reset date range to default') .'">' .
                     '<span class="ui-button-text">' .
-                        wireIconMarkup('rotate-left') .
+                        \ProcessWire\wireIconMarkup('rotate-left') .
                     '</span>' .
             '</a>';
 
@@ -481,7 +488,7 @@ trait Dashboard {
             '<span
                 class="pw-tooltip"
                 title="' . $errorMessage .'">' .
-                    wireIconMarkup('exclamation-triangle') .
+                    \ProcessWire\wireIconMarkup('exclamation-triangle') .
             '</span>';
 
             $values = array(
@@ -499,7 +506,7 @@ trait Dashboard {
             '<span
                 class="pw-tooltip"
                 title="' . $errorMessage .'">' .
-                    wireIconMarkup('exclamation-triangle') .
+                    \ProcessWire\wireIconMarkup('exclamation-triangle') .
             '</span>';
 
             $values = array(
@@ -736,14 +743,14 @@ trait Dashboard {
                         '<a href="' . $product->editUrl . '"
                             class="pw-tooltip pw-modal pw-modal-large"
                             title="' . $this->_('Edit product page') .'">' .
-                                wireIconMarkup('pencil-square-o') .
+                                \ProcessWire\wireIconMarkup('pencil-square-o') .
                         '</a>';
                     } else {
                         $editLink =
                         '<span
                             class="pw-tooltip"
                             title="' . $this->_('Product not editable') .'">' .
-                                wireIconMarkup('pencil-square-o') .
+                                \ProcessWire\wireIconMarkup('pencil-square-o') .
                         '</span>';
                     }
                 } else {
@@ -752,7 +759,7 @@ trait Dashboard {
                     '<span
                         class="pw-tooltip"
                         title="' . $this->_('No matching ProcessWire page found.') .'">' . 
-                            wireIconMarkup('exclamation-triangle') .
+                            \ProcessWire\wireIconMarkup('exclamation-triangle') .
                     '</span>';
                 }
 
@@ -822,9 +829,9 @@ trait Dashboard {
                     CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
                 '</strong>';
                 $completionDate = '<span class="tooltip" title="';
-                $completionDate .= wireDate('Y-m-d H:i:s', $item['completionDate']);
+                $completionDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['completionDate']);
                 $completionDate .= '">';
-                $completionDate .= wireDate('relative', $item['completionDate']);
+                $completionDate .= \ProcessWire\wireDate('relative', $item['completionDate']);
                 $completionDate .= '</span>';
 
                 $table->row(array(

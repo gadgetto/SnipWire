@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Services;
 
 /**
  * WireHttpExtended - service class (wrapper for WireHttp) that allows processing of multiple cURL handles asynchronously.
@@ -11,6 +12,9 @@
  * https://processwire.com
  *
  */
+
+use ProcessWire\WireException;
+use ProcessWire\WireHttp;
 
 class WireHttpExtended extends WireHttp {
 

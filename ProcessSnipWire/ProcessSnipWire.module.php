@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace ProcessWire;
 
 /**
  * ProcessSnipWire - Snipcart dashboard integration for ProcessWire.
@@ -16,7 +17,6 @@ require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/Functio
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/CurrencyFormat.php';
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/Countries.php';
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'installer/ExtendedInstaller.php';
-
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Dashboard.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Orders.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Subscriptions.php';
@@ -25,8 +25,20 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Customers.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Products.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Discounts.php';
 
+use SnipWire\Installer\ExtendedInstaller;
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Helpers\Countries;
+use SnipWire\ProcessSnipWire\Sections\Dashboard;
+use SnipWire\ProcessSnipWire\Sections\Orders;
+use SnipWire\ProcessSnipWire\Sections\Subscriptions;
+use SnipWire\ProcessSnipWire\Sections\AbandonedCarts;
+use SnipWire\ProcessSnipWire\Sections\Customers;
+use SnipWire\ProcessSnipWire\Sections\Products;
+use SnipWire\ProcessSnipWire\Sections\Discounts;
+
 class ProcessSnipWire extends Process implements Module {
 
+    // Import traits
     use Dashboard, Orders, Subscriptions, AbandonedCarts, Customers, Products, Discounts;
 
     /**
@@ -37,7 +49,7 @@ class ProcessSnipWire extends Process implements Module {
         return array(
             'title' => __('SnipWire Dashboard'), // Module Title
             'summary' => __('Snipcart dashboard integration for ProcessWire.'), // Module Summary
-            'version' => '0.8.0', 
+            'version' => '0.8.1', 
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'permission' => 'snipwire-dashboard',
@@ -89,6 +101,7 @@ class ProcessSnipWire extends Process implements Module {
             'requires' => array(
                 'ProcessWire>=3.0.148',
                 'SnipWire',
+                'PHP>=7.0.0',
             ),
         );
     }

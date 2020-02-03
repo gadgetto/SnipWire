@@ -1,4 +1,5 @@
-<?php  namespace ProcessWire;
+<?php
+namespace ProcessWire;
 
 /**
  * FieldtypeSnipWireTaxSelector - Special (internal SnipWire) Fieldtype which fetches 
@@ -16,19 +17,22 @@
  *
  */
 
+use SnipWire\Helpers\Taxes;
+
 class FieldtypeSnipWireTaxSelector extends FieldtypeText {
 
     public static function getModuleInfo() {
         return array(
             'title' => __('SnipWire Fieldtype TaxSelector'), // Module Title
             'summary' => __('Fieldtype which fetches taxes setting from SnipWire module config and builds a dropdown list.'), // Module Summary
-            'version' => '0.8.0',
+            'version' => '0.8.1',
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'requires' => array(
                 'ProcessWire>=3.0.148',
                 'SnipWire',
                 'InputfieldSelect',
+                'PHP>=7.0.0',
             ),
         );
     }

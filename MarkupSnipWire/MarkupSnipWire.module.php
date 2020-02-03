@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace ProcessWire;
 
 /**
  * MarkupSnipWire - Snipcart markup output for SnipWire.
@@ -14,13 +15,15 @@
  
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 
+use SnipWire\Helpers\CurrencyFormat;
+
 class MarkupSnipWire extends WireData implements Module {
     
     public static function getModuleInfo() {
         return array(
             'title' => __('SnipWire Markup'), // Module Title
             'summary' => __('Snipcart markup output for SnipWire.'), // Module Summary
-            'version' => '0.8.0', 
+            'version' => '0.8.1', 
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'singular' => true, 
@@ -28,6 +31,7 @@ class MarkupSnipWire extends WireData implements Module {
             'requires' => array(
                 'ProcessWire>=3.0.148',
                 'SnipWire',
+                'PHP>=7.0.0',
              )
         );
     }

@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Subscriptions trait - sections file for ProcessSnipWire.module.php.
@@ -11,6 +12,11 @@
  * https://processwire.com
  *
  */
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\WireHttpExtended;
+use ProcessWire\Inputfield;
 
 trait Subscriptions {
     /**
@@ -298,7 +304,7 @@ trait Subscriptions {
                 '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '"
                     class="pw-panel"
                     data-panel-width="85%">' .
-                        wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
+                        \ProcessWire\wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
                 '</a>';
                 $panelLink2 =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['user']['id'] . '"
@@ -307,9 +313,9 @@ trait Subscriptions {
                         $item['user']['email'] .
                 '</a>';
                 $creationDate = '<span class="tooltip" title="';
-                $creationDate .= wireDate('Y-m-d H:i:s', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
                 $creationDate .= '">';
-                $creationDate .= wireDate('relative', $item['creationDate']);
+                $creationDate .= \ProcessWire\wireDate('relative', $item['creationDate']);
                 $creationDate .= '</span>';
 
                 $table->row(array(

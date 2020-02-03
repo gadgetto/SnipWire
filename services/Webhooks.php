@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Services;
 
 /**
  * Webhooks - service class for SnipWire to provide webhooks for Snipcart.
@@ -17,6 +18,11 @@
 
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Helpers\Taxes;
+use ProcessWire\WireData;
+use ProcessWire\WireException;
 
 class Webhooks extends WireData {
 
@@ -602,7 +608,7 @@ class Webhooks extends WireData {
         $taxes = array('taxes' => $taxesResponse);
         
         $this->responseStatus = 202; // Accepted
-        $this->responseBody = wireEncodeJSON($taxes, true);
+        $this->responseBody = \ProcessWire\wireEncodeJSON($taxes, true);
     }
 
     /**

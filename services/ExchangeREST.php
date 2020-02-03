@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Services;
 
 /**
  * ExchangeREST - service class for Foreign exchange rates API which is a free service for 
@@ -18,6 +19,9 @@
 
 require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'WireHttpExtended.php';
+
+use SnipWire\Helpers\CurrencyFormat;
+use ProcessWire\WireCache;
 
 class ExchangeREST extends WireHttpExtended {
 
@@ -66,9 +70,9 @@ class ExchangeREST extends WireHttpExtended {
      */
     public static function getMessagesText($key) {
         $texts = array(
-            'no_headers' => __('Missing request headers for Exchangerates API connection.'),
-            'connection_failed' => __('Connection to Exchangerates API failed'),
-            'unsupported_currency' => __('The specified currency %s is currently not supported by Exchangerates API.'),
+            'no_headers' => \ProcessWire\__('Missing request headers for Exchangerates API connection.'),
+            'connection_failed' => \ProcessWire\__('Connection to Exchangerates API failed'),
+            'unsupported_currency' => \ProcessWire\__('The specified currency %s is currently not supported by Exchangerates API.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }

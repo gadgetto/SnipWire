@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Products trait - sections file for ProcessSnipWire.module.php.
@@ -11,6 +12,11 @@
  * https://processwire.com
  *
  */
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\WireHttpExtended;
+use ProcessWire\Inputfield;
 
 trait Products {
     /**
@@ -305,7 +311,7 @@ trait Products {
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
+                        \ProcessWire\wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
                 '</a>';
                 $thumb = $this->getProductImg($item['image']);
 
@@ -316,14 +322,14 @@ trait Products {
                         '<a href="' . $product->editUrl . '"
                             class="pw-tooltip pw-modal pw-modal-large"
                             title="' . $this->_('Edit product page') .'">' .
-                                wireIconMarkup('pencil-square-o') .
+                                \ProcessWire\wireIconMarkup('pencil-square-o') .
                         '</a>';
                     } else {
                         $editLink =
                         '<span
                             class="pw-tooltip"
                             title="' . $this->_('Product not editable') .'">' .
-                                wireIconMarkup('pencil-square-o') .
+                                \ProcessWire\wireIconMarkup('pencil-square-o') .
                         '</span>';
                     }
                 } else {
@@ -332,7 +338,7 @@ trait Products {
                     '<span
                         class="pw-tooltip"
                         title="' . $this->_('No matching ProcessWire page found') .'">' . 
-                            wireIconMarkup('exclamation-triangle') .
+                            \ProcessWire\wireIconMarkup('exclamation-triangle') .
                     '</span>';
                 }
 
@@ -348,7 +354,7 @@ trait Products {
                     CurrencyFormat::format($item['price'], $currency),
                     $item['statistics']['numberOfSales'],
                     //CurrencyFormat::format($item['statistics']['totalSales'], 'usd'),  // not usable at the moment as Snipcart doesn't support multi currency for statistics
-                    wireDate('Y-m-d H:i:s', $item['modificationDate']),
+                    \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']),
                     $editLink,
                 ));
             }
@@ -386,7 +392,7 @@ trait Products {
         $out .=
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                wireIconMarkup(self::iconProduct, 'fa-right-margin') .
+                \ProcessWire\wireIconMarkup(self::iconProduct, 'fa-right-margin') .
                 $this->_('Product') . ': ' .
                 $item['name'] .
             '</h2>' .
@@ -454,7 +460,7 @@ trait Products {
                     class="ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary pw-modal pw-modal-large"
                     role="button">' .
                         '<span class="ui-button-text">' .
-                            wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
+                            \ProcessWire\wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
                         '</span>' .
                 '</a>';
             } else {
@@ -463,7 +469,7 @@ trait Products {
                     class="ui-button ui-widget ui-corner-all ui-state-disabled ui-priority-secondary pw-tooltip"
                     title="' . $this->_('Product not editable') .'">' .
                         '<span class="ui-button-text">' .
-                            wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
+                            \ProcessWire\wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
                         '</span>' .
                 '</span>';
             }
@@ -474,7 +480,7 @@ trait Products {
                 class="ui-button ui-widget ui-corner-all ui-state-disabled ui-priority-secondary pw-tooltip"
                 title="' . $this->_('No matching ProcessWire page found') .'">' .
                     '<span class="ui-button-text">' .
-                        wireIconMarkup('exclamation-triangle') . ' ' . $this->_('Edit product page') .
+                        \ProcessWire\wireIconMarkup('exclamation-triangle') . ' ' . $this->_('Edit product page') .
                     '</span>' .
             '</span>';
         }
@@ -517,8 +523,8 @@ trait Products {
         $item['stock'] = isset($item['stock'])
             ? $item['stock']
             : '';
-        $item['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
-        $item['modificationDate'] = wireDate('Y-m-d H:i:s', $item['modificationDate']);
+        $item['creationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $item['modificationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']);
 
         $data = array();
         foreach ($infoCaptions as $key => $caption) {

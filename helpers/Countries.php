@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Helpers;
 
 /**
  * Countries - helper class for SnipWire to get worldwide countries list.
@@ -11,6 +12,8 @@
  * https://processwire.com
  *
  */
+
+use ProcessWire\WireData;
 
 class Countries extends WireData {
     

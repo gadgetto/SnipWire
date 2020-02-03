@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Installer;
 
 /**
  * Extended resources installer for SnipWire.
@@ -11,6 +12,14 @@
  * https://processwire.com
  *
  */
+
+use ProcessWire\Field;
+use ProcessWire\Fieldgroup;
+use ProcessWire\Page;
+use ProcessWire\Permission;
+use ProcessWire\Template;
+use ProcessWire\Wire;
+use ProcessWire\WireException;
 
 class ExtendedInstaller extends Wire {
 
@@ -283,7 +292,7 @@ class ExtendedInstaller extends Wire {
             foreach ($this->resources['pages'] as $item) {
 
                 // Page "parent" key may have "string tags"
-                $parent = wirePopulateStringTags(
+                $parent = \ProcessWire\wirePopulateStringTags(
                     $item['parent'],
                     array('snipWireRootUrl' => $this->snipWireRootUrl)
                 );

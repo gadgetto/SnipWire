@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Discounts trait - sections file for ProcessSnipWire.module.php.
@@ -11,6 +12,13 @@
  * https://processwire.com
  *
  */
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\WireHttpExtended;
+use ProcessWire\Inputfield;
+use ProcessWire\InputfieldDatetime;
+use ProcessWire\WireCache;
 
 trait Discounts {
     /**
@@ -360,7 +368,7 @@ trait Discounts {
                 '<a href="' . $this->snipWireRootUrl . 'discount-edit/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        wireIconMarkup(self::iconDiscount, 'fa-right-margin') . $itemName .
+                        \ProcessWire\wireIconMarkup(self::iconDiscount, 'fa-right-margin') . $itemName .
                 '</a>';
 
                 $currency = !empty($item['currency']) ? $item['currency'] : '-';
@@ -396,7 +404,7 @@ trait Discounts {
                     : $usages;
 
                 $expires = $item['expires']
-                    ? wireDate('Y-m-d', $item['expires'])
+                    ? \ProcessWire\wireDate('Y-m-d', $item['expires'])
                     : $this->_('Never');
 
                 // Archive or delete?
@@ -406,14 +414,14 @@ trait Discounts {
                     '<a href="' . $archiveUrl . '"
                         class="ArchiveDiscountButton pw-tooltip"
                         title="' . $this->_('Archive discount') .'">' .
-                            wireIconMarkup('check-square-o') .
+                            \ProcessWire\wireIconMarkup('check-square-o') .
                     '</a>';
                 } elseif ($item['numberOfUsages'] > 0 && $item['archived']) {
                     $actionLink =
                     '<span
                         class="pw-tooltip"
                         title="' . $this->_('Archived') .'">' .
-                            wireIconMarkup('check-square-o') .
+                            \ProcessWire\wireIconMarkup('check-square-o') .
                     '</span>';
                 } else {
                     $deleteUrl = $this->currentUrl . '?id=' . $item['id'] . '&action=delete_discount';
@@ -421,7 +429,7 @@ trait Discounts {
                     '<a href="' . $deleteUrl . '"
                         class="DeleteDiscountButton pw-tooltip"
                         title="' . $this->_('Delete discount') .'">' .
-                            wireIconMarkup('trash') .
+                            \ProcessWire\wireIconMarkup('trash') .
                     '</a>';
                 }
 
@@ -498,7 +506,7 @@ trait Discounts {
         $out =
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
+                \ProcessWire\wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
                 $this->_('Edit Discount') . ': ' .
                 $item['name'] .
             '</h2>' .
@@ -541,7 +549,7 @@ trait Discounts {
         $out =
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
+                \ProcessWire\wireIconMarkup(self::iconDiscount, 'fa-right-margin') .
                 $this->_('Add New Discount') .
             '</h2>' .
         '</div>';
@@ -570,7 +578,7 @@ trait Discounts {
 
         $expiresDateFormat = 'Y-m-d';
         $expiresPlaceholder = 'YYYY-MM-DD';
-        $expiresMinDate = wireDate($expiresDateFormat);
+        $expiresMinDate = \ProcessWire\wireDate($expiresDateFormat);
         
         if (!$input->post->saving_discount_active) {
 
@@ -1128,13 +1136,13 @@ trait Discounts {
 
         $amount = $form->get('amount');
         $amountValue = $amount->value;
-        if ($amountValue && !checkPattern($amountValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($amountValue && !\SnipWire\Helpers\checkPattern($amountValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $amount->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 19.99'));
         }
 
         $rate = $form->get('rate');
         $rateValue = $rate->value;
-        if ($rateValue && !checkPattern($rateValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($rateValue && !\SnipWire\Helpers\checkPattern($rateValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $rate->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 2.5'));
         }
 
@@ -1146,7 +1154,7 @@ trait Discounts {
 
         $shippingCost = $form->get('shippingCost');
         $shippingCostValue = $shippingCost->value;
-        if ($shippingCostValue && !checkPattern($shippingCostValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($shippingCostValue && !\SnipWire\Helpers\checkPattern($shippingCostValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $shippingCost->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 4.5'));
         }
 
@@ -1203,13 +1211,13 @@ trait Discounts {
         
         $totalToReach = $form->get('totalToReach');
         $totalToReachValue = $totalToReach->value;
-        if ($totalToReachValue && !checkPattern($totalToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($totalToReachValue && !\SnipWire\Helpers\checkPattern($totalToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $totalToReach->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 19.99'));
         }
 
         $maxAmountToReach = $form->get('maxAmountToReach');
         $maxAmountToReachValue = $maxAmountToReach->value;
-        if ($maxAmountToReachValue && !checkPattern($maxAmountToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($maxAmountToReachValue && !\SnipWire\Helpers\checkPattern($maxAmountToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $maxAmountToReach->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 199.99'));
         }
 

@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace ProcessWire;
 
 /**
  * Returns extended installation resources for ProcessSnipWire.

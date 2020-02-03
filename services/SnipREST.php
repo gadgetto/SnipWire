@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Services;
 
 /**
  * SnipREST - service class for Snipcart REST API that lets you manage your data remotely.
@@ -18,6 +19,8 @@
  */
 
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'WireHttpExtended.php';
+
+use ProcessWire\WireCache;
 
 class SnipREST extends WireHttpExtended {
 
@@ -100,19 +103,19 @@ class SnipREST extends WireHttpExtended {
      */
     public static function getMessagesText($key) {
         $texts = array(
-            'no_headers' => __('Missing request headers for Snipcart REST connection'),
-            'connection_failed' => __('Connection to Snipcart failed'),
-            'cache_refreshed' => __('Snipcart cache for this section refreshed'),
-            'full_cache_refreshed' => __('Full Snipcart cache refreshed'),
-            'dashboard_no_curl' => __('cURL extension not available - the SnipWire Dashboard will respond very slow without'),
-            'no_order_token' => __('No order token provided'),
-            'no_subscription_id' => __('No subscription ID provided'),
-            'no_cart_id' => __('No cart ID provided'),
-            'no_customer_id' => __('No customer ID provided'),
-            'no_product_id' => __('No product ID provided'),
-            'no_product_url' => __('No product URL provided'),
-            'no_userdefined_id' => __('No userdefined ID provided'),
-            'no_discount_id' => __('No discount ID provided'),
+            'no_headers' => \ProcessWire\__('Missing request headers for Snipcart REST connection'),
+            'connection_failed' => \ProcessWire\__('Connection to Snipcart failed'),
+            'cache_refreshed' => \ProcessWire\__('Snipcart cache for this section refreshed'),
+            'full_cache_refreshed' => \ProcessWire\__('Full Snipcart cache refreshed'),
+            'dashboard_no_curl' => \ProcessWire\__('cURL extension not available - the SnipWire Dashboard will respond very slow without'),
+            'no_order_token' => \ProcessWire\__('No order token provided'),
+            'no_subscription_id' => \ProcessWire\__('No subscription ID provided'),
+            'no_cart_id' => \ProcessWire\__('No cart ID provided'),
+            'no_customer_id' => \ProcessWire\__('No customer ID provided'),
+            'no_product_id' => \ProcessWire\__('No product ID provided'),
+            'no_product_url' => \ProcessWire\__('No product URL provided'),
+            'no_userdefined_id' => \ProcessWire\__('No userdefined ID provided'),
+            'no_discount_id' => \ProcessWire\__('No discount ID provided'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
@@ -484,7 +487,7 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
-        $url = wirePopulateStringTags(
+        $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathOrdersNotifications,
             array('token' => $token)
         );
@@ -560,11 +563,11 @@ class SnipREST extends WireHttpExtended {
             )
         );
         
-        $url = wirePopulateStringTags(
+        $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathOrdersNotifications,
             array('token' => $token)
         );
-        $requestbody = wireEncodeJSON($options);
+        $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
 
@@ -611,11 +614,11 @@ class SnipREST extends WireHttpExtended {
             )
         );
         
-        $url = wirePopulateStringTags(
+        $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathOrdersRefunds,
             array('token' => $token)
         );
-        $requestbody = wireEncodeJSON($options);
+        $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
 
@@ -664,7 +667,7 @@ class SnipREST extends WireHttpExtended {
         );
 
         $url = self::apiEndpoint . self::resPathOrders. '/' . $token;
-        $requestbody = wireEncodeJSON($options, true);
+        $requestbody = \ProcessWire\wireEncodeJSON($options, true);
 
         $response = $this->send($url, $requestbody, 'PUT');
 
@@ -986,11 +989,11 @@ class SnipREST extends WireHttpExtended {
             )
         );
         
-        $url = wirePopulateStringTags(
+        $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathCartsAbandonedNotifications,
             array('id' => $id)
         );
-        $requestbody = wireEncodeJSON($options);
+        $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
 
@@ -1106,7 +1109,7 @@ class SnipREST extends WireHttpExtended {
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixCustomersOrders . '.' . md5($id);
 
-        $url = wirePopulateStringTags(
+        $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathCustomersOrders,
             array('id' => $id)
         );
@@ -1344,7 +1347,7 @@ class SnipREST extends WireHttpExtended {
         );
         
         $url = self::apiEndpoint . self::resPathProducts;
-        $requestbody = wireEncodeJSON($options);
+        $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = json_decode($this->send($url, $requestbody, 'POST'), true);
 
@@ -1391,7 +1394,7 @@ class SnipREST extends WireHttpExtended {
         );
         
         $url = self::apiEndpoint . self::resPathProducts . '/' . $id;
-        $requestbody = wireEncodeJSON($options);
+        $requestbody = \ProcessWire\wireEncodeJSON($options);
 
         $response = json_decode($this->send($url, $requestbody, 'PUT'), true);
 
@@ -1581,7 +1584,7 @@ class SnipREST extends WireHttpExtended {
         );
 
         $url = self::apiEndpoint . self::resPathDiscounts. '/' . $id;
-        $requestbody = wireEncodeJSON($options, true);
+        $requestbody = \ProcessWire\wireEncodeJSON($options, true);
 
         $response = $this->send($url, $requestbody, 'PUT');
 
@@ -1655,7 +1658,7 @@ class SnipREST extends WireHttpExtended {
         );
 
         $url = self::apiEndpoint . self::resPathDiscounts;
-        $requestbody = wireEncodeJSON($options, true);
+        $requestbody = \ProcessWire\wireEncodeJSON($options, true);
 
         $response = $this->send($url, $requestbody, 'POST');
 

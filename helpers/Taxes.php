@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Helpers;
 
 /**
  * Taxes - helper class
@@ -53,7 +54,7 @@ class Taxes {
                 'appliesOnShipping' => array(1) // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
             ),            
        );
-        return ($json) ? wireEncodeJSON($defaultTaxes, true) : $defaultTaxes;
+       return ($json) ? \ProcessWire\wireEncodeJSON($defaultTaxes, true) : $defaultTaxes;
     }
 
     /**
@@ -66,8 +67,8 @@ class Taxes {
      * 
      */
     public static function getTaxesConfig($json = false, $type = self::taxesTypeAll, $name = '') {
-        $taxes = wire('modules')->getConfig('SnipWire', 'taxes'); // JSON string
-        $taxes = wireDecodeJSON($taxes);
+        $taxes = \ProcessWire\wire('modules')->getConfig('SnipWire', 'taxes'); // JSON string
+        $taxes = \ProcessWire\wireDecodeJSON($taxes);
         if (!$taxes) $taxes = self::getDefaultTaxesConfig();
         
         $selectedTaxes = array();
@@ -96,7 +97,7 @@ class Taxes {
             }
             $selectedTaxes = $singleSelected;
         }
-        return ($json) ? wireEncodeJSON($selectedTaxes, true) : $selectedTaxes;
+        return ($json) ? \ProcessWire\wireEncodeJSON($selectedTaxes, true) : $selectedTaxes;
     }
 
     /**
@@ -113,7 +114,7 @@ class Taxes {
             $firstTax = $tax;
             break;
         }
-        return ($json) ? wireEncodeJSON($firstTax, true) : $firstTax;
+        return ($json) ? \ProcessWire\wireEncodeJSON($firstTax, true) : $firstTax;
     }
 
     /**
@@ -123,7 +124,7 @@ class Taxes {
      * 
      */
     public static function getTaxesIncludedConfig() {
-        $taxesIncluded = wire('modules')->getConfig('SnipWire', 'taxes_included');
+        $taxesIncluded = \ProcessWire\wire('modules')->getConfig('SnipWire', 'taxes_included');
         if (is_null($taxesIncluded)) $taxesIncluded = 1; // default
         return $taxesIncluded ? true : false;
     }
@@ -135,7 +136,7 @@ class Taxes {
      * 
      */
     public static function getShippingTaxesTypeConfig() {
-        $shippingTaxesType = wire('modules')->getConfig('SnipWire', 'shipping_taxes_type');
+        $shippingTaxesType = \ProcessWire\wire('modules')->getConfig('SnipWire', 'shipping_taxes_type');
         if (empty($shippingTaxesType)) $shippingTaxesType = self::shippingTaxesHighestRate; // default
         return $shippingTaxesType;
     }

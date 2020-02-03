@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace ProcessWire;
 
 /**
  * SnipWire sample shop parent template for "regular" site-profile.

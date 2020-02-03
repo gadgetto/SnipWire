@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Orders trait - sections file for ProcessSnipWire.module.php.
@@ -11,6 +12,11 @@
  * https://processwire.com
  *
  */
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\WireHttpExtended;
+use ProcessWire\Inputfield;
 
 trait Orders {
     /**
@@ -368,7 +374,7 @@ trait Orders {
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
+                        \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
                 '</a>';
                 $total =
                 '<strong class="price-field">' .
@@ -380,7 +386,7 @@ trait Orders {
                           CurrencyFormat::format($refundsAmount, $item['currency']) .
                       '</span>'
                     : '-';
-                $downloadUrl = wirePopulateStringTags(
+                $downloadUrl = \ProcessWire\wirePopulateStringTags(
                     SnipREST::snipcartInvoiceUrl,
                     array('token' => $item['token'])
                 );
@@ -389,12 +395,12 @@ trait Orders {
                     target="' . $item['token'] . '"
                     class="DownloadInvoiceButton pw-tooltip"
                     title="' . $this->_('Download invoice') .'">' .
-                        wireIconMarkup('download') .
+                        \ProcessWire\wireIconMarkup('download') .
                 '</a>';
                 $completionDate = '<span class="tooltip" title="';
-                $completionDate .= wireDate('Y-m-d H:i:s', $item['completionDate']);
+                $completionDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['completionDate']);
                 $completionDate .= '">';
-                $completionDate .= wireDate('relative', $item['completionDate']);
+                $completionDate .= \ProcessWire\wireDate('relative', $item['completionDate']);
                 $completionDate .= '</span>';
 
                 $table->row(array(
@@ -451,7 +457,7 @@ trait Orders {
             '<div class="ItemDetailBackLink">' . 
                 '<a href="' .$ret . '?modal=1"
                     class="pw-panel-links">' .
-                        wireIconMarkup('times-circle', 'fa-right-margin') .
+                        \ProcessWire\wireIconMarkup('times-circle', 'fa-right-margin') .
                         $this->_('Close order details') .
                 '</a>' .
             '</div>';
@@ -460,7 +466,7 @@ trait Orders {
         $out .=
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                wireIconMarkup(self::iconOrder, 'fa-right-margin') .
+                \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') .
                 $this->_('Order') . ': ' .
                 $item['invoiceNumber'] .
             '</h2>' .
@@ -556,7 +562,7 @@ trait Orders {
 
                 $refundsBadge = 
                 ' <span class="snipwire-badge snipwire-badge-info">' .
-                    sprintf(_n("%d refund", "%d refunds", $refundsCount), $refundsCount) .
+                    sprintf($this->_n("%d refund", "%d refunds", $refundsCount), $refundsCount) .
                 '</span>';
 
                 /** @var InputfieldMarkup $f */
@@ -578,7 +584,7 @@ trait Orders {
 
             $notificationsBadge = 
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf(_n("%d notification", "%d notifications", $notificationsCount), $notificationsCount) .
+                sprintf($this->_n("%d notification", "%d notifications", $notificationsCount), $notificationsCount) .
             '</span>';
 
             /** @var InputfieldMarkup $f */
@@ -755,7 +761,7 @@ trait Orders {
         $amountValue = $amount->value;
         if (!$amountValue) {
             $amount->error($this->_('Please enter an amount'));
-        } elseif ($amountValue && !checkPattern($amountValue, $amount->pattern)) {
+        } elseif ($amountValue && !\SnipWire\Helpers\checkPattern($amountValue, $amount->pattern)) {
             $amount->error($this->_('Please enter a valid number'));
         } elseif ($amountValue > $maxAmount) {
             $amount->error($this->_('Maximum amount is') . ' ' . $maxAmountFormatted);
@@ -1085,7 +1091,7 @@ trait Orders {
      *
      */
     private function _getOrderDetailActionButtons($token, $ret = '') {
-        $downloadUrl = wirePopulateStringTags(
+        $downloadUrl = \ProcessWire\wirePopulateStringTags(
             SnipREST::snipcartInvoiceUrl,
             array('token' => $token)
         );
@@ -1096,7 +1102,7 @@ trait Orders {
             class="DownloadInvoiceButton ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary"
             role="button">' .
                 '<span class="ui-button-text">' .
-                    wireIconMarkup('download') . ' ' . $this->_('Download Invoice') .
+                    \ProcessWire\wireIconMarkup('download') . ' ' . $this->_('Download Invoice') .
                 '</span>' .
         '</a>';
 
@@ -1107,7 +1113,7 @@ trait Orders {
             class="ResendInvoiceButton ui-button ui-widget ui-corner-all ui-state-default"
             role="button">' .
                 '<span class="ui-button-text">' .
-                    wireIconMarkup('share') . ' ' . $this->_('Resend Invoice') .
+                    \ProcessWire\wireIconMarkup('share') . ' ' . $this->_('Resend Invoice') .
                 '</span>' .
         '</a>';
 
@@ -1139,7 +1145,7 @@ trait Orders {
             title="' . $this->_('Send email to customer') .'">' .
                 $item['email'] .
         '</a>';
-        $item['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $item['creationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
         $item['status'] = $this->getOrderStatus($item['status']);
 
         $trackingNumber = $item['trackingNumber'];
@@ -1374,7 +1380,7 @@ trait Orders {
         ));
         foreach ($refunds as $refund) {
             $table->row(array(
-                wireDate('Y-m-d H:i:s', $refund['creationDate']),
+                \ProcessWire\wireDate('Y-m-d H:i:s', $refund['creationDate']),
                 CurrencyFormat::format($refund['amount'], $currency),
                 $refund['comment'],
                 $refund['refundedByPaymentGateway']
@@ -1479,16 +1485,16 @@ trait Orders {
             
             if ($notification['deliveryMethod'] == 'Email') {
                 $emailSent = '<span class="ui-priority-secondary tooltip" title="';
-                $emailSent .= wireDate('Y-m-d H:i:s', $notification['sentOn']);
+                $emailSent .= \ProcessWire\wireDate('Y-m-d H:i:s', $notification['sentOn']);
                 $emailSent .= '">';
-                $emailSent .= wireDate('relative', $notification['sentOn']);
+                $emailSent .= \ProcessWire\wireDate('relative', $notification['sentOn']);
                 $emailSent .= '</span>';
             } else {
                 $emailSent = '-';
             }
 
             $table->row(array(
-                wireDate('Y-m-d H:i:s', $notification['creationDate']),
+                \ProcessWire\wireDate('Y-m-d H:i:s', $notification['creationDate']),
                 $message,
                 $emailSent,
             ));

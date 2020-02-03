@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\Helpers;
 
 /**
  * CurrencyFormat - helper class for SnipWire to handle currency formatting.
@@ -12,6 +13,8 @@
  *
  */
 
+use ProcessWire\WireData;
+
 class CurrencyFormat extends WireData {
     
     /** @var array $currenciesCache An array of available currency formats (currency formats memory cache) */
@@ -24,7 +27,7 @@ class CurrencyFormat extends WireData {
      * 
      */
     public static function setStaticCurrenciesCache() {
-        if (!$currencies = wire('sniprest')->getSettings('currencies')) {
+        if (!$currencies = \ProcessWire\wire('sniprest')->getSettings('currencies')) {
             $currencies = self::getDefaultCurrencyDefinition();
         }
         // Cache currency definitons in static property (DB is queried only once!)
@@ -60,7 +63,7 @@ class CurrencyFormat extends WireData {
             'numberFormat' => '%s%v',
             'currencySymbol' => '€',
         );
-        return ($json) ? wireEncodeJSON($defaultCurrency, true) : $defaultCurrency;
+        return ($json) ? \ProcessWire\wireEncodeJSON($defaultCurrency, true) : $defaultCurrency;
     }
 
     /**
@@ -87,7 +90,7 @@ class CurrencyFormat extends WireData {
             $currencyDefinition = $currencyDefinition[$key];
             $json = false;
         }
-        return ($json) ? wireEncodeJSON($currencyDefinition, true) : $currencyDefinition;
+        return ($json) ? \ProcessWire\wireEncodeJSON($currencyDefinition, true) : $currencyDefinition;
     }
 
     /**
@@ -118,15 +121,15 @@ class CurrencyFormat extends WireData {
         $info = '';
         if (is_array($price)) {
             if (array_key_exists($currency, $price)) {
-                $info = __('multi currency');
+                $info = \ProcessWire\__('multi currency');
             } else {
-                $info = __('currency not found');
+                $info = \ProcessWire\__('currency not found');
                 $currency = array_keys($price)[0]; // fallback to first currency in array
             }
             $price = $price[$currency];
         }
 
-        $floatPrice = wire('sanitizer')->float($price);
+        $floatPrice = \ProcessWire\wire('sanitizer')->float($price);
         if ($floatPrice < 0) {
             $numberFormatString = $currencyDefinition['negativeNumberFormat'];
             $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
@@ -175,7 +178,7 @@ class CurrencyFormat extends WireData {
         foreach ($prices as $currency => $price) {
             $currencyDefinition = self::getCurrencyDefinition($currency);
             
-            $floatPrice = wire('sanitizer')->float($price);
+            $floatPrice = \ProcessWire\wire('sanitizer')->float($price);
             if ($floatPrice < 0) {
                 $numberFormatString = $currencyDefinition['negativeNumberFormat'];
                 $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)

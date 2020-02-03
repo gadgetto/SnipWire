@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * AbandonedCarts trait - sections file for ProcessSnipWire.module.php.
@@ -11,6 +12,12 @@
  * https://processwire.com
  *
  */
+
+use SnipWire\Helpers\Countries;
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\WireHttpExtended;
+use ProcessWire\Inputfield;
 
 trait AbandonedCarts {
     /**
@@ -280,14 +287,14 @@ trait AbandonedCarts {
                 '<a href="' . $this->snipWireRootUrl . 'abandoned-cart/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
+                        \ProcessWire\wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
                 '</a>';
 
                 if(!empty($item['modificationDate'])) {
                     $modificationDate = '<span class="tooltip" title="';
-                    $modificationDate .= wireDate('Y-m-d H:i:s', $item['modificationDate']);
+                    $modificationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']);
                     $modificationDate .= '">';
-                    $modificationDate .= wireDate('relative', $item['modificationDate']);
+                    $modificationDate .= \ProcessWire\wireDate('relative', $item['modificationDate']);
                     $modificationDate .= '</span>';
                 } else {
                     $modificationDate = '-';
@@ -360,7 +367,7 @@ trait AbandonedCarts {
         $out =
         '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') .
+                \ProcessWire\wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') .
                 $this->_('Cart') . ': ' .
                 $item['email'] .
             '</h2>' .
@@ -409,7 +416,7 @@ trait AbandonedCarts {
 
             $notificationsBadge = 
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf(_n("%d message", "%d messages", $notificationsCount), $notificationsCount) .
+                sprintf($this->_n("%d message", "%d messages", $notificationsCount), $notificationsCount) .
             '</span>';
 
             /** @var InputfieldMarkup $f */
@@ -557,8 +564,8 @@ trait AbandonedCarts {
             'currency' => $this->_('Currency'),
         );
 
-        $item['creationDate'] = wireDate('Y-m-d H:i:s', $item['creationDate']);
-        $item['modificationDate'] = wireDate('Y-m-d H:i:s', $item['modificationDate']);
+        $item['creationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
+        $item['modificationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']);
         $item['shippingMethod'] = $item['shippingInformation']['method'];
 
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
@@ -744,9 +751,9 @@ trait AbandonedCarts {
         foreach ($notifications as $notification) {            
             if (!empty($notification['sentOn'])) {
                 $sentOn = '<span class="tooltip" title="';
-                $sentOn .= wireDate('Y-m-d H:i:s', $notification['sentOn']);
+                $sentOn .= \ProcessWire\wireDate('Y-m-d H:i:s', $notification['sentOn']);
                 $sentOn .= '">';
-                $sentOn .= wireDate('relative', $notification['sentOn']);
+                $sentOn .= \ProcessWire\wireDate('relative', $notification['sentOn']);
                 $sentOn .= '</span>';
             } else {
                 $sentOn = '-';
@@ -761,9 +768,9 @@ trait AbandonedCarts {
 
             if (!empty($notification['seenOn'])) {
                 $seenOn = '<span class="tooltip" title="';
-                $seenOn .= wireDate('Y-m-d H:i:s', $notification['seenOn']);
+                $seenOn .= \ProcessWire\wireDate('Y-m-d H:i:s', $notification['seenOn']);
                 $seenOn .= '">';
-                $seenOn .= wireDate('relative', $notification['seenOn']);
+                $seenOn .= \ProcessWire\wireDate('relative', $notification['seenOn']);
                 $seenOn .= '</span>';
             } else {
                 $seenOn = '-';

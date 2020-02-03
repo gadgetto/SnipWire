@@ -1,4 +1,5 @@
-<?php namespace ProcessWire;
+<?php
+namespace ProcessWire;
 
 /**
  * SnipWire - Full Snipcart shopping cart integration for ProcessWire CMF.
@@ -12,12 +13,19 @@
  *
  */
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'SnipREST.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'ExchangeREST.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'Webhooks.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Functions.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'SnipREST.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'ExchangeREST.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'Webhooks.php';
+
+use SnipWire\Helpers\CurrencyFormat;
+use SnipWire\Helpers\Taxes;
+use SnipWire\Services\ExchangeREST;
+use SnipWire\Services\SnipREST;
+use SnipWire\Services\Webhooks;
+use SnipWire\Services\WireHttpExtended;
 
 class SnipWire extends WireData implements Module, ConfigurableModule {
 
@@ -25,7 +33,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         return array(
             'title' => __('SnipWire'), // Module Title
             'summary' => __('Full Snipcart shopping cart integration for ProcessWire.'), // Module Summary
-            'version' => '0.8.0', 
+            'version' => '0.8.1', 
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'singular' => true, 
@@ -37,6 +45,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             ),
             'requires' => array(
                 'ProcessWire>=3.0.148',
+                'PHP>=7.0.0',
             ),
         );
     }
@@ -141,7 +150,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                     $key + 1
                 ));
             }
-            if (!empty($tax['rate']) && !checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
+            if (!empty($tax['rate']) && !\SnipWire\Helpers\checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
                 $taxesField->error(sprintf(
                     $this->_('Taxes repeater row [%s]: "Rate" value needs to be float'),
                     $key + 1
