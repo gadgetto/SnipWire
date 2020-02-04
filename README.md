@@ -1,7 +1,15 @@
 # SnipWire - ProcessWire Plugin
+
+[![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/gadgetto/SnipWire?label=updated)](https://github.com/gadgetto/SnipWire/releases) 
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/gadgetto/SnipWire?color=informational&label=version)](https://github.com/gadgetto/SnipWire/releases) 
+[![ProcessWire version](https://img.shields.io/badge/ProcessWire-%3E%3D3.0.148-informational)](https://processwire.com/download/core/) 
+[![GitHub License](https://img.shields.io/github/license/gadgetto/SnipWire?color=informational)](./LICENSE) 
+
 [Snipcart](https://snipcart.com) is a powerful, developer-first 3rd party HTML/JavaScript shopping cart platform. **SnipWire** is the missing link between Snipcart and the content management framework [ProcessWire](https://processwire.com).
 
 With **SnipWire**, you can quickly turn any **ProcessWire** site into a Snipcart online shop. The SnipWire plugin helps you to get your store up and running in no time. Detailed knowledge of the Snipcart system is not required.
+
+![SnipWire Dashboard](https://docs.bitego.com/site/assets/files/1016/snipwire-section-dashboard.png)
 
 SnipWire is free and open source! It would be nice if you could donate an amount to support further development:
 
@@ -25,7 +33,5 @@ SnipWire is free and open source! It would be nice if you could donate an amount
 - [SnipWire in ProcessWire support forums](https://processwire.com/talk/topic/21554-snipwire-snipcart-integration-for-processwire/)
 - [Snipcart Website](https://snipcart.com/)
 - [ProcessWire website](https://processwire.com/)
-
-<hr>
 
 *SnipWire is free and open source! Copyright by bitego/Martin Gartner (@gadgetto) 2019 - 2020 | Licensed under MPL 2.0*
