@@ -132,7 +132,7 @@ class MarkupSnipWire extends WireData implements Module {
      * @return string $currency
      *
      */
-    public function getCurrency($currency) {
+    public function getCurrency() {
         return $this->currency;
     }    
 
