@@ -694,7 +694,7 @@ class MarkupSnipWire extends WireData implements Module {
     }
 
     /**
-     * Get a selection of fields from SnipWire product templates (defined in module config).
+     * Get a selection of fields from a SnipWire product template.
      * 
      * @param string $defaultFieldName Name of the field to be returned if no product templates available
      * @param array $allowedFieldTypes An array of allowed field types to be returned [optional]
