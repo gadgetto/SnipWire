@@ -253,7 +253,6 @@ class MarkupSnipWire extends WireData implements Module {
      * Renders a Snipcart anchor (buy button or link)
      *
      * @param Page $product The product page which holds Snipcart related product fields
-     * @param string $prompt 
      * @param array|string $options Options for the rendered html tag:
      *  - `id` (string): Additional id name to add (default='').
      *  - `class` (string): Any additional class names to add, separated by ' ' (default='').
