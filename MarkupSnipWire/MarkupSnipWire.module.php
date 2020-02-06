@@ -117,6 +117,7 @@ class MarkupSnipWire extends WireData implements Module {
      *
      */
     public function setCurrency(string $currency) {
+        $currency = strtolower($currency);
         // Get allowed currencies from module config (set to 'eur' if no module config available)
         $currencies = array();
         if (!$currencies = $this->wire('modules')->getConfig('SnipWire', 'currencies')) $currencies[] = 'eur';
