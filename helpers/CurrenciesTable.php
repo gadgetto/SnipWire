@@ -1,6 +1,10 @@
 <?php
 namespace ProcessWire;
 
+/**
+ * An array of ISO 4217 currency codes with translatable currency names.
+ *
+ */
 return array(
     
     // supported by Snipcart AND exchangeratesapi
