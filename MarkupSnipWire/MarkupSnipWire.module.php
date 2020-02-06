@@ -112,8 +112,9 @@ class MarkupSnipWire extends WireData implements Module {
 
     /**
      * Setter for current cart and catalogue currency.
+     * (needs to be called before any other MarkupSnipWire methods)
      *
-     * @param $currency The desired cart and catalogue currency
+     * @param $currency The desired cart and catalogue currency (ISO 4217 currency code)
      *
      */
     public function setCurrency(string $currency) {
@@ -130,7 +131,7 @@ class MarkupSnipWire extends WireData implements Module {
     /**
      * Getter for current cart and catalogue currency.
      *
-     * @return string $currency
+     * @return string $currency The ISO 4217 currency code
      *
      */
     public function getCurrency() {
