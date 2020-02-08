@@ -133,6 +133,7 @@ class SnipWireConfig extends ModuleConfig {
             'product_templates' => array(self::defaultProductTemplate),
             'data_item_name_field' => 'title',
             'data_item_categories_field' => 'snipcart_item_categories',
+            'currency_param' => 'currency',
             'snipwire_debug' => false,
         );
     }
@@ -871,6 +872,15 @@ class SnipWireConfig extends ModuleConfig {
             foreach ($productTemplateFields as $ptField) {
                 $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
             }
+
+        $fsSnipWire->add($f);
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->attr('name', 'currency_param');
+            $f->label = $this->_('Currency Parameter Name');
+            $f->description = $this->_('Set the name of the GET, POST and SESSION parameter to be used for setting cart and catalogue currency.');
+            $f->notes = $this->_('Can be used to switch the currency (used in templates and markup output) via form submit or session variable.');
 
         $fsSnipWire->add($f);
 
