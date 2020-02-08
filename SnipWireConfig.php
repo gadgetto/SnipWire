@@ -689,7 +689,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldAsmSelect');
             $f->attr('name', 'excluded_templates');
             $f->label = 'Exclude Templates from Snipcart Integration';
-            $f->description = $this->_('The chosen templates will be excluded from Snipcart scripts (JS) and styles (CSS) integration.');
+            $f->description = $this->_('The selected templates will be excluded from Snipcart scripts (JS) and styles (CSS) integration.');
             $f->notes = $this->_('Leave empty for no limitation. Please note: system templates (admin, user, language, ...) are always excluded!');
             foreach ($this->_getTemplates() as $t) {
                 $name = $t->name;
@@ -820,7 +820,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldAsmSelect');
             $f->attr('name', 'product_templates');
             $f->label = 'SnipWire Product Templates';
-            $f->description = $this->_('The chosen templates will be enabled as SnipWire product templates.');
+            $f->description = $this->_('The selected templates will be enabled as SnipWire product templates.');
             $f->required = true;
             foreach ($this->_getTemplates() as $t) {
                 $name = $t->name;
