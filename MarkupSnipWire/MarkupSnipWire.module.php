@@ -90,7 +90,7 @@ class MarkupSnipWire extends WireData implements Module {
         $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
 
         // Init $currency with first currency from SnipWire module config
-        $this->currency = $this->snipwireConfig->currencies[0];
+        $this->setCurrency();
 
         // Get the "Custom Cart Fields" page (the corresponding template only allows one single page)
         $this->customCartFieldsPage = $this->wire('pages')->findOne('name=custom-cart-fields, template=snipcart-cart, include=hidden');
@@ -114,17 +114,18 @@ class MarkupSnipWire extends WireData implements Module {
      * Setter for current cart and catalogue currency.
      * (needs to be called before any other MarkupSnipWire methods)
      *
-     * @param $currency The desired cart and catalogue currency (ISO 4217 currency code)
+     * @param $currency The desired cart and catalogue ISO 4217 currency code [default:'']
+     *                  (leave empty to set the default currency)
      *
      */
-    public function setCurrency(string $currency) {
+    public function setCurrency(string $currency = '') {
         $currency = strtolower($currency);
-        // Get allowed currencies from module config (set to 'eur' if no module config available)
-        $currencies = array();
-        if (!$currencies = $this->wire('modules')->getConfig('SnipWire', 'currencies')) $currencies[] = 'eur';
+        // Get allowed currencies from module config (set to 'eur' if no currecy config available)
+        $currencies = $this->snipwireConfig->currencies;
+        if (empty($currencies) || !is_array($currencies)) $currencies[] = 'eur';
 
-        // Not a valid currency given? Fallback to first currency from module settings
-        if (!$currency || !in_array($currency, $currencies)) $currency = reset($currencies);
+        // Not a valid currency given? Fallback to first currency from module config
+        if (empty($currency) || !in_array($currency, $currencies)) $currency = reset($currencies);
         $this->currency = $currency;
     }
     
