@@ -94,10 +94,10 @@ class ExtendedInstaller extends Wire {
     }
 
     /**
-     * Installer for extended resources from [ClassName].resources.php.
+     * Installer for extended resources.
      *
      * @param integer $mode
-     * @return boolean true | false (if installations has errors or warnings)
+     * @return boolean true | false (if installations has errors)
      *
      */
     public function installResources($mode = self::installerModeAll) {
