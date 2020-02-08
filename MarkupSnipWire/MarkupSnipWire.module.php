@@ -89,8 +89,8 @@ class MarkupSnipWire extends WireData implements Module {
         // This works because of using the ModuleConfig class)
         $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
 
-        // Init $currency with first currency from SnipWire module config
-        $this->setCurrency();
+        // Init cart/catalogue currency
+        $this->_initCurrency();
 
         // Get the "Custom Cart Fields" page (the corresponding template only allows one single page)
         $this->customCartFieldsPage = $this->wire('pages')->findOne('name=custom-cart-fields, template=snipcart-cart, include=hidden');
@@ -111,21 +111,27 @@ class MarkupSnipWire extends WireData implements Module {
     }
 
     /**
-     * Setter for current cart and catalogue currency.
-     * (needs to be called before any other MarkupSnipWire methods)
-     *
-     * @param $currency The desired cart and catalogue ISO 4217 currency code [default:'']
-     *                  (leave empty to set the default currency)
+     * Set cart and catalogue currency (ISO 4217 currency code) using $input, $session or module config.
      *
      */
-    public function setCurrency(string $currency = '') {
-        $currency = strtolower($currency);
+    private function _initCurrency() {
+        $input = $this->wire('input');
+        $session = $this->wire('session');
+        $sanitizer = $this->wire('sanitizer');
+
+        $currencyParam = $this->snipwireConfig->currency_param ?? 'currency';
+
         // Get allowed currencies from module config (set to 'eur' if no currecy config available)
         $currencies = $this->snipwireConfig->currencies;
         if (empty($currencies) || !is_array($currencies)) $currencies[] = 'eur';
 
+        // GET, POST, session
+        $currency = $input->$currencyParam ?? $session->get($currencyParam);
+        $currency = strtolower($currency);
+        $currency = $sanitizer->option($currency, $currencies);
+
         // Not a valid currency given? Fallback to first currency from module config
-        if (empty($currency) || !in_array($currency, $currencies)) $currency = reset($currencies);
+        if (!$currency) $currency = reset($currencies);
         $this->currency = $currency;
     }
     
