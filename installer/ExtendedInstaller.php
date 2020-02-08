@@ -136,9 +136,9 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['noParents'])) $t->noParents = $item['noParents'];
                     if (isset($item['tags'])) $t->tags = $item['tags'];
                     $t->save();
-                    $this->message($this->_('Installed Template: ') . $item['name']);
+                    $this->message($this->_('Installed Template:') . ' ' . $item['name']);
                 } else {
-                    $this->warning(sprintf($this->_("Template [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_('Template [%s] already exists. Skipped installation.'), $item['name']));
                 }
             }
             
@@ -189,7 +189,7 @@ class ExtendedInstaller extends Wire {
                 if (!$fields->get($item['name'])) {
                     $f = new Field();
                     if (!$f->type = $modules->get($item['type'])) {
-                        $this->error(sprintf($this->_("Field [%s] could not be installed. Fieldtype [%s] not available. Skipped installation."), $item['name'], $item['type']));
+                        $this->error(sprintf($this->_('Field [%1$s] could not be installed. Fieldtype [%2$s] not available. Skipped installation.'), $item['name'], $item['type']));
                         continue;
                     }
                     $f->name = $item['name'];
@@ -235,9 +235,9 @@ class ExtendedInstaller extends Wire {
                     if (isset($item['tags'])) $f->tags = $item['tags'];
                     if (isset($item['taxesType'])) $f->taxesType = $item['taxesType'];
                     $f->save();
-                    $this->message($this->_('Installed Field: ') . $item['name']);
+                    $this->message($this->_('Installed Field:') . ' ' . $item['name']);
                 } else {
-                    $this->warning(sprintf($this->_("Field [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_('Field [%s] already exists. Skipped installation.'), $item['name']));
                 }
 
             }
@@ -253,7 +253,7 @@ class ExtendedInstaller extends Wire {
                             $fg->add($f);
                             $fg->save();
                         } else {
-                            $out = sprintf($this->_("Could not add field [%s] to template [%s]. The template does not exist!"), $item['name'], $tn);
+                            $out = sprintf($this->_('Could not add field [%1$s] to template [%2$s]. The template does not exist!'), $item['name'], $tn);
                             $this->warning($out);
                         }
                     }
@@ -274,11 +274,11 @@ class ExtendedInstaller extends Wire {
                                 if (isset($options['collapsed'])) $f->collapsed = $options['collapsed'];
                                 $fields->saveFieldgroupContext($f, $fg);
                             } else {
-                                $out = sprintf($this->_("Could not configure options of field [%s] in template context [%s]. The field is not assigned to template!"), $item['name'], $tn);
+                                $out = sprintf($this->_('Could not configure options of field [%1$s] in template context [%2$s]. The field is not assigned to template!'), $item['name'], $tn);
                                 $this->warning($out);
                             }
                         } else {
-                            $out = sprintf($this->_("Could not configure options of field [%s] in template context [%s]. The template does not exist!"), $item['name'], $tn);
+                            $out = sprintf($this->_('Could not configure options of field [%1$s] in template context [%2$s]. The template does not exist!'), $item['name'], $tn);
                             $this->warning($out);
                         }
                     }
@@ -298,12 +298,12 @@ class ExtendedInstaller extends Wire {
                 );
 
                 if (!$t = $templates->get($item['template'])) {
-                    $out = sprintf($this->_("Skipped installation of page [%s]. The template [%s] to be assigned does not exist!"), $item['name'], $item['template']);
+                    $out = sprintf($this->_('Skipped installation of page [%1$s]. The template [%2$s] to be assigned does not exist!'), $item['name'], $item['template']);
                     $this->error($out);
                     continue;
                 }
                 if (!$this->wire('pages')->get($parent)) {
-                    $out = sprintf($this->_("Skipped installation of page [%s]. The parent [%s] to be set does not exist!"), $item['name'], $parent);
+                    $out = sprintf($this->_('Skipped installation of page [%1$s]. The parent [%2$s] to be set does not exist!'), $item['name'], $parent);
                     $this->error($out);
                     continue;
                 }
@@ -317,7 +317,7 @@ class ExtendedInstaller extends Wire {
                     $page->title = $item['title'];
                     if (isset($item['status'])) $page->status = $item['status'];
                     $page->save();
-                    $this->message($this->_('Installed Page: ') . $page->path);
+                    $this->message($this->_('Installed Page:') . ' ' . $page->path);
                     
                     // Populate page-field values
                     if (!empty($item['fields']) && is_array($item['fields'])) {
@@ -335,7 +335,7 @@ class ExtendedInstaller extends Wire {
                     }
                     $page->save();
                 } else {
-                    $this->warning(sprintf($this->_("Page [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_('Page [%s] already exists. Skipped installation.'), $item['name']));
                 }
             }
         }
@@ -349,9 +349,9 @@ class ExtendedInstaller extends Wire {
                     $p->name = $item['name'];
                     $p->title = $item['title'];
                     $p->save();
-                    $this->message($this->_('Installed Permission: ') . $item['name']);
+                    $this->message($this->_('Installed Permission:') . ' ' . $item['name']);
                 } else {
-                    $this->warning(sprintf($this->_("Permission [%s] already exists. Skipped installation."), $item['name']));
+                    $this->warning(sprintf($this->_('Permission [%s] already exists. Skipped installation.'), $item['name']));
                 }
             }
         }
