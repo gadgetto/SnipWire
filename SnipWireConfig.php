@@ -48,7 +48,7 @@ class SnipWireConfig extends ModuleConfig {
      */
     public function __construct() {
         parent::__construct();
-        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
     /**

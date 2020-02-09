@@ -201,9 +201,9 @@ class ProcessSnipWire extends Process implements Module {
         // Get activated $currencies from SnipWire module config
         $this->currencies = $this->snipwireConfig->currencies;
 
-        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
-        $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
-        $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . '/';
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $this->currentUrl = rtrim($this->wire('input')->url, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . DIRECTORY_SEPARATOR;
 
         $this->orderStatusesSelectable = array(
             'Processed' => $this->_('Processed'),
