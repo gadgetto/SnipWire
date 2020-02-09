@@ -254,12 +254,20 @@
 		"oAP": "/installer/ExtendedInstaller.php",
 		"oF": 0
 		},
-	"/installer/ProductsPackage.php": {
+	"/installer/resources/ProductsPackage.php": {
 		"cB": 0,
 		"ft": 8192,
 		"hM": 0,
 		"oA": 0,
-		"oAP": "/installer/ProductsPackage.php",
+		"oAP": "/installer/resources/ProductsPackage.php",
+		"oF": 0
+		},
+	"/installer/resources/SystemResources.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/installer/resources/SystemResources.php",
 		"oF": 0
 		},
 	"/installer/sample_images/beer1.jpg": {
