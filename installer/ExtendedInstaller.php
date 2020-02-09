@@ -372,4 +372,131 @@ class ExtendedInstaller extends Wire {
         
         return ($this->wire('notices')->hasErrors()) ? false : true;    
     }
+
+    /**
+     * Uninstaller for extended resources.
+     *
+     * @param integer $mode
+     * @return boolean true | false (if uninstallation has errors)
+     *
+     */
+    public function uninstallResources($mode = self::installerModeAll) {
+        $fields      = $this->wire('fields');
+        $fieldgroups = $this->wire('fieldgroups');
+        $templates   = $this->wire('templates');
+        $pages       = $this->wire('pages');
+        $permissions = $this->wire('permissions');
+        $modules     = $this->wire('modules');
+        $config      = $this->wire('config');
+
+        if (!$this->resources) {
+            $out = $this->_('Uninstallation aborted. No resources array provided. Please use "setResourcesFile" or "setResources" method to provide a resources array.');
+            throw new WireException($out);
+        }
+
+        /* ====== Uninstall pages ====== */
+
+        if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
+            foreach ($this->resources['pages'] as $item) {
+                $p = $pages->get('template=' . $item['template'] . ', name=' . $item['name']); 
+                if ($p->id) {
+                    if (isset($item['_uninstall'])) {
+                        if (($item['_uninstall'] == 'delete' || $item['_uninstall'] == 'trash') && $p->hasStatus(Page::statusSystem)) {
+                            $p->addStatus(Page::statusSystemOverride); 
+                            $p->removeStatus(Page::statusSystem);
+                            $p->removeStatus(Page::statusSystemOverride);
+                        }
+                        if ($item['_uninstall'] == 'delete') {
+                            $p->delete(true); // including sub-pages
+                            $out = sprintf($this->_('Deleted page [%s].'), $p->path);
+                            $this->message($out);
+                        } elseif ($item['_uninstall'] == 'trash') {
+                            $p->trash();
+                            $out = sprintf($this->_('Trashed page [%s].'), $p->path);
+                            $this->message($out);
+                        } elseif ($item['_uninstall'] == 'no') {
+                            // do nothing!
+                        }
+                    }
+                }
+            }
+        }
+
+        /* ====== Uninstall fields ====== */
+
+        if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
+            foreach ($this->resources['fields'] as $item) {
+                // First remove field from template(s) before deleting it
+                if (isset($item['_addToTemplates'])) {
+                    foreach (explode(',', $item['_addToTemplates']) as $tn) {
+                        $t = $templates->get($tn);
+                        if ($t) {
+                            $fg = $t->fieldgroup;
+                            $fg->remove($fields->get($item['name']));
+                            $fg->save();
+                        }
+                    }
+                }
+                if (!empty($item['_configureOnly'])) continue;
+                $f = $fields->get($item['name']);
+                if ($f) {
+                    $fields->delete($f);
+                    $out = sprintf($this->_('Deleted field [%s].'), $item['name']);
+                    $this->message($out);
+                }
+            }
+        }
+
+        /* ====== Uninstall files ====== */
+
+        if (!empty($this->resources['files']) && is_array($this->resources['files']) && $mode & self::installerModeFiles) {
+            foreach ($this->resources['files'] as $file) {
+                $destination = $config->paths->templates . $file['name'];
+                if (file_exists($destination)) {
+                    if ($this->wire('files')->unlink($destination)) {
+                        $out = sprintf($this->_('Removed file [%s].'), $destination);
+                        $this->message($out);
+                    } else {
+                        $out = sprintf($this->_('Could not remove file [%s]. Please remove this file manually.'), $destination);
+                        $this->warning($out);
+                    }
+                }
+            }
+        }
+
+        /* ====== Uninstall templates ====== */
+
+        if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
+            foreach ($this->resources['templates'] as $item) {
+                $t = $templates->get($item['name']);
+                if (!$t) continue;
+                // Only delete template if not assigned to existing pages
+                if ($templates->getNumPages($t) > 0) {
+                    $out = sprintf($this->_('Could not delete template [%s]. The template is assigned to at least one page!'), $item['name']);
+                    $this->warning($out);
+                // All OK - delete!
+                } else {
+                    $templates->delete($t);
+                    $fieldgroups->delete($t->fieldgroup); // delete the associated fieldgroup
+                    $out = sprintf($this->_('Deleted template [%s].'), $item['name']);
+                    $this->message($out);
+                }
+            }
+        }
+
+        /* ====== Uninstall permissions ====== */
+
+        if (!empty($this->resources['permissions']) && is_array($this->resources['permissions']) && $mode & self::installerModePermissions) {
+            foreach ($this->resources['permissions'] as $item) {
+                $permission = $permissions->get('name=' . $item['name']);
+                if ($permission){
+                    $permission->delete();
+                    $out = sprintf($this->_('Deleted permission [%s].'), $item['name']);
+                    $this->message($out);
+                }
+            }
+        }
+
+        return ($this->wire('notices')->hasErrors()) ? false : true;    
+    }
 }

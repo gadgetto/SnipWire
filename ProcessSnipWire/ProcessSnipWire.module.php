@@ -1105,6 +1105,19 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
+     * Uninstall additional SnipWire system resources.
+     *
+     * @return boolean
+     *
+     */
+    private function _uninstallSystemResources() {
+        /** @var ExstendedInstaller $installer */
+        $installer = $this->wire(new ExtendedInstaller());
+        $installer->setResourcesFile('SystemResources.php');
+        return $installer->uninstallResources(ExtendedInstaller::installerModeAll);        
+    }
+
+    /**
      * Called on module install
      *
      * @throws WireException if installation fails
@@ -1142,6 +1155,10 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     public function ___uninstall() {
+        if (!$this->_uninstallSystemResources()) {                        
+            $out = $this->_('Uninstallation of SnipWire system resources failed.');
+            throw new WireException($out);
+        }
         parent::___uninstall();
     }
 }
