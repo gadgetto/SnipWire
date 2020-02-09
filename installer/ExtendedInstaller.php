@@ -148,7 +148,8 @@ class ExtendedInstaller extends Wire {
             
             // Solve template dependencies (after installation of all templates!)
             foreach ($this->resources['templates'] as $item) {
-                if ($t = $templates->get($item['name'])) {
+                $t = $templates->get($item['name']);
+                if ($t) {
                     $pt = array();
                     if (!empty($item['_allowedParentTemplates'])) {
                         foreach (explode(',', $item['_allowedParentTemplates']) as $ptn) {
@@ -193,6 +194,7 @@ class ExtendedInstaller extends Wire {
         
         if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
             foreach ($this->resources['fields'] as $item) {
+                if (!empty($item['_configureOnly'])) continue;
                 if (!$fields->get($item['name'])) {
                     $f = new Field();
                     if (!$f->type = $modules->get($item['type'])) {
@@ -256,7 +258,8 @@ class ExtendedInstaller extends Wire {
             foreach ($this->resources['fields'] as $item) {
                 if (!empty($item['_addToTemplates'])) {
                     foreach (explode(',', $item['_addToTemplates']) as $tn) {
-                        if ($t = $templates->get($tn)) {
+                        $t = $templates->get($tn);
+                        if ($t) {
                             $fg = $t->fieldgroup;
                             if ($fg->hasField($item['name'])) continue; // No need to add - already added!
                             $f = $fields->get($item['name']);
@@ -274,7 +277,8 @@ class ExtendedInstaller extends Wire {
             foreach ($this->resources['fields'] as $item) {
                 if (!empty($item['_templateFieldOptions'])) {
                     foreach ($item['_templateFieldOptions'] as $tn => $options) {
-                        if ($t = $templates->get($tn)) {
+                        $t = $templates->get($tn);
+                        if ($t) {
                             $fg = $t->fieldgroup;
                             if ($fg->hasField($item['name'])) {
                                 $f = $fg->getField($item['name'], true);
@@ -307,7 +311,8 @@ class ExtendedInstaller extends Wire {
                     array('snipWireRootUrl' => $this->snipWireRootUrl)
                 );
 
-                if (!$t = $templates->get($item['template'])) {
+                $t = $templates->get($item['template']);
+                if (!$t) {
                     $out = sprintf($this->_('Skipped installation of page [%1$s]. The template [%2$s] to be assigned does not exist!'), $item['name'], $item['template']);
                     $this->error($out);
                     continue;
@@ -336,7 +341,7 @@ class ExtendedInstaller extends Wire {
                             if ($page->hasField($fieldname)) {
                                 $type = $page->getField($fieldname)->type;
                                 if ($type == 'FieldtypeImage') {
-                                    $source = $sourceDir . $value;
+                                    $source = $sourceBaseDir . $value;
                                     $page->$fieldname->add($source);
                                 } else {
                                     $page->$fieldname = $value;
@@ -356,7 +361,8 @@ class ExtendedInstaller extends Wire {
 
         if (!empty($this->resources['permissions']) && is_array($this->resources['permissions'])) {
             foreach ($this->resources['permissions'] as $item) {
-                if (!$permission = $permissions->get('name=' . $item['name'])) {
+                $permission = $permissions->get('name=' . $item['name']);
+                if (!$permission) {
                     $p = new Permission();
                     $p->name = $item['name'];
                     $p->title = $item['title'];
