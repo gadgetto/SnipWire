@@ -48,7 +48,7 @@ class ExtendedInstaller extends Wire {
      * 
      */
     public function __construct() {
-        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         parent::__construct();
     }
 
@@ -116,7 +116,7 @@ class ExtendedInstaller extends Wire {
             throw new WireException($out);
         }
         
-        $sourceDir = dirname(__FILE__) . '/';
+        $sourceBaseDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         
         /* ====== Install templates ====== */
         
@@ -170,7 +170,7 @@ class ExtendedInstaller extends Wire {
         
         if (!empty($this->resources['files']) && is_array($this->resources['files']) && $mode & self::installerModeFiles) {
             foreach ($this->resources['files'] as $file) {
-                $source = $sourceDir . $file['type'] . '/' . $file['name'];
+                $source = $sourceBaseDir . $file['type'] . DIRECTORY_SEPARATOR . $file['name'];
                 $destination = $config->paths->templates . $file['name'];
                 if (!file_exists($destination)) {
                     if ($this->wire('files')->copy($source, $destination)) {
