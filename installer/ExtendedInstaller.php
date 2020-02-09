@@ -23,6 +23,8 @@ use ProcessWire\WireException;
 
 class ExtendedInstaller extends Wire {
 
+    const installerResourcesDirName = 'resources';
+    
     const installerModeTemplates = 1;
     const installerModeFields = 2;
     const installerModePages = 4;
@@ -60,7 +62,7 @@ class ExtendedInstaller extends Wire {
      * 
      */
     public function setResourcesFile($fileName) {
-        $path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $fileName;
+        $path = dirname(__FILE__) . DIRECTORY_SEPARATOR . self::installerResourcesDirName . DIRECTORY_SEPARATOR . $fileName;
         if (file_exists($path)) {
             include $path;
             if (!is_array($resources) || !count($resources)) {

@@ -2,7 +2,7 @@
 namespace ProcessWire;
 
 /**
- * Returns extended installation resources for ProcessSnipWire.
+ * Returns product package resources for ProcessSnipWire.
  * (This file is part of the SnipWire package)
  *
  */
@@ -54,6 +54,7 @@ $resources = array(
                     'columnWidth' => 70,
                 ),
             ),
+            '_configureOnly' => true, // will not be installed - only configured
         ),
         'snipcart_item_id' => array(
             'name' => 'snipcart_item_id',
