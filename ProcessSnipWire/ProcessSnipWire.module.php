@@ -1120,14 +1120,12 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Called on module install
      *
-     * @throws WireException if installation fails
-     *
      */
     public function ___install() {
         parent::___install();
         if (!$this->_installSystemResources()) {                        
             $out = $this->_('Installation of SnipWire system resources failed.');
-            throw new WireException($out);
+            $this->error($out);
         }
     }
 
@@ -1136,7 +1134,6 @@ class ProcessSnipWire extends Process implements Module {
      * 
      * @param int|string $fromVersion Previous version
      * @param int|string $toVersion New version
-     * @throws WireException if upgrade fails
      * 
      */
     public function ___upgrade($fromVersion, $toVersion) {
@@ -1145,7 +1142,7 @@ class ProcessSnipWire extends Process implements Module {
 		if (version_compare($fromVersion, '0.7.9', '<=')) {
             if (!$this->_installSystemResources()) {                        
                 $out = $this->_('Installation of SnipWire system resources failed while upgrading the module.');
-                throw new WireException($out);
+                $this->error($out);
             }
         }
     }
@@ -1157,7 +1154,7 @@ class ProcessSnipWire extends Process implements Module {
     public function ___uninstall() {
         if (!$this->_uninstallSystemResources()) {                        
             $out = $this->_('Uninstallation of SnipWire system resources failed.');
-            throw new WireException($out);
+            $this->error($out);
         }
         parent::___uninstall();
     }
