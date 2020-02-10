@@ -359,7 +359,7 @@ class ExtendedInstaller extends Wire {
 
         /* ====== Install permissions ====== */
 
-        if (!empty($this->resources['permissions']) && is_array($this->resources['permissions'])) {
+        if (!empty($this->resources['permissions']) && is_array($this->resources['permissions']) && $mode & self::installerModePermissions) {
             foreach ($this->resources['permissions'] as $item) {
                 $permission = $permissions->get('name=' . $item['name']);
                 if (!$permission) {
