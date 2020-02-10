@@ -666,12 +666,12 @@ class MarkupSnipWire extends WireData implements Module {
         if ($objects) {
             $productTemplates = new WireArray();
             foreach ($templates as $template) {
-                $productTemplates->add($this->wire('templates')->get($template));
+                if ($t = $this->wire('templates')->get($template)) $productTemplates->add($t);
             }
         } else {
-            $productTemplates = $templates;
+            $productTemplates = $templates ?? array();
         }
-        return !empty($productTemplates) ? $productTemplates : array();
+        return $productTemplates;
     }
 
     /**
