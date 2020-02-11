@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- Refactored ExtendedInstaller class to make it more stable
+
 ## [0.8.2] - 2020-02-08
 ### Added
 - Added method to change cart and catalogue currency via GET, POST or SESSION
