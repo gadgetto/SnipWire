@@ -102,281 +102,83 @@ class ExtendedInstaller extends Wire {
      * @return boolean true | false (if installations has errors)
      *
      */
-    public function installResources($mode = self::installerModeAll) {
-        $fields      = $this->wire('fields');
-        $fieldgroups = $this->wire('fieldgroups');
-        $templates   = $this->wire('templates');
-        $pages       = $this->wire('pages');
-        $permissions = $this->wire('permissions');
-        $modules     = $this->wire('modules');
-        $config      = $this->wire('config');
-        
+    public function installResources($mode = self::installerModeAll) {        
         if (!$this->resources) {
-            $out = $this->_('Installation aborted. No resources array provided. Please use "setResourcesFile" or "setResources" method to provide a resources array.');
+            $out  =       $this->_('Installation aborted. No resources array provided.');
+            $out .= ' ' . $this->_('Please use "setResourcesFile" or "setResources" method to provide a resources array.');
             throw new WireException($out);
         }
         
-        $sourceBaseDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        
-        /* ====== Install templates ====== */
-        
-        if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
+        //
+        // Install templates
+        //
+        if (
+            !empty($this->resources['templates']) &&
+            is_array($this->resources['templates']) &&
+            $mode & self::installerModeTemplates
+        ) {
             foreach ($this->resources['templates'] as $item) {
-                if (!$templates->get($item['name'])) {
-                    $fg = new Fieldgroup();
-                    $fg->name = $item['name'];
-                    // Add title field (mandatory!)
-                    $fg->add($fields->get('title'));
-                    $fg->save();             
-                   
-                    $t = new Template();
-                    $t->name = $item['name'];
-                    $t->fieldgroup = $fg;
-                    $t->label = $item['label'];
-                    if (isset($item['icon'])) $t->setIcon($item['icon']);
-                    if (isset($item['noChildren'])) $t->noChildren = $item['noChildren'];
-                    if (isset($item['noParents'])) $t->noParents = $item['noParents'];
-                    if (isset($item['tags'])) $t->tags = $item['tags'];
-                    $t->save();
-                    $out = sprintf($this->_('Installed template [%s].'), $item['name']);
-                    $this->message($out);
-                } else {
-                    $out = sprintf($this->_('Template [%s] already exists. Skipped installation!'), $item['name']);
-                    $this->warning($out);
-                }
+                $this->_installTemplate($item);
             }
-            
-            // Solve template dependencies (after installation of all templates!)
+            // Solve template dependencies (after installing all templates!)
             foreach ($this->resources['templates'] as $item) {
-                $t = $templates->get($item['name']);
-                if ($t) {
-                    $pt = array();
-                    if (!empty($item['_allowedParentTemplates'])) {
-                        foreach (explode(',', $item['_allowedParentTemplates']) as $ptn) {
-                            $pt[] += $templates->get($ptn)->id; // needs to be added as array of template IDs
-                        }
-                        $t->parentTemplates = $pt;
-                    }
-                    $ct = array();
-                    if (!empty($item['_allowedChildTemplates'])) {
-                        foreach (explode(',', $item['_allowedChildTemplates']) as $ctn) {
-                            $ct[] += $templates->get($ctn)->id; // needs to be added as array of template IDs
-                        }
-                        $t->childTemplates = $ct;
-                    }
-                    $t->save();
-                }
+                $this->_setTemplateDependencies($item);
             }
         }
         
-        /* ====== Install files ====== */
-        
-        if (!empty($this->resources['files']) && is_array($this->resources['files']) && $mode & self::installerModeFiles) {
+        //
+        // Install files
+        //
+        if (
+            !empty($this->resources['files']) &&
+            is_array($this->resources['files']) &&
+            $mode & self::installerModeFiles
+        ) {
             foreach ($this->resources['files'] as $file) {
-                $source = $sourceBaseDir . $file['type'] . DIRECTORY_SEPARATOR . $file['name'];
-                $destination = $config->paths->templates . $file['name'];
-                if (!file_exists($destination)) {
-                    if ($this->wire('files')->copy($source, $destination)) {
-                        $out = sprintf($this->_('Installed file [%1$s] to [%2$s].'), $source, $destination);
-                        $this->message($out);
-                    } else {
-                        $out = sprintf($this->_('Could not copy file from [%1$s] to [%2$s]. Please copy manually.'), $source, $destination);
-                        $this->error($out);
-                    }
-                } else {
-                    $out = sprintf($this->_('File [%2$s] already exists. Skipped installation! If necessary please copy manually from [%1$s].'), $source, $destination);
-                    $this->warning($out);
-                }
+                $this->_installFile($file);
             }
         }
 
-        /* ====== Install fields ====== */
-        
-        if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
+        //
+        // Install fields
+        //
+        if (
+            !empty($this->resources['fields']) &&
+            is_array($this->resources['fields']) &&
+            $mode & self::installerModeFields
+        ) {
             foreach ($this->resources['fields'] as $item) {
-                if (!empty($item['_configureOnly'])) continue;
-                if (!$fields->get($item['name'])) {
-                    $f = new Field();
-                    if (!$f->type = $modules->get($item['type'])) {
-                        $out = sprintf($this->_('Field [%1$s] could not be installed. Fieldtype [%2$s] not available. Skipped installation!'), $item['name'], $item['type']);
-                        $this->error($out);
-                        continue;
-                    }
-                    $f->name = $item['name'];
-                    $f->label = $item['label'];
-                    if (isset($item['label2'])) $f->label2 = $item['label2'];
-                    if (isset($item['description'])) $f->description = $item['description'];
-                    if (isset($item['notes'])) $f->notes = $item['notes'];
-                    if (isset($item['icon'])) $f->setIcon($item['icon']);
-                    if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
-                    if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
-                    if (isset($item['rows'])) $f->rows = $item['rows'];
-                    if (isset($item['columnWidth'])) $f->columnWidth = $item['columnWidth'];
-                    if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
-                    if (isset($item['min'])) $f->min = $item['min'];
-                    if (isset($item['inputType'])) $f->inputType = $item['inputType'];
-                    if (isset($item['inputfield'])) $f->inputfield = $item['inputfield'];
-                    if (isset($item['labelFieldName'])) $f->labelFieldName = $item['labelFieldName'];
-                    if (isset($item['usePageEdit'])) $f->usePageEdit = $item['usePageEdit'];
-                    if (isset($item['addable'])) $f->addable = $item['addable'];
-                    if (isset($item['derefAsPage'])) $f->derefAsPage = $item['derefAsPage'];
-                    // Used for AsmSelect
-                    if (isset($item['parent_id'])) {
-                        if (is_int($item['parent_id'])) {
-                            $f->parent_id = $item['parent_id'];
-                        } else {
-                            $f->parent_id = $pages->get($item['parent_id'])->id;
-                        }
-                    }
-                    // Used for AsmSelect
-                    if (isset($item['template_id'])) {
-                        if (is_int($item['template_id'])) {
-                            $f->template_id = $item['template_id'];
-                        } else {
-                            $f->template_id = $templates->get($item['template_id'])->id;
-                        }
-                    }
-                    if (isset($item['showCount'])) $f->showCount = $item['showCount'];
-                    if (isset($item['stripTags'])) $f->stripTags = $item['stripTags'];
-                    if (isset($item['textformatters']) && is_array($item['textformatters'])) $f->textformatters = $item['textformatters'];
-                    if (isset($item['required'])) $f->required = $item['required'];
-                    if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
-                    if (isset($item['pattern'])) $f->pattern = $item['pattern'];
-                    if (isset($item['tags'])) $f->tags = $item['tags'];
-                    if (isset($item['taxesType'])) $f->taxesType = $item['taxesType'];
-                    $f->save();
-                    $out = sprintf($this->_('Installed field [%s].'), $item['name']);
-                    $this->message($out);
-                } else {
-                    $out = sprintf($this->_('Field [%s] already exists. Skipped installation!'), $item['name']);
-                    $this->warning($out);
-                }
-
+                $this->_installField($item);
             }
-
-            // Add fields to their desired templates */
-            foreach ($this->resources['fields'] as $item) {
-                if (!empty($item['_addToTemplates'])) {
-                    foreach (explode(',', $item['_addToTemplates']) as $tn) {
-                        $t = $templates->get($tn);
-                        if ($t) {
-                            $fg = $t->fieldgroup;
-                            if ($fg->hasField($item['name'])) continue; // No need to add - already added!
-                            $f = $fields->get($item['name']);
-                            $fg->add($f);
-                            $fg->save();
-                        } else {
-                            $out = sprintf($this->_('Could not add field [%1$s] to template [%2$s]. The template does not exist!'), $item['name'], $tn);
-                            $this->warning($out);
-                        }
-                    }
-                }
-            }
-            
-            // Configure fields in their templates context (overriding field options per template) */
-            foreach ($this->resources['fields'] as $item) {
-                if (!empty($item['_templateFieldOptions'])) {
-                    foreach ($item['_templateFieldOptions'] as $tn => $options) {
-                        $t = $templates->get($tn);
-                        if ($t) {
-                            $fg = $t->fieldgroup;
-                            if ($fg->hasField($item['name'])) {
-                                $f = $fg->getField($item['name'], true);
-                                if (isset($options['label'])) $f->label = $options['label'];
-                                if (isset($options['notes'])) $f->notes = $options['notes'];
-                                if (isset($options['columnWidth'])) $f->columnWidth = $options['columnWidth'];
-                                if (isset($options['collapsed'])) $f->collapsed = $options['collapsed'];
-                                $fields->saveFieldgroupContext($f, $fg);
-                            } else {
-                                $out = sprintf($this->_('Could not configure options of field [%1$s] in template context [%2$s]. The field is not assigned to template!'), $item['name'], $tn);
-                                $this->warning($out);
-                            }
-                        } else {
-                            $out = sprintf($this->_('Could not configure options of field [%1$s] in template context [%2$s]. The template does not exist!'), $item['name'], $tn);
-                            $this->warning($out);
-                        }
-                    }
-                }
-            }            
         }
 
-        /* ====== Install pages ====== */
-
-        if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
+        //
+        // Install pages
+        //
+        if (
+            !empty($this->resources['pages']) &&
+            is_array($this->resources['pages']) &&
+            $mode & self::installerModePages
+        ) {
             foreach ($this->resources['pages'] as $item) {
-
-                // Page "parent" key may have "string tags"
-                $parent = \ProcessWire\wirePopulateStringTags(
-                    $item['parent'],
-                    array('snipWireRootUrl' => $this->snipWireRootUrl)
-                );
-
-                $t = $templates->get($item['template']);
-                if (!$t) {
-                    $out = sprintf($this->_('Skipped installation of page [%1$s]. The template [%2$s] to be assigned does not exist!'), $item['name'], $item['template']);
-                    $this->error($out);
-                    continue;
-                }
-                if (!$this->wire('pages')->get($parent)) {
-                    $out = sprintf($this->_('Skipped installation of page [%1$s]. The parent [%2$s] to be set does not exist!'), $item['name'], $parent);
-                    $this->error($out);
-                    continue;
-                }
-                
-                if (!$pages->findOne('name=' . $item['name'] . ', include=hidden')->id) {
-                    $page = new Page();
-                    $page->name = $item['name'];
-                    $page->template = $item['template'];
-                    $page->parent = $parent;
-                    $page->process = $this;
-                    $page->title = $item['title'];
-                    if (isset($item['status'])) $page->status = $item['status'];
-                    $page->save();
-                    $out = sprintf($this->_('Installed page [%s].'), $page->path);
-                    $this->message($out);
-                    
-                    // Populate page-field values
-                    if (!empty($item['fields']) && is_array($item['fields'])) {
-                        foreach ($item['fields'] as $fieldname => $value) {
-                            if ($page->hasField($fieldname)) {
-                                $type = $page->getField($fieldname)->type;
-                                if ($type == 'FieldtypeImage') {
-                                    $source = $sourceBaseDir . $value;
-                                    $page->$fieldname->add($source);
-                                } else {
-                                    $page->$fieldname = $value;
-                                }
-                            }
-                        }
-                    }
-                    $page->save();
-                } else {
-                    $out = sprintf($this->_('Page [%s] already exists. Skipped installation!'), $item['name']);
-                    $this->warning($out);
-                }
+                $this->_installPage($item);
             }
         }
 
-        /* ====== Install permissions ====== */
-
-        if (!empty($this->resources['permissions']) && is_array($this->resources['permissions']) && $mode & self::installerModePermissions) {
+        //
+        // Install permissions
+        //
+        if (
+            !empty($this->resources['permissions']) &&
+            is_array($this->resources['permissions']) &&
+            $mode & self::installerModePermissions
+        ) {
             foreach ($this->resources['permissions'] as $item) {
-                $permission = $permissions->get('name=' . $item['name']);
-                if (!$permission) {
-                    $p = new Permission();
-                    $p->name = $item['name'];
-                    $p->title = $item['title'];
-                    $p->save();
-                    $out = sprintf($this->_('Installed permission [%s].'), $item['name']);
-                    $this->message($out);
-                } else {
-                    $out = sprintf($this->_('Permission [%s] already exists. Skipped installation!'), $item['name']);
-                    $this->warning($out);
-                }
+                $this->_installPermission($item);
             }
         }
         
-        return ($this->wire('notices')->hasErrors()) ? false : true;    
+        return ($this->errors('array')) ? false : true;    
     }
 
     /**
@@ -387,122 +189,486 @@ class ExtendedInstaller extends Wire {
      *
      */
     public function uninstallResources($mode = self::installerModeAll) {
-        $fields      = $this->wire('fields');
-        $fieldgroups = $this->wire('fieldgroups');
-        $templates   = $this->wire('templates');
-        $pages       = $this->wire('pages');
-        $permissions = $this->wire('permissions');
-        $modules     = $this->wire('modules');
-        $config      = $this->wire('config');
-
         if (!$this->resources) {
-            $out = $this->_('Uninstallation aborted. No resources array provided. Please use "setResourcesFile" or "setResources" method to provide a resources array.');
+            $out  =       $this->_('Uninstallation aborted. No resources array provided.');
+            $out .= ' ' . $this->_('Please use "setResourcesFile" or "setResources" method to provide a resources array.');
             throw new WireException($out);
         }
 
-        /* ====== Uninstall pages ====== */
-
-        if (!empty($this->resources['pages']) && is_array($this->resources['pages']) && $mode & self::installerModePages) {
+        //
+        // Uninstall pages
+        //
+        if (
+            !empty($this->resources['pages']) &&
+            is_array($this->resources['pages']) &&
+            $mode & self::installerModePages
+        ) {
             foreach ($this->resources['pages'] as $item) {
-                $p = $pages->get('template=' . $item['template'] . ', name=' . $item['name']); 
-                if ($p->id) {
-                    if (isset($item['_uninstall'])) {
-                        if (($item['_uninstall'] == 'delete' || $item['_uninstall'] == 'trash') && $p->hasStatus(Page::statusSystem)) {
-                            $p->addStatus(Page::statusSystemOverride); 
-                            $p->removeStatus(Page::statusSystem);
-                            $p->removeStatus(Page::statusSystemOverride);
-                        }
-                        if ($item['_uninstall'] == 'delete') {
-                            $p->delete(true); // including sub-pages
-                            $out = sprintf($this->_('Deleted page [%s].'), $p->path);
-                            $this->message($out);
-                        } elseif ($item['_uninstall'] == 'trash') {
-                            $p->trash();
-                            $out = sprintf($this->_('Trashed page [%s].'), $p->path);
-                            $this->message($out);
-                        } elseif ($item['_uninstall'] == 'no') {
-                            // do nothing!
-                        }
-                    }
-                }
+                $this->_uninstallPage($item);
             }
         }
 
-        /* ====== Uninstall fields ====== */
-
-        if (!empty($this->resources['fields']) && is_array($this->resources['fields']) && $mode & self::installerModeFields) {
+        //
+        // Uninstall fields
+        //
+        if (
+            !empty($this->resources['fields']) &&
+            is_array($this->resources['fields']) &&
+            $mode & self::installerModeFields
+        ) {
             foreach ($this->resources['fields'] as $item) {
-                // First remove field from template(s) before deleting it
-                if (isset($item['_addToTemplates'])) {
-                    foreach (explode(',', $item['_addToTemplates']) as $tn) {
-                        $t = $templates->get($tn);
-                        if ($t) {
-                            $fg = $t->fieldgroup;
-                            $fg->remove($fields->get($item['name']));
-                            $fg->save();
-                        }
-                    }
+                $this->_uninstallField($item);
+            }
+        }
+
+        //
+        // Uninstall files
+        //
+        if (
+            !empty($this->resources['files']) &&
+            is_array($this->resources['files']) &&
+            $mode & self::installerModeFiles
+        ) {
+            foreach ($this->resources['files'] as $file) {
+                $this->_uninstallFile($file);
+            }
+        }
+
+        //
+        // Uninstall templates
+        //
+        if (
+            !empty($this->resources['templates']) &&
+            is_array($this->resources['templates']) &&
+            $mode & self::installerModeTemplates
+        ) {
+            foreach ($this->resources['templates'] as $item) {
+                $this->_uninstallTemplate($item);
+            }
+        }
+
+        //
+        // Uninstall permissions
+        //
+        if (
+            !empty($this->resources['permissions']) &&
+            is_array($this->resources['permissions']) &&
+            $mode & self::installerModePermissions
+        ) {
+            foreach ($this->resources['permissions'] as $item) {
+                $this->_uninstallPermission($item);
+            }
+        }
+
+        return ($this->errors('array')) ? false : true;    
+    }
+
+    /**
+     * Install a template.
+     *
+     * @param array $item
+     *
+     */
+    private function _installTemplate(array $item) {
+        $fields = $this->wire('fields');
+        $templates = $this->wire('templates');
+
+        if (!$templates->get($item['name'])) {
+            $fg = new Fieldgroup();
+            $fg->name = $item['name'];
+            // Add title field (mandatory!)
+            $fg->add($fields->get('title'));
+            $fg->save();             
+           
+            $t = new Template();
+            $t->name = $item['name'];
+            $t->fieldgroup = $fg;
+            $t->label = $item['label'];
+            if (isset($item['icon'])) $t->setIcon($item['icon']);
+            if (isset($item['noChildren'])) $t->noChildren = $item['noChildren'];
+            if (isset($item['noParents'])) $t->noParents = $item['noParents'];
+            if (isset($item['tags'])) $t->tags = $item['tags'];
+            $t->save();
+            $out = sprintf($this->_('Installed template [%s].'), $item['name']);
+            $this->message($out);
+        } else {
+            $out = sprintf($this->_('Template [%s] already exists. Skipped installation!'), $item['name']);
+            $this->warning($out);
+        }
+    }
+    
+    /**
+     * Uninstall a template.
+     *
+     * @param array $item
+     *
+     */
+    private function _uninstallTemplate(array $item) {
+        $templates = $this->wire('templates');
+        $fieldgroups = $this->wire('fieldgroups');
+
+        $t = $templates->get($item['name']);
+        if (!$t) return;
+
+        // Only delete template if not assigned to existing pages
+        if ($templates->getNumPages($t) > 0) {
+            $out = sprintf($this->_('Could not delete template [%s]. The template is assigned to at least one page!'), $item['name']);
+            $this->warning($out);
+        // All OK - delete!
+        } else {
+            $templates->delete($t);
+            $fieldgroups->delete($t->fieldgroup); // delete the associated fieldgroup
+            $out = sprintf($this->_('Deleted template [%s].'), $item['name']);
+            $this->message($out);
+        }
+    }
+    
+    /**
+     * Set template dependencies.
+     *
+     * @param array $item
+     *
+     */
+    private function _setTemplateDependencies(array $item) {
+        $templates = $this->wire('templates');
+
+        $t = $templates->get($item['name']);
+        if ($t) {
+            $pt = array();
+            if (!empty($item['_allowedParentTemplates'])) {
+                foreach (explode(',', $item['_allowedParentTemplates']) as $ptn) {
+                    $pt[] += $templates->get($ptn)->id; // needs to be added as array of template IDs
                 }
-                if (!empty($item['_configureOnly'])) continue;
-                $f = $fields->get($item['name']);
-                if ($f) {
-                    $fields->delete($f);
-                    $out = sprintf($this->_('Deleted field [%s].'), $item['name']);
-                    $this->message($out);
+                $t->parentTemplates = $pt;
+            }
+            $ct = array();
+            if (!empty($item['_allowedChildTemplates'])) {
+                foreach (explode(',', $item['_allowedChildTemplates']) as $ctn) {
+                    $ct[] += $templates->get($ctn)->id; // needs to be added as array of template IDs
+                }
+                $t->childTemplates = $ct;
+            }
+            $t->save();
+        }
+    }
+
+    /**
+     * Install a file.
+     *
+     * @param array $file
+     *
+     */
+    private function _installFile(array $file) {
+        $config = $this->wire('config');
+
+        $source = dirname(__FILE__) . DIRECTORY_SEPARATOR . $file['type'] . DIRECTORY_SEPARATOR . $file['name'];
+        $destination = $config->paths->templates . $file['name'];
+        if (!file_exists($destination)) {
+            if ($this->wire('files')->copy($source, $destination)) {
+                $out = sprintf($this->_('Installed file [%1$s] to [%2$s].'), $source, $destination);
+                $this->message($out);
+            } else {
+                $out = sprintf($this->_('Could not copy file from [%1$s] to [%2$s]. Please copy manually.'), $source, $destination);
+                $this->error($out);
+            }
+        } else {
+            $out = sprintf($this->_('File [%2$s] already exists. Skipped installation! If necessary please copy manually from [%1$s].'), $source, $destination);
+            $this->warning($out);
+        }
+    }
+    
+    /**
+     * Uninstall a file.
+     *
+     * @param array $file
+     *
+     */
+    private function _uninstallFile(array $file) {
+        $config = $this->wire('config');
+
+        $destination = $config->paths->templates . $file['name'];
+        if (file_exists($destination)) {
+            if ($this->wire('files')->unlink($destination)) {
+                $out = sprintf($this->_('Removed file [%s].'), $destination);
+                $this->message($out);
+            } else {
+                $out = sprintf($this->_('Could not remove file [%s]. Please remove this file manually.'), $destination);
+                $this->warning($out);
+            }
+        }
+    }
+    
+    /**
+     * Install a field.
+     *
+     * @param array $file
+     *
+     */
+    private function _installField(array $item) {
+        $fields = $this->wire('fields');
+        $templates = $this->wire('templates');
+        $pages = $this->wire('pages');
+        $modules = $this->wire('modules');
+
+        if (!$fields->get($item['name']) && empty($item['_configureOnly'])) {
+            $f = new Field();
+            if (!$f->type = $modules->get($item['type'])) {
+                $out = sprintf($this->_('Field [%1$s] could not be installed. Fieldtype [%2$s] not available. Skipped installation!'), $item['name'], $item['type']);
+                $this->error($out);
+                return;
+            }
+            $f->name = $item['name'];
+            $f->label = $item['label'];
+            if (isset($item['label2'])) $f->label2 = $item['label2'];
+            if (isset($item['description'])) $f->description = $item['description'];
+            if (isset($item['notes'])) $f->notes = $item['notes'];
+            if (isset($item['icon'])) $f->setIcon($item['icon']);
+            if (isset($item['collapsed'])) $f->collapsed = $item['collapsed'];
+            if (isset($item['maxlength'])) $f->maxlength = $item['maxlength'];
+            if (isset($item['rows'])) $f->rows = $item['rows'];
+            if (isset($item['columnWidth'])) $f->columnWidth = $item['columnWidth'];
+            if (isset($item['defaultValue'])) $f->defaultValue = $item['defaultValue'];
+            if (isset($item['min'])) $f->min = $item['min'];
+            if (isset($item['inputType'])) $f->inputType = $item['inputType'];
+            if (isset($item['inputfield'])) $f->inputfield = $item['inputfield'];
+            if (isset($item['labelFieldName'])) $f->labelFieldName = $item['labelFieldName'];
+            if (isset($item['usePageEdit'])) $f->usePageEdit = $item['usePageEdit'];
+            if (isset($item['addable'])) $f->addable = $item['addable'];
+            if (isset($item['derefAsPage'])) $f->derefAsPage = $item['derefAsPage'];
+            // Used for AsmSelect
+            if (isset($item['parent_id'])) {
+                if (is_int($item['parent_id'])) {
+                    $f->parent_id = $item['parent_id'];
+                } else {
+                    $f->parent_id = $pages->get($item['parent_id'])->id;
+                }
+            }
+            // Used for AsmSelect
+            if (isset($item['template_id'])) {
+                if (is_int($item['template_id'])) {
+                    $f->template_id = $item['template_id'];
+                } else {
+                    $f->template_id = $templates->get($item['template_id'])->id;
+                }
+            }
+            if (isset($item['showCount'])) $f->showCount = $item['showCount'];
+            if (isset($item['stripTags'])) $f->stripTags = $item['stripTags'];
+            if (isset($item['textformatters']) && is_array($item['textformatters'])) $f->textformatters = $item['textformatters'];
+            if (isset($item['required'])) $f->required = $item['required'];
+            if (isset($item['extensions'])) $f->extensions = $item['extensions']; // for image and file fields
+            if (isset($item['pattern'])) $f->pattern = $item['pattern'];
+            if (isset($item['tags'])) $f->tags = $item['tags'];
+            if (isset($item['taxesType'])) $f->taxesType = $item['taxesType'];
+            $f->save();
+            $out = sprintf($this->_('Installed field [%s].'), $item['name']);
+            $this->message($out);
+        } else {
+            $out = sprintf($this->_('Field [%s] already exists. Skipped installation!'), $item['name']);
+            $this->message($out);
+        }
+
+        // Add field to templates */
+        if (!empty($item['_addToTemplates'])) {
+            foreach (explode(',', $item['_addToTemplates']) as $tn) {
+                $t = $templates->get($tn);
+                if ($t) {
+                    $fg = $t->fieldgroup;
+                    if ($fg->hasField($item['name'])) continue; // No need to add - already added!
+                    $f = $fields->get($item['name']);
+                    $fg->add($f);
+                    $fg->save();
+                } else {
+                    $out = sprintf($this->_('Could not add field [%1$s] to template [%2$s]. The template does not exist!'), $item['name'], $tn);
+                    $this->warning($out);
                 }
             }
         }
 
-        /* ====== Uninstall files ====== */
-
-        if (!empty($this->resources['files']) && is_array($this->resources['files']) && $mode & self::installerModeFiles) {
-            foreach ($this->resources['files'] as $file) {
-                $destination = $config->paths->templates . $file['name'];
-                if (file_exists($destination)) {
-                    if ($this->wire('files')->unlink($destination)) {
-                        $out = sprintf($this->_('Removed file [%s].'), $destination);
-                        $this->message($out);
+        // Configure field in templates context (overriding field options per template) */
+        if (!empty($item['_templateFieldOptions'])) {
+            foreach ($item['_templateFieldOptions'] as $tn => $options) {
+                $t = $templates->get($tn);
+                if ($t) {
+                    $fg = $t->fieldgroup;
+                    if ($fg->hasField($item['name'])) {
+                        $f = $fg->getField($item['name'], true);
+                        if (isset($options['label'])) $f->label = $options['label'];
+                        if (isset($options['notes'])) $f->notes = $options['notes'];
+                        if (isset($options['columnWidth'])) $f->columnWidth = $options['columnWidth'];
+                        if (isset($options['collapsed'])) $f->collapsed = $options['collapsed'];
+                        $fields->saveFieldgroupContext($f, $fg);
                     } else {
-                        $out = sprintf($this->_('Could not remove file [%s]. Please remove this file manually.'), $destination);
+                        $out = sprintf($this->_('Could not configure options of field [%1$s] in template context [%2$s]. The field is not assigned to template!'), $item['name'], $tn);
                         $this->warning($out);
                     }
-                }
-            }
-        }
-
-        /* ====== Uninstall templates ====== */
-
-        if (!empty($this->resources['templates']) && is_array($this->resources['templates']) && $mode & self::installerModeTemplates) {
-            foreach ($this->resources['templates'] as $item) {
-                $t = $templates->get($item['name']);
-                if (!$t) continue;
-                // Only delete template if not assigned to existing pages
-                if ($templates->getNumPages($t) > 0) {
-                    $out = sprintf($this->_('Could not delete template [%s]. The template is assigned to at least one page!'), $item['name']);
-                    $this->warning($out);
-                // All OK - delete!
                 } else {
-                    $templates->delete($t);
-                    $fieldgroups->delete($t->fieldgroup); // delete the associated fieldgroup
-                    $out = sprintf($this->_('Deleted template [%s].'), $item['name']);
-                    $this->message($out);
+                    $out = sprintf($this->_('Could not configure options of field [%1$s] in template context [%2$s]. The template does not exist!'), $item['name'], $tn);
+                    $this->warning($out);
                 }
             }
         }
+    }
+    
+    /**
+     * Uninstall a field.
+     *
+     * @param array $file
+     *
+     */
+    private function _uninstallField(array $item) {
+        $fields = $this->wire('fields');
+        $templates = $this->wire('templates');
 
-        /* ====== Uninstall permissions ====== */
-
-        if (!empty($this->resources['permissions']) && is_array($this->resources['permissions']) && $mode & self::installerModePermissions) {
-            foreach ($this->resources['permissions'] as $item) {
-                $permission = $permissions->get('name=' . $item['name']);
-                if ($permission){
-                    $permission->delete();
-                    $out = sprintf($this->_('Deleted permission [%s].'), $item['name']);
-                    $this->message($out);
+        // First remove field from template(s) before deleting it
+        if (isset($item['_addToTemplates'])) {
+            foreach (explode(',', $item['_addToTemplates']) as $tn) {
+                $t = $templates->get($tn);
+                if ($t) {
+                    $fg = $t->fieldgroup;
+                    $fg->remove($fields->get($item['name']));
+                    $fg->save();
                 }
             }
         }
+        if (!empty($item['_configureOnly'])) return;
+        $f = $fields->get($item['name']);
+        if ($f) {
+            $fields->delete($f);
+            $out = sprintf($this->_('Deleted field [%s].'), $item['name']);
+            $this->message($out);
+        }
+    }
+    
+    /**
+     * Install a page.
+     *
+     * @param array $item
+     *
+     */
+    private function _installPage(array $item) {
+        $templates = $this->wire('templates');
+        $pages = $this->wire('pages');
 
-        return ($this->wire('notices')->hasErrors()) ? false : true;    
+        // Page "parent" key may have "string tags"
+        $parent = \ProcessWire\wirePopulateStringTags(
+            $item['parent'],
+            array('snipWireRootUrl' => $this->snipWireRootUrl)
+        );
+
+        $t = $templates->get($item['template']);
+        if (!$t) {
+            $out = sprintf($this->_('Skipped installation of page [%1$s]. The template [%2$s] to be assigned does not exist!'), $item['name'], $item['template']);
+            $this->error($out);
+            return;
+        }
+        if (!$this->wire('pages')->get($parent)) {
+            $out = sprintf($this->_('Skipped installation of page [%1$s]. The parent [%2$s] to be set does not exist!'), $item['name'], $parent);
+            $this->error($out);
+            return;
+        }
+        
+        if (!$pages->findOne('name=' . $item['name'] . ', include=hidden')->id) {
+            $page = new Page();
+            $page->name = $item['name'];
+            $page->template = $item['template'];
+            $page->parent = $parent;
+            $page->process = $this;
+            $page->title = $item['title'];
+            if (isset($item['status'])) $page->status = $item['status'];
+            $page->save();
+            $out = sprintf($this->_('Installed page [%s].'), $page->path);
+            $this->message($out);
+            
+            // Populate page-field values
+            if (!empty($item['fields']) && is_array($item['fields'])) {
+                foreach ($item['fields'] as $fieldname => $value) {
+                    if ($page->hasField($fieldname)) {
+                        $type = $page->getField($fieldname)->type;
+                        if ($type == 'FieldtypeImage') {
+                            $source = dirname(__FILE__) . DIRECTORY_SEPARATOR . $value;
+                            $page->$fieldname->add($source);
+                        } else {
+                            $page->$fieldname = $value;
+                        }
+                    }
+                }
+            }
+            $page->save();
+        } else {
+            $out = sprintf($this->_('Page [%s] already exists. Skipped installation!'), $item['name']);
+            $this->warning($out);
+        }
+    }
+
+    /**
+     * Uninstall a page.
+     *
+     * @param array $item
+     *
+     */
+    private function _uninstallPage(array $item) {
+        $pages = $this->wire('pages');
+
+        $p = $pages->get('template=' . $item['template'] . ', name=' . $item['name']); 
+        if ($p->id) {
+            if (isset($item['_uninstall'])) {
+                if (($item['_uninstall'] == 'delete' || $item['_uninstall'] == 'trash') && $p->hasStatus(Page::statusSystem)) {
+                    $p->addStatus(Page::statusSystemOverride); 
+                    $p->removeStatus(Page::statusSystem);
+                    $p->removeStatus(Page::statusSystemOverride);
+                }
+                if ($item['_uninstall'] == 'delete') {
+                    $p->delete(true); // including sub-pages
+                    $out = sprintf($this->_('Deleted page [%s].'), $p->path);
+                    $this->message($out);
+                } elseif ($item['_uninstall'] == 'trash') {
+                    $p->trash();
+                    $out = sprintf($this->_('Trashed page [%s].'), $p->path);
+                    $this->message($out);
+                } elseif ($item['_uninstall'] == 'no') {
+                    // do nothing!
+                }
+            }
+        }
+    }
+    
+    /**
+     * Install a permission.
+     *
+     * @param array $item
+     *
+     */
+    private function _installPermission(array $item) {
+        $permissions = $this->wire('permissions');
+
+        $permission = $permissions->get('name=' . $item['name']);
+        if (!$permission) {
+            $p = new Permission();
+            $p->name = $item['name'];
+            $p->title = $item['title'];
+            $p->save();
+            $out = sprintf($this->_('Installed permission [%s].'), $item['name']);
+            $this->message($out);
+        } else {
+            $out = sprintf($this->_('Permission [%s] already exists. Skipped installation!'), $item['name']);
+            $this->warning($out);
+        }
+    }
+    
+    /**
+     * Uninstall a permission.
+     *
+     * @param array $item
+     *
+     */
+    private function _uninstallPermission(array $item) {
+        $permissions = $this->wire('permissions');
+
+        $permission = $permissions->get('name=' . $item['name']);
+        if ($permission){
+            $permission->delete();
+            $out = sprintf($this->_('Deleted permission [%s].'), $item['name']);
+            $this->message($out);
+        }
     }
 }
