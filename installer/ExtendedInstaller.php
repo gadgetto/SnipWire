@@ -468,9 +468,11 @@ class ExtendedInstaller extends Wire {
             $f->save();
             $out = sprintf($this->_('Installed field [%s].'), $item['name']);
             $this->message($out);
-        } else {
+        } elseif (!empty($item['_configureOnly'])) {
+            // do nothing
+        } else{
             $out = sprintf($this->_('Field [%s] already exists. Skipped installation!'), $item['name']);
-            $this->message($out);
+            $this->warning($out);
         }
 
         // Add field to templates */
