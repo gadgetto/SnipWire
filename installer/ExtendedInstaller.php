@@ -92,6 +92,16 @@ class ExtendedInstaller extends Wire {
     }
 
     /**
+     * Get install resources array.
+     *
+     * @return array
+     *
+     */
+    public function getResources() {
+        return $this->resources;
+    }
+    
+    /**
      * Installer for extended resources.
      *
      * @param integer $mode
