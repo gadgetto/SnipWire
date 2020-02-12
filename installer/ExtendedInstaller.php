@@ -57,7 +57,6 @@ class ExtendedInstaller extends Wire {
      * (file needs to be in same folder as this class file)
      * 
      * @param string $fileName The name of the resources file
-     * @return array
      * @throws WireException
      * 
      */
@@ -74,7 +73,6 @@ class ExtendedInstaller extends Wire {
             throw new WireException($out);
         }
         $this->resources = $resources;
-        return $this->resources;
     }
 
     /**
@@ -82,7 +80,6 @@ class ExtendedInstaller extends Wire {
      * (multidimensional array)
      * 
      * @param array $resources Installation resources array
-     * @return array
      * @throws WireException
      * 
      */
@@ -92,7 +89,6 @@ class ExtendedInstaller extends Wire {
             throw new WireException($out);
         }
         $this->resources = $resources;
-        return $this->resources;
     }
 
     /**
