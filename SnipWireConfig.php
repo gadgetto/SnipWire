@@ -22,8 +22,6 @@ use SnipWire\Helpers\Taxes;
 
 class SnipWireConfig extends ModuleConfig {
 
-    const defaultProductTemplate = 'snipcart-product';
-
     /** @var array $availableCreditCards Available creditcard types */
     protected $availableCreditCards = array(            
         'visa',
@@ -130,9 +128,9 @@ class SnipWireConfig extends ModuleConfig {
             'cart_image_hidpi' => 1,
             'cart_image_hidpiQuality' => 50,
             'webhooks_endpoint' =>  '/webhooks/snipcart',
-            'product_templates' => array(self::defaultProductTemplate),
+            'product_templates' => array(),
             'data_item_name_field' => 'title',
-            'data_item_categories_field' => 'snipcart_item_categories',
+            'data_item_categories_field' => '',
             'currency_param' => 'currency',
             'snipwire_debug' => false,
         );
@@ -824,8 +822,7 @@ class SnipWireConfig extends ModuleConfig {
             $f = $modules->get('InputfieldAsmSelect');
             $f->attr('name', 'product_templates');
             $f->label = 'SnipWire Product Templates';
-            $f->description = $this->_('The selected templates will be enabled as SnipWire product templates.');
-            $f->required = true;
+            $f->description = $this->_('The selected templates will be enabled as SnipWire product templates. This means the required Snipcart scripts (JS) and styles (CSS) will be added automatically.');
             foreach ($this->_getTemplates() as $t) {
                 $name = $t->name;
                 $label = !empty($t->label) ? $t->label . ' [' . $name. ']' :  $name;
@@ -852,7 +849,7 @@ class SnipWireConfig extends ModuleConfig {
                 'snipcart_item_id',
                 'snipcart_item_price_',
             );
-            $productTemplateFields = $snipwire->getProductTemplateFields($defaults['data_item_name_field'], $allowedFieldTypes, $excludeFieldNames);
+            $productTemplateFields = $this->_getFields($allowedFieldTypes, $excludeFieldNames);
             foreach ($productTemplateFields as $ptField) {
                 $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
             }
@@ -864,13 +861,12 @@ class SnipWireConfig extends ModuleConfig {
             $f->attr('name', 'data_item_categories_field'); 
             $f->label = $this->_('Select Field for Snipcart Categories'); 
             $f->notes = $this->_('Allowed field types: `FieldtypePage`');
-            $f->required = true;
             $f->columnWidth = 50;
 
             $allowedFieldTypes = array(
                 'FieldtypePage',
             );
-            $productTemplateFields = $snipwire->getProductTemplateFields($defaults['data_item_categories_field'], $allowedFieldTypes);
+            $productTemplateFields = $this->_getFields($allowedFieldTypes);
             $f->addOption('', $this->_('-- Categories disabled --'));
             foreach ($productTemplateFields as $ptField) {
                 $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
@@ -981,12 +977,35 @@ class SnipWireConfig extends ModuleConfig {
     private function _getTemplates() {
         $templates = new WireArray();
         foreach ($this->wire('templates') as $t) {
-            if (!($t->flags & Template::flagSystem)) {
+            // System templates + cart template excluded
+            if (!($t->flags & Template::flagSystem) && $t->name != 'snipcart-cart') {
                 $templates->add($t);
             }
         }
-    
         return $templates;
+    }
+
+    /**
+     * Get a selection of fields suitable for SnipWire product templates.
+     * 
+     * @param array $allowedFieldTypes An array of allowed field types to be returned [optional]
+     * @param array $excludeFieldNames An array of field names to be excluded from result [optional]
+     * @return WireArray $fields
+     * 
+     */
+    private function _getFields($allowedFieldTypes = array(), $excludeFieldNames = array()) {        
+        $fields = new WireArray();
+        foreach ($this->wire('fields') as $f) {
+            // Title field is mandatory!
+            if ($f->name == 'title') $fields->add($f);
+            // System fields excluded
+            if (!($f->flags & Field::flagSystem)) {
+                $fields->add($f);
+            }
+        }
+        if (!empty($allowedFieldTypes)) $fields = $fields->find('type=' . implode('|', $allowedFieldTypes));
+        if (!empty($excludeFieldNames)) $fields = $fields->find('!name%=' . implode('|', $excludeFieldNames));
+        return $fields;
     }
 
     /**
