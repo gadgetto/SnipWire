@@ -74,7 +74,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             'required' => true,
             'pattern' => '[-+]?[0-9]*[.]?[0-9]+',
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
         );
     }
 
@@ -163,8 +162,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Manage currency specific price input fields based on module "currencies" property.
      * (Method triggered after module config save)
      *
-     * - Fields will be created on demand and added to the products template automatically.
-     * - If Field to create already exists, it will be re-added to the products template.
+     * - Fields will be created on demand (if not exists).
      *
      */
     public function manageCurrencyPriceFields(HookEvent $event) {
@@ -180,17 +178,13 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         if (empty($currencies) || !is_array($currencies)) return;
 
         $fields = $this->wire('fields');
-        $fieldgroups = $this->wire('fieldgroups');
-        $templates = $this->wire('templates');
         $modules = $this->wire('modules');
         
         $fieldTemplate = self::getCurrencyFieldTemplate();
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
         
-        $fieldsToTemplate = array();
         foreach ($currencies as $currency) {
             $fieldName = $fieldTemplate['name'] . $currency;
-            $fieldsToTemplate[] = $fieldName;
             if ($fields->get($fieldName)) continue; // No need to create - already exists!
             $fieldLabelCurrencyAdd = isset($supportedCurrencies[$currency])
                 ? $supportedCurrencies[$currency]
@@ -206,33 +200,12 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $f->pattern = $fieldTemplate['pattern'];
             $f->tags = $fieldTemplate['tags'];
             $f->save();
-            $this->message(
-                $this->_('Created currency specific field:') . ' ' .
+            $out = sprintf(
+                $this->_('Created currency specific field: [%s].'),
                 $fieldName
             );
-            $fieldsToTemplate[] = $fieldName;
-        }
-
-        // Add fields to template */
-        if (!empty($fieldsToTemplate)) {
-            foreach ($fieldsToTemplate as $name) {
-                foreach (explode(',', $fieldTemplate['_addToTemplates']) as $tn) {
-                    if ($t = $templates->get($tn)) {
-                        $fg = $t->fieldgroup;
-                        if ($fg->hasField($name)) continue; // No need to add - already added!
-                        $f = $fields->get($name);
-                        $fg->add($f);
-                        $fg->save();
-                    } else {
-                        $out = sprintf(
-                            $this->_('Could not add field [%1$s] to template [%2$s]. The template does not exist. Please install Snipcart products package first!'),
-                            $name,
-                            $tn
-                        );
-                        $this->warning($out);
-                    }
-                }
-            }
+            $out .= ' ' . $this->_('You need to add this field to your product templates manually!');
+            $this->message($out);
         }
     }
 

@@ -353,7 +353,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->label = $this->_('Set Currencies'); 
             $f->description =        $this->_('Selected currency(s) will be used in your shop catalogue and in the Snipcart shopping-cart system during checkout.');
             $f->description .= ' ' . $this->_('As SnipWire fetches the available currency-list directly from Snipcart Dashboard, you will need to first setup the desired currency format(s) in your [Snipcart Dashboard > Regional Settings](https://app.snipcart.com/dashboard/settings/regional).');
-            $f->description .= ' ' . $this->_('Selecting a currency will also create a corresponding currency specific price input field and add it to the products template automatically.');
+            $f->description .= ' ' . $this->_('Selecting a currency will also create a corresponding currency specific price input field which needs to be added to your product templates manually.');
             $f->notes =        $this->_('Selecting more than one currency will enable Snipcart\'s multiple currencies payments feature.');
             $f->notes .= ' ' . $this->_('The first currency in the list will be the default one used in your product catalogue, Snipcart shopping-cart and SnipWire dashboard.');
     
