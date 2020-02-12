@@ -1022,8 +1022,8 @@ class ProcessSnipWire extends Process implements Module {
         $comeFromUrl = $sanitizer->url($input->get('ret'));
         $submitInstall = $input->post('submit_install');
 
-        $this->browserTitle($this->_('SnipWire installer'));
-        $this->headline($this->_('Install SnipWire product package'));
+        $this->browserTitle($this->_('Products Package Installer'));
+        $this->headline($this->_('SnipWire Products Package Installer'));
 
         /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm'); 
@@ -1036,7 +1036,7 @@ class ProcessSnipWire extends Process implements Module {
         // Prevent installation when already installed
         if (isset($snipwireConfig['product_package']) && $snipwireConfig['product_package']) {
             
-            $this->warning($this->_('SnipWire product package is already installed!'));
+            $this->warning($this->_('SnipWire products package is already installed!'));
             $this->wire('session')->redirect($comeFromUrl);
             
         // Install
@@ -1044,20 +1044,49 @@ class ProcessSnipWire extends Process implements Module {
 
             $apiReady = true;
             if (($result = $sniprest->testConnection()) !== true) {
-                $warningMessage = $this->_('SnipWire product package cannot be installed. Snipcart REST API connection failed! Please check your secret API keys.');
+                $warningMessage = $this->_('SnipWire products package cannot be installed. Snipcart REST API connection failed! Please check your secret API keys.');
                 $this->warning($warningMessage);
                 $this->wire('session')->redirect($comeFromUrl);
                 // Should not get here - just to be sure!
                 $apiReady = false;
             }
 
-            /** @var InputfieldMarkup $f (info install) */
+            /** @var ExstendedInstaller $installer */
+            $installer = $this->wire(new ExtendedInstaller());
+            $installer->setResourcesFile('ProductsPackage.php');
+
+            /** @var InputfieldMarkup $f (installation info) */
             $f = $modules->get('InputfieldMarkup');
             $f->icon = 'sign-in';
-            $f->label = $this->_('Install');
-            $f->description = $this->_('Install the SnipWire product package? This will create product templates, files, fields and pages required by Snipcart.');
+            $f->label = $this->_('Install Products Package');
+            $f->description = $this->_('Do you want to install the SnipWire products package? This will create product templates, files, fields and pages required by Snipcart.');
+            $f->collapsed = Inputfield::collapsedNever;
             $form->add($f);
             
+            /** @var InputfieldMarkup $f (additional info) */
+            $f = $modules->get('InputfieldMarkup');
+            $f->icon = 'exclamation-circle';
+            $f->label = $this->_('Please Note');
+            $f->skipLabel = Inputfield::skipLabelHeader;
+            $f->addClass('InputfieldIsHighlight');
+            $f->value  = '<p>';
+            $f->value .=     $this->_('To prevent unintended deletion of your Snipcart products catalogue, the products package resources can\'t be uninstalled automatically.') . ' ';
+            $f->value .=     $this->_('If you want to uninstall completely, these resources need to be removed manually!');
+            $f->value .= '</p>';
+            $f->value .= '<p><strong>';
+            $f->value .=     $this->_('Before continuing please be sure to backup your ProcessWire installation and your database!');
+            $f->value .= '</strong></p>';
+            $f->collapsed = Inputfield::collapsedNever;
+            $form->add($f);
+            
+            /** @var InputfieldMarkup $f (listing resources to be installed) */
+            $f = $modules->get('InputfieldMarkup');
+            $f->icon = 'list-ul';
+            $f->label = $this->_('The following resources will be installed');
+            $f->value = '<pre>' . $sanitizer->entities(print_r($installer->getResources(true), true)) . '</pre>';
+            $f->collapsed = Inputfield::collapsedYes;
+            $form->add($f);
+                        
             if ($apiReady) {
                 /** @var InputfieldSubmit $f */
                 $f = $modules->get('InputfieldSubmit');
@@ -1069,9 +1098,6 @@ class ProcessSnipWire extends Process implements Module {
 
             // Was the form submitted?
             if ($submitInstall) {
-                /** @var ExstendedInstaller $installer */
-                $installer = $this->wire(new ExtendedInstaller());
-                $installer->setResourcesFile('ProductsPackage.php');
                 $installResources = $installer->installResources(ExtendedInstaller::installerModeAll);
                 if (!$installResources) {                        
                     $this->warning($this->_('Installation of SnipWire product package not completet. Please check for errors and warnings...'));
