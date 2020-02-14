@@ -269,7 +269,7 @@ class MarkupSnipWire extends WireData implements Module {
      *  - `class` (string): Any additional class names to add, separated by ' ' (default='').
      *  - `attr` (array): Any additional tag attributes to add, as attr => value (default: 'title' => 'Add to cart').
      *  - `label` (string): The button or link label (default='Add to cart').
-     *  - `type` (integer) The anchor type - can be button or link [default=self::snicpartAnchorTypeButton]
+     *  - `type` (integer): The anchor type - can be button or link [default=self::snicpartAnchorTypeButton]
      * @return string $out The HTML for a snipcart buy button or link (HTML button | a tag)
      *
      * @see: https://docs.snipcart.com/v3/setup/products
