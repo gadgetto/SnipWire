@@ -186,12 +186,12 @@ class SnipWireConfig extends ModuleConfig {
         $steps[] = array(
             'type' => 'check',
             'name' => 'product_package',
-            'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
+            'url' => $this->snipWireRootUrl . 'install-product-package/?ret=' . $redirectUrl,
             'prompt' => $this->_('Install Snipcart products package'),
             'description' => $this->_('Contains product templates, files, fields and some demo pages required to build a Snipcart product catalogue. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled. These resources need to be removed manually!'),
             /*
             'followup' => array(
-                'url' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
+                'url' => $this->snipWireRootUrl . 'uninstall-product-package/?ret=' . $redirectUrl,
                 'prompt' => $this->_('Uninstall package'),
                 'icon' => 'times-circle',
             ),
