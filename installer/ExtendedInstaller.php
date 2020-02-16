@@ -443,17 +443,13 @@ class ExtendedInstaller extends Wire {
             if (isset($item['derefAsPage'])) $f->derefAsPage = $item['derefAsPage'];
             // Used for AsmSelect
             if (isset($item['parent_id'])) {
-                if (is_int($item['parent_id'])) {
-                    $f->parent_id = $item['parent_id'];
-                } else {
-                    $f->parent_id = $pages->get($item['parent_id'])->id;
+                if ($parent_id = $pages->get($item['parent_id'])->id) {
+                    $f->parent_id = $parent_id;
                 }
             }
             // Used for AsmSelect
             if (isset($item['template_id'])) {
-                if (is_int($item['template_id'])) {
-                    $f->template_id = $item['template_id'];
-                } else {
+                if ($templates->get($item['template_id'])) {
                     $f->template_id = $templates->get($item['template_id'])->id;
                 }
             }
