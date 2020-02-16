@@ -168,20 +168,6 @@ class SnipWireConfig extends ModuleConfig {
 
         $steps = array();
         $steps[] = array(
-            'type' => 'check',
-            'name' => 'product_package',
-            'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
-            'prompt' => $this->_('Install Snipcart products package'),
-            'description' => $this->_('Contains product templates, files, fields and some demo pages required to build a Snipcart product catalogue. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled. These resources need to be removed manually!'),
-            /*
-            'followup' => array(
-                'url' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
-                'prompt' => $this->_('Uninstall package'),
-                'icon' => 'times-circle',
-            ),
-            */
-        );
-        $steps[] = array(
             'type' => 'link',
             'name' => 'snipcart_account',
             'url' => 'https://app.snipcart.com',
@@ -196,6 +182,20 @@ class SnipWireConfig extends ModuleConfig {
             'target' => '_blank',
             'prompt' => $this->_('Get your Snipcart API keys'),
             'description' => $this->_('To get your public JavaScript - and secret REST API keys, head to the Account > API Keys section. There you’ll find your public API keys and also need to create your secret API keys for live and test environment.'),
+        );
+        $steps[] = array(
+            'type' => 'check',
+            'name' => 'product_package',
+            'url' => '../setup/snipwire/install-product-package/?ret=' . $redirectUrl,
+            'prompt' => $this->_('Install Snipcart products package'),
+            'description' => $this->_('Contains product templates, files, fields and some demo pages required to build a Snipcart product catalogue. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled. These resources need to be removed manually!'),
+            /*
+            'followup' => array(
+                'url' => '../setup/snipwire/uninstall-product-package/?ret=' . $redirectUrl,
+                'prompt' => $this->_('Uninstall package'),
+                'icon' => 'times-circle',
+            ),
+            */
         );
         $steps[] = array(
             'type' => 'link',
