@@ -2,8 +2,22 @@
 namespace ProcessWire;
 
 /**
- * Returns product package resources for ProcessSnipWire.
+ * Returns products package resources for SnipWire (required).
  * (This file is part of the SnipWire package)
+ *
+ * 'templates' - special array keys:
+ *
+ *  - _allowedChildTemplates: comma separated list of allowed child template names
+ *
+ * 'fields' - special array keys:
+ *
+ *  - _addToTemplates: comma separated list of template names the field should be added to
+ *  - _templateFieldOptions: field options in template context
+ *  - _configureOnly: field will not be installed - only configured (add to template, configure in template context, ...)
+ *
+ * 'pages' - special array keys:
+ *
+ *  - _uninstall: what should happen when the page is uninstalled (possible values "trash", "delete", "no")
  *
  */
 
@@ -16,7 +30,7 @@ $resources = array(
             'icon' => 'tags', 
             'noChildren' => 0,
             'tags' => 'Snipcart',
-            '_allowedChildTemplates' => 'snipcart-product', // comma separated list of allowed child template names
+            '_allowedChildTemplates' => 'snipcart-product',
         ),
         'snipcart-product' => array(
             'name' => 'snipcart-product',
@@ -24,7 +38,7 @@ $resources = array(
             'icon' => 'tag', 
             'noChildren' => 1,
             'tags' => 'Snipcart',
-            '_allowedParentTemplates' => 'snipcart-shop', // comma separated list of allowed parent template names
+            '_allowedParentTemplates' => 'snipcart-shop',
         ),
     ),
     
@@ -44,7 +58,6 @@ $resources = array(
     // @see: /MarkupSnipWire/MarkupSnipWire.module.php for product attributes definitions
 
     'fields' => array(
-        // `title` is an alredy available field which only needs to be configured in template context
         'title' => array(
             'name' => 'title',
             '_templateFieldOptions' => array(
@@ -54,7 +67,7 @@ $resources = array(
                     'columnWidth' => 70,
                 ),
             ),
-            '_configureOnly' => true, // will not be installed - only configured
+            '_configureOnly' => true,
         ),
         'snipcart_item_id' => array(
             'name' => 'snipcart_item_id',
@@ -65,7 +78,7 @@ $resources = array(
             'required' => true,
             'pattern' => '^[\w\-_*+.,]+$',
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
             '_templateFieldOptions' => array(
                 'snipcart-product' => array(
                     'columnWidth' => 30,
@@ -81,7 +94,7 @@ $resources = array(
             'required' => true,
             'pattern' => '[-+]?[0-9]*[.]?[0-9]+',
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_description' => array(
             'name' => 'snipcart_item_description',
@@ -96,7 +109,7 @@ $resources = array(
             'textformatters' => array('TextformatterEntities'),
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_image' => array(
             'name' => 'snipcart_item_image',
@@ -107,7 +120,7 @@ $resources = array(
             'required' => false,
             'extensions' => 'gif jpg jpeg png',
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_categories' => array(
             'name' => 'snipcart_item_categories',
@@ -123,7 +136,7 @@ $resources = array(
             'template_id' => 'category', // will be converted to template ID by installer (used for AsmSelect)
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_weight' => array(
             'name' => 'snipcart_item_weight',
@@ -135,7 +148,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_width' => array(
             'name' => 'snipcart_item_width',
@@ -147,7 +160,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_length' => array(
             'name' => 'snipcart_item_length',
@@ -159,7 +172,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_height' => array(
             'name' => 'snipcart_item_height',
@@ -171,7 +184,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_quantity' => array(
             'name' => 'snipcart_item_quantity',
@@ -184,7 +197,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_max_quantity' => array(
             'name' => 'snipcart_item_max_quantity',
@@ -196,7 +209,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_min_quantity' => array(
             'name' => 'snipcart_item_min_quantity',
@@ -208,7 +221,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_quantity_step' => array(
             'name' => 'snipcart_item_quantity_step',
@@ -221,7 +234,7 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_stackable' => array(
             'name' => 'snipcart_item_stackable',
@@ -231,7 +244,7 @@ $resources = array(
             'description' => __('Uncheck, if this product should be added to cart in distinct items instead of increasing quantity.'),
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_taxable' => array(
             'name' => 'snipcart_item_taxable',
@@ -241,7 +254,7 @@ $resources = array(
             'description' => __('Uncheck, if this product should be excluded from taxes calculation.'),
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_taxes' => array(
             'name' => 'snipcart_item_taxes',
@@ -250,8 +263,8 @@ $resources = array(
             'description' => __('Select the tax which should be applied.'),
             'required' => false,
             'tags' => 'Snipcart',
-            'taxesType' => 1, // = taxesTypeProducts
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            'taxesType' => 1, // Taxes::taxesTypeProducts
+            '_addToTemplates' => 'snipcart-product',
         ),
         'snipcart_item_shippable' => array(
             'name' => 'snipcart_item_shippable',
@@ -261,10 +274,8 @@ $resources = array(
             'description' => __('Uncheck, if this product should be flagged as not shippable.'),
             'required' => false,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-product',  // comma separated list of template names
+            '_addToTemplates' => 'snipcart-product',
         ),
-
-        
     ),
 
     'pages' => array(
@@ -273,7 +284,7 @@ $resources = array(
             'title' => 'Snipcart Shop',
             'template' => 'snipcart-shop',
             'parent' => '/', // needs to be page path
-            '_uninstall' => 'delete', // "trash" or "delete" or "no"
+            '_uninstall' => 'delete',
         ),
         'fuzzy-regalia' => array(
             'name' => 'big-schlemel-stout',
@@ -285,7 +296,7 @@ $resources = array(
                 'snipcart_item_description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'snipcart_item_image' => 'sample_images/beer1.jpg', // source file from module directory
             ),
-            '_uninstall' => 'delete', // "trash" or "delete" or "no"
+            '_uninstall' => 'delete',
         ),
         'square-cream-hoax' => array(
             'name' => 'festish-wet-warmer',
@@ -297,7 +308,7 @@ $resources = array(
                 'snipcart_item_description' => 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 'snipcart_item_image' => 'sample_images/beer2.jpg', // source file from module directory
             ),
-            '_uninstall' => 'delete', // "trash" or "delete" or "no"
+            '_uninstall' => 'delete',
         ),
         'axolotl-juicer' => array(
             'name' => 'axolotl-juicer',
@@ -309,7 +320,7 @@ $resources = array(
                 'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
                 'snipcart_item_image' => 'sample_images/beer3.jpg', // source file from module directory
             ),
-            '_uninstall' => 'delete', // "trash" or "delete" or "no"
+            '_uninstall' => 'delete',
         ),
     ),
 );

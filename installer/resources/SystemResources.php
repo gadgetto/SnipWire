@@ -2,8 +2,22 @@
 namespace ProcessWire;
 
 /**
- * Returns system resources for ProcessSnipWire.
+ * Returns system resources for SnipWire (required).
  * (This file is part of the SnipWire package)
+ *
+ * 'templates' - special array keys:
+ *
+ *  - _allowedChildTemplates: comma separated list of allowed child template names
+ *
+ * 'fields' - special array keys:
+ *
+ *  - _addToTemplates: comma separated list of template names the field should be added to
+ *  - _templateFieldOptions: field options in template context
+ *  - _configureOnly: field will not be installed - only configured (add to template, configure in template context, ...)
+ *
+ * 'pages' - special array keys:
+ *
+ *  - _uninstall: what should happen when the page is uninstalled (possible values "trash", "delete", "no")
  *
  */
 
@@ -23,7 +37,6 @@ $resources = array(
         ),
     ),
     'fields' => array(
-        // `title` is an alredy available field which only needs to be configured in template context
         'title' => array(
             'name' => 'title',
             '_templateFieldOptions' => array(
@@ -31,7 +44,7 @@ $resources = array(
                     'collapsed' => 4, //Inputfield::collapsedHidden
                 ),
             ),
-            '_configureOnly' => true, // will not be installed - only configured
+            '_configureOnly' => true,
         ),
         'snipcart_cart_custom_fields' => array(
             'name' => 'snipcart_cart_custom_fields',
@@ -42,7 +55,7 @@ $resources = array(
             'notes' => __('For detailed infos about custom cart fields setup, please visit [Snipcart v2.0 Custom Fields](https://docs.snipcart.com/v2/configuration/custom-fields).'),
             'rows' => 12,
             'tags' => 'Snipcart',
-            '_addToTemplates' => 'snipcart-cart', // comma separated list of template names
+            '_addToTemplates' => 'snipcart-cart',
         ),
         // This field will be preinstalled only and needs to be added manually to the desired product template(s)
         'snipcart_item_custom_fields' => array(
@@ -67,7 +80,7 @@ $resources = array(
             'fields' => array(
                 'snipcart_cart_custom_fields' => $cartCustomVal,
             ),
-            '_uninstall' => 'delete', // "trash" or "delete" or "no"
+            '_uninstall' => 'delete',
         ),
     ),
 );
