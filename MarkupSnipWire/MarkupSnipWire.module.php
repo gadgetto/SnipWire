@@ -525,7 +525,7 @@ class MarkupSnipWire extends WireData implements Module {
     /**
      * Returns the product price, raw or formatted by currency property from SnipWire module config.
      *
-     * - if formatted = false and multiple currencies are configured, this will return a JSON encoded array: {"usd":20,"cad":25}.
+     * - if formatted = false this will return a JSON encoded array: {"eur":19.99} or {"usd":20,"cad":25,...}.
      * - if formatted = true, this will return the price formatted by the selected (or first) currency: € 19,99
      *
      * @param Page $product The product page which holds Snipcart related product fields
@@ -546,17 +546,15 @@ class MarkupSnipWire extends WireData implements Module {
         foreach ($currencies as $currency) {
             // Snipcart always needs a . as separator - so we may not typecasting (float) as it
             // would be locale aware so it could lead to , as decimal separator
-            $prices[$currency] = $product->get("snipcart_item_price_$currency");
+            if ($price = $product->get("snipcart_item_price_$currency")) {
+                $prices[$currency] = $price;
+            }
         }
 
         // ===== unformatted price(s) =====
 
         // If unformatted return as early as possible
-        //  - sample for single currency: 19.99
-        //  - sample for multi currency: {"usd":20,"cad":25.90}
-        if (!$formatted) {
-            return (count($prices) > 1) ? wireEncodeJSON($prices, true) : reset($prices);
-        }
+        if (!$formatted) return wireEncodeJSON($prices);
 
         // ===== formatted price =====
         
