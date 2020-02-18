@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - Refactored ExtendedInstaller class to be more reliable
 - Extended resources installer page is now more user friendly
+- Fixed product price JSON output if a currency field is missing
 - Small fixes and code enhancements
 
 ## [0.8.2] - 2020-02-08
