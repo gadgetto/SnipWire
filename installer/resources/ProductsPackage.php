@@ -23,6 +23,15 @@ namespace ProcessWire;
 
 $resources = array(
 
+    'config' => array(
+        'SnipWire' => array(
+            'name' => 'SnipWire',
+            'options' => array(
+                'product_templates' => array('snipcart-product'),
+            ),
+        ),
+    ),
+    
     'templates' => array(
         'snipcart-shop' => array(
             'name' => 'snipcart-shop',
