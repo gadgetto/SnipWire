@@ -25,12 +25,13 @@ class ExtendedInstaller extends Wire {
 
     const installerResourcesDirName = 'resources';
     
-    const installerModeTemplates = 1;
-    const installerModeFields = 2;
-    const installerModePages = 4;
-    const installerModePermissions = 8;
-    const installerModeFiles = 16;
-    const installerModeAll = 31;
+    const installerModeConfig = 1;
+    const installerModeTemplates = 2;
+    const installerModeFields = 4;
+    const installerModePages = 8;
+    const installerModePermissions = 16;
+    const installerModeFiles = 32;
+    const installerModeAll = 63;
 
     /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
     protected $snipWireRootUrl = '';
@@ -115,6 +116,19 @@ class ExtendedInstaller extends Wire {
             throw new WireException($message);
         }
         
+        //
+        // Save module(s) config(s)
+        //
+        if (
+            !empty($this->resources['config']) &&
+            is_array($this->resources['config']) &&
+            $mode & self::installerModeConfig
+        ) {
+            foreach ($this->resources['config'] as $item) {
+                $this->_addModuleConfigData($item);
+            }
+        }
+
         //
         // Install templates
         //
@@ -269,6 +283,29 @@ class ExtendedInstaller extends Wire {
         return ($this->errors('array')) ? false : true;    
     }
 
+    /**
+     * Save module(s) configiguration(s).
+     *
+     * @param array $item
+     *
+     */
+    private function _addModuleConfigData(array $item) {
+        $modules = $this->wire('modules');
+        
+        $moduleName = $item['name'];
+        if (!$modules->isInstalled($moduleName) || !$modules->isConfigurable($moduleName)) return;
+        
+        $config = $modules->getConfig($moduleName);
+        foreach ($item['options'] as $key => $value) {
+            if (isset($config[$key]) && is_array($config[$key]) && is_array($value)) {
+                $config[$key] = array_merge($config[$key], $value);
+            } else {
+                $config[$key] = $value;
+            }
+        }
+        $modules->saveConfig($moduleName, $config);
+    }
+    
     /**
      * Install a template.
      *
