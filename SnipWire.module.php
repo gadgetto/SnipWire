@@ -288,7 +288,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                     // value is not unique!
                     $error = $this->_('SKU must be unique'); 
                     $exception = sprintf(
-                        $this->_('SKU "%s" is already in use'),
+                        $this->_('SKU [%s] is already in use'),
                         $sku
                     ); 
                     $inputfield = $page->getInputfield($field);
