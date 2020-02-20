@@ -301,9 +301,13 @@ $resources = array(
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
+                'snipcart_item_id' => 'BEER-10001',
                 'snipcart_item_price_eur' => '69.98',
                 'snipcart_item_description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'snipcart_item_image' => 'sample_images/beer1.jpg', // source file from module directory
+                'snipcart_item_taxable' => true,
+                'snipcart_item_shippable' => true,
+                'snipcart_item_stackable' => true,
             ),
             '_uninstall' => 'delete',
         ),
@@ -313,9 +317,13 @@ $resources = array(
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
+                'snipcart_item_id' => 'BEER-10002',
                 'snipcart_item_price_eur' => '19.90',
                 'snipcart_item_description' => 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 'snipcart_item_image' => 'sample_images/beer2.jpg', // source file from module directory
+                'snipcart_item_taxable' => true,
+                'snipcart_item_shippable' => true,
+                'snipcart_item_stackable' => true,
             ),
             '_uninstall' => 'delete',
         ),
@@ -325,9 +333,13 @@ $resources = array(
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
             'fields' => array(
+                'snipcart_item_id' => 'BEER-10003',
                 'snipcart_item_price_eur' => '1199',
                 'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
                 'snipcart_item_image' => 'sample_images/beer3.jpg', // source file from module directory
+                'snipcart_item_taxable' => true,
+                'snipcart_item_shippable' => true,
+                'snipcart_item_stackable' => true,
             ),
             '_uninstall' => 'delete',
         ),
