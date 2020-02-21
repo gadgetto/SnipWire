@@ -1068,7 +1068,7 @@ class ProcessSnipWire extends Process implements Module {
             $f->icon = 'exclamation-circle';
             $f->label = $this->_('Please Note');
             $f->skipLabel = Inputfield::skipLabelHeader;
-            $f->addClass('InputfieldIsHighlight');
+            $f->addClass('InputfieldIsWarning');
             $f->value  = '<p>';
             $f->value .=     $this->_('To prevent unintended deletion of your Snipcart products catalogue, the products package resources can\'t be uninstalled automatically.') . ' ';
             $f->value .=     $this->_('If you want to uninstall completely, these resources need to be removed manually!');
