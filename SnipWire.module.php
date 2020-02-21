@@ -280,11 +280,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             $sku = $page->snipcart_item_id; // SKU field value
             
             if ($page->isChanged('snipcart_item_id')) {
-                $db = wire('db');
-                $table = $db->escapeTable($field->table);
-                $result = $db->query("SELECT COUNT(*) FROM `$table` WHERE data = '$sku'"); 
-                list($exists) = $result->fetch_row();
-                if ((int) $exists) {
+                $exists = $this->wire('pages')->get("snipcart_item_id=$sku");
+                if ($exists->id) {
                     // value is not unique!
                     $error = $this->_('SKU must be unique'); 
                     $exception = sprintf(
