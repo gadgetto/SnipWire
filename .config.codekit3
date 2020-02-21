@@ -584,6 +584,14 @@
 		"oAP": "/vendor/apexcharts.js/LICENSE",
 		"oF": 0
 		},
+	"/vendor/apexcharts.js/locales/ca.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/ca-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
 	"/vendor/apexcharts.js/locales/de.json": {
 		"ft": 524288,
 		"oA": 1,
@@ -616,6 +624,14 @@
 		"oO": 0,
 		"oS": 1
 		},
+	"/vendor/apexcharts.js/locales/fi.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/fi-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
 	"/vendor/apexcharts.js/locales/fr.json": {
 		"ft": 524288,
 		"oA": 1,
@@ -632,10 +648,61 @@
 		"oO": 0,
 		"oS": 1
 		},
+	"/vendor/apexcharts.js/locales/hr.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/hr-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/vendor/apexcharts.js/locales/hy.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/hy-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
 	"/vendor/apexcharts.js/locales/id.json": {
 		"ft": 524288,
 		"oA": 1,
 		"oAP": "/vendor/apexcharts.js/locales/id-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/vendor/apexcharts.js/locales/it.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/it-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/vendor/apexcharts.js/locales/ko.js": {
+		"bF": 0,
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "/vendor/apexcharts.js/locales/ko.min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
+	"/vendor/apexcharts.js/locales/ko.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/ko-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/vendor/apexcharts.js/locales/nl.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/nl-min.json",
 		"oF": 0,
 		"oO": 0,
 		"oS": 1
@@ -652,6 +719,30 @@
 		"ft": 524288,
 		"oA": 1,
 		"oAP": "/vendor/apexcharts.js/locales/ru-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/vendor/apexcharts.js/locales/se.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/se-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/vendor/apexcharts.js/locales/tr.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/tr-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/vendor/apexcharts.js/locales/ua.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/vendor/apexcharts.js/locales/ua-min.json",
 		"oF": 0,
 		"oO": 0,
 		"oS": 1

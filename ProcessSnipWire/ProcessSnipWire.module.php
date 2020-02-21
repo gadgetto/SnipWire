@@ -944,7 +944,7 @@ class ProcessSnipWire extends Process implements Module {
         if ($mode & self::assetsIncludeApexCharts) {
             // Include ApexCharts CSS/JS assets
             $config->styles->add($config->urls->SnipWire . 'assets/styles/PerformanceChart.css' . $versionAdd);
-            $config->scripts->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.min.js?v=3.6.9');
+            $config->scripts->add($config->urls->SnipWire . 'vendor/apexcharts.js/apexcharts.min.js?v=3.15.6');
             $config->scripts->add($config->urls->SnipWire . 'assets/scripts/PerformanceChart.min.js' . $versionAdd);
         }
     }

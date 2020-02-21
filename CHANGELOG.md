@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Updated apexcharts.js vendor plugin to version 3.15.6
 - Refactored ExtendedInstaller class to be more reliable
 - Extended resources installer page is now more user friendly
 - Fixed product price JSON output if a currency field is missing
