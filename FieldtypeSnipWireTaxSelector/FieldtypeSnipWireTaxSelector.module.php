@@ -17,6 +17,8 @@ namespace ProcessWire;
  *
  */
 
+require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+
 use SnipWire\Helpers\Taxes;
 
 class FieldtypeSnipWireTaxSelector extends FieldtypeText {
@@ -35,15 +37,6 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
                 'PHP>=7.0.0',
             ),
         );
-    }
-
-    /**
-     * Include Taxes class.
-     *
-     */
-    public function __construct() {
-        parent::__construct();
-        require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
     }
 
 	/**
