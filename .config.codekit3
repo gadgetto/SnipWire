@@ -17,6 +17,14 @@
 		"oAP": "/.gitignore",
 		"oF": 0
 		},
+	"/.vscode/sftp.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/.vscode/sftp-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
 	"/assets/images/snipcart_processwire.svg": {
 		"ft": 2097152,
 		"miP": 0,
@@ -493,6 +501,14 @@
 		"hM": 0,
 		"oA": 0,
 		"oAP": "/services/WireHttpExtended.php",
+		"oF": 0
+		},
+	"/SnipWire.code-workspace": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/SnipWire.code-workspace",
 		"oF": 0
 		},
 	"/SnipWire.module.php": {
@@ -4318,7 +4334,7 @@
 	"rollupExternals": "",
 	"rollupReplacements": "process.env.NODE_ENV:::$NODE_ENV,,,ENVIRONMENT:::$NODE_ENV",
 	"rollupTreeshakingEnabled": 1,
-	"skippedFoldersString": "log, _logs, logs, _cache, cache, .idea, /storage/framework/sessions, node_modules",
+	"skippedFoldersString": "/storage/framework/sessions,node_modules,_logs,logs,log,.idea,_cache,cache,.vscode,.git",
 	"sourceFolderName": "source",
 	"susyVersion": 3,
 	"tsAllowSyntheticDefaultImports": 0,
