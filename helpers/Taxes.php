@@ -68,8 +68,11 @@ class Taxes {
      */
     public static function getTaxesConfig($json = false, $type = self::taxesTypeAll, $name = '') {
         $taxes = \ProcessWire\wire('modules')->getConfig('SnipWire', 'taxes'); // JSON string
-        $taxes = \ProcessWire\wireDecodeJSON($taxes);
-        if (!$taxes) $taxes = self::getDefaultTaxesConfig();
+        if ($taxes) {
+            $taxes = \ProcessWire\wireDecodeJSON($taxes);
+        } else {
+            $taxes = self::getDefaultTaxesConfig();
+        }
         
         $selectedTaxes = array();
         // Filter taxes based on type if necessary
