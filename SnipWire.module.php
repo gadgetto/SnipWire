@@ -111,11 +111,11 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->addHookAfter('Pages::saveReady', $this, 'checkSKUUnique');
         $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
 
-        // From PW version 3.0.137 we can also use multiple methods to hook in CSV string or array
-        // (currently we use single calls)
         $this->addHookAfter('Pages::saved', $this, 'publishSnipcartProduct');
         $this->addHookAfter('Pages::unpublished', $this, 'unpublishSnipcartProduct');
         $this->addHookAfter('Pages::trashed', $this, 'unpublishSnipcartProduct');
+        
+		$this->addHookBefore('Modules::uninstall', $this, 'convertFieldtypeTaxSelector');
     }
 
     /**
@@ -378,6 +378,30 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 );
             }
             $log->save(self::snipWireLogName, $message);
+        }
+    }
+
+    /**
+     * Check if there are fields which uses FieldtypeSnipWireTaxSelector and convert them to FieldtypeText.
+     * This is needed to enable uninstallation of the custom fieldtype and preserve products data!
+     * (Method triggered before modules uninstall)
+     *
+     * @param HookEvent $event
+     *
+     */
+    public function convertFieldtypeTaxSelector(HookEvent $event) {   
+        $class = $event->arguments(0);
+        if ($class == 'SnipWire') {
+            $fields = $this->wire('fields')->find('type=FieldtypeSnipWireTaxSelector');
+            if ($fields->count()) {
+                foreach ($fields as $field) {
+                    $field->type = 'FieldtypeText';
+                    $field->save();
+                    // This step is needed because ProcessWire removes tags when fieldtype is changed!
+                    $field->tags = 'Snipcart';
+                    $field->save();
+                }
+            }
         }
     }
 
