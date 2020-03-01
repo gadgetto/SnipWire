@@ -4,15 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.3] - 2020-03-01
+### Added
+- Updated products package installer to add specific module config on install
+
+### Fixed
 - The uninstallation process is now much more reliable
 - FieldtypeSnipWireTaxeSelector is now uninstalled properly (existing fields are converted to FieldtypeText)
-- Updated apexcharts.js vendor plugin to version 3.15.6
 - Refactored ExtendedInstaller class to be more reliable
 - Extended resources installer page is now more user friendly
 - Fixed product price JSON output if a currency field is missing
-- Updated products package installer to add specific module config on install
 - Small fixes and code enhancements
+
+### Changed
+- Updated apexcharts.js vendor plugin to version 3.15.6
 
 ## [0.8.2] - 2020-02-08
 ### Added
