@@ -13,17 +13,17 @@ namespace ProcessWire;
  *
  */
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/Functions.php';
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/CurrencyFormat.php';
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers/Countries.php';
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'installer/ExtendedInstaller.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Dashboard.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Orders.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Subscriptions.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/AbandonedCarts.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Customers.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Products.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sections/Discounts.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/Functions.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/CurrencyFormat.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/Countries.php';
+require_once dirname(dirname(__FILE__)) . '/installer/ExtendedInstaller.php';
+require_once dirname(__FILE__) . '/sections/Dashboard.php';
+require_once dirname(__FILE__) . '/sections/Orders.php';
+require_once dirname(__FILE__) . '/sections/Subscriptions.php';
+require_once dirname(__FILE__) . '/sections/AbandonedCarts.php';
+require_once dirname(__FILE__) . '/sections/Customers.php';
+require_once dirname(__FILE__) . '/sections/Products.php';
+require_once dirname(__FILE__) . '/sections/Discounts.php';
 
 use SnipWire\Installer\ExtendedInstaller;
 use SnipWire\Helpers\CurrencyFormat;
@@ -201,9 +201,9 @@ class ProcessSnipWire extends Process implements Module {
         // Get activated $currencies from SnipWire module config
         $this->currencies = $this->snipwireConfig->currencies;
 
-        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        $this->currentUrl = rtrim($this->wire('input')->url, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . DIRECTORY_SEPARATOR;
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
+        $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
+        $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . '/';
 
         $this->orderStatusesSelectable = array(
             'Processed' => $this->_('Processed'),

@@ -13,12 +13,12 @@ namespace ProcessWire;
  *
  */
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Functions.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'SnipREST.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'ExchangeREST.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'Webhooks.php';
+require_once dirname(__FILE__) . '/helpers/Functions.php';
+require_once dirname(__FILE__) . '/helpers/CurrencyFormat.php';
+require_once dirname(__FILE__) . '/helpers/Taxes.php';
+require_once dirname(__FILE__) . '/services/SnipREST.php';
+require_once dirname(__FILE__) . '/services/ExchangeREST.php';
+require_once dirname(__FILE__) . '/services/Webhooks.php';
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;

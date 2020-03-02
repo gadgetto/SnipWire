@@ -13,7 +13,7 @@ namespace ProcessWire;
  *
  */
  
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/CurrencyFormat.php';
 
 use SnipWire\Helpers\CurrencyFormat;
 

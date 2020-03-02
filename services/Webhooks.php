@@ -16,8 +16,8 @@ namespace SnipWire\Services;
  *
  */
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/CurrencyFormat.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/Taxes.php';
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;
@@ -192,7 +192,7 @@ class Webhooks extends WireData {
             );
             return false;
         }
-        $handshakeUrl = $sniprest::apiEndpoint . $sniprest::resPathRequestValidation . DIRECTORY_SEPARATOR . $requestToken;
+        $handshakeUrl = $sniprest::apiEndpoint . $sniprest::resPathRequestValidation . '/' . $requestToken;
         if (($handshake = $sniprest->get($handshakeUrl)) === false) {
             $log->save(
                 self::snipWireWebhooksLogName,

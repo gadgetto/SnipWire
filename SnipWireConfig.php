@@ -13,9 +13,9 @@ namespace ProcessWire;
  *
  */
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Functions.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+require_once dirname(__FILE__) . '/helpers/Functions.php';
+require_once dirname(__FILE__) . '/helpers/CurrencyFormat.php';
+require_once dirname(__FILE__) . '/helpers/Taxes.php';
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;
@@ -46,7 +46,7 @@ class SnipWireConfig extends ModuleConfig {
      */
     public function __construct() {
         parent::__construct();
-        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
     }
 
     /**

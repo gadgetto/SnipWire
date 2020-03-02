@@ -17,8 +17,8 @@ namespace SnipWire\Services;
  *
  */
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'CurrencyFormat.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'WireHttpExtended.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/CurrencyFormat.php';
+require_once dirname(__FILE__) . '/WireHttpExtended.php';
 
 use SnipWire\Helpers\CurrencyFormat;
 use ProcessWire\WireCache;

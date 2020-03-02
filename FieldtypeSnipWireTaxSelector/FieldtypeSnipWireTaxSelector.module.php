@@ -17,7 +17,7 @@ namespace ProcessWire;
  *
  */
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Taxes.php';
+require_once dirname(dirname(__FILE__)) . '/helpers/Taxes.php';
 
 use SnipWire\Helpers\Taxes;
 

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- Entirely removed useage of DIRECTORY_SEPARATOR due to problems on Windows based systems
+
 ## [0.8.3] - 2020-03-01
 ### Added
 - Updated products package installer to add specific module config on install
