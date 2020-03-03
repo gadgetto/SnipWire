@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.8.4] - 2020-03-03
 ### Fixed
-- Improoved compatibility for Windows based Systems
+- Improved compatibility for Windows based Systems
 - Entirely removed useage of DIRECTORY_SEPARATOR due to problems on Windows based systems
 
 ## [0.8.3] - 2020-03-01
