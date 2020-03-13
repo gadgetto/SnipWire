@@ -71,7 +71,7 @@ class Webhooks extends WireData {
     private $responseBody = '';
     
     /**
-     * Set class properties and default header.
+     * Set class properties.
      *
      */
     public function __construct() {
@@ -97,10 +97,6 @@ class Webhooks extends WireData {
         // This works because of using the ModuleConfig class)
         $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
         $this->debug = $this->snipwireConfig->snipwire_debug;
-
-        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-        header('Cache-Control: post-check=0, pre-check=0', false);
-        header('Pragma: no-cache');
     }
 
     /**
@@ -112,6 +108,11 @@ class Webhooks extends WireData {
     public function process() {
         $sniprest = $this->wire('sniprest');
         $log = $this->wire('log');
+        
+        // Set default header
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
 
         if (!$this->_isValidRequest()) {
             // 404 Not Found

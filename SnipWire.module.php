@@ -96,6 +96,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->wire('sniprest', new SnipREST());
         /** @var ExchangeREST $exchangerest Custom ProcessWire API variable */
         $this->wire('exchangerest', new ExchangeREST());
+        /** @var Webhooks $webhooks Custom ProcessWire API variable */
+        $this->wire('webhooks', new Webhooks());
 
         // Get SnipWire module config.
         // (Holds merged data from DB and default config. 
@@ -217,8 +219,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     public function checkWebhookRequest(HookEvent $event) {
         if ($webhooksEndpoint = $this->get('webhooks_endpoint')) {
             if ($this->sanitizer->url($this->input->url) == $webhooksEndpoint) {
-                /** @var Webhooks $webhooks Custom ProcessWire API variable */
-                $this->wire('webhooks', new Webhooks());
                 $this->wire('webhooks')->process();
                 $event->replace = true;
                 // @note: Tracy Debug won't work from here on as normal page rendering is omitted!
