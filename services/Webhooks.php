@@ -74,9 +74,7 @@ class Webhooks extends WireData {
      * Set class properties.
      *
      */
-    public function __construct() {
-        $this->serverProtocol = $_SERVER['SERVER_PROTOCOL'];
-        
+    public function __construct() {        
         $this->webhookEventsIndex = array(
             self::webhookOrderCompleted => 'handleOrderCompleted',
             self::webhookOrderStatusChanged => 'handleOrderStatusChanged',
@@ -113,6 +111,8 @@ class Webhooks extends WireData {
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Cache-Control: post-check=0, pre-check=0', false);
         header('Pragma: no-cache');
+
+        $this->serverProtocol = $_SERVER['SERVER_PROTOCOL'];
 
         if (!$this->_isValidRequest()) {
             // 404 Not Found
