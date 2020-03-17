@@ -54,7 +54,7 @@ class ProcessSnipWire extends Process implements Module {
             'icon' => 'shopping-cart', 
             'permission' => 'snipwire-dashboard',
             'permissions' => array(
-                'snipwire-dashboard' => __('Use the SnipWire Dashboard'), // Permission Description
+                'snipwire-dashboard' => __('Use the SnipWire Dashboard sections'), // Permission Description
             ), 
             'page' => array(
                 'name' => 'snipwire',
