@@ -956,13 +956,25 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     public function ___executeSettings() {
-        $redirectTo = $this->wire('modules')->getModuleEditUrl('SnipWire');
-        $this->wire('session')->redirect($redirectTo);
+        $modules = $this->wire('modules');
+        $user = $this->wire('user');
+        $session = $this->wire('session');
+
+        $this->browserTitle($this->_('Snipcart Module Settings'));
+        $this->headline($this->_('Snipcart Module Settings'));
+        
+        if (!$user->isSuperuser()) {
+            $this->error($this->_('You dont have permisson to change SnipWire module settings - please contact your admin!'));
+            return '';
+        }
+
+        $redirectTo = $modules->getModuleEditUrl('SnipWire');
+        $session->redirect($redirectTo);
         
         // Should never be rendered ... (just to be sure)
         
         /** @var InputfieldButton $btn */
-        $btn = $this->wire('modules')->get('InputfieldButton');
+        $btn = $modules->get('InputfieldButton');
         $btn->href = $redirectTo;
         $btn->value = $this->_('Settings');
         $btn->icon = 'cog';
