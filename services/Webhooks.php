@@ -16,8 +16,8 @@ namespace SnipWire\Services;
  *
  */
 
-require_once dirname(dirname(__FILE__)) . '/helpers/CurrencyFormat.php';
-require_once dirname(dirname(__FILE__)) . '/helpers/Taxes.php';
+require_once dirname(__DIR__) . '/helpers/CurrencyFormat.php';
+require_once dirname(__DIR__) . '/helpers/Taxes.php';
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;

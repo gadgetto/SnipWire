@@ -43,7 +43,7 @@ class CurrencyFormat extends WireData {
      * 
      */
     public static function getSupportedCurrencies() {
-        return require dirname(__FILE__) . '/CurrenciesTable.php';
+        return require __DIR__ . '/CurrenciesTable.php';
     }
     
     /**

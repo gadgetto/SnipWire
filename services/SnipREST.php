@@ -18,7 +18,7 @@ namespace SnipWire\Services;
  *
  */
 
-require_once dirname(__FILE__) . '/WireHttpExtended.php';
+require_once __DIR__ . '/WireHttpExtended.php';
 
 use ProcessWire\WireCache;
 

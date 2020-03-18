@@ -38,7 +38,7 @@ class Countries extends WireData {
      * 
      */
     public static function importCountries() {
-        return require dirname(__FILE__) . '/CountriesTable.php';
+        return require __DIR__ . '/CountriesTable.php';
     }
 
     /**

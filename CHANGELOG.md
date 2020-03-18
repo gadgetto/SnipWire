@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Replaced dirname(__FILE__) with __DIR__ in entire project
 - Catch module settings access for non super users
 - Fixes [#2] Dashboard not accessible for non SuperUsers
 

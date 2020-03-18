@@ -13,12 +13,12 @@ namespace ProcessWire;
  *
  */
 
-require_once dirname(__FILE__) . '/helpers/Functions.php';
-require_once dirname(__FILE__) . '/helpers/CurrencyFormat.php';
-require_once dirname(__FILE__) . '/helpers/Taxes.php';
-require_once dirname(__FILE__) . '/services/SnipREST.php';
-require_once dirname(__FILE__) . '/services/ExchangeREST.php';
-require_once dirname(__FILE__) . '/services/Webhooks.php';
+require_once __DIR__ . '/helpers/Functions.php';
+require_once __DIR__ . '/helpers/CurrencyFormat.php';
+require_once __DIR__ . '/helpers/Taxes.php';
+require_once __DIR__ . '/services/SnipREST.php';
+require_once __DIR__ . '/services/ExchangeREST.php';
+require_once __DIR__ . '/services/Webhooks.php';
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;

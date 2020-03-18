@@ -62,7 +62,7 @@ class ExtendedInstaller extends Wire {
      * 
      */
     public function setResourcesFile($fileName) {
-        $path = dirname(__FILE__) . '/' . self::installerResourcesDirName . '/' . $fileName;
+        $path = __DIR__ . '/' . self::installerResourcesDirName . '/' . $fileName;
         if (file_exists($path)) {
             include $path;
             if (!is_array($resources) || !count($resources)) {
@@ -404,7 +404,7 @@ class ExtendedInstaller extends Wire {
     private function _installFile(array $file) {
         $config = $this->wire('config');
 
-        $source = dirname(__FILE__) . '/' . $file['type'] . '/' . $file['name'];
+        $source = __DIR__ . '/' . $file['type'] . '/' . $file['name'];
         $destination = $config->paths->templates . $file['name'];
         if (!file_exists($destination)) {
             if ($this->wire('files')->copy($source, $destination)) {
@@ -626,7 +626,7 @@ class ExtendedInstaller extends Wire {
                     if ($page->hasField($fieldname)) {
                         $type = $page->getField($fieldname)->type;
                         if ($type == 'FieldtypeImage') {
-                            $source = dirname(__FILE__) . '/' . $value;
+                            $source = __DIR__ . '/' . $value;
                             $page->$fieldname->add($source);
                         } else {
                             $page->$fieldname = $value;
