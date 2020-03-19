@@ -14,6 +14,19 @@ namespace SnipWire\Services;
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
  *
+ * ---
+ *
+ * Hookable event handler methods:
+ *
+ * All hookable event handler methods will return an array containing payload Snipcart sent to your endpoint.
+ * In addition the following class properties will be set:
+ *
+ * $this->payload (The payload Snipcart sent to your endpoint)
+ * $this->responseStatus (The response status your endpoint sent to Snipcart)
+ * $this->responseBody (The response body your endpoint sent to Snipcart)
+ *
+ * Use the appropriate getter methods to receive these values!
+ *
  */
 
 require_once dirname(__DIR__) . '/helpers/CurrencyFormat.php';
@@ -686,6 +699,8 @@ class Webhooks extends WireData {
     /**
      * Webhook handler for customer updated.
      * This event is triggered whenever a customer object is updated from the dashboard or the API.
+     *
+     * (This is an undocumented event!)
      *
      * @return array The payload sent by Snipcart
      *
