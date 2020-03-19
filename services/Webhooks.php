@@ -317,8 +317,14 @@ class Webhooks extends WireData {
         $this->{$methodName}();
     }
 
+    //
+    // Hookable event handler methods
+    //
+    
     /**
      * Webhook handler for order completed.
+     * This event is triggered when a new order has been completed successfully.
+     * It will contain the whole order details.
      *
      * @return array The payload sent by Snipcart
      *
@@ -334,6 +340,9 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for order status changed.
+     * This event is triggered when the status of an order is changed from the dashboard or the API.
+     * The payload will contain the original status along with the new status.
+     * It will also contain the whole order details.
      *
      * @return array The payload sent by Snipcart
      *
@@ -349,6 +358,9 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for payment status changed.
+     * This event is triggered when the payment status of an order is changed from the dashboard or the API.
+     * The payload will contain the original status along with the new status.
+     * It will also contain the whole order details.
      *
      * @return array The payload sent by Snipcart
      *
@@ -364,6 +376,8 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for tracking number changed.
+     * This event is triggered when the tracking number of an order is changed from the dashboard or the API.
+     * The event will contain the new tracking number and will also contain the order details.
      *
      * @return array The payload sent by Snipcart
      *
@@ -379,6 +393,7 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for subscription created.
+     * This event is triggered whenever a new subscription is created.
      *
      * @return array The payload sent by Snipcart
      *
@@ -394,6 +409,7 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for subscription cancelled.
+     * This event is triggered when a subscription is cancelled, either by an admin or by the customer.
      *
      * @return array The payload sent by Snipcart
      *
@@ -409,6 +425,7 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for subscription paused.
+     * This event is triggered when a subscription is paused by the customer.
      *
      * @return array The payload sent by Snipcart
      *
@@ -424,6 +441,7 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for subscription resumed.
+     * This event is triggered when a subscription is resumed by the customer.
      *
      * @return array The payload sent by Snipcart
      *
@@ -439,6 +457,8 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for subscription invoice created.
+     * This event is triggered whenever a new invoice is added to an existing subscription.
+     * This event will not trigger when a subscription is created, it will only trigger for upcoming invoices.
      *
      * @return array The payload sent by Snipcart
      *
@@ -453,7 +473,8 @@ class Webhooks extends WireData {
     }
 
     /**
-     * Webhook handler for shipping rates fetching.
+     * Webhook handler for custom shipping rates fetching.
+     * Snipcart expects to receive a JSON object containing an array of shipping rates.
      *
      * @return array The payload sent by Snipcart
      *
@@ -463,12 +484,18 @@ class Webhooks extends WireData {
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleShippingratesFetch'
         );
+        
+        
+        // @todo: implement custom shipping rates
+        
+         
         $this->responseStatus = 202; // Accepted
         return $this->payload;
     }
 
     /**
-     * Webhook handler for taxes calculation.
+     * Webhook handler for custom taxes calculation.
+     * Snipcart expects to receive a JSON object containing an array of tax rates.
      *
      * @return array The payload sent by Snipcart
      *
@@ -658,6 +685,7 @@ class Webhooks extends WireData {
 
     /**
      * Webhook handler for customer updated.
+     * This event is triggered whenever a customer object is updated from the dashboard or the API.
      *
      * @return array The payload sent by Snipcart
      *
