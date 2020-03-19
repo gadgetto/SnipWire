@@ -320,6 +320,8 @@ class Webhooks extends WireData {
     /**
      * Webhook handler for order completed.
      *
+     * @return array The payload sent by Snipcart
+     *
      */
     public function ___handleOrderCompleted() {
         if ($this->debug) $this->wire('log')->save(
@@ -327,10 +329,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleOrderCompleted'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for order status changed.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleOrderStatusChanged() {
@@ -339,10 +344,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleOrderStatusChanged'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for payment status changed.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleOrderPaymentStatusChanged() {
@@ -351,10 +359,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleOrderPaymentStatusChanged'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for tracking number changed.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleOrderTrackingNumberChanged() {
@@ -363,10 +374,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleOrderTrackingNumberChanged'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for subscription created.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleSubscriptionCreated() {
@@ -375,10 +389,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleSubscriptionCreated'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for subscription cancelled.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleSubscriptionCancelled() {
@@ -387,10 +404,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleSubscriptionCancelled'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for subscription paused.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleSubscriptionPaused() {
@@ -399,10 +419,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleSubscriptionPaused'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for subscription resumed.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleSubscriptionResumed() {
@@ -411,10 +434,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleSubscriptionResumed'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for subscription invoice created.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleSubscriptionInvoiceCreated() {
@@ -423,10 +449,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleSubscriptionInvoiceCreated'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for shipping rates fetching.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleShippingratesFetch() {
@@ -435,10 +464,13 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleShippingratesFetch'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
      * Webhook handler for taxes calculation.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleTaxesCalculate() {        
@@ -621,10 +653,13 @@ class Webhooks extends WireData {
         
         $this->responseStatus = 202; // Accepted
         $this->responseBody = \ProcessWire\wireEncodeJSON($taxes, true);
+        return $this->payload;
     }
 
     /**
      * Webhook handler for customer updated.
+     *
+     * @return array The payload sent by Snipcart
      *
      */
     public function ___handleCustomerUpdated() {
@@ -633,6 +668,7 @@ class Webhooks extends WireData {
             '[DEBUG] Webhooks request: handleCustomerUpdated'
         );
         $this->responseStatus = 202; // Accepted
+        return $this->payload;
     }
 
     /**
