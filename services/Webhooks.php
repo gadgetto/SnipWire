@@ -145,6 +145,16 @@ class Webhooks extends WireData {
     }
 
     /**
+     * Getter for payload.
+     *
+     * @return array The current payload
+     *
+     */
+    public function getPayload() {
+        return $this->payload;
+    }
+
+    /**
      * Getter for responseStatus.
      *
      * @return integer The current response status code
