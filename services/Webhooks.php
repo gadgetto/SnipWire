@@ -25,7 +25,17 @@ namespace SnipWire\Services;
  * $this->responseStatus (The response status your endpoint sent to Snipcart)
  * $this->responseBody (The response body your endpoint sent to Snipcart)
  *
- * Use the appropriate getter methods to receive these values!
+ * (Use the appropriate getter methods to receive these values!)
+ *
+ * How to use the hookable event handler methods (sample):
+ * ~~~~~
+ * $webhooks->addHookAfter('handleOrderCompleted', function($event) {
+ *     $payload = $event->return';
+ *     //... your code here ...
+ * }); 
+ * ~~~~~
+ *
+ * PLEASE NOTE: those hooks will currently only work when placed in init.php or init() or ready() module methods!
  *
  */
 
