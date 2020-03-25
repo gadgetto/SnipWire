@@ -42,6 +42,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 'ProcessSnipWire',
                 'MarkupSnipWire',
                 'FieldtypeSnipWireTaxSelector',
+                'FieldtypeOptions',
             ),
             'requires' => array(
                 'ProcessWire>=3.0.148',
