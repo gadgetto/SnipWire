@@ -20,6 +20,7 @@ use ProcessWire\Permission;
 use ProcessWire\Template;
 use ProcessWire\Wire;
 use ProcessWire\WireException;
+use ProcessWire\SelectableOptionManager;
 
 class ExtendedInstaller extends Wire {
 
@@ -499,6 +500,13 @@ class ExtendedInstaller extends Wire {
             if (isset($item['tags'])) $f->tags = $item['tags'];
             if (isset($item['taxesType'])) $f->taxesType = $item['taxesType'];
             $f->save();
+            // Additional field configuration after "save"
+            if ($item['type'] == 'FieldtypeOptions') {
+                if (isset($item['_optionsString'])) {
+                    $manager = new SelectableOptionManager();
+                    $manager->setOptionsString($f, $item['_optionsString'], true);
+                }
+            }
             $message = sprintf($this->_('Installed field [%s].'), $item['name']);
             $this->message($message);
         } elseif (!empty($item['_configureOnly'])) {
@@ -506,8 +514,8 @@ class ExtendedInstaller extends Wire {
         } else{
             $message = sprintf($this->_('Field [%s] already exists. Skipped installation!'), $item['name']);
             $this->warning($message);
-        }
-
+        }        
+        
         // Add field to templates */
         if (!empty($item['_addToTemplates'])) {
             foreach (explode(',', $item['_addToTemplates']) as $tn) {
