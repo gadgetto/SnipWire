@@ -1138,7 +1138,7 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     private function _installSystemResources() {
-        /** @var ExstendedInstaller $installer */
+        /** @var ExtendedInstaller $installer */
         $installer = $this->wire(new ExtendedInstaller());
         $installer->setResourcesFile('SystemResources.php');
         return $installer->installResources(ExtendedInstaller::installerModeAll);        
@@ -1151,7 +1151,7 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     private function _uninstallSystemResources() {
-        /** @var ExstendedInstaller $installer */
+        /** @var ExtendedInstaller $installer */
         $installer = $this->wire(new ExtendedInstaller());
         $installer->setResourcesFile('SystemResources.php');
         return $installer->uninstallResources(ExtendedInstaller::installerModeAll);        
