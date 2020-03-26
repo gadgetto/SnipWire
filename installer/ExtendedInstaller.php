@@ -444,7 +444,7 @@ class ExtendedInstaller extends Wire {
     /**
      * Install a field.
      *
-     * @param array $file
+     * @param array $item
      *
      */
     private function _installField(array $item) {
