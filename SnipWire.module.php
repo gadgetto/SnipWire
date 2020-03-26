@@ -232,6 +232,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Preset value of field snipcart_item_taxes (VAT) with first element of taxes config.
      * Preset value of checkbox field snipcart_item_taxable so it's checked by default.
      * Preset value of checkbox field snipcart_item_shippable so it's checked by default.
+     * Preset value of checkbox field snipcart_item_recurring_shipping so it's checked by default.
      * (Method triggered after Pages added)
      *
      */
@@ -241,10 +242,11 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
         $page = $event->arguments(0);
         if ($snipwire->isProductTemplate($page->template)) {
-            $page->setAndSave('snipcart_item_id', $page->id);
-            $page->setAndSave('snipcart_item_taxable', 1);
-            $page->setAndSave('snipcart_item_shippable', 1);
-            $page->setAndSave('snipcart_item_stackable', 1);
+            if ($page->hasfield('snipcart_item_id')) $page->setAndSave('snipcart_item_id', $page->id);
+            if ($page->hasfield('snipcart_item_taxable')) $page->setAndSave('snipcart_item_taxable', 1);
+            if ($page->hasfield('snipcart_item_shippable')) $page->setAndSave('snipcart_item_shippable', 1);
+            if ($page->hasfield('snipcart_item_stackable')) $page->setAndSave('snipcart_item_stackable', 1);
+            if ($page->hasfield('snipcart_item_recurring_shipping')) $page->setAndSave('snipcart_item_recurring_shipping', 1);
         }
     }
 

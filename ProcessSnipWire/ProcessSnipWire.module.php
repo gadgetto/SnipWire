@@ -1185,6 +1185,17 @@ class ProcessSnipWire extends Process implements Module {
                 $this->error($out);
             }
         }
+        
+        // added since v 0.8.6: subscription product fields
+        if (version_compare($fromVersion, '0.8.5', '<=')) {
+            /** @var ExtendedInstaller $installer */
+            $installer = $this->wire(new ExtendedInstaller());
+            $installer->setResourcesFile('ProductsPackageUpdate-0.8.6.php');
+            if(!$installer->installResources(ExtendedInstaller::installerModeFields)) {
+                $message = $this->_('Installation of additional SnipWire product fields failed while upgrading the module.');
+                $this->error($message);
+            }      
+        }
     }
 
     /**

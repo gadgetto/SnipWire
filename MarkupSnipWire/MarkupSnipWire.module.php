@@ -322,12 +322,12 @@ class MarkupSnipWire extends WireData implements Module {
      * 
      * Subscriptions and recurring payments:
      * 
-     *   data-item-payment-interval: 
-     *   data-item-payment-interval-count: 
-     *   data-item-payment-trial: 
-     *   data-item-recurring-shipping: boolean
-     *   data-item-cancellation-action:
-     *   data-item-pausing-action:
+     * - data-item-payment-interval: string Sets interval for the recurring payment. It can be Day, Week, Month, or Year
+     * - data-item-payment-interval-count: number Sets payment interval count (sample: data-item-payment-interval = "Month" and data-item-payment-interval-count = "2" --> customer will be charged every 2 months).
+     * - data-item-payment-trial: number Enables trial period for customers. Specify the duration of the trial by number of days.
+     * - data-item-recurring-shipping: boolean Set to false if you need to charge shipping only on the initial order (true by default).
+     *   data-item-cancellation-action: (undocumented)
+     *   data-item-pausing-action: (undocumented)
      * 
      * Others:
      * 
@@ -456,7 +456,24 @@ class MarkupSnipWire extends WireData implements Module {
         if ($snipwireConfig->taxes_included) {
             $out .= ' data-item-has-taxes-included="true"';
         }
-
+        
+        if ($product->snipcart_item_payment_interval) {
+            $out .= ' data-item-payment-interval="' . $product->snipcart_item_payment_interval->value . '"';
+        }
+        
+        if ($product->snipcart_item_payment_interval_count) {
+            $out .= ' data-item-payment-interval-count="' . $product->snipcart_item_payment_interval_count . '"';
+        }
+        
+        if ($product->snipcart_item_payment_trial) {
+            $out .= ' data-item-payment-trial="' . $product->snipcart_item_payment_trial . '"';
+        }
+        
+        if ($product->hasField('snipcart_item_recurring_shipping')) {
+            $recurringShipping = $product->snipcart_item_recurring_shipping ? 'true' : 'false';
+            $out .= ' data-item-recurring-shipping="' . $recurringShipping . '"';
+        }
+        
         if ($product->hasField('snipcart_item_shippable')) {
             $shippable = $product->snipcart_item_shippable ? 'true' : 'false';
         } else {
