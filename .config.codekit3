@@ -9,6 +9,44 @@
 	],
 "creatorBuild": "31934",
 "files": {
+	"/.github/ISSUE_TEMPLATE/bug_report.md": {
+		"cB": 0,
+		"cS": 0,
+		"eF": 1,
+		"eL": 1,
+		"ema": 1,
+		"eSQ": 1,
+		"ft": 4096,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/.github/ISSUE_TEMPLATE/bug_report.html",
+		"oF": 0,
+		"oFM": 0,
+		"oS": 0,
+		"pHT": 0,
+		"pME": 1,
+		"rFN": 0,
+		"uCM": 0
+		},
+	"/.github/ISSUE_TEMPLATE/feature_request.md": {
+		"cB": 0,
+		"cS": 0,
+		"eF": 1,
+		"eL": 1,
+		"ema": 1,
+		"eSQ": 1,
+		"ft": 4096,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/.github/ISSUE_TEMPLATE/feature_request.html",
+		"oF": 0,
+		"oFM": 0,
+		"oS": 0,
+		"pHT": 0,
+		"pME": 1,
+		"rFN": 0,
+		"uCM": 0
+		},
 	"/.gitignore": {
 		"cB": 0,
 		"ft": 8192,
@@ -16,6 +54,30 @@
 		"oA": 0,
 		"oAP": "/.gitignore",
 		"oF": 0
+		},
+	"/.nova/Configuration.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/.nova/Configuration-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/.nova/Publishing/SnipWire.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/.nova/Publishing/SnipWire-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/.nova/Template.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/.nova/Template-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
 		},
 	"/assets/images/snipcart_processwire.svg": {
 		"ft": 2097152,
@@ -260,6 +322,14 @@
 		"hM": 0,
 		"oA": 0,
 		"oAP": "/installer/resources/ProductsPackage.php",
+		"oF": 0
+		},
+	"/installer/resources/ProductsPackageUpdate-0.8.6.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/installer/resources/ProductsPackageUpdate-0.8.6.php",
 		"oF": 0
 		},
 	"/installer/resources/SystemResources.php": {
