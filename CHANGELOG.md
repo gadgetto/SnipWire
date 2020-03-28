@@ -13,16 +13,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated MarkupSnipWire to output subscription data-item-* tags
 
 ## [0.8.5] - 2020-03-21
-### Fixed
-- Catch module settings access for non super users
-- Fixes [#2] Dashboard not accessible for non SuperUsers
-
 ### Added
 - Added documentation (php comments) to Webhooks class and hookable event handler methods
 - All Webhooks event handler methods now have a return value (Snipcart payload)
 
 ### Changed
 - Replaced dirname(__FILE__) with __DIR__ in entire project
+
+### Fixed
+- Catch module settings access for non super users
+- Fixes [#2] Dashboard not accessible for non SuperUsers
 
 ## [0.8.4] - 2020-03-03
 ### Fixed
@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Updated products package installer to add specific module config on install
 
+### Changed
+- Updated apexcharts.js vendor plugin to version 3.15.6
+
 ### Fixed
 - The uninstallation process is now much more reliable
 - FieldtypeSnipWireTaxeSelector is now uninstalled properly (existing fields are converted to FieldtypeText)
@@ -41,20 +44,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed product price JSON output if a currency field is missing
 - Small fixes and code enhancements
 
-### Changed
-- Updated apexcharts.js vendor plugin to version 3.15.6
-
 ## [0.8.2] - 2020-02-08
 ### Added
 - Added method to change cart and catalogue currency via GET, POST or SESSION
 - Added module setting to choose GET, POST, SESSION parameter name for cart and catalogue currency
 
-### Fixed
-- Some small fixes and code enhancements
-
 ### Changed
 - Updated CHANGELOG.md (this file)
 - Updated README.md (added screenshot and GitHub badges)
+
+### Fixed
+- Some small fixes and code enhancements
 
 ## [0.8.1] - 2020-02-03
 ### Added
