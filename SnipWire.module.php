@@ -107,11 +107,12 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
         if ($this->snipwireConfig->taxes_provider == 'integrated') {
             $this->addHookBefore('Modules::saveConfig', $this, 'validateTaxesRepeater');
-            $this->addHookAfter('Pages::added', $this, 'presetProductTaxesField');
+            $this->addHookAfter('Pages::added', $this, 'presetProductTaxesField', ['priority' => 99]);
         }
-        $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
-        $this->addHookAfter('Pages::added', $this, 'presetProductFields');
+        $this->addHookAfter('Pages::added', $this, 'presetProductFields', ['priority' => 99]);
         $this->addHookAfter('Pages::saveReady', $this, 'checkSKUUnique');
+
+        $this->addHookAfter('Modules::saveConfig', $this, 'manageCurrencyPriceFields');
         $this->addHookBefore('ProcessPageView::execute', $this, 'checkWebhookRequest');
 
         $this->addHookAfter('Pages::saved', $this, 'publishSnipcartProduct');
@@ -262,7 +263,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $page = $event->arguments(0);
         if ($snipwire->isProductTemplate($page->template)) {
             $defaultTax = Taxes::getFirstTax(false, Taxes::taxesTypeProducts);
-            $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
+            if ($page->hasfield('snipcart_item_taxes')) $page->setAndSave('snipcart_item_taxes', $defaultTax['name']);
         }
     }
 
@@ -276,14 +277,15 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     public function checkSKUUnique(HookEvent $event) {
         $snipwire = $this->wire('snipwire');
         if (!$snipwire) return;
-
+        
         $page = $event->arguments(0);
         if ($snipwire->isProductTemplate($page->template)) {
             $field = $page->getField('snipcart_item_id');
             $sku = $page->snipcart_item_id; // SKU field value
+            if (!$sku) return;
             
             if ($page->isChanged('snipcart_item_id')) {
-                $exists = $this->wire('pages')->get("snipcart_item_id=$sku");
+                $exists = $this->wire('pages')->get("snipcart_item_id=$sku, id!=$page, status<" . Page::statusTrash);
                 if ($exists->id) {
                     // value is not unique!
                     $error = $this->_('SKU must be unique'); 

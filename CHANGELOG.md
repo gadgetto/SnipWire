@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Updated MarkupSnipWire to output subscription data-item-* tags
 
+### Fixed
+- Fixed a problem with duplicate SKU check on page save
+
 ## [0.8.5] - 2020-03-21
 ### Added
 - Added documentation (php comments) to Webhooks class and hookable event handler methods
