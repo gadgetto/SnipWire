@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Fixed a problem with duplicate SKU check on page save
+- Fixed [#3] Installer error: Can’t save page 0: /custom-cart-fields/: It has no parent assigned
 
 ## [0.8.5] - 2020-03-21
 ### Added

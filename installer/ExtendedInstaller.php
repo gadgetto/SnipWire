@@ -34,8 +34,8 @@ class ExtendedInstaller extends Wire {
     const installerModeFiles = 32;
     const installerModeAll = 63;
 
-    /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
-    protected $snipWireRootUrl = '';
+    /** @var string $snipwirePagePath The path of ProcessSnipWire page */
+    protected $snipwirePagePath = '';
 
     /** @var string $resourcesFile Name of file which holds installer resources */
     protected $resourcesFile = '';
@@ -50,7 +50,7 @@ class ExtendedInstaller extends Wire {
      * 
      */
     public function __construct() {
-        $this->snipWireRootUrl = rtrim($this->wire('pages')->findOne('template=admin, name=snipwire')->url, '/') . '/';
+        $this->snipwirePagePath = $this->wire('pages')->findOne('template=admin, name=snipwire')->path;
         parent::__construct();
     }
 
@@ -601,7 +601,7 @@ class ExtendedInstaller extends Wire {
         // Page "parent" key may have "string tags"
         $parent = \ProcessWire\wirePopulateStringTags(
             $item['parent'],
-            array('snipWireRootUrl' => $this->snipWireRootUrl)
+            array('snipwirePagePath' => $this->snipwirePagePath)
         );
 
         $t = $templates->get($item['template']);
