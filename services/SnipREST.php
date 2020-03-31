@@ -705,6 +705,10 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
 
+        // 'limit' must not be 0 (otherwise the result will not return items)!
+        // @todo: add this to other endpoint queries too!
+        if (isset($options['limit']) && $options['limit'] === 0) $options['limit'] = 100;
+        
         $allowedOptions = array('offset', 'limit', 'status', 'userDefinedPlanName', 'userDefinedCustomerNameOrEmail', 'from', 'to');
         $defaultOptions = array(
             'offset' => 0,
