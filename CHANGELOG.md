@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added support for Snipcart subscriptions
 - Added necessary fields for subscription products
+- Added debug output for webhooks request payload data
 
 ### Changed
 - Updated MarkupSnipWire to output subscription data-item-* tags

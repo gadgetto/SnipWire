@@ -273,6 +273,11 @@ class Webhooks extends WireData {
         $rawPayload = file_get_contents('php://input');
         $payload = json_decode($rawPayload, true);
         
+        if ($this->debug) $log->save(
+            self::snipWireWebhooksLogName,
+            '[DEBUG] Webhooks request payload: ' . $rawPayload
+        );
+        
         // Perform multiple checks for valid request data
         $check = false;
         if (is_null($payload) || !is_array($payload)) {
