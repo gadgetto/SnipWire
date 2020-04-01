@@ -63,6 +63,6 @@ class Countries extends WireData {
         if (empty(self::$countriesCache)) self::setStaticCountriesCache();
 		return isset(self::$countriesCache[$key])
 		    ? self::$countriesCache[$key]
-		    : $this->_('-- unknown --');
+		    : \ProcessWire\__('-- unknown --');
 	}
 }
