@@ -587,7 +587,7 @@ class Webhooks extends WireData {
                 // add new array entry
                 $itemTaxes[$taxName] = array(
                     'sumPrices' => $item['totalPriceWithoutTaxes'],
-                    'splitRatio' => 0, // is calculatet later
+                    'splitRatio' => 0, // is calculated later
                 );
             } else {
                 // add price to existing sumPrices
