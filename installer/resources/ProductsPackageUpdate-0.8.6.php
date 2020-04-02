@@ -56,7 +56,6 @@ $resources = array(
             'label' => __('Trial Period'),
             'description' => __('Trial period for customers in days. Empty for no trial!'),
             'notes' => __('Integer number (min value = 1).'),
-            'defaultValue' => 7,
             'min' => 1,
             'inputType' => 'number',
             'required' => false,
