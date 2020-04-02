@@ -553,10 +553,10 @@ class Webhooks extends WireData {
         $payload = $this->payload;
         $content = isset($payload['content']) ? $payload['content'] : null;
         if ($content) {
-            $items = isset($content['items']) ? $content['items'] : null;
-            $shippingInformation = isset($content['shippingInformation']) ? $content['shippingInformation'] : null;
-            $itemsTotal = isset($content['itemsTotal']) ? $content['itemsTotal'] : null;
-            $currency = isset($content['currency']) ? $content['currency'] : null;
+            $items = isset($content['items']) ? $content['items'] : null; // array
+            $shippingInformation = isset($content['shippingInformation']) ? $content['shippingInformation'] : null; // array
+            $itemsTotal = isset($content['itemsTotal']) ? $content['itemsTotal'] : null; // decimal
+            $currency = isset($content['currency']) ? $content['currency'] : null; // string
         }
         
         if (!$items || !$shippingInformation || !$itemsTotal || !$currency) {
@@ -598,6 +598,7 @@ class Webhooks extends WireData {
         // Calculate and add proportional ratio (for splittet shipping tax calculation)
         foreach ($itemTaxes as $name => $values) {
             $itemTaxes[$name]['splitRatio'] = round(($values['sumPrices'] / $itemsTotal), 2); // e.g. 0.35 = 35%
+            // @todo: what if $itemsTotal = 0? (division by 0 error!)
         }
         unset($name, $values);
 
