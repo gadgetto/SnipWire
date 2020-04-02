@@ -509,11 +509,13 @@ trait Products {
         );
         
         $item['sku'] = $item['userDefinedId'];
-        $item['image_path'] = $item['image']
-            ? '<small style="word-break: break-all;" class="ui-priority-secondary">' . $item['image'] . '</small>'
-            : '';
-        $item['image'] = $this->getProductImg($item['image']) . '<br>' .
-            $item['image_path'];
+        if (!empty($item['image'])) {
+            $item['image_path'] = $item['image']
+                ? '<small style="word-break: break-all;" class="ui-priority-secondary">' . $item['image'] . '</small>'
+                : '';
+            $item['image'] = $this->getProductImg($item['image']) . '<br>' .
+                $item['image_path'];
+        }
         $item['categories'] = (isset($item['categories']) && is_array($item['categories']))
             ? implode(', ', $item['categories'])
             : '';
