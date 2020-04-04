@@ -545,7 +545,7 @@ trait Customers {
                 '&nbsp;',
             ));
             foreach ($items as $item) {
-                // Need to attach a return ULR to be able to stay in modal panel when order detail is opened
+                // Need to attach a return URL to be able to stay in modal panel when order detail is opened
                 $ret = urlencode($this->snipWireRootUrl . 'customer/' . $customerId);
                 $invoiceNumber =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '?modal=1&ret=' . $ret . '"
