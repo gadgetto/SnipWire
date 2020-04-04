@@ -32,6 +32,8 @@ class SnipREST extends WireHttpExtended {
     const resPathOrdersNotifications = 'orders/{token}/notifications';
     const resPathOrdersRefunds = 'orders/{token}/refunds';
     const resPathSubscriptions = 'subscriptions';
+    const resPathSubscriptionsPause = 'subscriptions/{id}/pause';
+    const resPathSubscriptionsResume = 'subscriptions/{id}/resume';
     const resPathCartsAbandoned = 'carts/abandoned';
     const resPathCartsAbandonedNotifications = 'carts/{id}/notifications';
     const resPathCustomers = 'customers';
@@ -802,7 +804,109 @@ class SnipREST extends WireHttpExtended {
         );
         return $data;
     }
-
+    
+    /**
+     * Delete a single or the lister subscription cache (WireCache).
+     *
+     * @param string $id The Snipcart $id of the subscription (if no id provided, the lister subscription cache is deleted)
+     * @return void
+     *
+     */
+    public function deleteSubscriptionCache($id = '') {
+        if (!$id) {
+            // @todo: the lister cache is segmented (pagination!) so we need to finde all segments!
+            //        In the meantime the full Snipcart cache is deleted instead.
+            $this->deleteFullCache();
+        } else {
+            $cacheName = self::cacheNamePrefixSubscriptionDetail . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        }
+    }
+    
+    /**
+     * Pause an active subscription.
+     *
+     * (Under the hood, a 100% discount will be applied to the Stripe subscription)
+     *
+     * @param string $id The Snipcart item id of the subscription to be paused [#required]
+     * @return array $data
+     * 
+     */
+    public function postSubscriptionPause($id) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_subscription_id'));
+            return false;
+        }
+        // Add necessary header for PUT request
+        $this->setHeader('content-type', 'application/json; charset=utf-8');
+        
+        $url = \ProcessWire\wirePopulateStringTags(
+            self::apiEndpoint . self::resPathSubscriptionsPause,
+            array('id' => $id)
+        );
+        
+        // Snipcart doesn't expect a body here, but we provide 
+        // a placeholder request body, as WireHttp requires one!
+        $options = array('id' => $id);
+        $requestbody = \ProcessWire\wireEncodeJSON($options);
+        
+        $response = $this->post($url, $requestbody);
+        
+        if ($response === false) $response = array();
+        $data[$id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+    
+    /**
+     * Resume a paused subscription.
+     *
+     * (Under the hood, the 100% discount previously created on Stripe's subscription will be deleted)
+     *
+     * @param string $id The Snipcart item id of the subscription to be resumed [#required]
+     * @return array $data
+     * 
+     */
+    public function postSubscriptionResume($id) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_subscription_id'));
+            return false;
+        }
+        // Add necessary header for PUT request
+        $this->setHeader('content-type', 'application/json; charset=utf-8');
+        
+        $url = \ProcessWire\wirePopulateStringTags(
+            self::apiEndpoint . self::resPathSubscriptionsResume,
+            array('id' => $id)
+        );
+        
+        // Snipcart doesn't expect a body here, but we provide 
+        // a placeholder request body, as WireHttp requires one!
+        $options = array('id' => $id);
+        $requestbody = \ProcessWire\wireEncodeJSON($options);
+        
+        $response = $this->post($url, $requestbody);
+        
+        if ($response === false) $response = array();
+        $data[$id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+    
     /**
      * Get the abandoned carts from Snipcart dashboard as array.
      *
