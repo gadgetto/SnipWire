@@ -145,7 +145,10 @@ class ProcessSnipWire extends Process implements Module {
 
     /**var array $orderStatuses The order statuses */
     public $orderStatuses = array();
-
+    
+    /**var array $orderStatusesSelectable The order statuses for form selects */
+    public $orderStatusesSelectable = array();
+    
     /**var array $commentTypes The comment types */
     public $commentTypes = array();
 
