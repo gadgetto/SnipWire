@@ -52,23 +52,23 @@ class SnipREST extends WireHttpExtended {
     
     const cacheNamePrefixDashboard = 'Dashboard';
     const cacheNamePrefixPerformance = 'Performance';
+    const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixOrdersSales = 'OrdersSales';
     const cacheNamePrefixOrdersCount = 'OrdersCount';
-    const cacheNamePrefixOrders = 'Orders';
     const cacheNamePrefixOrdersNotifications = 'OrdersNotifications';
-    const cacheNamePrefixOrderDetail = 'OrderDetail';
+    const cacheNamePrefixOrdersDetail = 'OrdersDetail';
     const cacheNamePrefixSubscriptions = 'Subscriptions';
-    const cacheNamePrefixSubscriptionDetail = 'SubscriptionDetail';
+    const cacheNamePrefixSubscriptionsDetail = 'SubscriptionsDetail';
     const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
-    const cacheNamePrefixCartAbandonedNotifications = 'CartAbandonedNotifications';
-    const cacheNamePrefixCartAbandonedDetail = 'CartAbandonedDetail';
+    const cacheNamePrefixCartsAbandonedNotifications = 'CartsAbandonedNotifications';
+    const cacheNamePrefixCartsAbandonedDetail = 'CartsAbandonedDetail';
     const cacheNamePrefixCustomers = 'Customers';
     const cacheNamePrefixCustomersOrders = 'CustomersOrders';
-    const cacheNamePrefixCustomerDetail = 'CustomerDetail';
+    const cacheNamePrefixCustomersDetail = 'CustomersDetail';
     const cacheNamePrefixProducts = 'Products';
-    const cacheNamePrefixProductDetail = 'ProductDetail';
+    const cacheNamePrefixProductsDetail = 'ProductsDetail';
     const cacheNamePrefixDiscounts = 'Discounts';
-    const cacheNamePrefixDiscountDetail = 'DiscountDetail';
+    const cacheNamePrefixDiscountsDetail = 'DiscountsDetail';
     const cacheNamePrefixSettings = 'Settings';
 
     /**
@@ -426,7 +426,7 @@ class SnipREST extends WireHttpExtended {
         }
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixOrderDetail . '.' . md5($token);
+        $cacheName = self::cacheNamePrefixOrdersDetail . '.' . md5($token);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
@@ -445,19 +445,17 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
-     * Delete a single or the lister order cache (WireCache).
+     * Delete a single or the full order cache (WireCache).
      *
-     * @param string $token The Snipcart $token of the order (if no token provided, the lister order cache is deleted)
+     * @param string $token The Snipcart $token of the order (if no token provided, the full order cache is deleted)
      * @return void
      *
      */
     public function deleteOrderCache($token = '') {
         if (!$token) {
-            // @todo: the lister cache is segmented (pagination!) so we need to finde all order segments!
-            //        In the meantime the full Snipcart cache is deleted instead.
-            $this->deleteFullCache();
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrders . '*');
         } else {
-            $cacheName = self::cacheNamePrefixOrderDetail . '.' . md5($token);
+            $cacheName = self::cacheNamePrefixOrdersDetail . '.' . md5($token);
             $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
             
             $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token);
@@ -787,7 +785,7 @@ class SnipREST extends WireHttpExtended {
         }
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixSubscriptionDetail . '.' . md5($id);
+        $cacheName = self::cacheNamePrefixSubscriptionsDetail . '.' . md5($id);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
@@ -806,19 +804,17 @@ class SnipREST extends WireHttpExtended {
     }
     
     /**
-     * Delete a single or the lister subscription cache (WireCache).
+     * Delete a single or the full subscription cache (WireCache).
      *
-     * @param string $id The Snipcart $id of the subscription (if no id provided, the lister subscription cache is deleted)
+     * @param string $id The Snipcart $id of the subscription (if no id provided, the full subscription cache is deleted)
      * @return void
      *
      */
     public function deleteSubscriptionCache($id = '') {
         if (!$id) {
-            // @todo: the lister cache is segmented (pagination!) so we need to finde all segments!
-            //        In the meantime the full Snipcart cache is deleted instead.
-            $this->deleteFullCache();
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixSubscriptions . '*');
         } else {
-            $cacheName = self::cacheNamePrefixSubscriptionDetail . '.' . md5($id);
+            $cacheName = self::cacheNamePrefixSubscriptionsDetail . '.' . md5($id);
             $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
         }
     }
@@ -1021,7 +1017,7 @@ class SnipREST extends WireHttpExtended {
         }
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixCartAbandonedDetail . '.' . md5($id);
+        $cacheName = self::cacheNamePrefixCartsAbandonedDetail . '.' . md5($id);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
@@ -1040,22 +1036,20 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
-     * Delete a single or the lister abandoned cart cache (WireCache).
+     * Delete a single or the full abandoned cart cache (WireCache).
      *
-     * @param string $id The Snipcart $id of the abandoned cart (if no id provided, the lister cache is deleted)
+     * @param string $id The Snipcart $id of the abandoned cart (if no id provided, the full abandoned cart cache is deleted)
      * @return void
      *
      */
     public function deleteAbandonedCartsCache($id = '') {
         if (!$id) {
-            // @todo: the lister cache is semgented (pagination!) so we need to find all segments!
-            //        In the meantime the full Snipcart cache is deleted instead.
-            $this->deleteFullCache();
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixCartsAbandoned . '*');
         } else {
-            $cacheName = self::cacheNamePrefixCartAbandonedDetail . '.' . md5($id);
+            $cacheName = self::cacheNamePrefixCartsAbandonedDetail . '.' . md5($id);
             $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
             
-            $cacheName = self::cacheNamePrefixCartAbandonedNotifications . '.' . md5($id);
+            $cacheName = self::cacheNamePrefixCartsAbandonedNotifications . '.' . md5($id);
             $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
         }
     }
@@ -1260,7 +1254,7 @@ class SnipREST extends WireHttpExtended {
         }
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixCustomerDetail . '.' . md5($id);
+        $cacheName = self::cacheNamePrefixCustomersDetail . '.' . md5($id);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
@@ -1384,7 +1378,7 @@ class SnipREST extends WireHttpExtended {
         }
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixProductDetail . '.' . md5($id);
+        $cacheName = self::cacheNamePrefixProductsDetail . '.' . md5($id);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
@@ -1608,7 +1602,7 @@ class SnipREST extends WireHttpExtended {
         }
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixDiscountDetail . '.' . md5($id);
+        $cacheName = self::cacheNamePrefixDiscountsDetail . '.' . md5($id);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
@@ -1812,19 +1806,17 @@ class SnipREST extends WireHttpExtended {
     }
 
     /**
-     * Delete a single or the lister discount cache (WireCache).
+     * Delete a single or the full discount cache (WireCache).
      *
-     * @param string $id The Snipcart $id of the discount (if no id provided, the lister discount cache is deleted)
+     * @param string $id The Snipcart $id of the discount (if no id provided, the full discount cache is deleted)
      * @return void
      *
      */
     public function deleteDiscountCache($id = '') {
         if (!$id) {
-            // This works without segmentation as we have no pagination in discounts
-            $cacheName = self::cacheNamePrefixDiscounts;
-            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixDiscounts . '*');
         } else {
-            $cacheName = self::cacheNamePrefixDiscountDetail . '.' . md5($id);
+            $cacheName = self::cacheNamePrefixDiscountsDetail . '.' . md5($id);
             $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
         }
     }

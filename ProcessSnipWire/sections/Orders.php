@@ -1531,8 +1531,7 @@ trait Orders {
                 $this->_('The invoice could not be sent to customer! The following error occurred: ') .
                 $response[$token][WireHttpExtended::resultKeyError]);
         } else {
-            // Reset cache for this order
-            $sniprest->deleteOrderCache($token);
+            $sniprest->deleteOrderCache();
             $this->message($this->_('The invoice has been sent to customer.'));
         }
     }
@@ -1569,6 +1568,7 @@ trait Orders {
                 $this->_('The amount could not be refunded! The following error occurred: ') .
                 $response[$token][WireHttpExtended::resultKeyError]);
         } else {
+            $sniprest->deleteOrderCache();
             $this->message(sprintf($this->_("An amount of %s has been refunded."), $amountFormatted));
             $refunded = true;
         }
@@ -1608,6 +1608,7 @@ trait Orders {
                 $this->_('The order status could not be updated! The following error occurred: ') .
                 $response[$token][WireHttpExtended::resultKeyError]);
         } else {
+            $sniprest->deleteOrderCache();
             $this->message($this->_('The order status has been updated.'));
             $updated = true;
             
@@ -1646,8 +1647,7 @@ trait Orders {
                         $this->_('The notification could not be sent! The following error occurred: ') .
                         $response[$token][WireHttpExtended::resultKeyError]);
                 } else {
-                    // Reset cache for this order
-                    $sniprest->deleteOrderCache($token);
+                    $sniprest->deleteOrderCache();
                     $this->message($this->_('The notification has been sent.'));
                 }
             }
@@ -1685,6 +1685,7 @@ trait Orders {
                 $this->_('The order comment could not be added! The following error occurred: ') .
                 $response[$token][WireHttpExtended::resultKeyError]);
         } else {
+            $sniprest->deleteOrderCache();
             $this->message($this->_('The order comment has been added.'));
             $added = true;
         }

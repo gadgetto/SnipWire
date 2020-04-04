@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated MarkupSnipWire to output subscription data-item-* tags
 
 ### Fixed
+- Fixed deletion of segmented caches
 - Fixed display of empty image field in product details
 - Fixed a problem with namespace in Countries.php
 - Fixed a problem with duplicate SKU check on page save
