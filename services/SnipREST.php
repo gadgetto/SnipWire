@@ -785,7 +785,7 @@ class SnipREST extends WireHttpExtended {
         }
 
         // Segmented cache (each query is cached self-contained)
-        $cacheName = self::cacheNamePrefixSubscriptions . '.' . md5($id);
+        $cacheName = self::cacheNamePrefixSubscriptionDetail . '.' . md5($id);
 
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
 
