@@ -64,15 +64,26 @@ jQuery(document).ready(function() {
         window.location.href = $ItemsFilterResetButton.attr('value');
         return false;
     });
-
+    
     var orderActionStrings = config.orderActionStrings;
     var discountActionStrings = config.discountActionStrings;
-
+        
     $('.ResendInvoiceButton').on('click', function(e) {
         e.preventDefault();
         var a_href = $(this).attr('href');
         ProcessWire.confirm(
             orderActionStrings.confirm_resend_invoice,
+            function() {
+                // dialogue OK click
+                window.location.href = a_href;
+            }
+        );
+    });
+    $('.DownloadInvoiceButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            orderActionStrings.info_download_invoice,
             function() {
                 // dialogue OK click
                 window.location.href = a_href;
