@@ -493,7 +493,7 @@ trait Customers {
      * triggers href targets twice + we need to attach JavaScript events on button click)
      *
      * @param $id The customer id
-     * @param $email The customer eamil
+     * @param $email The customer email
      * @return buttons markup 
      *
      */
