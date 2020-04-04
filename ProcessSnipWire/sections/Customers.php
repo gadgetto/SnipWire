@@ -373,7 +373,6 @@ trait Customers {
         unset($response);
         
         $response = $sniprest->getSubscriptionsItems(array(
-            'limit' => 0,
             'userDefinedCustomerNameOrEmail' => $email,
         ));
         $subscriptions = isset($response[SnipREST::resPathSubscriptions][WireHttpExtended::resultKeyContent])
