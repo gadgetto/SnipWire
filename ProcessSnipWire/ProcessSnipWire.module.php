@@ -149,6 +149,9 @@ class ProcessSnipWire extends Process implements Module {
     /**var array $orderStatusesSelectable The order statuses for form selects */
     public $orderStatusesSelectable = array();
     
+    /**var array $subscriptionStatuses The subscription statuses */
+    public $subscriptionStatuses = array();
+    
     /**var array $commentTypes The comment types */
     public $commentTypes = array();
 
@@ -223,6 +226,14 @@ class ProcessSnipWire extends Process implements Module {
                 'InProgress' => $this->_('In Progress'),
             ),
             $this->orderStatusesSelectable
+        );
+        // Unlike other API endpoints, subscriptions API only supports status keys in lower case!
+        $this->subscriptionStatuses = array(
+            'all' =>  $this->_('All Subscriptions'),
+            'paid' => $this->_('Paid'),
+            'active' => $this->_('Active'),
+            'paused' => $this->_('Paused'),
+            'canceled' => $this->_('Cancelled'), // Key 'Canceled' with a single "l" is not a typo here!
         );
         $this->commentTypes = array(
             'Comment' => $this->_('Comment'),
@@ -343,7 +354,35 @@ class ProcessSnipWire extends Process implements Module {
 		    ? $this->orderStatuses[$key]
 		    : $this->_('-- unknown --');
 	}
-
+    
+    /**
+     * Get all pre-translated subscription statuses.
+     *
+     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @return array
+     *
+     */
+    public function getSubscriptionStatuses($includeAllKey = true) {
+        if ($includeAllKey) return $this->subscriptionStatuses;
+        $subscriptionStatuses = $this->subscriptionStatuses;
+        array_shift($subscriptionStatuses);
+        return $subscriptionStatuses;
+    }
+    
+    /**
+     * Get a pre-translated subscription status by it's key.
+     *
+     * @param string $key The array key
+     * @return string
+     *
+     */
+    public function getSubscriptionStatus($key) {
+        $key = strtolower($key);
+        return isset($this->subscriptionStatuses[$key])
+            ? $this->subscriptionStatuses[$key]
+            : $this->_('-- unknown --');
+    }
+    
     /**
      * Get all pre-translated comment types.
      *
