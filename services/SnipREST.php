@@ -34,6 +34,7 @@ class SnipREST extends WireHttpExtended {
     const resPathSubscriptions = 'subscriptions';
     const resPathSubscriptionsPause = 'subscriptions/{id}/pause';
     const resPathSubscriptionsResume = 'subscriptions/{id}/resume';
+    const resPathSubscriptionsDelete = 'subscriptions/{id}';
     const resPathCartsAbandoned = 'carts/abandoned';
     const resPathCartsAbandonedNotifications = 'carts/{id}/notifications';
     const resPathCustomers = 'customers';
@@ -893,6 +894,44 @@ class SnipREST extends WireHttpExtended {
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
+        
+        if ($response === false) $response = array();
+        $data[$id] = array(
+            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+    
+    /**
+     * Delete a subscription.
+     *
+     * (Under the hood, the subscription will not be deleted but set to "cancelled")
+     *
+     * @param string $id The Snipcart item id of the subscription to be cancelled [#required]
+     * @return array $data
+     * 
+     */
+    public function deleteSubscription($id) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_subscription_id'));
+            return false;
+        }
+        // Add necessary header for DELETE request
+        $this->setHeader('content-type', 'application/json; charset=utf-8');
+
+        $url = \ProcessWire\wirePopulateStringTags(
+            self::apiEndpoint . self::resPathSubscriptionsDelete,
+            array('id' => $id)
+        );
+        
+        $rawResponse = $this->send($url, array(), 'DELETE');
+        $response = json_decode($rawResponse, true);
         
         if ($response === false) $response = array();
         $data[$id] = array(
