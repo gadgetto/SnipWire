@@ -837,7 +837,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_subscription_id'));
             return false;
         }
-        // Add necessary header for PUT request
+        // Add necessary header for POST request
         $this->setHeader('content-type', 'application/json; charset=utf-8');
         
         $url = \ProcessWire\wirePopulateStringTags(
@@ -879,7 +879,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_subscription_id'));
             return false;
         }
-        // Add necessary header for PUT request
+        // Add necessary header for POST request
         $this->setHeader('content-type', 'application/json; charset=utf-8');
         
         $url = \ProcessWire\wirePopulateStringTags(
