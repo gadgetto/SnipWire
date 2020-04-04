@@ -445,13 +445,13 @@ class SnipREST extends WireHttpExtended {
     /**
      * Delete a single or the lister order cache (WireCache).
      *
-     * @param string $token The Snipcart $token of the order (if no token provided, the lister order cache is deleted) [#required]
+     * @param string $token The Snipcart $token of the order (if no token provided, the lister order cache is deleted)
      * @return void
      *
      */
     public function deleteOrderCache($token = '') {
         if (!$token) {
-            // @todo: the lister cache is semgented (pagination!) so we need to finde all order segments!
+            // @todo: the lister cache is segmented (pagination!) so we need to finde all order segments!
             //        In the meantime the full Snipcart cache is deleted instead.
             $this->deleteFullCache();
         } else {
