@@ -73,14 +73,14 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixDiscounts = 'Discounts';
     const cacheNamePrefixDiscountsDetail = 'DiscountsDetail';
     const cacheNamePrefixSettings = 'Settings';
-
+    
     /**
      * Construct/initialize
      * 
      */
     public function __construct() {
         parent::__construct();
-
+        
         // Get SnipWire module config.
         // (Holds merged data from DB and default config. 
         // This works because of using the ModuleConfig class)
@@ -99,7 +99,7 @@ class SnipREST extends WireHttpExtended {
             'Accept' => 'application/json',
         ));
     }
-
+    
     /**
      * Returns messages texts (message, warning, error) based on given key.
      *
@@ -124,7 +124,7 @@ class SnipREST extends WireHttpExtended {
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
-
+    
     /**
      * Get the available settings from Snipcart dashboard as array.
      *
@@ -141,16 +141,16 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixSettings);
-
+        
         // Try to get settings array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, self::cacheNamePrefixSettings, $expires, function() {
             return $this->getJSON(self::apiEndpoint . self::resPathSettingsGeneral);
         });
         return ($key && isset($response[$key])) ? $response[$key] : $response;
     }
-
+    
     /**
      * Get all dashboard results using cURL multi (fallback to single requests if cURL not available)
      *
@@ -168,20 +168,20 @@ class SnipREST extends WireHttpExtended {
             // Get data without cURL multi
             return $this->_getDashboardDataSingle($start, $end, $currency);
         }
-
+        
         // Segmented orders cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixDashboard . '.' . md5($start . $end . $currency);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get orders array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($start, $end, $currency) {
             return $this->_getDashboardDataMulti($start, $end, $currency);
         });
-
+        
         return $response;
     }
-
+    
     /**
      * Get all dashboard results using multi cURL requests
      *
@@ -196,18 +196,18 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         // ---- Part of performance boxes data ----
-
+        
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataPerformance . $query);
-
+        
         // ---- Part of performance boxes + performance chart data ----
-
+        
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
@@ -217,7 +217,7 @@ class SnipREST extends WireHttpExtended {
         
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataOrdersSales . $query);
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataOrdersCount . $query);
-
+        
         // ---- Top 10 customers ----
         
         $selector = array(
@@ -227,9 +227,9 @@ class SnipREST extends WireHttpExtended {
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathCustomers . $query);
-
+        
         // ---- Top 10 products ----
-
+        
         $selector = array(
             'limit' => 10,
             'archived' => 'false',
@@ -240,9 +240,9 @@ class SnipREST extends WireHttpExtended {
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathProducts . $query);
-
+        
         // ---- Latest 10 orders ----
-
+        
         $selector = array(
             'limit' => 10,
             'from' => $start,
@@ -251,10 +251,10 @@ class SnipREST extends WireHttpExtended {
         );
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathOrders . $query);
-
+        
         return $this->getMultiJSON();
     }
-
+    
     /**
      * Get all dashboard results using single requests
      *
@@ -269,7 +269,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $data = array();
         
         // ---- Part of performance boxes data ----
@@ -279,15 +279,15 @@ class SnipREST extends WireHttpExtended {
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
         );
         $data[] = $this->getPerformance($selector);
-
+        
         // ---- Part of performance boxes + performance chart data ----
-
+        
         $selector = array(
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
             'currency' => $currency,
         );
-
+        
         $data[] = $this->getSalesCount($selector);
         $data[] = $this->getOrdersCount($selector);
         
@@ -299,9 +299,9 @@ class SnipREST extends WireHttpExtended {
             'to' => $end,
         );
         $data[] = $this->getCustomers($selector);
-
+        
         // ---- Top 10 products ----
-
+        
         $selector = array(
             'offset' => 0,
             'limit' => 10,
@@ -312,9 +312,9 @@ class SnipREST extends WireHttpExtended {
             'to' => $end,
         );
         $data[] = $this->getProducts($selector);
-
+        
         // ---- Latest 10 orders ----
-
+        
         $selector = array(
             'limit' => 10,
             'from' => $start,
@@ -325,7 +325,7 @@ class SnipREST extends WireHttpExtended {
         
         return $data;
     }
-
+    
     /**
      * Get all orders from Snipcart dashboard as array.
      *
@@ -352,7 +352,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $allowedOptions = array('offset', 'limit', 'status', 'paymentStatus', 'invoiceNumber', 'placedBy', 'from', 'to', 'format');
         $defaultOptions = array(
             'offset' => 0,
@@ -366,27 +366,27 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrders . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathOrders . $query);
         });
-
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
-        if ($response === false) $response = array();
-        $data[self::resPathOrders] = array(
-            WireHttpExtended::resultKeyContent => $response,
+        
+        $dataKey = self::resPathOrders;
+        $data[$dataKey] = array(
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get orders items from Snipcart dashboard.
      *
@@ -406,7 +406,7 @@ class SnipREST extends WireHttpExtended {
     public function getOrdersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getOrders('items', $options, $expires, $forceRefresh);
     }
-
+    
     /**
      * Get a single order from Snipcart dashboard as array.
      *
@@ -427,45 +427,26 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_order_token'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrdersDetail . '.' . md5($token);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($token) {
             return $this->getJSON(self::apiEndpoint . self::resPathOrders . '/' . $token);
         });
-
-        if ($response === false) $response = array();
-        $data[self::resPathOrders . '/' . $token] = array(
-            WireHttpExtended::resultKeyContent => $response,
+        
+        $dataKey = self::resPathOrders . '/' . $token;
+        $data[$dataKey] = array(
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
-    /**
-     * Delete a single or the full order cache (WireCache).
-     *
-     * @param string $token The Snipcart $token of the order (if no token provided, the full order cache is deleted)
-     * @return void
-     *
-     */
-    public function deleteOrderCache($token = '') {
-        if (!$token) {
-            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrders . '*');
-        } else {
-            $cacheName = self::cacheNamePrefixOrdersDetail . '.' . md5($token);
-            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-            
-            $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token);
-            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-        }
-    }
-
+    
     /**
      * Get all notifications of an order from Snipcart dashboard as array.
      *
@@ -489,12 +470,12 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_order_token'));
             return false;
         }
-
+        
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathOrdersNotifications,
             array('token' => $token)
         );
-
+        
         $allowedOptions = array('offset', 'limit');
         $defaultOptions = array(
             'offset' => 0,
@@ -508,27 +489,26 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token); // @todo: currently query is not used for cache name
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($url, $query) {
             return $this->getJSON($url . $query);
         });
-
-        if ($response === false) $response = array();
+        
         $dataKey = self::cacheNamePrefixOrdersNotifications . '.' . $token;
         $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Creates a new notification on a specified order.
      *
@@ -553,7 +533,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $allowedOptions = array('type', 'deliveryMethod', 'message');
         $defaultOptions = array(
             'type' => 'TrackingNumber',
@@ -573,16 +553,15 @@ class SnipREST extends WireHttpExtended {
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
-
-        if ($response === false) $response = array();
+        
         $data[$token] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Creates a new refund on a specified order.
      *
@@ -607,7 +586,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $allowedOptions = array('amount', 'comment', 'notifyCustomer');
         $defaultOptions = array();
         $options = array_merge(
@@ -624,16 +603,15 @@ class SnipREST extends WireHttpExtended {
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
-
-        if ($response === false) $response = array();
+        
         $data[$token] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Updates the status of an order.
      *
@@ -659,7 +637,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $allowedOptions = array('status', 'paymentStatus', 'trackingNumber', 'trackingUrl');
         $defaultOptions = array();
         $options = array_merge(
@@ -668,21 +646,20 @@ class SnipREST extends WireHttpExtended {
                 $options, array_flip($allowedOptions)
             )
         );
-
+        
         $url = self::apiEndpoint . self::resPathOrders. '/' . $token;
         $requestbody = \ProcessWire\wireEncodeJSON($options, true);
-
+        
         $response = $this->send($url, $requestbody, 'PUT');
-
-        if ($response === false) $response = array();
+        
         $data[$token] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get all subscriptions from Snipcart dashboard as array.
      *
@@ -707,7 +684,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         // 'limit' must not be 0 (otherwise the result will not return items)!
         // @todo: add this to other endpoint queries too!
         if (isset($options['limit']) && $options['limit'] === 0) $options['limit'] = 100;
@@ -725,27 +702,26 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixSubscriptions . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathSubscriptions . $query);
         });
-
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
-        if ($response === false) $response = array();
+        
         $data[self::resPathSubscriptions] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get subscriptions items from Snipcart dashboard.
      *
@@ -765,7 +741,7 @@ class SnipREST extends WireHttpExtended {
     public function getSubscriptionsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getSubscriptions('items', $options, $expires, $forceRefresh);
     }
-
+    
     /**
      * Get a single subscription from Snipcart dashboard as array.
      *
@@ -786,40 +762,23 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_subscription_id'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixSubscriptionsDetail . '.' . md5($id);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
             return $this->getJSON(self::apiEndpoint . self::resPathSubscriptions . '/' . $id);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathSubscriptions . '/' . $id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
-    }
-    
-    /**
-     * Delete a single or the full subscription cache (WireCache).
-     *
-     * @param string $id The Snipcart $id of the subscription (if no id provided, the full subscription cache is deleted)
-     * @return void
-     *
-     */
-    public function deleteSubscriptionCache($id = '') {
-        if (!$id) {
-            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixSubscriptions . '*');
-        } else {
-            $cacheName = self::cacheNamePrefixSubscriptionsDetail . '.' . md5($id);
-            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-        }
     }
     
     /**
@@ -869,7 +828,7 @@ class SnipREST extends WireHttpExtended {
         );
         return $data;
     }
-
+    
     /**
      * Pause an active subscription.
      *
@@ -903,9 +862,8 @@ class SnipREST extends WireHttpExtended {
         
         $response = $this->post($url, $requestbody);
         
-        if ($response === false) $response = array();
         $data[$id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
@@ -945,9 +903,8 @@ class SnipREST extends WireHttpExtended {
         
         $response = $this->post($url, $requestbody);
         
-        if ($response === false) $response = array();
         $data[$id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
@@ -974,7 +931,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for DELETE request
         $this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathSubscriptionsDelete,
             array('id' => $id)
@@ -983,9 +940,8 @@ class SnipREST extends WireHttpExtended {
         $rawResponse = $this->send($url, array(), 'DELETE');
         $response = json_decode($rawResponse, true);
         
-        if ($response === false) $response = array();
         $data[$id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
@@ -1021,7 +977,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $allowedOptions = array('limit', 'continuationToken', 'timeRange', 'minimalValue', 'email');
         $defaultOptions = array(
             'limit' => 50,
@@ -1035,27 +991,26 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixCartsAbandoned . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathCartsAbandoned . $query);
         });
-
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
-        if ($response === false) $response = array();
+        
         $data[self::resPathCartsAbandoned] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get the abandoned carts items from Snipcart dashboard as array.
      *
@@ -1083,7 +1038,7 @@ class SnipREST extends WireHttpExtended {
     public function getAbandonedCartsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getAbandonedCarts('items', $options, $expires, $forceRefresh);
     }
-
+    
     /**
      * Get a single abandoned cart from Snipcart dashboard as array.
      *
@@ -1104,45 +1059,25 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_cart_id'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixCartsAbandonedDetail . '.' . md5($id);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
             return $this->getJSON(self::apiEndpoint . self::resPathCartsAbandoned . '/' . $id);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathCartsAbandoned . '/' . $id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
-    /**
-     * Delete a single or the full abandoned cart cache (WireCache).
-     *
-     * @param string $id The Snipcart $id of the abandoned cart (if no id provided, the full abandoned cart cache is deleted)
-     * @return void
-     *
-     */
-    public function deleteAbandonedCartsCache($id = '') {
-        if (!$id) {
-            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixCartsAbandoned . '*');
-        } else {
-            $cacheName = self::cacheNamePrefixCartsAbandonedDetail . '.' . md5($id);
-            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-            
-            $cacheName = self::cacheNamePrefixCartsAbandonedNotifications . '.' . md5($id);
-            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-        }
-    }
-
+    
     /**
      * Creates a new notification on a specified abandoned cart.
      *
@@ -1167,7 +1102,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $allowedOptions = array('type', 'deliveryMethod', 'message');
         $defaultOptions = array(
             'type' => 'Comment',
@@ -1187,16 +1122,15 @@ class SnipREST extends WireHttpExtended {
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
-
-        if ($response === false) $response = array();
+        
         $data[$id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get the all customers from Snipcart dashboard as array.
      *
@@ -1221,7 +1155,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $allowedOptions = array('offset', 'limit', 'status', 'email', 'name', 'from', 'to');
         $defaultOptions = array(
             'offset' => 0,
@@ -1235,27 +1169,26 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixCustomers . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathCustomers . $query);
         });
-
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
-        if ($response === false) $response = array();
+
         $data[self::resPathCustomers] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get customers items from Snipcart dashboard.
      *
@@ -1275,7 +1208,7 @@ class SnipREST extends WireHttpExtended {
     public function getCustomersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getCustomers('items', $options, $expires, $forceRefresh);
     }
-
+    
     /**
      * Get all orders of a customer from Snipcart dashboard as array.
      *
@@ -1296,31 +1229,30 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_customer_id'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixCustomersOrders . '.' . md5($id);
-
+        
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathCustomersOrders,
             array('id' => $id)
         );
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($url) {
             return $this->getJSON($url);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathCustomersOrders] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get a single customer from Snipcart dashboard as array.
      *
@@ -1341,26 +1273,25 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_customer_id'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixCustomersDetail . '.' . md5($id);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
             return $this->getJSON(self::apiEndpoint . self::resPathCustomers . '/' . $id);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathCustomers . '/' . $id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get all products from Snipcart dashboard as array.
      *
@@ -1387,7 +1318,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $allowedOptions = array('offset', 'limit', 'userDefinedId', 'keywords', 'archived', 'excludeZeroSales', 'orderBy', 'from', 'to');
         $defaultOptions = array(
             'offset' => 0,
@@ -1402,27 +1333,26 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixProducts . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathProducts . $query);
         });
-
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
-        if ($response === false) $response = array();
+
         $data[self::resPathProducts] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get products items from Snipcart dashboard.
      *
@@ -1444,7 +1374,7 @@ class SnipREST extends WireHttpExtended {
     public function getProductsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getProducts('items', $options, $expires, $forceRefresh);
     }
-
+    
     /**
      * Get a single product from Snipcart dashboard as array.
      *
@@ -1465,26 +1395,25 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_product_id'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixProductsDetail . '.' . md5($id);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
             return $this->getJSON(self::apiEndpoint . self::resPathProducts . '/' . $id);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathProducts . '/' . $id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get the id of a Snipcart product by it's userDefinedId.
      *
@@ -1505,7 +1434,7 @@ class SnipREST extends WireHttpExtended {
         );
         // Get a specific item
         $data = $this->getProductsItems($options, WireCache::expireNow); // Get uncached result
-
+        
         if ($data[self::resPathProducts][WireHttpExtended::resultKeyHttpCode] == 200) {
             $id = $data[self::resPathProducts][WireHttpExtended::resultKeyContent][0]['id'];
         } else {
@@ -1513,7 +1442,7 @@ class SnipREST extends WireHttpExtended {
         }
         return $id;
     }
-
+    
     /**
      * Fetch the URL passed in parameter and generate product(s) found on this page.
      *
@@ -1532,7 +1461,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $options = array(
             'fetchUrl' => $fetchUrl,
         );
@@ -1541,16 +1470,15 @@ class SnipREST extends WireHttpExtended {
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = json_decode($this->send($url, $requestbody, 'POST'), true);
-
-        if ($response === false) $response = array();
+        
         $data[$fetchUrl] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Update a specific product.
      *
@@ -1574,7 +1502,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $allowedOptions = array('inventoryManagementMethod', 'variants', 'stock', 'allowOutOfStockPurchases');
         $defaultOptions = array();
         $options = array_merge(
@@ -1589,15 +1517,14 @@ class SnipREST extends WireHttpExtended {
 
         $response = json_decode($this->send($url, $requestbody, 'PUT'), true);
 
-        if ($response === false) $response = array();
         $data[$id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Delete a specific product.
      * (the product isn't actually deleted, but it's "archived" flag is set to true)
@@ -1617,20 +1544,19 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for DELETE request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $url = self::apiEndpoint . self::resPathProducts . '/' . $id;
         
         $response = json_decode($this->send($url, array(), 'DELETE'), true);
-
-        if ($response === false) $response = array();
+        
         $data[$id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get discounts from Snipcart dashboard as array.
      *
@@ -1649,26 +1575,25 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixDiscounts;
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() {
             return $this->getJSON(self::apiEndpoint . self::resPathDiscounts);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathDiscounts] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get a single discount from Snipcart dashboard as array.
      *
@@ -1689,26 +1614,25 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_discount_id'));
             return false;
         }
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixDiscountsDetail . '.' . md5($id);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($id) {
             return $this->getJSON(self::apiEndpoint . self::resPathDiscounts . '/' . $id);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathDiscounts . '/' . $id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Updates a Snipcart discount.
      *
@@ -1757,7 +1681,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $allowedOptions = array(
             'id', 'name', 'expires', 'maxNumberOfUsages', 'currency', 'combinable',
             'type', 'amount', 'rate', 'alternatePrice', 'shippingDescription', 'shippingCost',
@@ -1773,13 +1697,12 @@ class SnipREST extends WireHttpExtended {
                 $options, array_flip($allowedOptions)
             )
         );
-
+        
         $url = self::apiEndpoint . self::resPathDiscounts. '/' . $id;
         $requestbody = \ProcessWire\wireEncodeJSON($options, true);
-
+        
         $response = $this->send($url, $requestbody, 'PUT');
-
-        if ($response === false) $response = array();
+        
         $data[$id] = array(
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
@@ -1787,7 +1710,7 @@ class SnipREST extends WireHttpExtended {
         );
         return $data;
     }
-
+    
     /**
      * Creates a Snipcart discount.
      *
@@ -1831,7 +1754,7 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $allowedOptions = array(
             'name', 'expires', 'maxNumberOfUsages', 'currency', 'combinable',
             'type', 'amount', 'rate', 'alternatePrice', 'shippingDescription', 'shippingCost',
@@ -1847,21 +1770,20 @@ class SnipREST extends WireHttpExtended {
                 $options, array_flip($allowedOptions)
             )
         );
-
+        
         $url = self::apiEndpoint . self::resPathDiscounts;
         $requestbody = \ProcessWire\wireEncodeJSON($options, true);
-
+        
         $response = $this->send($url, $requestbody, 'POST');
-
-        if ($response === false) $response = array();
+        
         $data = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Deletes a Snipcart discount.
      *
@@ -1880,36 +1802,19 @@ class SnipREST extends WireHttpExtended {
         }
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
-
+        
         $url = self::apiEndpoint . self::resPathDiscounts . '/' . $id;
-
+        
         $response = json_decode($this->send($url, array(), 'DELETE'), true);
-
-        if ($response === false) $response = array();
+        
         $data[$id] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
-    /**
-     * Delete a single or the full discount cache (WireCache).
-     *
-     * @param string $id The Snipcart $id of the discount (if no id provided, the full discount cache is deleted)
-     * @return void
-     *
-     */
-    public function deleteDiscountCache($id = '') {
-        if (!$id) {
-            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixDiscounts . '*');
-        } else {
-            $cacheName = self::cacheNamePrefixDiscountsDetail . '.' . md5($id);
-            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-        }
-    }
-
+    
     /**
      * Get the store performance from Snipcart dashboard as array.
      *
@@ -1928,7 +1833,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $allowedOptions = array('from', 'to');
         $defaultOptions = array();
         $options = array_merge(
@@ -1939,26 +1844,25 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixPerformance . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathDataPerformance . $query);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathDataPerformance] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get the sales (amount of sales by day) from Snipcart dashboard as array.
      *
@@ -1978,7 +1882,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $allowedOptions = array('from', 'to', 'currency');
         $defaultOptions = array();
         $options = array_merge(
@@ -1989,26 +1893,25 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrdersSales . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathDataOrdersSales . $query);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathDataOrdersSales] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Get the order counts (number of orders by days) from Snipcart dashboard as array.
      *
@@ -2028,7 +1931,7 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-
+        
         $allowedOptions = array('from', 'to', 'currency');
         $defaultOptions = array();
         $options = array_merge(
@@ -2039,26 +1942,25 @@ class SnipREST extends WireHttpExtended {
         );
         $query = '';
         if (!empty($options)) $query = '?' . http_build_query($options);
-
+        
         // Segmented cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixOrdersCount . '.' . md5($query);
-
+        
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
-
+        
         // Try to get array from cache first
         $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($query) {
             return $this->getJSON(self::apiEndpoint . self::resPathDataOrdersCount . $query);
         });
-
-        if ($response === false) $response = array();
+        
         $data[self::resPathDataOrdersCount] = array(
-            WireHttpExtended::resultKeyContent => $response,
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
         );
         return $data;
     }
-
+    
     /**
      * Snipcart REST API connection test.
      * (uses resPathSettingsDomain for test request)
@@ -2085,6 +1987,76 @@ class SnipREST extends WireHttpExtended {
     }
     
     /**
+     * Delete a single or the full order cache (WireCache).
+     *
+     * @param string $token The Snipcart $token of the order (if no token provided, the full order cache is deleted)
+     * @return void
+     *
+     */
+    public function deleteOrderCache($token = '') {
+        if (!$token) {
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixOrders . '*');
+        } else {
+            $cacheName = self::cacheNamePrefixOrdersDetail . '.' . md5($token);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+            
+            $cacheName = self::cacheNamePrefixOrdersNotifications . '.' . md5($token);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        }
+    }
+    
+    /**
+     * Delete a single or the full subscription cache (WireCache).
+     *
+     * @param string $id The Snipcart $id of the subscription (if no id provided, the full subscription cache is deleted)
+     * @return void
+     *
+     */
+    public function deleteSubscriptionCache($id = '') {
+        if (!$id) {
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixSubscriptions . '*');
+        } else {
+            $cacheName = self::cacheNamePrefixSubscriptionsDetail . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        }
+    }
+    
+    /**
+     * Delete a single or the full abandoned cart cache (WireCache).
+     *
+     * @param string $id The Snipcart $id of the abandoned cart (if no id provided, the full abandoned cart cache is deleted)
+     * @return void
+     *
+     */
+    public function deleteAbandonedCartsCache($id = '') {
+        if (!$id) {
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixCartsAbandoned . '*');
+        } else {
+            $cacheName = self::cacheNamePrefixCartsAbandonedDetail . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+            
+            $cacheName = self::cacheNamePrefixCartsAbandonedNotifications . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        }
+    }
+    
+    /**
+     * Delete a single or the full discount cache (WireCache).
+     *
+     * @param string $id The Snipcart $id of the discount (if no id provided, the full discount cache is deleted)
+     * @return void
+     *
+     */
+    public function deleteDiscountCache($id = '') {
+        if (!$id) {
+            $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixDiscounts . '*');
+        } else {
+            $cacheName = self::cacheNamePrefixDiscountsDetail . '.' . md5($id);
+            $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        }
+    }
+    
+    /**
      * Completely refresh Snipcart settings cache.
      *
      * @return boolean|array False if request failed or settings array
@@ -2093,5 +2065,4 @@ class SnipREST extends WireHttpExtended {
     public function refreshSettings() {
         return $this->getSettings('', WireCache::expireNever, true);
     }
-
 }
