@@ -32,6 +32,7 @@ class SnipREST extends WireHttpExtended {
     const resPathOrdersNotifications = 'orders/{token}/notifications';
     const resPathOrdersRefunds = 'orders/{token}/refunds';
     const resPathSubscriptions = 'subscriptions';
+    const resPathSubscriptionsInvoices = 'subscriptions/{id}/invoices';
     const resPathSubscriptionsPause = 'subscriptions/{id}/pause';
     const resPathSubscriptionsResume = 'subscriptions/{id}/resume';
     const resPathSubscriptionsDelete = 'subscriptions/{id}';
@@ -60,6 +61,7 @@ class SnipREST extends WireHttpExtended {
     const cacheNamePrefixOrdersDetail = 'OrdersDetail';
     const cacheNamePrefixSubscriptions = 'Subscriptions';
     const cacheNamePrefixSubscriptionsDetail = 'SubscriptionsDetail';
+    const cacheNamePrefixSubscriptionsInvoices = 'SubscriptionsInvoices';
     const cacheNamePrefixCartsAbandoned = 'CartsAbandoned';
     const cacheNamePrefixCartsAbandonedNotifications = 'CartsAbandonedNotifications';
     const cacheNamePrefixCartsAbandonedDetail = 'CartsAbandonedDetail';
@@ -820,6 +822,54 @@ class SnipREST extends WireHttpExtended {
         }
     }
     
+    /**
+     * Get all invoices of a subscription from Snipcart dashboard as array.
+     *
+     * Uses WireCache to prevent reloading Snipcart data on each request.
+     *
+     * @param string $id The Snipcart item id of the subscription [#required]
+     * @param mixed $expires Lifetime of this cache, in seconds
+     * @param boolean $forceRefresh Wether to refresh this cache
+     * @return array $data
+     *
+     */
+    public function getSubscriptionInvoices($id, $expires = self::cacheExpireDefault, $forceRefresh = false) {
+        if (!$this->getHeaders()) {
+            $this->error(self::getMessagesText('no_headers'));
+            return false;
+        }
+        if (!$id) {
+            $this->error(self::getMessagesText('no_subscription_id'));
+            return false;
+        }
+        
+        $url = \ProcessWire\wirePopulateStringTags(
+            self::apiEndpoint . self::resPathSubscriptionsInvoices,
+            array('id' => $id)
+        );
+        
+        // Segmented cache (each query is cached self-contained)
+        $cacheName = self::cacheNamePrefixSubscriptionsInvoices . '.' . md5($id);
+        
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
+        
+        // Try to get array from cache first
+        $response = $this->wire('cache')->getFor(self::cacheNamespace, $cacheName, $expires, function() use($url) {
+            return $this->getJSON($url);
+        });
+        
+        $dataKey = \ProcessWire\wirePopulateStringTags(
+            self::resPathSubscriptionsInvoices,
+            array('id' => $id)
+        );
+        $data[$dataKey] = array(
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+            WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
+            WireHttpExtended::resultKeyError => $this->getError(),
+        );
+        return $data;
+    }
+
     /**
      * Pause an active subscription.
      *
