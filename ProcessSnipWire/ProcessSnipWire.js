@@ -67,7 +67,8 @@ jQuery(document).ready(function() {
     
     var orderActionStrings = config.orderActionStrings;
     var discountActionStrings = config.discountActionStrings;
-        
+    var subscriptionActionStrings = config.subscriptionActionStrings;
+    
     $('.ResendInvoiceButton').on('click', function(e) {
         e.preventDefault();
         var a_href = $(this).attr('href');
@@ -130,6 +131,39 @@ jQuery(document).ready(function() {
             function() {
                 // dialogue OK click
                 window.parent.document.location.href = a_href; // will work in panels and in main window
+            }
+        );
+    });
+    $('.PauseSubscriptionButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            subscriptionActionStrings.confirm_pause_subscription,
+            function() {
+                // dialogue OK click
+                window.location.href = a_href;
+            }
+        );
+    });
+    $('.ResumeSubscriptionButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            subscriptionActionStrings.confirm_resume_subscription,
+            function() {
+                // dialogue OK click
+                window.location.href = a_href;
+            }
+        );
+    });
+    $('.CancelSubscriptionButton').on('click', function(e) {
+        e.preventDefault();
+        var a_href = $(this).attr('href');
+        ProcessWire.confirm(
+            subscriptionActionStrings.confirm_cancel_subscription,
+            function() {
+                // dialogue OK click
+                window.location.href = a_href;
             }
         );
     });

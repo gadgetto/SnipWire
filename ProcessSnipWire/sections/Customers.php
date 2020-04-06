@@ -463,7 +463,7 @@ trait Customers {
             $f->label .= $subscriptionsBadge;
             $f->collapsed = Inputfield::collapsedYes;
             $f->icon = self::iconOrder;
-            $f->value = $this->_renderTableCustomerSubscriptions($subscriptions);
+            $f->value = $this->_renderTableCustomerSubscriptions($subscriptions, $id);
             
         $wrapper->add($f);
 
@@ -608,10 +608,11 @@ trait Customers {
      * Render the customer subscriptions table.
      *
      * @param array $items
+     * @param array $customerId The customer id
      * @return markup MarkupAdminDataTable | custom html with `no items` display 
      *
      */
-    private function _renderTableCustomerSubscriptions($items) {
+    private function _renderTableCustomerSubscriptions($items, $customerId) {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -627,13 +628,19 @@ trait Customers {
             $table->setResponsive(true);
             $table->headerRow(array(
                 $this->_('Plan'),
-                $this->_('Creation Date'),
+                $this->_('Subscription Date'),
+                $this->_('Interval'),
+                $this->_('Price'),
+                $this->_('Total Spent'),
                 $this->_('Status'),
             ));
             foreach ($items as $item) {
-                $plan =
-                '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '"
-                    class="pw-panel-links">' .
+                // Need to attach a return URL to be able to stay in modal panel when subscription detail is opened
+                $ret = urlencode($this->snipWireRootUrl . 'customer/' . $customerId);
+                $planName =
+                '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '?modal=1&ret=' . $ret . '"
+                    class="pw-panel-links"
+                    data-panel-width="85%">' .
                         \ProcessWire\wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
                 '</a>';
                 $creationDate = '<span class="tooltip" title="';
@@ -641,11 +648,30 @@ trait Customers {
                 $creationDate .= '">';
                 $creationDate .= \ProcessWire\wireDate('relative', $item['creationDate']);
                 $creationDate .= '</span>';
+                $interval = $item['schedule']['intervalCount'] . '&nbsp;/&nbsp;' . $item['schedule']['interval'];
+                $amount =
+                '<strong class="price-field">' .
+                    CurrencyFormat::format($item['amount'], $item['currency']) .
+                '</strong>';
+                $totalSpent =
+                '<strong class="price-field">' .
+                    CurrencyFormat::format($item['totalSpent'], $item['currency']) .
+                '</strong>';
+                if ($item['pausedOn']) {
+                    $status = '<span class="info-color-dark">' . $this->getSubscriptionStatus('paused') . '</span>';
+                } elseif ($item['cancelledOn']) {
+                    $status = '<span class="warning-color-dark">' . $this->getSubscriptionStatus('canceled') . '</span>';
+                } else {
+                    $status = $this->getSubscriptionStatus('active');
+                }
 
                 $table->row(array(
-                    $plan,
+                    $planName,
                     $creationDate,
-                    $item['status'],
+                    $interval,
+                    $amount,
+                    $totalSpent,
+                    $status,
                 ));
             }
             $out = $table->render();

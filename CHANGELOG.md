@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- Finished subscriptions dashboard section
 - Added support for Snipcart subscriptions
 - Added necessary fields for subscription products
 - Added debug output for webhooks request payload data
