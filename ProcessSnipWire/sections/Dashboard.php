@@ -85,13 +85,13 @@ trait Dashboard {
         $out = $this->_buildDashboardFilter($startDate, $endDate, $currency);
 
         $out .= $this->_renderPerformanceBoxes(
-            $dashboard[SnipRest::resPathDataPerformance],
+            $dashboard[SnipREST::resPathDataPerformance],
             $currency
         );
 
         $chart = $this->_renderChart(
-            $dashboard[SnipRest::resPathDataOrdersSales],
-            $dashboard[SnipRest::resPathDataOrdersCount],
+            $dashboard[SnipREST::resPathDataOrdersSales],
+            $dashboard[SnipREST::resPathDataOrdersCount],
             $currency
         );
 
@@ -117,7 +117,7 @@ trait Dashboard {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Customers');
             $f->icon = self::iconCustomer;
-            $f->value = $this->_renderTableTopCustomers($dashboard[SnipRest::resPathCustomers]);
+            $f->value = $this->_renderTableTopCustomers($dashboard[SnipREST::resPathCustomers]);
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
 
@@ -127,7 +127,7 @@ trait Dashboard {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Top Products');
             $f->icon = self::iconProduct;
-            $f->value = $this->_renderTableTopProducts($dashboard[SnipRest::resPathProducts], $currency);
+            $f->value = $this->_renderTableTopProducts($dashboard[SnipREST::resPathProducts], $currency);
             $f->columnWidth = 50;
             $f->collapsed = Inputfield::collapsedNever;
 
@@ -142,7 +142,7 @@ trait Dashboard {
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Recent Orders');
             $f->icon = self::iconOrder;
-            $f->value = $this->_renderTableRecentOrders($dashboard[SnipRest::resPathOrders]);
+            $f->value = $this->_renderTableRecentOrders($dashboard[SnipREST::resPathOrders]);
             $f->columnWidth = 100;
             $f->collapsed = Inputfield::collapsedNever;
             
@@ -168,12 +168,12 @@ trait Dashboard {
 
         // Initialize dashboard
         $dashboard = array(
-            SnipRest::resPathDataPerformance => array(),
-            SnipRest::resPathDataOrdersSales => array(),
-            SnipRest::resPathDataOrdersCount => array(),
-            SnipRest::resPathCustomers => array(),
-            SnipRest::resPathProducts => array(),
-            SnipRest::resPathOrders => array(),
+            SnipREST::resPathDataPerformance => array(),
+            SnipREST::resPathDataOrdersSales => array(),
+            SnipREST::resPathDataOrdersCount => array(),
+            SnipREST::resPathCustomers => array(),
+            SnipREST::resPathProducts => array(),
+            SnipREST::resPathOrders => array(),
         );
 
         $ordersSales = 0.0;
@@ -182,7 +182,7 @@ trait Dashboard {
 
         foreach ($packages as $key => $package) {
             
-            if (strpos($key, SnipRest::resPathDataPerformance) !== false) {
+            if (strpos($key, SnipREST::resPathDataPerformance) !== false) {
 
                 // Performance data is NOT currency dependent therefore some values need to be 
                 // determined from other currency dependent sources and will be replaced later.
@@ -204,47 +204,47 @@ trait Dashboard {
                     "totalRecovered" => not in use
                 ]
                 */
-                $dashboard[SnipRest::resPathDataPerformance] = $package;
+                $dashboard[SnipREST::resPathDataPerformance] = $package;
                 
-            } elseif (strpos($key, SnipRest::resPathDataOrdersSales) !== false) {
+            } elseif (strpos($key, SnipREST::resPathDataOrdersSales) !== false) {
                 
-                $dashboard[SnipRest::resPathDataOrdersSales] = $package;
+                $dashboard[SnipREST::resPathDataOrdersSales] = $package;
 
                 // Calc sales sum
-                if (isset($dashboard[SnipRest::resPathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'])) {
-                    $data = $dashboard[SnipRest::resPathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'];
+                if (isset($dashboard[SnipREST::resPathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipREST::resPathDataOrdersSales][WireHttpExtended::resultKeyContent]['data'];
                     foreach ($data as $item) {
                         $ordersSales += $item['value'];
                     }
                 }
 
-            } elseif (strpos($key, SnipRest::resPathDataOrdersCount) !== false) {
+            } elseif (strpos($key, SnipREST::resPathDataOrdersCount) !== false) {
                 
-                $dashboard[SnipRest::resPathDataOrdersCount] = $package;
+                $dashboard[SnipREST::resPathDataOrdersCount] = $package;
                 
                 // Calc orders count
-                if (isset($dashboard[SnipRest::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'])) {
-                    $data = $dashboard[SnipRest::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'];
+                if (isset($dashboard[SnipREST::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'])) {
+                    $data = $dashboard[SnipREST::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'];
                     foreach ($data as $item) {
                         $ordersCount += $item['value'];
                     }
                 }
                 
-            } elseif (strpos($key, SnipRest::resPathCustomers) !== false) {
+            } elseif (strpos($key, SnipREST::resPathCustomers) !== false) {
                 
-                $dashboard[SnipRest::resPathCustomers] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                $dashboard[SnipREST::resPathCustomers] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
                 
-            } elseif (strpos($key, SnipRest::resPathProducts) !== false) {
+            } elseif (strpos($key, SnipREST::resPathProducts) !== false) {
                 
-                $dashboard[SnipRest::resPathProducts] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                $dashboard[SnipREST::resPathProducts] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
                 
-            } elseif (strpos($key, SnipRest::resPathOrders) !== false) {
+            } elseif (strpos($key, SnipREST::resPathOrders) !== false) {
                 
-                $dashboard[SnipRest::resPathOrders] = isset($package[WireHttpExtended::resultKeyContent]['items'])
+                $dashboard[SnipREST::resPathOrders] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : array();
             }
@@ -257,8 +257,8 @@ trait Dashboard {
             'ordersCount' => $ordersCount,
             'averageOrdersValue' => $averageOrdersValue,
         );
-        $dashboard[SnipRest::resPathDataPerformance][WireHttpExtended::resultKeyContent] = array_merge(
-            $dashboard[SnipRest::resPathDataPerformance][WireHttpExtended::resultKeyContent],
+        $dashboard[SnipREST::resPathDataPerformance][WireHttpExtended::resultKeyContent] = array_merge(
+            $dashboard[SnipREST::resPathDataPerformance][WireHttpExtended::resultKeyContent],
             $calculated
         );
 
