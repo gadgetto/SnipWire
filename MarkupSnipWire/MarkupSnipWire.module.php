@@ -23,7 +23,7 @@ class MarkupSnipWire extends WireData implements Module {
         return array(
             'title' => __('SnipWire Markup'), // Module Title
             'summary' => __('Snipcart markup output for SnipWire.'), // Module Summary
-            'version' => '0.8.5',
+            'version' => '0.8.6',
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'singular' => true, 

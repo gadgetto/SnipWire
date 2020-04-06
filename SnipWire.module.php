@@ -33,7 +33,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         return array(
             'title' => __('SnipWire'), // Module Title
             'summary' => __('Full Snipcart shopping cart integration for ProcessWire.'), // Module Summary
-            'version' => '0.8.5',
+            'version' => '0.8.6',
             'author'  => 'Martin Gartner',
             'href' => 'https://processwire.com/talk/topic/21554-snipwire-snipcart-integration-for-processwire/',
             'icon' => 'shopping-cart', 
