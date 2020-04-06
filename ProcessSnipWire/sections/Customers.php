@@ -79,8 +79,9 @@ trait Customers {
             $forceRefresh
         );
 
-        $customers = isset($response[SnipRest::resPathCustomers][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathCustomers][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathCustomers;
+        $customers = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
         
         $total = isset($customers['totalItems']) ? $customers['totalItems'] : 0;
@@ -165,8 +166,9 @@ trait Customers {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $customer = isset($response[SnipRest::resPathCustomers . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathCustomers . '/' . $id][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathCustomers . '/' . $id;
+        $customer = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
 
         $out = '';
@@ -367,18 +369,20 @@ trait Customers {
         '</div>';
 
         $response = $sniprest->getCustomersOrders($id);
-        $orders = isset($response[SnipREST::resPathCustomersOrders][WireHttpExtended::resultKeyContent])
-            ? $response[SnipREST::resPathCustomersOrders][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathCustomersOrders;
+        $orders = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
-        unset($response);
+        unset($response, $dataKey);
         
         $response = $sniprest->getSubscriptionsItems(array(
             'userDefinedCustomerNameOrEmail' => $email,
         ));
-        $subscriptions = isset($response[SnipREST::resPathSubscriptions][WireHttpExtended::resultKeyContent])
-            ? $response[SnipREST::resPathSubscriptions][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathSubscriptions;
+        $subscriptions = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
-        unset($response);
+        unset($response, $dataKey);
         
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');

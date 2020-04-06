@@ -101,8 +101,9 @@ trait Discounts {
             $forceRefresh
         );
 
-        $discounts = isset($response[SnipRest::resPathDiscounts][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathDiscounts][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathDiscounts;
+        $discounts = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
 
         // As discounts have no query params for REST, we need to search in the result set instead
@@ -194,8 +195,9 @@ trait Discounts {
             $id,
             WireCache::expireNow
         );
-        $discount = isset($response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathDiscounts . '/' . $id;
+        $discount = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
 
         /** @var InputfieldMarkup $f */
@@ -1358,13 +1360,14 @@ trait Discounts {
 
         $updated = false;
         $response = $sniprest->putDiscount($id, $options);
+        $dataKey = $id;
         if (
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The discount could not be updated! The following error occurred: ') .
-                $response[$id][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The discount has been updated.'));
             $updated = true;
@@ -1388,8 +1391,9 @@ trait Discounts {
             $id,
             WireCache::expireNow
         );
-        $discount = isset($response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathDiscounts . '/' . $id;
+        $discount = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
 
         if (empty($discount)) {
@@ -1406,13 +1410,14 @@ trait Discounts {
 
         $updated = false;
         $response = $sniprest->putDiscount($id, $discount);
+        $dataKey = $id;
         if (
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The discount could not be archived! The following error occurred: ') .
-                $response[$id][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The discount has been archived.'));
             $updated = true;
@@ -1436,8 +1441,9 @@ trait Discounts {
             $id,
             WireCache::expireNow
         );
-        $discount = isset($response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathDiscounts . '/' . $id][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathDiscounts . '/' . $id;
+        $discount = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
 
         if (empty($discount)) {
@@ -1454,13 +1460,14 @@ trait Discounts {
 
         $updated = false;
         $response = $sniprest->putDiscount($id, $discount);
+        $dataKey = $id;
         if (
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The discount could not be restored! The following error occurred: ') .
-                $response[$id][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The discount has been restored.'));
             $updated = true;
@@ -1506,12 +1513,13 @@ trait Discounts {
 
         $deleted = false;
         $response = $sniprest->deleteDiscount($id);
+        $dataKey = $id;
         if (
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 204 // DELETE http response code
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 204 // DELETE http response code
         ) {
             $this->error(
                 $this->_('The discount could not be deleted! The following error occurred: ') .
-                $response[$id][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The discount has been deleted.'));
             $deleted = true;

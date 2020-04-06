@@ -82,8 +82,9 @@ trait AbandonedCarts {
             $forceRefresh
         );
 
-        $abandonedCarts = isset($response[SnipRest::resPathCartsAbandoned][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathCartsAbandoned][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathCartsAbandoned;
+        $abandonedCarts = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
         
         $items = isset($abandonedCarts['items']) ? $abandonedCarts['items'] : array();
@@ -149,7 +150,7 @@ trait AbandonedCarts {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $dataKey = SnipRest::resPathCartsAbandoned . '/' . $id;
+        $dataKey = SnipREST::resPathCartsAbandoned . '/' . $id;
         $cart = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
@@ -812,13 +813,14 @@ trait AbandonedCarts {
 
         $added = false;
         $response = $sniprest->postAbandonedCartNotification($id, $options);
+        $dataKey = $id;
         if (
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$id][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The cart message could not be sent! The following error occurred: ') .
-                $response[$id][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $this->message($this->_('The cart message has been sent.'));
             $added = true;

@@ -61,7 +61,7 @@ trait Orders {
         } elseif ($action == 'download_invoice') {
             $out .= $this->_downloadInvoice($token);
         }
-
+        
         $status = $sanitizer->text($input->status);
         $paymentStatus = $sanitizer->text($input->paymentStatus);
         $invoiceNumber = $sanitizer->text($input->invoiceNumber);
@@ -72,24 +72,25 @@ trait Orders {
             'invoiceNumber' => $invoiceNumber ? $invoiceNumber : '',
             'placedBy' => $placedBy ? $placedBy : '',
         );
-
+        
         $defaultSelector = array(
             'offset' => $offset,
             'limit' => $limit,
             'format' => 'Excerpt',
         );
- 
+        
         $selector = array_merge($defaultSelector, $filter);
-
+        
         $response = $sniprest->getOrders(
             '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-
-        $orders = isset($response[SnipRest::resPathOrders][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathOrders][WireHttpExtended::resultKeyContent]
+        
+        $dataKey = SnipREST::resPathOrders;
+        $orders = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
 
         $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;
@@ -183,7 +184,7 @@ trait Orders {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $dataKey = SnipRest::resPathOrders . '/' . $token;
+        $dataKey = SnipREST::resPathOrders . '/' . $token;
         $order = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
@@ -199,7 +200,10 @@ trait Orders {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $dataKey = SnipREST::cacheNamePrefixOrdersNotifications . '.' . $token;
+        $dataKey = \ProcessWire\wirePopulateStringTags(
+            SnipREST::resPathOrdersNotifications,
+            array('token' => $token)
+        );
         $notifications = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
@@ -1514,22 +1518,27 @@ trait Orders {
      */
     private function _resendInvoice($token) {
         $sniprest = $this->wire('sniprest');
-
+        
         if (empty($token)) return;
-
+        
         $options = array(
             'type' => 'Invoice',
             'deliveryMethod' => 'Email',
         );
-
+        
         $response = $sniprest->postOrderNotification($token, $options);
+        
+        $dataKey = \ProcessWire\wirePopulateStringTags(
+            SnipREST::resPathOrdersNotifications,
+            array('token' => $token)
+        );
         if (
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The invoice could not be sent to customer! The following error occurred: ') .
-                $response[$token][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $sniprest->deleteOrderCache();
             $this->message($this->_('The invoice has been sent to customer.'));
@@ -1560,13 +1569,18 @@ trait Orders {
 
         $refunded = false;
         $response = $sniprest->postOrderRefund($token, $options);
+        
+        $dataKey = \ProcessWire\wirePopulateStringTags(
+            SnipREST::resPathOrdersRefunds,
+            array('token' => $token)
+        );
         if (
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The amount could not be refunded! The following error occurred: ') .
-                $response[$token][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $sniprest->deleteOrderCache();
             $this->message(sprintf($this->_("An amount of %s has been refunded."), $amountFormatted));
@@ -1589,24 +1603,25 @@ trait Orders {
      */
     private function _updateOrderStatus($token, $status, $oldStatus, $trackingNumber, $trackingUrl, $deliveryMethod) {
         $sniprest = $this->wire('sniprest');
-
+        
         if (empty($token)) return;
-
+        
         $options = array(
             'status' => $status,
             'trackingNumber' => $trackingNumber,
             'trackingUrl' => $trackingUrl,
         );
-
+        
         $updated = false;
         $response = $sniprest->putOrderStatus($token, $options);
+        $dataKey = $token;
         if (
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The order status could not be updated! The following error occurred: ') .
-                $response[$token][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $sniprest->deleteOrderCache();
             $this->message($this->_('The order status has been updated.'));
@@ -1637,15 +1652,20 @@ trait Orders {
                         'deliveryMethod' => 'None',
                     );
                 }
-
+                
                 $response = $sniprest->postOrderNotification($token, $options);
+                
+                $dataKey = \ProcessWire\wirePopulateStringTags(
+                    SnipREST::resPathOrdersNotifications,
+                    array('token' => $token)
+                );
                 if (
-                    $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
-                    $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+                    $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+                    $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
                 ) {
                     $this->error(
                         $this->_('The notification could not be sent! The following error occurred: ') .
-                        $response[$token][WireHttpExtended::resultKeyError]);
+                        $response[$dataKey][WireHttpExtended::resultKeyError]);
                 } else {
                     $sniprest->deleteOrderCache();
                     $this->message($this->_('The notification has been sent.'));
@@ -1666,24 +1686,29 @@ trait Orders {
      */
     private function _addOrderComment($token, $message, $deliveryMethod) {
         $sniprest = $this->wire('sniprest');
-
+        
         if (empty($token)) return;
-
+        
         $options = array(
             'type' => 'Comment',
             'message' => $message,
             'deliveryMethod' => $deliveryMethod,
         );
-
+        
         $added = false;
         $response = $sniprest->postOrderNotification($token, $options);
+        
+        $dataKey = \ProcessWire\wirePopulateStringTags(
+            SnipREST::resPathOrdersNotifications,
+            array('token' => $token)
+        );
         if (
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 200 &&
-            $response[$token][WireHttpExtended::resultKeyHttpCode] != 201
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
+            $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 201
         ) {
             $this->error(
                 $this->_('The order comment could not be added! The following error occurred: ') .
-                $response[$token][WireHttpExtended::resultKeyError]);
+                $response[$dataKey][WireHttpExtended::resultKeyError]);
         } else {
             $sniprest->deleteOrderCache();
             $this->message($this->_('The order comment has been added.'));

@@ -78,8 +78,9 @@ trait Subscriptions {
             $forceRefresh
         );
 
-        $subscriptions = isset($response[SnipRest::resPathSubscriptions][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathSubscriptions][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathSubscriptions;
+        $subscriptions = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
 
         $total = isset($subscriptions['totalItems']) ? $subscriptions['totalItems'] : 0;
@@ -164,10 +165,11 @@ trait Subscriptions {
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        $subscription = isset($response[SnipRest::resPathSubscriptions . '/' . $id][WireHttpExtended::resultKeyContent])
-            ? $response[SnipRest::resPathSubscriptions . '/' . $id][WireHttpExtended::resultKeyContent]
+        $dataKey = SnipREST::resPathSubscriptions . '/' . $id;
+        $subscription = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
+            ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : array();
-
+        unset($response, $dataKey);
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
         $f->label = $this->_('Snipcart Subscription');

@@ -319,9 +319,10 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 $snipcart_item_id = $page->snipcart_item_id;
                 $response = $sniprest->postProduct($page->httpUrl);
                 
-                $content = $response[$page->httpUrl][WireHttpExtended::resultKeyContent];
-                $httpCode = $response[$page->httpUrl][WireHttpExtended::resultKeyHttpCode];
-                $error = $response[$page->httpUrl][WireHttpExtended::resultKeyError];
+                $dataKey = $page->httpUrl;
+                $content = $response[$dataKey][WireHttpExtended::resultKeyContent];
+                $httpCode = $response[$dataKey][WireHttpExtended::resultKeyHttpCode];
+                $error = $response[$dataKey][WireHttpExtended::resultKeyError];
                 
                 if ($httpCode == 200 || $httpCode == 201) {
                     $id = isset($content[0]['id']) ? $content[0]['id'] : '';
@@ -352,16 +353,17 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $sniprest = $this->wire('sniprest');
         $log = $this->wire('log');
         if (!$snipwire || !$sniprest) return;
-
+        
         $page = $event->arguments(0);
         if ($snipwire->isProductTemplate($page->template)) {
             $snipcart_item_id = $page->snipcart_item_id;
             
             if ($id = $sniprest->getProductId($snipcart_item_id)) {
                 $response = $sniprest->deleteProduct($id);
-
-                $httpCode = $response[$id][WireHttpExtended::resultKeyHttpCode];
-                $error = $response[$id][WireHttpExtended::resultKeyError];
+                
+                $dataKey = $id;
+                $httpCode = $response[$dataKey][WireHttpExtended::resultKeyHttpCode];
+                $error = $response[$dataKey][WireHttpExtended::resultKeyError];
                 
                 if ($httpCode == 200 || $httpCode == 201) {
                     $message = sprintf(
