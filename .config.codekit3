@@ -55,26 +55,10 @@
 		"oAP": "/.gitignore",
 		"oF": 0
 		},
-	"/.nova/Configuration.json": {
-		"ft": 524288,
-		"oA": 1,
-		"oAP": "/.nova/Configuration-min.json",
-		"oF": 0,
-		"oO": 0,
-		"oS": 1
-		},
 	"/.nova/Publishing/SnipWire.json": {
 		"ft": 524288,
 		"oA": 1,
 		"oAP": "/.nova/Publishing/SnipWire-min.json",
-		"oF": 0,
-		"oO": 0,
-		"oS": 1
-		},
-	"/.nova/Template.json": {
-		"ft": 524288,
-		"oA": 1,
-		"oAP": "/.nova/Template-min.json",
 		"oF": 0,
 		"oO": 0,
 		"oS": 1
