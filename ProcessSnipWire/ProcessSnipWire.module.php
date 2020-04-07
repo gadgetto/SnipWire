@@ -193,24 +193,26 @@ class ProcessSnipWire extends Process implements Module {
         parent::init();
         
         $modules = $this->wire('modules');
-
+        
         $modules->get('JqueryWireTabs');
         $modules->get('JqueryUI')->use('panel');
         $modules->get('JqueryUI')->use('modal');
         $modules->get('JqueryUI')->use('vex');
-
+        
         // Get SnipWire module config.
         // (Holds merged data from DB and default config. 
         // This works because of using the ModuleConfig class)
         $this->snipwireConfig = $this->wire('modules')->get('SnipWire');
-
+        
         // Get activated $currencies from SnipWire module config
         $this->currencies = $this->snipwireConfig->currencies;
-
+        
         $this->snipWireRootUrl = rtrim($this->wire('pages')->get('template=admin, name=snipwire, status<' . Page::statusTrash)->url, '/') . '/';
         $this->currentUrl = rtrim($this->wire('input')->url, '/') . '/';
         $this->processUrl = $this->snipWireRootUrl . $this->getProcessPage()->urlSegment . '/';
-
+        
+        $this->_noticeTestMode();
+        
         $this->orderStatusesSelectable = array(
             'Processed' => $this->_('Processed'),
             'Disputed' => $this->_('Disputed'),
@@ -325,12 +327,12 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getOrderStatuses($includeAllKey = true) {
-		if ($includeAllKey) return $this->orderStatuses;
-		$orderStatuses = $this->orderStatuses;
-		array_shift($orderStatuses);
-		return $orderStatuses;
-	}
+    public function getOrderStatuses($includeAllKey = true) {
+        if ($includeAllKey) return $this->orderStatuses;
+        $orderStatuses = $this->orderStatuses;
+        array_shift($orderStatuses);
+        return $orderStatuses;
+    }
 
     /**
      * Get all selectable pre-translated order statuses.
@@ -338,9 +340,9 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getOrderStatusesSelectable() {
-		return $this->orderStatusesSelectable;
-	}
+    public function getOrderStatusesSelectable() {
+        return $this->orderStatusesSelectable;
+    }
 
     /**
      * Get a pre-translated order status by it's key.
@@ -349,11 +351,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getOrderStatus($key) {
-		return isset($this->orderStatuses[$key])
-		    ? $this->orderStatuses[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getOrderStatus($key) {
+        return isset($this->orderStatuses[$key])
+            ? $this->orderStatuses[$key]
+            : $this->_('-- unknown --');
+    }
     
     /**
      * Get all pre-translated subscription statuses.
@@ -389,9 +391,9 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getCommentTypes() {
-		return $this->commentTypes;
-	}
+    public function getCommentTypes() {
+        return $this->commentTypes;
+    }
 
     /**
      * Get a pre-translated comment type by it's key.
@@ -400,11 +402,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getCommentType($key) {
-		return isset($this->commentTypes[$key])
-		    ? $this->commentTypes[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getCommentType($key) {
+        return isset($this->commentTypes[$key])
+            ? $this->commentTypes[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * Get all pre-translated payment statuses.
@@ -413,12 +415,12 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getPaymentStatuses($includeAllKey = true) {
-		if ($includeAllKey) return $this->paymentStatuses;
-		$paymentStatuses = $this->paymentStatuses;
-		array_shift($paymentStatuses);
-		return $paymentStatuses;
-	}
+    public function getPaymentStatuses($includeAllKey = true) {
+        if ($includeAllKey) return $this->paymentStatuses;
+        $paymentStatuses = $this->paymentStatuses;
+        array_shift($paymentStatuses);
+        return $paymentStatuses;
+    }
 
     /**
      * Get a pre-translated payment status by it's key.
@@ -427,11 +429,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getPaymentStatus($key) {
-		return isset($this->paymentStatuses[$key])
-		    ? $this->paymentStatuses[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getPaymentStatus($key) {
+        return isset($this->paymentStatuses[$key])
+            ? $this->paymentStatuses[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * Get all pre-translated payment methods.
@@ -440,12 +442,12 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getPaymentMethods($includeAllKey = true) {
-		if ($includeAllKey) return $this->paymentMethods;
-		$paymentMethods = $this->paymentMethods;
-		array_shift($paymentMethods);
-		return $paymentMethods;
-	}
+    public function getPaymentMethods($includeAllKey = true) {
+        if ($includeAllKey) return $this->paymentMethods;
+        $paymentMethods = $this->paymentMethods;
+        array_shift($paymentMethods);
+        return $paymentMethods;
+    }
 
     /**
      * Get a pre-translated payment method by it's key.
@@ -454,11 +456,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getPaymentMethod($key) {
-		return isset($this->paymentMethods[$key])
-		    ? $this->paymentMethods[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getPaymentMethod($key) {
+        return isset($this->paymentMethods[$key])
+            ? $this->paymentMethods[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * Get all pre-translated abandoned carts time-ranges.
@@ -466,9 +468,9 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getAbandonedCartsTimeRanges() {
-		return $this->abandonedCartsTimeRanges;
-	}
+    public function getAbandonedCartsTimeRanges() {
+        return $this->abandonedCartsTimeRanges;
+    }
 
     /**
      * Get a pre-translated abandoned carts time-range by it's key.
@@ -477,11 +479,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getAbandonedCartsTimeRange($key) {
-		return isset($this->abandonedCartsTimeRanges[$key])
-		    ? $this->abandonedCartsTimeRanges[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getAbandonedCartsTimeRange($key) {
+        return isset($this->abandonedCartsTimeRanges[$key])
+            ? $this->abandonedCartsTimeRanges[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * Get all pre-translated customer address-labels.
@@ -489,9 +491,9 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getCustomerAddressLabels() {
-		return $this->customerAddressLabels;
-	}
+    public function getCustomerAddressLabels() {
+        return $this->customerAddressLabels;
+    }
 
     /**
      * Get all pre-translated customer statuses.
@@ -500,12 +502,12 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getCustomerStatuses($includeAllKey = true) {
-		if ($includeAllKey) return $this->customerStatuses;
-		$customerStatuses = $this->customerStatuses;
-		array_shift($customerStatuses);
-		return $customerStatuses;
-	}
+    public function getCustomerStatuses($includeAllKey = true) {
+        if ($includeAllKey) return $this->customerStatuses;
+        $customerStatuses = $this->customerStatuses;
+        array_shift($customerStatuses);
+        return $customerStatuses;
+    }
 
     /**
      * Get a pre-translated customer status by it's key.
@@ -514,11 +516,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getCustomerStatus($key) {
-		return isset($this->customerStatuses[$key])
-		    ? $this->customerStatuses[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getCustomerStatus($key) {
+        return isset($this->customerStatuses[$key])
+            ? $this->customerStatuses[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * Get all pre-translated discounts statuses.
@@ -527,12 +529,12 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getDiscountsStatuses($includeAllKey = true) {
-		if ($includeAllKey) return $this->discountsStatuses;
-		$discountsStatuses = $this->discountsStatuses;
-		array_shift($discountsStatuses);
-		return $discountsStatuses;
-	}
+    public function getDiscountsStatuses($includeAllKey = true) {
+        if ($includeAllKey) return $this->discountsStatuses;
+        $discountsStatuses = $this->discountsStatuses;
+        array_shift($discountsStatuses);
+        return $discountsStatuses;
+    }
 
     /**
      * Get a pre-translated discounts status by it's key.
@@ -541,11 +543,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getDiscountsStatus($key) {
-		return isset($this->discountsStatuses[$key])
-		    ? $this->discountsStatuses[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getDiscountsStatus($key) {
+        return isset($this->discountsStatuses[$key])
+            ? $this->discountsStatuses[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * Get all pre-translated discounts types.
@@ -554,10 +556,10 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getDiscountsTypes($keysonly = false) {
-    	if ($keysonly) return array_keys($this->discountsTypes);
-		return $this->discountsTypes;
-	}
+    public function getDiscountsTypes($keysonly = false) {
+        if ($keysonly) return array_keys($this->discountsTypes);
+        return $this->discountsTypes;
+    }
 
     /**
      * Get a pre-translated discounts type by it's key.
@@ -566,11 +568,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getDiscountsType($key) {
-		return isset($this->discountsTypes[$key])
-		    ? $this->discountsTypes[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getDiscountsType($key) {
+        return isset($this->discountsTypes[$key])
+            ? $this->discountsTypes[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * Get all pre-translated discounts triggers.
@@ -579,10 +581,10 @@ class ProcessSnipWire extends Process implements Module {
      * @return array
      *
      */
-	public function getDiscountsTriggers($keysonly = false) {
-    	if ($keysonly) return array_keys($this->discountsTriggers);
-		return $this->discountsTriggers;
-	}
+    public function getDiscountsTriggers($keysonly = false) {
+        if ($keysonly) return array_keys($this->discountsTriggers);
+        return $this->discountsTriggers;
+    }
 
     /**
      * Get a pre-translated discounts trigger by it's key.
@@ -591,11 +593,11 @@ class ProcessSnipWire extends Process implements Module {
      * @return string
      *
      */
-	public function getDiscountsTrigger($key) {
-		return isset($this->discountsTriggers[$key])
-		    ? $this->discountsTriggers[$key]
-		    : $this->_('-- unknown --');
-	}
+    public function getDiscountsTrigger($key) {
+        return isset($this->discountsTriggers[$key])
+            ? $this->discountsTriggers[$key]
+            : $this->_('-- unknown --');
+    }
 
     /**
      * SnipWire dashboard output wrapper with tabbed interface.
@@ -809,7 +811,24 @@ class ProcessSnipWire extends Process implements Module {
 
         return $out;
     }
-
+    
+    /**
+     * Show a notice if SnipWire is set to use Snipcart TEST mode
+     *
+     */
+    private function _noticeTestMode() {
+        if ($this->snipwireConfig->snipcart_environment != 0) return; // 0 = TEST mode
+        $settingsUrl = $this->snipWireRootUrl . 'settings';
+        $this->message(
+            'icon-plug ' .
+            $this->_('SnipWire currently runs in Snipcart TEST mode, suitable for stores in development and for secure staging') .
+            '<div><small class="ui-priority-secondary">' .
+            $this->_('To switch to LIVE mode, open SnipWire module settings and change the Snipcart environment') .
+            '</small></div>',
+            Notice::allowMarkup | Notice::anonymous | Notice::noGroup
+        );
+    }
+    
     /**
      * Renders a wrapper for the item lister headline.
      *
@@ -1221,7 +1240,7 @@ class ProcessSnipWire extends Process implements Module {
     public function ___upgrade($fromVersion, $toVersion) {
         // added since v 0.7.1: custom cart fields support
         // added since v 0.8.0: custom product fields support
-		if (version_compare($fromVersion, '0.7.9', '<=')) {
+        if (version_compare($fromVersion, '0.7.9', '<=')) {
             if (!$this->_installSystemResources()) {                        
                 $out = $this->_('Installation of SnipWire system resources failed while upgrading the module.');
                 $this->error($out);
