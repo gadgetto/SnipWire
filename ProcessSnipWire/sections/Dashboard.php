@@ -115,7 +115,7 @@ trait Dashboard {
 
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Top Customers');
+            $f->label = $this->_('Top Customers For Selected Period');
             $f->icon = self::iconCustomer;
             $f->value = $this->_renderTableTopCustomers($dashboard[SnipREST::resPathCustomers]);
             $f->columnWidth = 50;
@@ -125,7 +125,7 @@ trait Dashboard {
 
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Top Products');
+            $f->label = $this->_('Top Products For Selected Period');
             $f->icon = self::iconProduct;
             $f->value = $this->_renderTableTopProducts($dashboard[SnipREST::resPathProducts], $currency);
             $f->columnWidth = 50;
@@ -389,7 +389,7 @@ trait Dashboard {
             /** @var InputfieldFieldset $fieldset */
             $fieldset = $modules->get('InputfieldFieldset');
             $fieldset->label = '<span class="hidable-inputfield-label">';
-            $fieldset->label .= $this->_('Store performance');
+            $fieldset->label .= $this->_('Store Performance');
             $fieldset->label .= '</span>';
             $fieldset->label .= $dateRangeDisplay;
             $fieldset->label .= $dateRangeReset;
