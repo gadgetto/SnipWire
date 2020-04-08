@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added ProcessWire notice to flag SnipWire TEST mode
 
+### Fixed
+- Fixed badges display when no refunds possible (in order details - refunds form)
+
 ## [0.8.6] - 2020-04-06
 ### Added
 - Finished subscriptions dashboard section

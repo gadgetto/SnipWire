@@ -623,7 +623,7 @@ trait Orders {
 
         return $out;
     }
-
+    
     /**
      * Render and process the refund form.
      *
@@ -637,34 +637,35 @@ trait Orders {
         $sanitizer = $this->wire('sanitizer');
         $input = $this->wire('input');
         $session = $this->wire('session');
-
+        
         $token = $item['token'];
         $currency = $item['currency'];
+        $total = $item['total'];
         $maxAmount = $item['adjustedAmount'];
         $refundingEnabled = ($maxAmount > 0) ? true : false;
         $maxAmountFormatted = CurrencyFormat::format($maxAmount, $currency);
         $refundsAmount = $item['refundsAmount'];
         $refundsAmountFormatted = CurrencyFormat::format($refundsAmount, $currency);
-
+        
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
         $currencyLabel = isset($supportedCurrencies[$currency])
             ? $supportedCurrencies[$currency]
             : $currency;
-
+            
 		/** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm');
         $form->id = 'RefundForm';
         $form->action = $this->currentUrl;
-
+            
             if ($ret) {
                 /** @var InputfieldHidden $f */
                 $f = $modules->get('InputfieldHidden');
                 $f->name = 'ret';
                 $f->value = urlencode($ret);
-    
+                
                 $form->add($f);
             }
-
+            
             $refundBadges = 
             ' <span class="snipwire-badge snipwire-badge-info">';
             if ($refundingEnabled) {
@@ -672,8 +673,11 @@ trait Orders {
                 $this->_('max.') .
                 ' ' . $maxAmountFormatted;
             } else {
-                $refundBadges .=
-                $this->_('total order refunded');
+                if ($total == 0) {
+                    $refundBadges .= $this->_('nothing to refund');
+                } else {
+                    $refundBadges .= $this->_('total order refunded');
+                }
             }
             $refundBadges .= 
             '</span>';
@@ -692,11 +696,11 @@ trait Orders {
             $fieldset->collapsed = ($input->refunding_active)
                 ? Inputfield::collapsedNo
                 : Inputfield::collapsedYes;
-
+                
         $form->add($fieldset);
-
+        
         if ($refundingEnabled) {
-     
+                
                 /** @var InputfieldText $f */
                 $f = $modules->get('InputfieldText');
                 $f->name = 'amount';
@@ -705,45 +709,45 @@ trait Orders {
                 $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
                 $f->required = true;
                 $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
-            
+                
             $fieldset->add($f);
-    
+                
                 /** @var InputfieldTextarea $f */
                 $f = $modules->get('InputfieldTextarea');
                 $f->name = 'comment';
                 $f->label = $this->_('Reason for refund');
                 $f->rows = 3;
-            
+                
             $fieldset->add($f);
-
+                
                 /** @var InputfieldCheckbox $f */
                 $f = $modules->get('InputfieldCheckbox');
                 $f->name = 'notifyCustomer'; 
                 $f->label = $this->_('Send reason for refund with customer notification');
-    
+                
             $fieldset->add($f);
-
+                
                 /** @var InputfieldHidden $f */
         		$f = $modules->get('InputfieldHidden');
         		$f->name = 'refunding_active';
         		$f->value = true;
-
+                
             $fieldset->add($f);
-
+                
                 /** @var InputfieldSubmit $btn */
                 $btn = $modules->get('InputfieldSubmit');
                 $btn->id = 'SendRefundButton';
                 $btn->name = 'send_refund';
                 $btn->value = $this->_('Send refund');
                 $btn->small = true;
-    
+                
             $fieldset->add($btn);
-
+            
         } else {
-
+                
                 $disabledMarkup =
                 '<div class="RefundFormDisabled">' .
-                    $this->_('Maximum refund amount reached') .
+                    $this->_('Nothing to refund or maximum refund amount reached') .
                 '</div>';
                 
                 /** @var InputfieldMarkup $f */
@@ -751,15 +755,15 @@ trait Orders {
                 $f->label = $this->_('Refunding disabled');
                 $f->value = $disabledMarkup;
                 $f->collapsed = Inputfield::collapsedNever;
-            
+                
             $fieldset->add($f);
         }
-
+        
         // Render form without processing if not submitted
         if (!$input->post->refunding_active) return $form->render();
-
+        
         $form->processInput($input->post);
-
+        
         // Validate input
         $amount = $form->get('amount');
         $amountValue = $amount->value;
@@ -770,24 +774,24 @@ trait Orders {
         } elseif ($amountValue > $maxAmount) {
             $amount->error($this->_('Maximum amount is') . ' ' . $maxAmountFormatted);
         }
-
+        
         $notifyCustomer = $form->get('notifyCustomer');
         $notifyCustomerValue = !empty($notifyCustomer) ? 1 : 0;
         
         $comment = $form->get('comment');
         $commentValue = $comment->value;
-
+        
         if ($form->getErrors()) {
             // The form is processed and populated but contains errors
             return $form->render();
         }
-
+        
         // Sanitize input
         $amountValue = $sanitizer->float($amountValue);
         $amountValueFormatted = CurrencyFormat::format($amountValue, $currency);
         $notifyCustomerValue = $sanitizer->bool($notifyCustomerValue);
         $commentValue = $sanitizer->textarea($commentValue);
-
+        
         $success = $this->_refund($token, $amountValue, $amountValueFormatted, $notifyCustomerValue, $commentValue);
         if ($success) {
             // Reset cache for this order and redirect to itself to display updated values
@@ -796,10 +800,10 @@ trait Orders {
             if ($ret) $redirectUrl .= '&ret=' . urlencode($ret);
             $session->redirect($redirectUrl);
         }
-
+        
         return $form->render();
     }
-
+    
     /**
      * Render and process the order status form.
      *
