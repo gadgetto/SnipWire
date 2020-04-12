@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added ProcessWire notice to flag SnipWire TEST mode
 
+## Changed
+- Updated exchangerates API to handle unsupported currencies
+
 ### Fixed
 - Fixed badges display when no refunds possible (in order details - refunds form)
 

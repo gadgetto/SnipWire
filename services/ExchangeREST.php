@@ -72,6 +72,7 @@ class ExchangeREST extends WireHttpExtended {
         $texts = array(
             'no_headers' => \ProcessWire\__('Missing request headers for Exchangerates API connection.'),
             'connection_failed' => \ProcessWire\__('Connection to Exchangerates API failed'),
+            'missing_currency_param' => \ProcessWire\__('The currency parameter is required to fetch exchange rates.'),
             'unsupported_currency' => \ProcessWire\__('The specified currency %s is currently not supported by Exchangerates API.'),
         );
         return array_key_exists($key, $texts) ? $texts[$key] : '';
@@ -93,16 +94,20 @@ class ExchangeREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
-        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixExchangeRates);
-
-        $query = '';
-        if (!empty($currency)) {
-            if (array_key_exists(strtolower($currency), $this->_supportedCurrencies)) {
-                $query = '?base=' . strtoupper($currency);
-            } else {
-                $this->error(sprintf(self::getMessagesText('unsupported_currency'), $currency));
-            }
+        if (empty($currency)) {
+            $this->error(self::getMessagesText('missing_currency_param'));
+            return false;
         }
+        
+        $query = '';
+        if (array_key_exists(strtolower($currency), $this->_supportedCurrencies)) {
+            $query = '?base=' . strtoupper($currency);
+        } else {
+            $this->error(sprintf(self::getMessagesText('unsupported_currency'), $currency));
+            return false;
+        }
+        
+        if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, self::cacheNamePrefixExchangeRates);
 
         // Segmented orders cache (each query is cached self-contained)
         $cacheName = self::cacheNamePrefixExchangeRates . '.' . md5($query);

@@ -43,10 +43,8 @@ return array(
     'thb' => __('Thai Baht'),
     'try' => __('Turkish Lira'),
     'zar' => __('South African Rand'),
-
-    /*
-        
-    // currently not supported by exchangeratesapi
+    
+    // supported by Snipcart (NOT exchangeratesapi)
     
     'aed' => __('UAE Dirham'),
     'afn' => __('Afghan Afghani'),
@@ -171,5 +169,4 @@ return array(
     'yer' => __('Yemeni Rial'),
     'zmk' => __('Zambian Kwacha'),
     'zwl' => __('Zimbabwean Dollar'),
-    */
 );
