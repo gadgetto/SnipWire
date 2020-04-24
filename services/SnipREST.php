@@ -18,8 +18,6 @@ namespace SnipWire\Services;
  *
  */
 
-require_once __DIR__ . '/WireHttpExtended.php';
-
 use ProcessWire\WireCache;
 
 class SnipREST extends WireHttpExtended {

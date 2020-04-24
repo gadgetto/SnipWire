@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Changed
 - Updated exchangerates API to handle unsupported currencies
+- All modules and class files are now using ProcessWire's classLoader
 
 ### Fixed
 - Fixed badges display when no refunds possible (in order details - refunds form)

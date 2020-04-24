@@ -14,16 +14,9 @@ namespace ProcessWire;
  */
 
 require_once dirname(__DIR__) . '/helpers/Functions.php';
-require_once dirname(__DIR__) . '/helpers/CurrencyFormat.php';
-require_once dirname(__DIR__) . '/helpers/Countries.php';
-require_once dirname(__DIR__) . '/installer/ExtendedInstaller.php';
-require_once __DIR__ . '/sections/Dashboard.php';
-require_once __DIR__ . '/sections/Orders.php';
-require_once __DIR__ . '/sections/Subscriptions.php';
-require_once __DIR__ . '/sections/AbandonedCarts.php';
-require_once __DIR__ . '/sections/Customers.php';
-require_once __DIR__ . '/sections/Products.php';
-require_once __DIR__ . '/sections/Discounts.php';
+wire('classLoader')->addNamespace('SnipWire\Helpers', dirname(__DIR__) . '/helpers');
+wire('classLoader')->addNamespace('SnipWire\Installer', dirname(__DIR__) . '/installer');
+wire('classLoader')->addNamespace('SnipWire\ProcessSnipWire\Sections', __DIR__ . '/sections');
 
 use SnipWire\Installer\ExtendedInstaller;
 use SnipWire\Helpers\CurrencyFormat;
@@ -177,7 +170,7 @@ class ProcessSnipWire extends Process implements Module {
     public $discountsTriggers = array();
 
     /**
-     * Initalize module config variables (properties)
+     * Initialize module config variables (properties)
      *
      */
     public function __construct() {

@@ -14,11 +14,8 @@ namespace ProcessWire;
  */
 
 require_once __DIR__ . '/helpers/Functions.php';
-require_once __DIR__ . '/helpers/CurrencyFormat.php';
-require_once __DIR__ . '/helpers/Taxes.php';
-require_once __DIR__ . '/services/SnipREST.php';
-require_once __DIR__ . '/services/ExchangeREST.php';
-require_once __DIR__ . '/services/Webhooks.php';
+wire('classLoader')->addNamespace('SnipWire\Helpers', __DIR__ . '/helpers');
+wire('classLoader')->addNamespace('SnipWire\Services', __DIR__ . '/services');
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;
@@ -93,7 +90,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * (Called after module config is populated)
      * 
      */
-    public function init() {
+     public function init() {
         /** @var SnipREST $sniprest Custom ProcessWire API variable */
         $this->wire('sniprest', new SnipREST());
         /** @var ExchangeREST $exchangerest Custom ProcessWire API variable */

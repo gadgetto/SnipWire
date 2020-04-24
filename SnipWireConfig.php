@@ -14,8 +14,7 @@ namespace ProcessWire;
  */
 
 require_once __DIR__ . '/helpers/Functions.php';
-require_once __DIR__ . '/helpers/CurrencyFormat.php';
-require_once __DIR__ . '/helpers/Taxes.php';
+wire('classLoader')->addNamespace('SnipWire\Helpers', __DIR__ . '/helpers');
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;

@@ -17,8 +17,7 @@ namespace SnipWire\Services;
  *
  */
 
-require_once dirname(__DIR__) . '/helpers/CurrencyFormat.php';
-require_once __DIR__ . '/WireHttpExtended.php';
+\ProcessWire\wire('classLoader')->addNamespace('SnipWire\Helpers', dirname(__DIR__) . '/helpers');
 
 use SnipWire\Helpers\CurrencyFormat;
 use ProcessWire\WireCache;

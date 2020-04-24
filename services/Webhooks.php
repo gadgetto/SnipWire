@@ -39,8 +39,7 @@ namespace SnipWire\Services;
  *
  */
 
-require_once dirname(__DIR__) . '/helpers/CurrencyFormat.php';
-require_once dirname(__DIR__) . '/helpers/Taxes.php';
+\ProcessWire\wire('classLoader')->addNamespace('SnipWire\Helpers', dirname(__DIR__) . '/helpers');
 
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;
