@@ -7,7 +7,7 @@
 		"uuidString": "7AB70542-347E-4802-AC73-57D522AE8947"
 		}
 	],
-"creatorBuild": "32001",
+"creatorBuild": "32137",
 "files": {
 	"/.github/ISSUE_TEMPLATE/bug_report.md": {
 		"cB": 0,
@@ -18,7 +18,7 @@
 		"eSQ": 1,
 		"ft": 4096,
 		"hM": 0,
-		"oA": 0,
+		"oA": 1,
 		"oAP": "/.github/ISSUE_TEMPLATE/bug_report.html",
 		"oF": 0,
 		"oFM": 0,
@@ -37,7 +37,7 @@
 		"eSQ": 1,
 		"ft": 4096,
 		"hM": 0,
-		"oA": 0,
+		"oA": 1,
 		"oAP": "/.github/ISSUE_TEMPLATE/feature_request.html",
 		"oF": 0,
 		"oFM": 0,
@@ -193,14 +193,14 @@
 		"aP": 1,
 		"bl": 0,
 		"dP": 10,
-		"dS": 0,
+		"ec": 1,
 		"ft": 4,
 		"ma": 0,
 		"oA": 0,
 		"oAP": "/assets/styles/PerformanceChart.css",
 		"oF": 0,
 		"oS": 3,
-		"uL": 1
+		"sct": 0
 		},
 	"/assets/styles/SnipWireConfig.css": {
 		"aP": 1,
@@ -216,14 +216,14 @@
 		"aP": 1,
 		"bl": 0,
 		"dP": 10,
-		"dS": 0,
+		"ec": 1,
 		"ft": 4,
 		"ma": 0,
 		"oA": 0,
 		"oAP": "/assets/styles/SnipWireConfig.css",
 		"oF": 0,
 		"oS": 3,
-		"uL": 1
+		"sct": 0
 		},
 	"/CHANGELOG.md": {
 		"cB": 0,
@@ -236,7 +236,7 @@
 		"hM": 0,
 		"oA": 1,
 		"oAP": "/CHANGELOG.html",
-		"oF": 1,
+		"oF": 0,
 		"oFM": 0,
 		"oS": 0,
 		"pHT": 0,
@@ -441,14 +441,14 @@
 		"aP": 1,
 		"bl": 0,
 		"dP": 10,
-		"dS": 0,
+		"ec": 1,
 		"ft": 4,
 		"ma": 0,
 		"oA": 0,
 		"oAP": "/ProcessSnipWire/ProcessSnipWire.css",
 		"oF": 0,
 		"oS": 3,
-		"uL": 1
+		"sct": 0
 		},
 	"/ProcessSnipWire/sections/AbandonedCarts.php": {
 		"cB": 0,
@@ -517,7 +517,7 @@
 		"hM": 0,
 		"oA": 1,
 		"oAP": "/README.html",
-		"oF": 1,
+		"oF": 0,
 		"oFM": 0,
 		"oS": 0,
 		"pHT": 0,
@@ -840,7 +840,7 @@
 		"eSQ": 1,
 		"ft": 4096,
 		"hM": 0,
-		"oA": 0,
+		"oA": 1,
 		"oAP": "/vendor/jquery.repeater.js/LICENSE.html",
 		"oF": 0,
 		"oFM": 0,
@@ -2286,7 +2286,7 @@
 		"eSQ": 1,
 		"ft": 4096,
 		"hM": 0,
-		"oA": 0,
+		"oA": 1,
 		"oAP": "/vendor/moment.js/README.html",
 		"oF": 0,
 		"oFM": 0,
@@ -4267,7 +4267,7 @@
 		"strictUnits": 0
 		},
 	"languageDefaultsMARKDOWN": {
-		"autoOutputAction": 0,
+		"autoOutputAction": 1,
 		"autoOutputPathFilenamePattern": "*.html",
 		"autoOutputPathRelativePath": "",
 		"autoOutputPathReplace1": "",
@@ -4326,13 +4326,13 @@
 		"autoOutputPathReplace1": "sass",
 		"autoOutputPathReplace2": "css",
 		"autoOutputPathStyle": 0,
+		"compilerType": 0,
 		"createSourceMap": 0,
-		"debugStyle": 0,
 		"decimalPrecision": 10,
+		"emitCharset": 1,
 		"outputStyle": 3,
 		"shouldRunAutoprefixer": 1,
-		"shouldRunBless": 0,
-		"useLibsass": 1
+		"shouldRunBless": 0
 		},
 	"languageDefaultsSLIM": {
 		"autoOutputAction": 0,
