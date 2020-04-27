@@ -13,7 +13,6 @@ namespace ProcessWire;
  *
  */
 
-require_once __DIR__ . '/helpers/Functions.php';
 wire('classLoader')->addNamespace('SnipWire\Helpers', __DIR__ . '/helpers');
 
 use SnipWire\Helpers\CurrencyFormat;

@@ -13,6 +13,7 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  */
 
+use SnipWire\Helpers\Functions;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
@@ -769,7 +770,7 @@ trait Orders {
         $amountValue = $amount->value;
         if (!$amountValue) {
             $amount->error($this->_('Please enter an amount'));
-        } elseif ($amountValue && !\SnipWire\Helpers\checkPattern($amountValue, $amount->pattern)) {
+        } elseif ($amountValue && !Functions::checkPattern($amountValue, $amount->pattern)) {
             $amount->error($this->_('Please enter a valid number'));
         } elseif ($amountValue > $maxAmount) {
             $amount->error($this->_('Maximum amount is') . ' ' . $maxAmountFormatted);

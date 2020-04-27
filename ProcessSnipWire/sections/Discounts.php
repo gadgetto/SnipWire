@@ -13,6 +13,7 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  */
 
+use SnipWire\Helpers\Functions;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
@@ -1138,13 +1139,13 @@ trait Discounts {
 
         $amount = $form->get('amount');
         $amountValue = $amount->value;
-        if ($amountValue && !\SnipWire\Helpers\checkPattern($amountValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($amountValue && !Functions::checkPattern($amountValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $amount->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 19.99'));
         }
 
         $rate = $form->get('rate');
         $rateValue = $rate->value;
-        if ($rateValue && !\SnipWire\Helpers\checkPattern($rateValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($rateValue && !Functions::checkPattern($rateValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $rate->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 2.5'));
         }
 
@@ -1156,7 +1157,7 @@ trait Discounts {
 
         $shippingCost = $form->get('shippingCost');
         $shippingCostValue = $shippingCost->value;
-        if ($shippingCostValue && !\SnipWire\Helpers\checkPattern($shippingCostValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($shippingCostValue && !Functions::checkPattern($shippingCostValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $shippingCost->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 4.5'));
         }
 
@@ -1213,13 +1214,13 @@ trait Discounts {
         
         $totalToReach = $form->get('totalToReach');
         $totalToReachValue = $totalToReach->value;
-        if ($totalToReachValue && !\SnipWire\Helpers\checkPattern($totalToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($totalToReachValue && !Functions::checkPattern($totalToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $totalToReach->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 19.99'));
         }
 
         $maxAmountToReach = $form->get('maxAmountToReach');
         $maxAmountToReachValue = $maxAmountToReach->value;
-        if ($maxAmountToReachValue && !\SnipWire\Helpers\checkPattern($maxAmountToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
+        if ($maxAmountToReachValue && !Functions::checkPattern($maxAmountToReachValue, '^[-+]?[0-9]*[.]?[0-9]+$')) {
             $maxAmountToReach->error($this->_('Wrong format! Please use decimal with a dot (.) as separator e.g. 199.99'));
         }
 

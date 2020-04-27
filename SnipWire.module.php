@@ -13,10 +13,10 @@ namespace ProcessWire;
  *
  */
 
-require_once __DIR__ . '/helpers/Functions.php';
 wire('classLoader')->addNamespace('SnipWire\Helpers', __DIR__ . '/helpers');
 wire('classLoader')->addNamespace('SnipWire\Services', __DIR__ . '/services');
 
+use SnipWire\Helpers\Functions;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Helpers\Taxes;
 use SnipWire\Services\ExchangeREST;
@@ -151,7 +151,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                     $key + 1
                 ));
             }
-            if (!empty($tax['rate']) && !\SnipWire\Helpers\checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
+            if (!empty($tax['rate']) && !Functions::checkPattern($tax['rate'], '^[-+]?[0-9]*[.]?[0-9]+$')) {
                 $taxesField->error(sprintf(
                     $this->_('Taxes repeater row [%s]: "Rate" value needs to be float'),
                     $key + 1
