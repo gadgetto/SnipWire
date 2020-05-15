@@ -30,7 +30,7 @@ namespace SnipWire\Services;
  * How to use the hookable event handler methods (sample):
  * ~~~~~
  * $webhooks->addHookAfter('handleOrderCompleted', function($event) {
- *     $payload = $event->return';
+ *     $payload = $event->return;
  *     //... your code here ...
  * }); 
  * ~~~~~
