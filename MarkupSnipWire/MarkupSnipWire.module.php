@@ -93,7 +93,7 @@ class MarkupSnipWire extends WireData implements Module {
         $this->_initCurrency();
 
         // Get the "Custom Cart Fields" page (the corresponding template only allows one single page)
-        $this->customCartFieldsPage = $this->wire('pages')->findOne('name=custom-cart-fields, template=snipcart-cart, include=hidden');
+        $this->customCartFieldsPage = $this->wire('pages')->findOne('name=custom-cart-fields, template=snipcart-cart, include=all');
         
         // Get the "snipcart_cart_custom_fields" field content
         if ($this->customCartFieldsPage->hasField('snipcart_cart_custom_fields')) {

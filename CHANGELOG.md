@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Fixed badges display when no refunds possible (in order details - refunds form)
+- Fixed a page select problem with custom cart fields
 
 ## [0.8.6] - 2020-04-06
 ### Added
