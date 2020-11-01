@@ -4,11 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [0.8.7] - 2020-07-03
 ### Added
 - Added ProcessWire notice to flag SnipWire TEST mode
 
-## Changed
+### Changed
 - Updated exchangerates API to handle unsupported currencies
 - All modules and class files are now using ProcessWire's classLoader
 
