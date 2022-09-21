@@ -485,6 +485,15 @@ class MarkupSnipWire extends WireData implements Module {
         }
         $out .= ' data-item-shippable="' . $shippable . '"';
 
+        if ($product->hasField('snipcart_item_downloadable') && $product->hasField('snipcart_item_file_guid')) {
+            $downloadable = $product->snipcart_item_downloadable ? 'true' : 'false';
+        } else {
+            $downloadable = 'false';
+        }
+        if($downloadable && $guid = $product->snipcart_item_file_guid) {
+            $out .= ' data-item-file-guid="' . $guid . '"';
+        }
+
         // Get the "snipcart_item_custom_fields" field content
         if ($product->hasField('snipcart_item_custom_fields')) {
             $customFields = $product->snipcart_item_custom_fields;
