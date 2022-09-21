@@ -127,8 +127,12 @@ class MarkupSnipWire extends WireData implements Module {
 
         // GET, POST, session
         $currency = $input->$currencyParam ?? $session->get($currencyParam);
+        if($currency) {
         $currency = strtolower($currency);
         $currency = $sanitizer->option($currency, $currencies);
+        } else {
+            $currency = reset($currencies);
+        }
 
         // Not a valid currency given? Fallback to first currency from module config
         if (!$currency) $currency = reset($currencies);
