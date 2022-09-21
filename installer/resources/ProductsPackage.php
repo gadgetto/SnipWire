@@ -327,6 +327,26 @@ $resources = array(
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
         ),
+        'snipcart_item_downloadable' => array(
+            'name' => 'snipcart_item_downloadable',
+            'type' => 'FieldtypeCheckbox',
+            'label' => __('Downloadable'),
+            'label2' => __('Product is downloadable'),
+            'description' => __('Check, if this product should be flagged as downloadable.'),
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',
+        ),
+        'snipcart_item_file_guid' => array(
+            'name' => 'snipcart_item_file_guid',
+            'type' => 'Text',
+            'label' => __('File GUID for Download'),
+            'label2' => __('File GUID for Download'),
+            'description' => __('You can find the download GUID in your snipcart dashboard.'),
+            'required' => false,
+            'tags' => 'Snipcart',
+            '_addToTemplates' => 'snipcart-product',
+        ),
     ),
 
     'pages' => array(

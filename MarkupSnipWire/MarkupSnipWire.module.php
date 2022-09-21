@@ -127,8 +127,12 @@ class MarkupSnipWire extends WireData implements Module {
 
         // GET, POST, session
         $currency = $input->$currencyParam ?? $session->get($currencyParam);
+        if($currency) {
         $currency = strtolower($currency);
         $currency = $sanitizer->option($currency, $currencies);
+        } else {
+            $currency = reset($currencies);
+        }
 
         // Not a valid currency given? Fallback to first currency from module config
         if (!$currency) $currency = reset($currencies);
@@ -480,6 +484,15 @@ class MarkupSnipWire extends WireData implements Module {
             $shippable = 'true';
         }
         $out .= ' data-item-shippable="' . $shippable . '"';
+
+        if ($product->hasField('snipcart_item_downloadable') && $product->hasField('snipcart_item_file_guid')) {
+            $downloadable = $product->snipcart_item_downloadable ? 'true' : 'false';
+        } else {
+            $downloadable = 'false';
+        }
+        if($downloadable && $guid = $product->snipcart_item_file_guid) {
+            $out .= ' data-item-file-guid="' . $guid . '"';
+        }
 
         // Get the "snipcart_item_custom_fields" field content
         if ($product->hasField('snipcart_item_custom_fields')) {
