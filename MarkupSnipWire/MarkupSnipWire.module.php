@@ -127,6 +127,7 @@ class MarkupSnipWire extends WireData implements Module {
 
         // GET, POST, session
         $currency = $input->$currencyParam ?? $session->get($currencyParam);
+        $currency = $currency ?? '';
         $currency = strtolower($currency);
         $currency = $sanitizer->option($currency, $currencies);
 
