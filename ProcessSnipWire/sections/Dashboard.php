@@ -167,14 +167,14 @@ trait Dashboard {
         if (empty($packages) || !is_array($packages)) return false;
 
         // Initialize dashboard
-        $dashboard = array(
-            SnipREST::resPathDataPerformance => array(),
-            SnipREST::resPathDataOrdersSales => array(),
-            SnipREST::resPathDataOrdersCount => array(),
-            SnipREST::resPathCustomers => array(),
-            SnipREST::resPathProducts => array(),
-            SnipREST::resPathOrders => array(),
-        );
+        $dashboard = [
+            SnipREST::resPathDataPerformance => [],
+            SnipREST::resPathDataOrdersSales => [],
+            SnipREST::resPathDataOrdersCount => [],
+            SnipREST::resPathCustomers => [],
+            SnipREST::resPathProducts => [],
+            SnipREST::resPathOrders => [],
+        ];
 
         $ordersSales = 0.0;
         $ordersCount = 0;
@@ -234,29 +234,29 @@ trait Dashboard {
                 
                 $dashboard[SnipREST::resPathCustomers] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
-                    : array();
+                    : [];
                 
             } elseif (strpos($key, SnipREST::resPathProducts) !== false) {
                 
                 $dashboard[SnipREST::resPathProducts] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
-                    : array();
+                    : [];
                 
             } elseif (strpos($key, SnipREST::resPathOrders) !== false) {
                 
                 $dashboard[SnipREST::resPathOrders] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
-                    : array();
+                    : [];
             }
         }
 
         // Replace performance data with currency dependent values
         if ($ordersSales && $ordersCount) $averageOrdersValue = $ordersSales / $ordersCount;
-        $calculated = array(
+        $calculated = [
             'ordersSales' => $ordersSales,
             'ordersCount' => $ordersCount,
             'averageOrdersValue' => $averageOrdersValue,
-        );
+        ];
         $dashboard[SnipREST::resPathDataPerformance][WireHttpExtended::resultKeyContent] = array_merge(
             $dashboard[SnipREST::resPathDataPerformance][WireHttpExtended::resultKeyContent],
             $calculated
@@ -290,7 +290,7 @@ trait Dashboard {
             $end = date('Y-m-d');
         }
 
-        $pickerSettings = array(
+        $pickerSettings = [
             'form' => '#StorePerformanceFilterForm',
             'resetButton' => '#DateRangeReset',
             'fieldSelect' => '#periodSelect',
@@ -301,9 +301,9 @@ trait Dashboard {
             'endDate' => $end,
             'currency' => $currency,
             'dateFormat' => 'YYYY-MM-DD', // for moment.js
-        );
+        ];
 
-        $perioRangeLabels = array(
+        $perioRangeLabels = [
             'today' => $this->_('Today'),
             'yesterday' => $this->_('Yesterday'),
             'last7days' => $this->_('Last 7 Days'),
@@ -311,43 +311,43 @@ trait Dashboard {
             'thismonth' => $this->_('This Month'),
             'lastmonth' => $this->_('Last Month'),
             'custom' =>  $this->_('Custom range'),
-        );
+        ];
 
-        $pickerMessages = array(
+        $pickerMessages = [
             'fromAfterTo' => $this->_('Period from can\'t be after Period to'),
             'yearAfterNow' => $this->_('The chosen year lies in the future'),
-        );
+        ];
 
-        $periodRanges = array(
-            'today' => array(
+        $periodRanges = [
+            'today' => [
                 'start' => date('Y-m-d'),
                 'end' => date('Y-m-d'),
-            ),
-            'yesterday' => array(
+            ],
+            'yesterday' => [
                 'start' => date('Y-m-d', strtotime('-1 day')),
                 'end' => date('Y-m-d', strtotime('-1 day')),
-            ),
-            'last7days' => array(
+            ],
+            'last7days' => [
                 'start' => date('Y-m-d', strtotime('-6 day')),
                 'end' => date('Y-m-d'),
-            ),
-            'last30days' => array(
+            ],
+            'last30days' => [
                 'start' => date('Y-m-d', strtotime('-29 day')),
                 'end' => date('Y-m-d'),
-            ),
-            'thismonth' => array(
+            ],
+            'thismonth' => [
                 'start' => date('Y-m-d', strtotime('first day of this month')),
                 'end' => date('Y-m-d', strtotime('last day of this month')),
-            ),
-            'lastmonth' => array(
+            ],
+            'lastmonth' => [
                 'start' => date('Y-m-d', strtotime('first day of last month')),
                 'end' => date('Y-m-d', strtotime('last day of last month')),
-            ),
-            'custom' => array(
+            ],
+            'custom' => [
                 'start' => '',
                 'end' => '',
-            ),
-        );
+            ],
+        ];
 
         // Determine if this is one of the predefined ranges
         $knownRange = 'custom';
@@ -491,15 +491,15 @@ trait Dashboard {
                     \ProcessWire\wireIconMarkup('exclamation-triangle') .
             '</span>';
 
-            $values = array(
+            $values = [
                 'orders' => $errorIcon,
                 'sales' => $errorIcon, 
                 'average' => $errorIcon,
-                'customers' => array(
+                'customers' => [
                     'new' => $errorIcon,
                     'returning' => $errorIcon,
-                )
-            );
+                ]
+            ];
         } else {
             $errorMessage = $this->_('Missing value in Snipcart data');
             $errorIcon =
@@ -509,7 +509,7 @@ trait Dashboard {
                     \ProcessWire\wireIconMarkup('exclamation-triangle') .
             '</span>';
 
-            $values = array(
+            $values = [
                 'orders' => isset($content['ordersCount'])
                     ? $content['ordersCount']
                     : $errorIcon,
@@ -519,23 +519,23 @@ trait Dashboard {
                 'average' => isset($content['averageOrdersValue'])
                     ? CurrencyFormat::format($content['averageOrdersValue'], $currency)
                     : $errorIcon,
-                'customers' => array(
+                'customers' => [
                     'new' => isset($content['customers']['newCustomers'])
                         ? $content['customers']['newCustomers']
                         : $errorIcon,
                     'returning' => isset($content['customers']['returningCustomers'])
                         ? $content['customers']['returningCustomers']
                         : $errorIcon,
-                )
-            );
+                ]
+            ];
         }
 
-        $boxes = array(
+        $boxes = [
             'sales' => $this->_('Sales'),
             'orders' => $this->_('Orders'),
             'average' => $this->_('Average Order'),
             'customers' => $this->_('Customers'),
-        );
+        ];
 
         $out = '';
 
@@ -586,8 +586,8 @@ trait Dashboard {
         $salesDataContent = $salesData[WireHttpExtended::resultKeyContent];
         $salesDataHttpCode = $salesData[WireHttpExtended::resultKeyHttpCode];
         $salesDataError = $salesData[WireHttpExtended::resultKeyError];
-        $salesCategories = array();
-        $sales = array();
+        $salesCategories = [];
+        $sales = [];
 
         if ($salesDataError) {
             $this->error($this->_('Values for sales chart could not be fetched:') . ' ' . $salesDataError);
@@ -604,8 +604,8 @@ trait Dashboard {
         $ordersDataContent = $ordersData[WireHttpExtended::resultKeyContent];
         $ordersDataHttpCode = $ordersData[WireHttpExtended::resultKeyHttpCode];
         $ordersDataError = $ordersData[WireHttpExtended::resultKeyError];
-        $ordersCategories = array();
-        $orders = array();
+        $ordersCategories = [];
+        $orders = [];
  
         if ($ordersDataError) {
             $this->error($this->_('Values for orders chart could not be fetched:') . ' ' . $ordersDataError);
@@ -625,18 +625,18 @@ trait Dashboard {
         } elseif ($ordersCategories) {
             $categories = $ordersCategories;
         } else {
-            $categories = array();
+            $categories = [];
         }
         
         // Hand over chartData to JS
-        $config->js('chartData', array(
+        $config->js('chartData', [
             'categories' => $categories,
             'sales' => $sales,
             'orders' => $orders,
             'salesLabel' => $this->_('Sales'),
             'ordersLabel' => $this->_('Orders'),
             'noDataText' => $this->_('No Chart data available'),
-        ));
+        ]);
 
         $out =
         '<div id="PerformanceChart"' .
@@ -664,11 +664,11 @@ trait Dashboard {
             $table->id = 'snipwire-top-customers-table';
             $table->setSortable(false);
             $table->setResizable(false);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Name'),
                 $this->_('# Orders'),
                 $this->_('Total Spent'),
-            ));
+            ]);
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
@@ -676,11 +676,11 @@ trait Dashboard {
                     data-panel-width="85%">' .
                         $item['billingAddress']['fullName'] .
                 '</a>';
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     $item['statistics']['ordersCount'],
                     CurrencyFormat::format($item['statistics']['ordersAmount'], 'usd'), // @todo: handle currency!
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -721,13 +721,13 @@ trait Dashboard {
             $table->id = 'snipwire-top-products-table';
             $table->setSortable(false);
             $table->setResizable(false);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Name'),
                 $this->_('Price'),
                 $this->_('# Sales'),
                 $this->_('Sales'),
                 '&nbsp;',
-            ));
+            ]);
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
@@ -763,13 +763,13 @@ trait Dashboard {
                     '</span>';
                 }
 
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     CurrencyFormat::format($item['price'], $currency),
                     $item['statistics']['numberOfSales'],
                     CurrencyFormat::format($item['statistics']['totalSales'], $currency), // @todo: handle multi currency calculation!
                     $editLink,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -808,7 +808,7 @@ trait Dashboard {
             $table->id = 'snipwire-recent-orders-table';
             $table->setSortable(false);
             $table->setResizable(false);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
                 $this->_('Placed by'),
@@ -816,7 +816,7 @@ trait Dashboard {
                 $this->_('Payment status'),
                 $this->_('Payment method'),
                 $this->_('Total'),
-            ));
+            ]);
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
@@ -834,7 +834,7 @@ trait Dashboard {
                 $completionDate .= \ProcessWire\wireDate('relative', $item['completionDate']);
                 $completionDate .= '</span>';
 
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     $completionDate,
                     $item['placedBy'],
@@ -842,7 +842,7 @@ trait Dashboard {
                     $this->getPaymentStatus($item['paymentStatus']),
                     $this->getPaymentMethod($item['paymentMethod']),
                     $total,
-                ));
+                ]);
             }
             $out = $table->render();            
         } else {

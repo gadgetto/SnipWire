@@ -41,7 +41,7 @@ class ExtendedInstaller extends Wire {
     protected $resourcesFile = '';
     
     /** @var array $resources Installation resources */
-    protected $resources = array();
+    protected $resources = [];
     
     /**
      * Constructor for ExtendedInstaller class.
@@ -378,14 +378,14 @@ class ExtendedInstaller extends Wire {
 
         $t = $templates->get($item['name']);
         if ($t) {
-            $pt = array();
+            $pt = [];
             if (!empty($item['_allowedParentTemplates'])) {
                 foreach (explode(',', $item['_allowedParentTemplates']) as $ptn) {
                     $pt[] += $templates->get($ptn)->id; // needs to be added as array of template IDs
                 }
                 $t->parentTemplates = $pt;
             }
-            $ct = array();
+            $ct = [];
             if (!empty($item['_allowedChildTemplates'])) {
                 foreach (explode(',', $item['_allowedChildTemplates']) as $ctn) {
                     $ct[] += $templates->get($ctn)->id; // needs to be added as array of template IDs
@@ -601,7 +601,7 @@ class ExtendedInstaller extends Wire {
         // Page "parent" key may have "string tags"
         $parent = \ProcessWire\wirePopulateStringTags(
             $item['parent'],
-            array('snipwirePagePath' => $this->snipwirePagePath)
+            ['snipwirePagePath' => $this->snipwirePagePath]
         );
 
         $t = $templates->get($item['template']);

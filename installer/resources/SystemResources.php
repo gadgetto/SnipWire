@@ -25,28 +25,28 @@ $cartCustomVal  = 'data-cart-custom1-name="By checking this box, I have read and
 $cartCustomVal .= 'data-cart-custom1-options="true|false"' . PHP_EOL;
 $cartCustomVal .= 'data-cart-custom1-required="true"';
 
-$resources = array(
-    'templates' => array(
-        'snipcart-cart' => array(
+$resources = [
+    'templates' => [
+        'snipcart-cart' => [
             'name' => 'snipcart-cart',
             'label' => 'Snipcart Cart (System)',
             'icon' => 'cog',
             'noChildren' => 1,
             'noParents' => 1,
             'tags' => 'Snipcart',
-        ),
-    ),
-    'fields' => array(
-        'title' => array(
+        ],
+    ],
+    'fields' => [
+        'title' => [
             'name' => 'title',
-            '_templateFieldOptions' => array(
-                'snipcart-cart' => array(
+            '_templateFieldOptions' => [
+                'snipcart-cart' => [
                     'collapsed' => 4, //Inputfield::collapsedHidden
-                ),
-            ),
+                ],
+            ],
             '_configureOnly' => true,
-        ),
-        'snipcart_cart_custom_fields' => array(
+        ],
+        'snipcart_cart_custom_fields' => [
             'name' => 'snipcart_cart_custom_fields',
             'type' => 'FieldtypeTextarea',
             'label' => __('Custom Cart Fields Setup'),
@@ -56,9 +56,9 @@ $resources = array(
             'rows' => 12,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-cart',
-        ),
+        ],
         // This field will be preinstalled only and needs to be added manually to the desired product template(s)
-        'snipcart_item_custom_fields' => array(
+        'snipcart_item_custom_fields' => [
             'name' => 'snipcart_item_custom_fields',
             'type' => 'FieldtypeTextarea',
             'label' => __('Custom Product Fields Setup'),
@@ -68,19 +68,19 @@ $resources = array(
             'rows' => 12,
             'collapsed' => 1, // Inputfield::collapsedYes
             'tags' => 'Snipcart',
-        ),
-    ),            
-    'pages' => array(
-        'custom-cart-fields' => array(
+        ],
+    ],            
+    'pages' => [
+        'custom-cart-fields' => [
             'name' => 'custom-cart-fields',
             'title' => 'Custom Cart Fields',
             'template' => 'snipcart-cart',
             'parent' => '{snipwirePagePath}', // needs to be page path (in this case we use a "string tag" which will be resolved by installer)
             'status' => 1024, // Page::statusHidden
-            'fields' => array(
+            'fields' => [
                 'snipcart_cart_custom_fields' => $cartCustomVal,
-            ),
+            ],
             '_uninstall' => 'delete',
-        ),
-    ),
-);
+        ],
+    ],
+];

@@ -91,11 +91,11 @@ class SnipREST extends WireHttpExtended {
         
         // Set headers required by Snipcart
         // -> Authorization: Basic <credentials>, where credentials is the base64 encoding of the secret API key and empty(!) password joined by a colon
-        $this->setHeaders(array(
+        $this->setHeaders([
             'cache-control' => 'no-cache',
             'Authorization' => 'Basic ' . base64_encode($snipcartAPIKey . ':'),
             'Accept' => 'application/json',
-        ));
+        ]);
     }
     
     /**
@@ -105,7 +105,7 @@ class SnipREST extends WireHttpExtended {
      *
      */
     public static function getMessagesText($key) {
-        $texts = array(
+        $texts = [
             'no_headers' => \ProcessWire\__('Missing request headers for Snipcart REST connection'),
             'connection_failed' => \ProcessWire\__('Connection to Snipcart failed'),
             'cache_refreshed' => \ProcessWire\__('Snipcart cache for this section refreshed'),
@@ -119,7 +119,7 @@ class SnipREST extends WireHttpExtended {
             'no_product_url' => \ProcessWire\__('No product URL provided'),
             'no_userdefined_id' => \ProcessWire\__('No userdefined ID provided'),
             'no_discount_id' => \ProcessWire\__('No discount ID provided'),
-        );
+        ];
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
     
@@ -197,20 +197,20 @@ class SnipREST extends WireHttpExtended {
         
         // ---- Part of performance boxes data ----
         
-        $selector = array(
+        $selector = [
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
-        );
+        ];
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataPerformance . $query);
         
         // ---- Part of performance boxes + performance chart data ----
         
-        $selector = array(
+        $selector = [
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
             'currency' => $currency,
-        );
+        ];
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathDataOrdersSales . $query);
@@ -218,35 +218,35 @@ class SnipREST extends WireHttpExtended {
         
         // ---- Top 10 customers ----
         
-        $selector = array(
+        $selector = [
             'limit' => 10,
             'from' => $start,
             'to' => $end,
-        );
+        ];
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathCustomers . $query);
         
         // ---- Top 10 products ----
         
-        $selector = array(
+        $selector = [
             'limit' => 10,
             'archived' => 'false',
             'excludeZeroSales' => 'true',
             'orderBy' => 'SalesValue',
             'from' => $start,
             'to' => $end,
-        );
+        ];
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathProducts . $query);
         
         // ---- Latest 10 orders ----
         
-        $selector = array(
+        $selector = [
             'limit' => 10,
             'from' => $start,
             'to' => $end,
             'format' => 'Excerpt',
-        );
+        ];
         $query = !empty($selector) ? '?' . http_build_query($selector) : '';
         $this->addMultiCURLRequest(self::apiEndpoint . self::resPathOrders . $query);
         
@@ -268,39 +268,39 @@ class SnipREST extends WireHttpExtended {
             return false;
         }
         
-        $data = array();
+        $data = [];
         
         // ---- Part of performance boxes data ----
         
-        $selector = array(
+        $selector = [
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
-        );
+        ];
         $data[] = $this->getPerformance($selector);
         
         // ---- Part of performance boxes + performance chart data ----
         
-        $selector = array(
+        $selector = [
             'from' => $start ? strtotime($start) : '', // UNIX timestamp required
             'to' => $end ? strtotime($end) : '', // UNIX timestamp required
             'currency' => $currency,
-        );
+        ];
         
         $data[] = $this->getSalesCount($selector);
         $data[] = $this->getOrdersCount($selector);
         
         // ---- Top 10 customers ----
         
-        $selector = array(
+        $selector = [
             'limit' => 10,
             'from' => $start,
             'to' => $end,
-        );
+        ];
         $data[] = $this->getCustomers($selector);
         
         // ---- Top 10 products ----
         
-        $selector = array(
+        $selector = [
             'offset' => 0,
             'limit' => 10,
             'archived' => 'false',
@@ -308,17 +308,17 @@ class SnipREST extends WireHttpExtended {
             'orderBy' => 'SalesValue',
             'from' => $start,
             'to' => $end,
-        );
+        ];
         $data[] = $this->getProducts($selector);
         
         // ---- Latest 10 orders ----
         
-        $selector = array(
+        $selector = [
             'limit' => 10,
             'from' => $start,
             'to' => $end,
             'format' => 'Excerpt',
-        );
+        ];
         $data[] = $this->getOrders($selector);
         
         return $data;
@@ -345,17 +345,17 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getOrders($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getOrders($key = '', $options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         
-        $allowedOptions = array('offset', 'limit', 'status', 'paymentStatus', 'invoiceNumber', 'placedBy', 'from', 'to', 'format');
-        $defaultOptions = array(
+        $allowedOptions = ['offset', 'limit', 'status', 'paymentStatus', 'invoiceNumber', 'placedBy', 'from', 'to', 'format'];
+        $defaultOptions = [
             'offset' => 0,
             'limit' => 20,
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -377,11 +377,11 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         
         $dataKey = self::resPathOrders;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -401,7 +401,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function getOrdersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getOrdersItems($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getOrders('items', $options, $expires, $forceRefresh);
     }
     
@@ -437,11 +437,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathOrders . '/' . $token;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -459,7 +459,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getOrderNotifications($token, $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getOrderNotifications($token, $options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -471,14 +471,14 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathOrdersNotifications,
-            array('token' => $token)
+            ['token' => $token]
         );
         
-        $allowedOptions = array('offset', 'limit');
-        $defaultOptions = array(
+        $allowedOptions = ['offset', 'limit'];
+        $defaultOptions = [
             'offset' => 0,
             'limit' => 20,
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -500,13 +500,13 @@ class SnipREST extends WireHttpExtended {
         
         $dataKey = \ProcessWire\wirePopulateStringTags(
             self::resPathOrdersNotifications,
-            array('token' => $token)
+            ['token' => $token]
         );
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -523,7 +523,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function postOrderNotification($token, $options = array()) {
+    public function postOrderNotification($token, $options = []) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -535,11 +535,11 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $allowedOptions = array('type', 'deliveryMethod', 'message');
-        $defaultOptions = array(
+        $allowedOptions = ['type', 'deliveryMethod', 'message'];
+        $defaultOptions = [
             'type' => 'TrackingNumber',
             'deliveryMethod' => 'Email',
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -549,7 +549,7 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathOrdersNotifications,
-            array('token' => $token)
+            ['token' => $token]
         );
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
@@ -557,13 +557,13 @@ class SnipREST extends WireHttpExtended {
         
         $dataKey = \ProcessWire\wirePopulateStringTags(
             self::resPathOrdersNotifications,
-            array('token' => $token)
+            ['token' => $token]
         );
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -580,7 +580,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function postOrderRefund($token, $options = array()) {
+    public function postOrderRefund($token, $options = []) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -592,8 +592,8 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $allowedOptions = array('amount', 'comment', 'notifyCustomer');
-        $defaultOptions = array();
+        $allowedOptions = ['amount', 'comment', 'notifyCustomer'];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -603,7 +603,7 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathOrdersRefunds,
-            array('token' => $token)
+            ['token' => $token]
         );
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
@@ -611,13 +611,13 @@ class SnipREST extends WireHttpExtended {
         
         $dataKey = \ProcessWire\wirePopulateStringTags(
             self::resPathOrdersRefunds,
-            array('token' => $token)
+            ['token' => $token]
         );
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -635,7 +635,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function putOrderStatus($token, $options = array()) {
+    public function putOrderStatus($token, $options = []) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -647,8 +647,8 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $allowedOptions = array('status', 'paymentStatus', 'trackingNumber', 'trackingUrl');
-        $defaultOptions = array();
+        $allowedOptions = ['status', 'paymentStatus', 'trackingNumber', 'trackingUrl'];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -662,11 +662,11 @@ class SnipREST extends WireHttpExtended {
         $response = $this->send($url, $requestbody, 'PUT');
         
         $dataKey = $token;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -689,7 +689,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getSubscriptions($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getSubscriptions($key = '', $options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -699,11 +699,11 @@ class SnipREST extends WireHttpExtended {
         // @todo: add this to other endpoint queries too!
         if (isset($options['limit']) && $options['limit'] === 0) $options['limit'] = 100;
         
-        $allowedOptions = array('offset', 'limit', 'status', 'userDefinedPlanName', 'userDefinedCustomerNameOrEmail', 'from', 'to');
-        $defaultOptions = array(
+        $allowedOptions = ['offset', 'limit', 'status', 'userDefinedPlanName', 'userDefinedCustomerNameOrEmail', 'from', 'to'];
+        $defaultOptions = [
             'offset' => 0,
             'limit' => 20,
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -725,11 +725,11 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         
         $dataKey = self::resPathSubscriptions;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -749,7 +749,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function getSubscriptionsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getSubscriptionsItems($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getSubscriptions('items', $options, $expires, $forceRefresh);
     }
     
@@ -785,11 +785,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathSubscriptions . '/' . $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -816,7 +816,7 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathSubscriptionsInvoices,
-            array('id' => $id)
+            ['id' => $id]
         );
         
         // Segmented cache (each query is cached self-contained)
@@ -831,13 +831,13 @@ class SnipREST extends WireHttpExtended {
         
         $dataKey = \ProcessWire\wirePopulateStringTags(
             self::resPathSubscriptionsInvoices,
-            array('id' => $id)
+            ['id' => $id]
         );
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -864,22 +864,22 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathSubscriptionsPause,
-            array('id' => $id)
+            ['id' => $id]
         );
         
         // Snipcart doesn't expect a body here, but we provide 
         // a placeholder request body, as WireHttp requires one!
-        $options = array('id' => $id);
+        $options = ['id' => $id];
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
         
         $dataKey = $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -906,22 +906,22 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathSubscriptionsResume,
-            array('id' => $id)
+            ['id' => $id]
         );
         
         // Snipcart doesn't expect a body here, but we provide 
         // a placeholder request body, as WireHttp requires one!
-        $options = array('id' => $id);
+        $options = ['id' => $id];
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
         
         $dataKey = $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -948,18 +948,18 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathSubscriptionsDelete,
-            array('id' => $id)
+            ['id' => $id]
         );
         
-        $rawResponse = $this->send($url, array(), 'DELETE');
+        $rawResponse = $this->send($url, [], 'DELETE');
         $response = json_decode($rawResponse, true);
         
         $dataKey = $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -987,17 +987,17 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getAbandonedCarts($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getAbandonedCarts($key = '', $options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         
-        $allowedOptions = array('limit', 'continuationToken', 'timeRange', 'minimalValue', 'email');
-        $defaultOptions = array(
+        $allowedOptions = ['limit', 'continuationToken', 'timeRange', 'minimalValue', 'email'];
+        $defaultOptions = [
             'limit' => 50,
             'continuationToken' => null,
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1019,11 +1019,11 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
         
         $dataKey = self::resPathCartsAbandoned;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1051,7 +1051,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getAbandonedCartsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getAbandonedCartsItems($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getAbandonedCarts('items', $options, $expires, $forceRefresh);
     }
     
@@ -1087,11 +1087,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathCartsAbandoned . '/' . $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1108,7 +1108,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function postAbandonedCartNotification($id, $options = array()) {
+    public function postAbandonedCartNotification($id, $options = []) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -1120,11 +1120,11 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $allowedOptions = array('type', 'deliveryMethod', 'message');
-        $defaultOptions = array(
+        $allowedOptions = ['type', 'deliveryMethod', 'message'];
+        $defaultOptions = [
             'type' => 'Comment',
             'deliveryMethod' => 'Email',
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1134,18 +1134,18 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathCartsAbandonedNotifications,
-            array('id' => $id)
+            ['id' => $id]
         );
         $requestbody = \ProcessWire\wireEncodeJSON($options);
         
         $response = $this->post($url, $requestbody);
         
         $dataKey = $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1168,17 +1168,17 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getCustomers($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getCustomers($key = '', $options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         
-        $allowedOptions = array('offset', 'limit', 'status', 'email', 'name', 'from', 'to');
-        $defaultOptions = array(
+        $allowedOptions = ['offset', 'limit', 'status', 'email', 'name', 'from', 'to'];
+        $defaultOptions = [
             'offset' => 0,
             'limit' => 20,
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1200,11 +1200,11 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
 
         $dataKey = self::resPathCustomers;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1224,7 +1224,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function getCustomersItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getCustomersItems($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getCustomers('items', $options, $expires, $forceRefresh);
     }
     
@@ -1254,7 +1254,7 @@ class SnipREST extends WireHttpExtended {
         
         $url = \ProcessWire\wirePopulateStringTags(
             self::apiEndpoint . self::resPathCustomersOrders,
-            array('id' => $id)
+            ['id' => $id]
         );
         
         if ($forceRefresh) $this->wire('cache')->deleteFor(self::cacheNamespace, $cacheName);
@@ -1265,11 +1265,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathCustomersOrders;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1305,11 +1305,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathCustomers . '/' . $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1334,18 +1334,18 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getProducts($key = '', $options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getProducts($key = '', $options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         
-        $allowedOptions = array('offset', 'limit', 'userDefinedId', 'keywords', 'archived', 'excludeZeroSales', 'orderBy', 'from', 'to');
-        $defaultOptions = array(
+        $allowedOptions = ['offset', 'limit', 'userDefinedId', 'keywords', 'archived', 'excludeZeroSales', 'orderBy', 'from', 'to'];
+        $defaultOptions = [
             'offset' => 0,
             'limit' => 20,
             'orderBy' => 'SalesValue',
-        );
+        ];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1367,11 +1367,11 @@ class SnipREST extends WireHttpExtended {
         $response = ($key && isset($response[$key])) ? $response[$key] : $response;
 
         $dataKey = self::resPathProducts;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1393,7 +1393,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function getProductsItems($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getProductsItems($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         return $this->getProducts('items', $options, $expires, $forceRefresh);
     }
     
@@ -1429,11 +1429,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathProducts . '/' . $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1449,12 +1449,12 @@ class SnipREST extends WireHttpExtended {
             $this->error(self::getMessagesText('no_userdefined_id'));
             return false;
         }
-        $options = array(
+        $options = [
             'offset' => 0,
             'limit' => 1,
             'orderBy' => '',
             'userDefinedId' => $userDefinedId,
-        );
+        ];
         // Get a specific item
         $data = $this->getProductsItems($options, WireCache::expireNow); // Get uncached result
         
@@ -1486,9 +1486,9 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $options = array(
+        $options = [
             'fetchUrl' => $fetchUrl,
-        );
+        ];
         
         $url = self::apiEndpoint . self::resPathProducts;
         $requestbody = \ProcessWire\wireEncodeJSON($options);
@@ -1496,11 +1496,11 @@ class SnipREST extends WireHttpExtended {
         $response = json_decode($this->send($url, $requestbody, 'POST'), true);
         
         $dataKey = $fetchUrl;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1516,7 +1516,7 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      * 
      */
-    public function putProduct($id, $options = array()) {
+    public function putProduct($id, $options = []) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
@@ -1528,8 +1528,8 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $allowedOptions = array('inventoryManagementMethod', 'variants', 'stock', 'allowOutOfStockPurchases');
-        $defaultOptions = array();
+        $allowedOptions = ['inventoryManagementMethod', 'variants', 'stock', 'allowOutOfStockPurchases'];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1543,11 +1543,11 @@ class SnipREST extends WireHttpExtended {
         $response = json_decode($this->send($url, $requestbody, 'PUT'), true);
 
         $dataKey = $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1573,14 +1573,14 @@ class SnipREST extends WireHttpExtended {
         
         $url = self::apiEndpoint . self::resPathProducts . '/' . $id;
         
-        $response = json_decode($this->send($url, array(), 'DELETE'), true);
+        $response = json_decode($this->send($url, [], 'DELETE'), true);
         
         $dataKey = $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1614,11 +1614,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathDiscounts;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1654,11 +1654,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathDiscounts . '/' . $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1711,15 +1711,15 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for PUT request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $allowedOptions = array(
+        $allowedOptions = [
             'id', 'name', 'expires', 'maxNumberOfUsages', 'currency', 'combinable',
             'type', 'amount', 'rate', 'alternatePrice', 'shippingDescription', 'shippingCost',
             'shippingGuaranteedDaysToDelivery', 'productIds', 'maxDiscountsPerItem', 'categories',
             'numberOfItemsRequired', 'numberOfFreeItems', 'trigger', 'code', 'itemId', 'totalToReach',
             'maxAmountToReach', 'quantityInterval', 'quantityOfAProduct', 'maxQuantityOfAProduct',
             'onlyOnSameProducts', 'quantityOfProductIds', 'archived',
-        );
-        $defaultOptions = array();
+        ];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1733,11 +1733,11 @@ class SnipREST extends WireHttpExtended {
         $response = $this->send($url, $requestbody, 'PUT');
         
         $dataKey = $id;
-        $data[$dataKey] = array(
+        $data[$dataKey] = [
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1785,15 +1785,15 @@ class SnipREST extends WireHttpExtended {
         // Add necessary header for POST request
 		$this->setHeader('content-type', 'application/json; charset=utf-8');
         
-        $allowedOptions = array(
+        $allowedOptions = [
             'name', 'expires', 'maxNumberOfUsages', 'currency', 'combinable',
             'type', 'amount', 'rate', 'alternatePrice', 'shippingDescription', 'shippingCost',
             'shippingGuaranteedDaysToDelivery', 'productIds', 'maxDiscountsPerItem', 'categories',
             'numberOfItemsRequired', 'numberOfFreeItems', 'trigger', 'code', 'itemId', 'totalToReach',
             'maxAmountToReach', 'quantityInterval', 'quantityOfAProduct', 'maxQuantityOfAProduct',
             'onlyOnSameProducts', 'quantityOfProductIds', 'archived',
-        );
-        $defaultOptions = array();
+        ];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1806,11 +1806,11 @@ class SnipREST extends WireHttpExtended {
         
         $response = $this->send($url, $requestbody, 'POST');
         
-        $data = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1835,14 +1835,14 @@ class SnipREST extends WireHttpExtended {
         
         $url = self::apiEndpoint . self::resPathDiscounts . '/' . $id;
         
-        $response = json_decode($this->send($url, array(), 'DELETE'), true);
+        $response = json_decode($this->send($url, [], 'DELETE'), true);
         
         $dataKey = $id;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1859,14 +1859,14 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getPerformance($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getPerformance($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         
-        $allowedOptions = array('from', 'to');
-        $defaultOptions = array();
+        $allowedOptions = ['from', 'to'];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1887,11 +1887,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathDataPerformance;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1909,14 +1909,14 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getSalesCount($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getSalesCount($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         
-        $allowedOptions = array('from', 'to', 'currency');
-        $defaultOptions = array();
+        $allowedOptions = ['from', 'to', 'currency'];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1937,11 +1937,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathDataOrdersSales;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     
@@ -1959,14 +1959,14 @@ class SnipREST extends WireHttpExtended {
      * @return array $data
      *
      */
-    public function getOrdersCount($options = array(), $expires = self::cacheExpireDefault, $forceRefresh = false) {
+    public function getOrdersCount($options = [], $expires = self::cacheExpireDefault, $forceRefresh = false) {
         if (!$this->getHeaders()) {
             $this->error(self::getMessagesText('no_headers'));
             return false;
         }
         
-        $allowedOptions = array('from', 'to', 'currency');
-        $defaultOptions = array();
+        $allowedOptions = ['from', 'to', 'currency'];
+        $defaultOptions = [];
         $options = array_merge(
             $defaultOptions,
             array_intersect_key(
@@ -1987,11 +1987,11 @@ class SnipREST extends WireHttpExtended {
         });
         
         $dataKey = self::resPathDataOrdersCount;
-        $data[$dataKey] = array(
-            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : array(),
+        $data[$dataKey] = [
+            WireHttpExtended::resultKeyContent => ($response !== false) ? $response : [],
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
     

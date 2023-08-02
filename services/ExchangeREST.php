@@ -31,7 +31,7 @@ class ExchangeREST extends WireHttpExtended {
     const cacheNamePrefixExchangeRates = 'Exchangerates';
     
     /** @var array $_supportedCurrencies Currencies supported by Exchangerates API */
-    private $_supportedCurrencies = array();
+    private $_supportedCurrencies = [];
     
     /**
      * Construct/initialize
@@ -55,10 +55,10 @@ class ExchangeREST extends WireHttpExtended {
         */
         
         // Set headers required by Exchangerates API
-        $this->setHeaders(array(
+        $this->setHeaders([
             'cache-control' => 'no-cache',
             'Accept' => 'application/json',
-        ));
+        ]);
     }
 
     /**
@@ -68,12 +68,12 @@ class ExchangeREST extends WireHttpExtended {
      *
      */
     public static function getMessagesText($key) {
-        $texts = array(
+        $texts = [
             'no_headers' => \ProcessWire\__('Missing request headers for Exchangerates API connection.'),
             'connection_failed' => \ProcessWire\__('Connection to Exchangerates API failed'),
             'missing_currency_param' => \ProcessWire\__('The currency parameter is required to fetch exchange rates.'),
             'unsupported_currency' => \ProcessWire\__('The specified currency %s is currently not supported by Exchangerates API.'),
-        );
+        ];
         return array_key_exists($key, $texts) ? $texts[$key] : '';
     }
 
@@ -116,12 +116,12 @@ class ExchangeREST extends WireHttpExtended {
             return $this->getJSON(self::apiEndpoint . self::resPathLatest . $query);
         });
 
-        if ($response === false) $response = array();
-        $data[self::resPathLatest] = array(
+        if ($response === false) $response = [];
+        $data[self::resPathLatest] = [
             WireHttpExtended::resultKeyContent => $response,
             WireHttpExtended::resultKeyHttpCode => $this->getHttpCode(),
             WireHttpExtended::resultKeyError => $this->getError(),
-        );
+        ];
         return $data;
     }
 

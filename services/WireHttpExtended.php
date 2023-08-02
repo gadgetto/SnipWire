@@ -23,16 +23,16 @@ class WireHttpExtended extends WireHttp {
     const resultKeyError = 'error';
 
     /** @var array $_curlMultiOptions cURL options used for all sessions */
-    private $_curlMultiOptions = array();
+    private $_curlMultiOptions = [];
 
     /** @var array $_multiHandle The cURL multi handle */
     private $_multiHandle = null;
     
     /** @var array $_curlHandles The cURL handles */
-    private $_curlHandles = array();
+    private $_curlHandles = [];
     
     /** @var array $resultsMulti Holds results from all requests */
-    protected $resultsMulti = array();
+    protected $resultsMulti = [];
 
     /**
      * Constructor/initialize.
@@ -51,7 +51,7 @@ class WireHttpExtended extends WireHttp {
      * @param array $options cURL options (will set default options if param not set)
      *
      */
-    public function setCurlMultiOptions($options = array()) {
+    public function setCurlMultiOptions($options = []) {
         $this->_curlMultiOptions = $this->sanitizeOptions($options);
     }
 
@@ -76,12 +76,12 @@ class WireHttpExtended extends WireHttp {
      *
      */
     protected function sanitizeOptions($options) {
-        $allowedOptions = array('connect_timeout', 'timeout', 'useragent', 'proxy');
-        $defaultOptions = array(
+        $allowedOptions = ['connect_timeout', 'timeout', 'useragent', 'proxy'];
+        $defaultOptions = [
             'connect_timeout' => $this->getTimeout(), // WireHttp method
             'timeout' => $this->getTimeout(), // WireHttp method
             'useragent' => $this->getUserAgent(), // WireHttp method
-        );
+        ];
         if (!empty($options['connect_timeout'])) $options['connect_timeout'] = (float) $options['connect_timeout'];
         if (!empty($options['timeout'])) $options['timeout'] = (float) $options['timeout'];
 
@@ -106,7 +106,7 @@ class WireHttpExtended extends WireHttp {
      *  - `proxy` (string) The HTTP proxy to tunnel requests through.
      *
      */
-    public function addMultiCURLRequest($url, $method = 'GET', $customOptions = array()) {
+    public function addMultiCURLRequest($url, $method = 'GET', $customOptions = []) {
         if (!$url) return;
     
         $options = !empty($customOptions)
@@ -141,7 +141,7 @@ class WireHttpExtended extends WireHttp {
         curl_setopt($this->_curlHandles[$url], CURLOPT_HEADER, false);
         if (count($this->headers)) {
             // cURL needs headers as array of header lines!
-            $headerlines = array();
+            $headerlines = [];
             foreach ($this->headers as $key => $value) {
                 $headerlines[] = $key . ': ' . $value;
             }
@@ -174,15 +174,15 @@ class WireHttpExtended extends WireHttp {
 	 *
 	 */
 	public function getMultiJSON() {
-    	$decoded = array();
+    	$decoded = [];
     	if (empty($results = $this->getMulti())) return $decoded;
     	foreach ($results as $key => $result) {
             $decodedContent = json_decode($result[self::resultKeyContent], true); // assoc!
-    	    $decoded[$key] = array(
-    	        self::resultKeyContent => json_last_error() === JSON_ERROR_NONE ? $decodedContent : array(),
+    	    $decoded[$key] = [
+    	        self::resultKeyContent => json_last_error() === JSON_ERROR_NONE ? $decodedContent : [],
     	        self::resultKeyHttpCode => $result[self::resultKeyHttpCode],
     	        self::resultKeyError => $result[self::resultKeyError],
-            );
+            ];
     	}
 		return $decoded; 
 	}
@@ -195,18 +195,18 @@ class WireHttpExtended extends WireHttp {
      *
      * Sample result:
      *
-     *    array(
-     *        'https://app.domain.com/api/orders' => array(
+     *    [
+     *        'https://app.domain.com/api/orders' => [
      *            'content' => 'The response content...',
      *            'http_code' => 200,
      *            'error' => ''
-     *        ),
-     *        'https://app.domain.com/api/wrongurl' => array(
+     *        ],
+     *        ']https://app.domain.com/api/wrongurl' => [
      *            'content' => '',
      *            'http_code' => 404
      *            'error' => 'String containing the last error for the current session'
-     *        )
-     *    )
+     *        ]
+     *    ]
      *
      */
     public function sendMultiCURL() {
@@ -252,11 +252,11 @@ class WireHttpExtended extends WireHttp {
             $content = !curl_error($curl) ? curl_multi_getcontent($curl) : '';
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             $curlError = curl_error($curl);
-            $this->resultsMulti[$key] = array(
+            $this->resultsMulti[$key] = [
                 self::resultKeyContent => $content,
                 self::resultKeyHttpCode => $httpCode,
                 self::resultKeyError => $curlError,
-            );
+            ];
             
             curl_multi_remove_handle($this->_multiHandle, $curl);
             curl_close($curl);

@@ -69,7 +69,7 @@ class Webhooks extends WireData {
     const webhookModeTest = 'Test';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
-    protected $snipwireConfig = array();
+    protected $snipwireConfig = [];
 
     /** @var boolean Turn on/off debug mode for Webhooks class */
     private $debug = false;
@@ -78,7 +78,7 @@ class Webhooks extends WireData {
     protected $serverProtocol = '';
     
     /** @var array $webhookEventsIndex All available webhook events */
-    protected $webhookEventsIndex = array();
+    protected $webhookEventsIndex = [];
     
     /** @var string $event The current Snipcart event */
     protected $event = '';
@@ -97,7 +97,7 @@ class Webhooks extends WireData {
      *
      */
     public function __construct() {        
-        $this->webhookEventsIndex = array(
+        $this->webhookEventsIndex = [
             self::webhookOrderCompleted => 'handleOrderCompleted',
             self::webhookOrderStatusChanged => 'handleOrderStatusChanged',
             self::webhookOrderPaymentStatusChanged => 'handleOrderPaymentStatusChanged',
@@ -110,7 +110,7 @@ class Webhooks extends WireData {
             self::webhookShippingratesFetch => 'handleShippingratesFetch',
             self::webhookTaxesCalculate => 'handleTaxesCalculate',
             self::webhookCustomerUpdated => 'handleCustomerUpdated',
-        );
+        ];
 
         // Get SnipWire module config.
         // (Holds merged data from DB and default config. 
@@ -297,7 +297,7 @@ class Webhooks extends WireData {
                 $this->_('Webhooks request: invalid request data - unknown event')
             );
             
-        } elseif (!isset($payload['mode']) || !in_array($payload['mode'], array(self::webhookModeLive, self::webhookModeTest))) {
+        } elseif (!isset($payload['mode']) || !in_array($payload['mode'], [self::webhookModeLive, self::webhookModeTest])) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 $this->_('Webhooks request: invalid request data - wrong or missing mode')
@@ -578,16 +578,16 @@ class Webhooks extends WireData {
         $taxNamePrefix .= ' ';
 
         // Collect and group all tax names and total prices (before taxes) from items in payload
-        $itemTaxes = array();
+        $itemTaxes = [];
         foreach ($items as $item) {
             if (!$item['taxable']) continue;
             $taxName = $item['taxes'][0]; // we currently only support a single tax per product!
             if (!isset($itemTaxes[$taxName])) {
                 // add new array entry
-                $itemTaxes[$taxName] = array(
+                $itemTaxes[$taxName] = [
                     'sumPrices' => $item['totalPriceWithoutTaxes'],
                     'splitRatio' => 0, // is calculated later
-                );
+                ];
             } else {
                 // add price to existing sumPrices
                 $itemTaxes[$taxName]['sumPrices'] += $item['totalPriceWithoutTaxes'];
@@ -604,16 +604,16 @@ class Webhooks extends WireData {
         /*
         Results in $itemTaxes (sample) array:
         
-        array(
-            '20% VAT' => array(
+        [
+            '20% VAT' => [
                 "sumPrices' => 300
                 'splitRatio' => 0.67
-            )
-            '10% VAT' => array(
+            ]
+            '10% VAT' => [
                 'sumPrices' => 150
                 'splitRatio' => 0.33
-            )
-        )
+            ]
+        ]
         
         Sample splitRatio calculation: 300 / (300 + 150) = 0.67 = 67%
         */
@@ -622,21 +622,21 @@ class Webhooks extends WireData {
         // Prepare item & shipping taxes response
         //
 
-        $taxesResponse = array();
-        $taxConfigMax = array();
+        $taxesResponse = [];
+        $taxConfigMax = [];
         $maxRate = 0;
 
         foreach ($itemTaxes as $name => $values) {
             $taxConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeProducts, $name);
             if (!empty($taxConfig)) {
-                $taxesResponse[] = array(
+                $taxesResponse[] = [
                     'name' => $taxNamePrefix . $name,
                     'amount' => Taxes::calculateTax($values['sumPrices'], $taxConfig['rate'], $hasTaxesIncluded, $currencyPrecision),
                     'rate' => $taxConfig['rate'],
                     'numberForInvoice' => $taxConfig['numberForInvoice'],
                     'includedInPrice' => $hasTaxesIncluded,
                     //'appliesOnShipping' // not needed,
-                );
+                ];
 
                 // Get tax config with highest rate (for shipping tax calculation)
                 if ($shippingTaxesType == Taxes::shippingTaxesHighestRate) {
@@ -662,27 +662,27 @@ class Webhooks extends WireData {
                     case Taxes::shippingTaxesFixedRate :
                         $taxConfig = Taxes::getFirstTax(false, Taxes::taxesTypeShipping);
                         if (!empty($taxConfig)) {
-                            $taxesResponse[] = array(
+                            $taxesResponse[] = [
                                 'name' => $taxNamePrefix . $taxConfig['name'] . $shippingMethod,
                                 'amount' => Taxes::calculateTax($shippingFees, $taxConfig['rate'], $hasTaxesIncluded, $currencyPrecision),
                                 'rate' => $taxConfig['rate'],
                                 'numberForInvoice' => $taxConfig['numberForInvoice'],
                                 'includedInPrice' => $hasTaxesIncluded,
                                 //'appliesOnShipping' // not needed,
-                            );
+                            ];
                         }
                         break;
 
                     case Taxes::shippingTaxesHighestRate :
                         if (!empty($taxConfigMax)) {
-                            $taxesResponse[] = array(
+                            $taxesResponse[] = [
                                 'name' => $taxNamePrefix . $taxConfigMax['name'] . $shippingMethod,
                                 'amount' => Taxes::calculateTax($shippingFees, $taxConfigMax['rate'], $hasTaxesIncluded, $currencyPrecision),
                                 'rate' => $taxConfigMax['rate'],
                                 'numberForInvoice' => $taxConfigMax['numberForInvoice'],
                                 'includedInPrice' => $hasTaxesIncluded,
                                 //'appliesOnShipping' // not needed,
-                            );
+                            ];
                         }
                         break;
 
@@ -691,14 +691,14 @@ class Webhooks extends WireData {
                             $shippingFeesSplit = round(($shippingFees * $values['splitRatio']), 2);
                             $taxConfig = Taxes::getTaxesConfig(false, Taxes::taxesTypeProducts, $name);
                             if (!empty($taxConfig)) {
-                                $taxesResponse[] = array(
+                                $taxesResponse[] = [
                                     'name' => $taxNamePrefix . $taxConfig['name'] . $shippingMethod,
                                     'amount' => Taxes::calculateTax($shippingFeesSplit, $taxConfig['rate'], $hasTaxesIncluded, $currencyPrecision),
                                     'rate' => $taxConfig['rate'],
                                     'numberForInvoice' => $taxConfig['numberForInvoice'],
                                     'includedInPrice' => $hasTaxesIncluded,
                                     //'appliesOnShipping' // not needed,
-                                );
+                                ];
                             }
                         }
                         break;                
@@ -706,7 +706,7 @@ class Webhooks extends WireData {
             }
         }
 
-        $taxes = array('taxes' => $taxesResponse);
+        $taxes = ['taxes' => $taxesResponse];
         
         $this->responseStatus = 202; // Accepted
         $this->responseBody = \ProcessWire\wireEncodeJSON($taxes, true);

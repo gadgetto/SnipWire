@@ -21,7 +21,7 @@ use SnipWire\Helpers\Taxes;
 class SnipWireConfig extends ModuleConfig {
 
     /** @var array $availableCreditCards Available creditcard types */
-    protected $availableCreditCards = array(            
+    protected $availableCreditCards = [            
         'visa',
         'mastercard',
         'maestro',
@@ -33,7 +33,7 @@ class SnipWireConfig extends ModuleConfig {
         'dankort',
         'cartasi',
         'postepay',
-    );
+    ];
 
     /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
     protected $snipWireRootUrl = '';
@@ -54,7 +54,7 @@ class SnipWireConfig extends ModuleConfig {
      * 
      */
     public static function getCreditCardLabels() {
-        return array(
+        return [
             'visa' => __('Visa'),
             'mastercard' => __('Mastercard'),
             'maestro' => __('Maestro'),
@@ -66,7 +66,7 @@ class SnipWireConfig extends ModuleConfig {
             'dankort' => __('Dankort'),
             'cartasi' => __('CartaSi'),
             'postepay' => __('Postepay'),
-        );
+        ];
     }
 
     /**
@@ -76,10 +76,10 @@ class SnipWireConfig extends ModuleConfig {
      * 
      */
     public static function getTaxesProviderLabels() {
-        return array(
+        return [
             'snipcart' => __('Snipcart'),
             'integrated' => __('Integrated (SnipWire)'),
-        );
+        ];
     }
 
     /**
@@ -90,7 +90,7 @@ class SnipWireConfig extends ModuleConfig {
      *
      */
     public function getDefaults() {
-        return array(
+        return [
             'api_key' => 'YOUR_LIVE_API_KEY',
             'api_key_test' => 'YOUR_TEST_API_KEY',
             'api_key_secret' => 'YOUR_LIVE_API_KEY_SECRET',
@@ -98,8 +98,8 @@ class SnipWireConfig extends ModuleConfig {
             'snipcart_environment' => 0,
             'single_page_shop' => 0,
             'single_page_shop_page' => 1,
-            'credit_cards' => array('visa', 'mastercard', 'maestro'),
-            'currencies' => array('eur'),
+            'credit_cards' => ['visa', 'mastercard', 'maestro'],
+            'currencies' => ['eur'],
             'show_cart_automatically' => 1,
             'shipping_same_as_billing' => 1,
             'show_continue_shopping' => 1,
@@ -118,7 +118,7 @@ class SnipWireConfig extends ModuleConfig {
             'include_jquery' => 1,
             'jquery_js_path' => 'https://code.jquery.com/jquery-3.3.1.min.js',
             'jquery_js_integrity' => 'sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=',
-            'excluded_templates' => array(),
+            'excluded_templates' => [],
             'cart_image_width' => 65,
             'cart_image_height' => 65,
             'cart_image_cropping' => 1,
@@ -126,12 +126,12 @@ class SnipWireConfig extends ModuleConfig {
             'cart_image_hidpi' => 1,
             'cart_image_hidpiQuality' => 50,
             'webhooks_endpoint' =>  '/webhooks/snipcart',
-            'product_templates' => array(),
+            'product_templates' => [],
             'data_item_name_field' => 'title',
             'data_item_categories_field' => '',
             'currency_param' => 'currency',
             'snipwire_debug' => false,
-        );
+        ];
     }
 
     /**
@@ -164,45 +164,45 @@ class SnipWireConfig extends ModuleConfig {
 
         $redirectUrl = urlencode($_SERVER['REQUEST_URI']);
 
-        $steps = array();
-        $steps[] = array(
+        $steps = [];
+        $steps[] = [
             'type' => 'link',
             'name' => 'snipcart_account',
             'url' => 'https://app.snipcart.com',
             'target' => '_blank',
             'prompt' => $this->_('Create a Snipcart account'),
             'description' => $this->_('Create or login to a Snipcart account.'),
-        );
-        $steps[] = array(
+        ];
+        $steps[] = [
             'type' => 'link',
             'name' => 'snipcart_api_keys',
             'url' => 'https://app.snipcart.com/dashboard/account/credentials',
             'target' => '_blank',
             'prompt' => $this->_('Get your Snipcart API keys'),
             'description' => $this->_('To get your public JavaScript - and secret REST API keys, head to the Account > API Keys section. There you’ll find your public API keys and also need to create your secret API keys for live and test environment.'),
-        );
-        $steps[] = array(
+        ];
+        $steps[] = [
             'type' => 'check',
             'name' => 'product_package',
             'url' => $this->snipWireRootUrl . 'install-product-package/?ret=' . $redirectUrl,
             'prompt' => $this->_('Install Snipcart products package'),
             'description' => $this->_('Contains product templates, files, fields and some demo pages required to build a Snipcart product catalogue. This additional step is needed to prevent unintended deletion of your Snipcart products catalogue when main module is uninstalled. These resources need to be removed manually!'),
             /*
-            'followup' => array(
+            'followup' => [
                 'url' => $this->snipWireRootUrl . 'uninstall-product-package/?ret=' . $redirectUrl,
                 'prompt' => $this->_('Uninstall package'),
                 'icon' => 'times-circle',
-            ),
+            ],
             */
-        );
-        $steps[] = array(
+        ];
+        $steps[] = [
             'type' => 'link',
             'name' => 'snipcart_domains',
             'url' => 'https://app.snipcart.com/dashboard/account/domains',
             'target' => '_blank',
             'prompt' => $this->_('Snipcart domains setup'),
             'description' => $this->_('Tell Snipcart where it can crawl your products. Go to Store Configuration > Domains & URLs and set your default domain name as well as additional allowed domains and sub-domains.'),
-        );
+        ];
         
         $stepsCounter = 0;
         $doneCounter = 0;
@@ -354,7 +354,7 @@ class SnipWireConfig extends ModuleConfig {
             $f->notes .= ' ' . $this->_('The first currency in the list will be the default one used in your product catalogue, Snipcart shopping-cart and SnipWire dashboard.');
     
             $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
-            $currencies = array();
+            $currencies = [];
             if (!$currencies = $sniprest->getSettings('currencies', WireCache::expireNever, true)) {
                 $currencies[] = CurrencyFormat::getDefaultCurrencyDefinition();
             }
@@ -489,7 +489,7 @@ class SnipWireConfig extends ModuleConfig {
 
         $fsTaxes->add($f);
 
-            $languageStrings = array(
+            $languageStrings = [
                 'tax_name' => $this->_('Tax name'),
                 'number_for_invoice' => $this->_('Number for Invoice'),
                 'rate' => $this->_('Rate'),
@@ -500,10 +500,10 @@ class SnipWireConfig extends ModuleConfig {
                 'sort_drag_drop' => $this->_('Sort by dragging and dropping'),
                 'remove_tax_setting' => $this->_('Remove tax setting'),
                 'add_tax_setting' => $this->_('Add tax setting'),
-                'js' => array(
+                'js' => [
                     'confirm_delete' => $this->_('Are you sure you want to delete this element?'),
-                ),
-            );
+                ],
+            ];
             $config->js('languageStrings', $languageStrings['js']);
 
             $taxesRepeaterMarkup =
@@ -585,12 +585,12 @@ class SnipWireConfig extends ModuleConfig {
             $f->columnWidth = 100;
             $f->showIf = 'taxes_provider=integrated';
             $f->requiredIf = 'taxes_provider=integrated';
-            $f->addOptions(array(
+            $f->addOptions([
                 Taxes::shippingTaxesNone => $this->_('No shipping taxes'),
                 Taxes::shippingTaxesFixedRate => $this->_('Apply a fixed tax rate'),
                 Taxes::shippingTaxesHighestRate => $this->_('Apply predominant tax rate'),
                 Taxes::shippingTaxesSplittedRate => $this->_('Proportionally split and apply tax rates'),
-            ));   
+            ]);   
 
         $fsTaxes->add($f);
 
@@ -797,9 +797,9 @@ class SnipWireConfig extends ModuleConfig {
             '</div>';        
     
             // Set httpRoot as JavaScript property
-            $config->js('SnipWire', array(
+            $config->js('SnipWire', [
                 'httpRoot' => $httpRootUrl,
-            ));
+            ]);
     
             /** @var InputfieldText $f */
             $f = $modules->get('InputfieldText');
@@ -837,16 +837,16 @@ class SnipWireConfig extends ModuleConfig {
             $f->required = true;
             $f->columnWidth = 50;
     
-            $allowedFieldTypes = array(
+            $allowedFieldTypes = [
                 'FieldtypeText',
                 'FieldtypeTextLanguage',
                 'FieldtypePageTitle',
                 'FieldtypePageTitleLanguage',
-            );
-            $excludeFieldNames = array(
+            ];
+            $excludeFieldNames = [
                 'snipcart_item_id',
                 'snipcart_item_price_',
-            );
+            ];
             $productTemplateFields = $this->_getFields($allowedFieldTypes, $excludeFieldNames);
             foreach ($productTemplateFields as $ptField) {
                 $f->addOption($ptField->name, $ptField->name . ' (' . $ptField->type . ')');
@@ -861,9 +861,9 @@ class SnipWireConfig extends ModuleConfig {
             $f->notes = $this->_('Allowed field types: `FieldtypePage`');
             $f->columnWidth = 50;
 
-            $allowedFieldTypes = array(
+            $allowedFieldTypes = [
                 'FieldtypePage',
-            );
+            ];
             $productTemplateFields = $this->_getFields($allowedFieldTypes);
             $f->addOption('', $this->_('-- Categories disabled --'));
             foreach ($productTemplateFields as $ptField) {
@@ -991,7 +991,7 @@ class SnipWireConfig extends ModuleConfig {
      * @return WireArray $fields
      * 
      */
-    private function _getFields($allowedFieldTypes = array(), $excludeFieldNames = array()) {        
+    private function _getFields($allowedFieldTypes = [], $excludeFieldNames = []) {        
         $fields = new WireArray();
         foreach ($this->wire('fields') as $f) {
             // Title field is mandatory!
@@ -1021,5 +1021,4 @@ class SnipWireConfig extends ModuleConfig {
         $config->scripts->add($config->urls->SnipWire . 'vendor/jquery.repeater.js/jquery.repeater.min.js?v=1.2.1');
         $config->scripts->add($config->urls->SnipWire . 'assets/scripts/SnipWireConfig.min.js' . $versionAdd);
     }
-
 }

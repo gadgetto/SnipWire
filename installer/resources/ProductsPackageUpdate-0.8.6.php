@@ -21,14 +21,14 @@ namespace ProcessWire;
  *
  */
 
-$resources = array(
+$resources = [
 
     // Additional Snipcart product fields since version 0.8.6:
     // @see: https://docs.snipcart.com/v3/setup/products
     // @see: /MarkupSnipWire/MarkupSnipWire.module.php for product attributes definitions
 
-    'fields' => array(
-        'snipcart_item_payment_interval' => array(
+    'fields' => [
+        'snipcart_item_payment_interval' => [
             'name' => 'snipcart_item_payment_interval',
             'type' => 'FieldtypeOptions',
             'inputfield' => 'InputfieldSelect',
@@ -37,8 +37,8 @@ $resources = array(
             'required' => true,
             'tags' => 'Snipcart',
             '_optionsString' => "1=Day|Day\n2=Week|Week\n3=Month|Month\n4=Year|Year", // Used in SelectableOptionManager->setOptionsString; Needs to be in double quotes!
-        ),
-        'snipcart_item_payment_interval_count' => array(
+        ],
+        'snipcart_item_payment_interval_count' => [
             'name' => 'snipcart_item_payment_interval_count',
             'type' => 'FieldtypeInteger',
             'label' => __('Interval Count'),
@@ -49,8 +49,8 @@ $resources = array(
             'inputType' => 'number',
             'required' => true,
             'tags' => 'Snipcart',
-        ),
-        'snipcart_item_payment_trial' => array(
+        ],
+        'snipcart_item_payment_trial' => [
             'name' => 'snipcart_item_payment_trial',
             'type' => 'FieldtypeInteger',
             'label' => __('Trial Period'),
@@ -60,8 +60,8 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-        ),
-        'snipcart_item_recurring_shipping' => array(
+        ],
+        'snipcart_item_recurring_shipping' => [
             'name' => 'snipcart_item_recurring_shipping',
             'type' => 'FieldtypeCheckbox',
             'label' => __('Recurring Shipping'),
@@ -69,6 +69,6 @@ $resources = array(
             'description' => __('Uncheck to add shipping costs to every upcoming recurring payment'),
             'required' => false,
             'tags' => 'Snipcart',
-        ),
-    ),
-);
+        ],
+    ],
+];

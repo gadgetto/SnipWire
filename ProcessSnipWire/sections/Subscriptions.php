@@ -61,16 +61,16 @@ trait Subscriptions {
         $status = $sanitizer->text($input->status);
         $userDefinedPlanName = $sanitizer->text($input->userDefinedPlanName);
         $userDefinedCustomerNameOrEmail = $sanitizer->text($input->userDefinedCustomerNameOrEmail);
-        $filter = array(
+        $filter = [
             'status' => $status ? $status : 'All',
             'userDefinedPlanName' => $userDefinedPlanName ? $userDefinedPlanName : '',
             'userDefinedCustomerNameOrEmail' => $userDefinedCustomerNameOrEmail ? $userDefinedCustomerNameOrEmail : '',
-        );
+        ];
 
-        $defaultSelector = array(
+        $defaultSelector = [
             'offset' => $offset,
             'limit' => $limit,
-        );
+        ];
  
         $selector = array_merge($defaultSelector, $filter);
 
@@ -84,10 +84,10 @@ trait Subscriptions {
         $dataKey = SnipREST::resPathSubscriptions;
         $subscriptions = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         $total = isset($subscriptions['totalItems']) ? $subscriptions['totalItems'] : 0;
-        $items = isset($subscriptions['items']) ? $subscriptions['items'] : array();
+        $items = isset($subscriptions['items']) ? $subscriptions['items'] : [];
         $count = count($items);
         
         // Pagination out of bound
@@ -99,10 +99,10 @@ trait Subscriptions {
         $out = $this->_buildSubscriptionsFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
-        $headline = $pageArray->getPaginationString(array(
+        $headline = $pageArray->getPaginationString([
             'label' => $this->_('Subscriptions'),
             'zeroLabel' => $this->_('No subscriptions found'), // 3.0.127+ only
-        ));
+        ]);
 
         $pager = $modules->get('MarkupPagerNav');
         $pager->setBaseUrl($this->processUrl);
@@ -183,7 +183,7 @@ trait Subscriptions {
         $dataKey = SnipREST::resPathSubscriptions . '/' . $id;
         $subscription = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         unset($response, $dataKey);
         
         $response = $sniprest->getSubscriptionInvoices(
@@ -193,11 +193,11 @@ trait Subscriptions {
         );
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathSubscriptionsInvoices,
-            array('id' => $id)
+            ['id' => $id]
         );
         $subscriptionInvoices = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         unset($response, $dataKey);
         
         /** @var InputfieldMarkup $f */
@@ -226,9 +226,9 @@ trait Subscriptions {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
-        $filterSettings = array(
+        $filterSettings = [
             'form' => '#SubscriptionsFilterForm',
-        );
+        ];
 
         // Hand over configuration to JS
         $config->js('filterSettings', $filterSettings);
@@ -318,7 +318,7 @@ trait Subscriptions {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Plan'),
                 $this->_('Subscription Date'),
                 $this->_('Subscriber'),
@@ -327,7 +327,7 @@ trait Subscriptions {
                 $this->_('Total Spent'),
                 $this->_('Status'),
                 '&nbsp;',
-            ));
+            ]);
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '"
@@ -369,7 +369,7 @@ trait Subscriptions {
                     data-panel-width="85%">' .
                         \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') .
                 '</a>';
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     $creationDate,
                     $subscriber,
@@ -378,7 +378,7 @@ trait Subscriptions {
                     $totalSpent,
                     $status,
                     $initialOrder,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -574,14 +574,14 @@ trait Subscriptions {
      *
      */
     private function _renderPlanInfo($item) {
-        $infoCaptions = array(
+        $infoCaptions = [
             'planName' => $this->_('Plan name'),
             'interval' => $this->_('Interval'),
             'intervalCount' => $this->_('Interval count'),
             'trialPeriodInDays' => $this->_('Trial period'),
             'creationDate' => $this->_('Subscription Date'),
             'startsOn' => $this->_('Starts on'),
-        );
+        ];
         
         if ($item['cancelledOn']) {
             $infoCaptions['cancelledOn'] = $this->_('Cancelled on');
@@ -589,7 +589,7 @@ trait Subscriptions {
             $infoCaptions['pausedOn'] = $this->_('Paused on');
         }
         
-        $planInfo = array();
+        $planInfo = [];
         $planInfo['planName'] = $item['name'];
         $planInfo['interval'] = $item['schedule']['interval'];
         $planInfo['intervalCount'] = $item['schedule']['intervalCount'];
@@ -604,7 +604,7 @@ trait Subscriptions {
         $planInfo['pausedOn'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['pausedOn']);
         $planInfo['cancelledOn'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['cancelledOn']);
         
-        $data = array();
+        $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($planInfo[$key]) ? $planInfo[$key] : '-';
         }
@@ -620,15 +620,15 @@ trait Subscriptions {
      *
      */
     private function _renderSubscriberInfo($item) {
-        $infoCaptions = array(
+        $infoCaptions = [
             'customer' => $this->_('Customer'),
             'email' => $this->_('Email'),
             'country' => $this->_('Country'),
             'creationDate' => $this->_('Created on'),
-        );
+        ];
         
         $subscriber = $item['user'];
-        $subscriberInfo = array();
+        $subscriberInfo = [];
         
         $subscriberInfo['customer'] = $subscriber['billingAddressFirstName'] . ' ' . $subscriber['billingAddressName'];
         $subscriberInfo['email'] =
@@ -640,7 +640,7 @@ trait Subscriptions {
         $subscriberInfo['country'] = Countries::getCountry($subscriber['billingAddressCountry']);
         $subscriberInfo['creationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $subscriber['creationDate']);
         
-        $data = array();
+        $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($subscriberInfo[$key]) ? $subscriberInfo[$key] : '-';
         }
@@ -667,12 +667,12 @@ trait Subscriptions {
         $table->setSortable(false);
         $table->setResizable(false);
         $table->setResponsive(true);
-        $table->headerRow(array(
+        $table->headerRow([
             $this->_('Invoice #'),
             $this->_('Placed on'),
             $this->_('Total'),
             $this->_('Status'),
-        ));
+        ]);
         
         foreach ($invoices as $invoice) {
             // Need to attach a return URL to be able to stay in modal panel when order detail is opened
@@ -686,12 +686,12 @@ trait Subscriptions {
             $total = CurrencyFormat::format($invoice['total'], $invoice['subscription']['currency']);
             $status = $invoice['paid'] ? $this->getPaymentStatus('Paid') : $this->getPaymentStatus('Open');
 
-            $table->row(array(
+            $table->row([
                 $invoiceNumber,
                 $placedOn,
                 $total,
                 $status,
-            ));
+            ]);
         }
         
         $out = $table->render();
@@ -787,10 +787,10 @@ trait Subscriptions {
      *
      */
     private function _setSubscriptionJSConfigValues() {
-        $this->wire('config')->js('subscriptionActionStrings', array(
+        $this->wire('config')->js('subscriptionActionStrings', [
             'confirm_pause_subscription' => $this->_('Do you want to pause this subscription?'),
             'confirm_resume_subscription' => $this->_('Do you want to resume this subscription?'),
             'confirm_cancel_subscription' => $this->_("Do you want to cancel this subscription?\nThis can not be undone!"),
-        ));
+        ]);
     }
 }

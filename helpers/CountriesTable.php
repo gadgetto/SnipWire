@@ -1,7 +1,7 @@
 <?php
 namespace ProcessWire;
 
-return array(
+return [
     'AF' => __('Afghanistan'),
     'AX' => __('Åland Islands'),
     'AL' => __('Albania'),
@@ -257,4 +257,4 @@ return array(
     'YE' => __('Yemen'),
     'ZM' => __('Zambia'),
     'ZW' => __('Zimbabwe'),
-);
+];

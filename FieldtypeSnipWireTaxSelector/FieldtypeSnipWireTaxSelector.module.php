@@ -24,19 +24,19 @@ use SnipWire\Helpers\Taxes;
 class FieldtypeSnipWireTaxSelector extends FieldtypeText {
 
     public static function getModuleInfo() {
-        return array(
-            'title' => __('SnipWire TaxSelector'), // Module Title
-            'summary' => __('Fieldtype which fetches taxes setting from SnipWire module config and builds a dropdown list.'), // Module Summary
+        return [
+            'title' => __('SnipWire TaxSelector'),
+            'summary' => __('Fieldtype which fetches taxes setting from SnipWire module config and builds a dropdown list.'),
             'version' => '0.8.7',
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
-            'requires' => array(
+            'requires' => [
                 'ProcessWire>=3.0.148',
                 'SnipWire',
                 'InputfieldSelect',
                 'PHP>=7.0.0',
-            ),
-        );
+            ],
+        ];
     }
 
 	/**
@@ -82,30 +82,30 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         /*
         Sample $taxes array:
         
-        array(
-            array(
+        [
+            [
                 'name' => '20% VAT',
                 'numberForInvoice' => '',
                 'rate' => '0.20',
-                'appliesOnShipping' => array(), // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
+                'appliesOnShipping' => [], // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
             ),
-             array(
+             [
                 'name' => '10% VAT',
                 'numberForInvoice' => '',
                 'rate' => '0.10',
-                'appliesOnShipping' => array() // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
+                'appliesOnShipping' => [] // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
             ),            
-             array(
+             [
                 'name' => '20% VAT',
                 'numberForInvoice' => '',
                 'rate' => '0.20',
-                'appliesOnShipping' => array(1) // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
+                'appliesOnShipping' => [1] // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
             ),            
        );
         */
         foreach ($taxes as $tax) {
-            $tax['attributes'] = array();
-            if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], array('selected'));
+            $tax['attributes'] = [];
+            if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], ['selected']);
             $inputfield->addOption($tax['name'], $tax['name'], $tax['attributes']);
         }
         return $inputfield; 
@@ -129,7 +129,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         foreach ($modules as $module) {
             if (strpos($module->className(), 'Inputfield') !== 0) continue;
             if ($module instanceof ModulePlaceholder) {
-                $module = $modules->getModule($module->className(), array('noInit' => true));
+                $module = $modules->getModule($module->className(), ['noInit' => true]);
             }
             if ($module instanceof InputfieldSelect) {
                 $name = str_replace('Inputfield', '', $module->className());

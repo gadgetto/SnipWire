@@ -88,11 +88,11 @@ trait Discounts {
         if (!$status) $status = 'Active';
         $name = $sanitizer->text($input->name);
         $code = $sanitizer->text($input->code);
-        $filter = array(
+        $filter = [
             'status' => $status ? $status : 'Active',
             'name' => $name ? $name : '',
             'code' => $code ? $code : '',
-        );
+        ];
 
         // Currently there is no pagination available as Snipcart has no limit & offset params in this case.
         // @todo: create an alternative way to use pagination here
@@ -105,7 +105,7 @@ trait Discounts {
         $dataKey = SnipREST::resPathDiscounts;
         $discounts = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         // As discounts have no query params for REST, we need to search in the result set instead
         if (!empty($discounts) && ($status == 'Archived' || $status == 'Active')) {
@@ -127,7 +127,7 @@ trait Discounts {
             });
         }
 
-        $items = $discounts ? $discounts : array();
+        $items = $discounts ? $discounts : [];
 
         $out = $this->_buildDiscountsFilter($filter);
 
@@ -199,7 +199,7 @@ trait Discounts {
         $dataKey = SnipREST::resPathDiscounts . '/' . $id;
         $discount = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -262,9 +262,9 @@ trait Discounts {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
-        $filterSettings = array(
+        $filterSettings = [
             'form' => '#DiscountsFilterForm',
-        );
+        ];
 
         // Hand over configuration to JS
         $config->js('filterSettings', $filterSettings);
@@ -353,7 +353,7 @@ trait Discounts {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Name'),
                 $this->_('Condition'),
                 $this->_('Action'),
@@ -362,7 +362,7 @@ trait Discounts {
                 $this->_('Usages'),
                 $this->_('Expires'),
                 '&nbsp;',
-            ));
+            ]);
 
             foreach ($items as $item) {
                 // Mark archived items
@@ -436,7 +436,7 @@ trait Discounts {
                     '</a>';
                 }
 
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     $condition,
                     $action,
@@ -445,7 +445,7 @@ trait Discounts {
                     $usages,
                     $expires,
                     $actionLink,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -591,7 +591,7 @@ trait Discounts {
                     : '';
 
                 // Get values from payload
-                $discount = array(
+                $discount = [
                     'id' => $item['id'],
                     'archived' => $item['archived'], // not editable in form (only with "Archive" and "Restore" buttons)!
                     'name' => $item['name'],
@@ -624,10 +624,10 @@ trait Discounts {
                     'maxQuantityOfAProduct' => $item['maxQuantityOfAProduct'],
                     'onlyOnSameProducts' => $item['onlyOnSameProducts'],
                     'quantityOfProductIds' => $item['quantityOfProductIds'],
-                );
+                ];
             } else {
                 // Set default values (if action = add)
-                $discount = array(
+                $discount = [
                     'id' => '',
                     'archived' => false,
                     'name' => '',
@@ -658,7 +658,7 @@ trait Discounts {
                     'maxQuantityOfAProduct' => '',
                     'onlyOnSameProducts' => '',
                     'quantityOfProductIds' => '',
-                );
+                ];
             }
         }
 
@@ -1118,7 +1118,7 @@ trait Discounts {
 
         $expires = $form->get('expires');
         $expiresValue = $expires->value;
-        if ($mode == 'add' && $expiresValue && !$sanitizer->date($expiresValue, $expiresDateFormat, array('min' => $expiresMinDate))) {
+        if ($mode == 'add' && $expiresValue && !$sanitizer->date($expiresValue, $expiresDateFormat, ['min' => $expiresMinDate])) {
             $expires->error(sprintf($this->_('Minimum allowed date is %s (today)'), $expiresMinDate));
         }
 
@@ -1253,7 +1253,7 @@ trait Discounts {
         // Sanitize and prepare input for saving
         //
 
-        $fieldValues = array(
+        $fieldValues = [
             // Not editable in form (hidden field!)
             'archived' => ($archivedValue ? true : false),
 
@@ -1327,7 +1327,7 @@ trait Discounts {
             'onlyOnSameProducts' => ($onlyOnSameProductsValue ? true : false),
             
             'quantityOfProductIds' => $sanitizer->text($quantityOfProductIdsValue),
-        );
+        ];
 
         if ($mode == 'edit') {
             // Add "id" key
@@ -1395,7 +1395,7 @@ trait Discounts {
         $dataKey = SnipREST::resPathDiscounts . '/' . $id;
         $discount = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         if (empty($discount)) {
             $this->error(
@@ -1445,7 +1445,7 @@ trait Discounts {
         $dataKey = SnipREST::resPathDiscounts . '/' . $id;
         $discount = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         if (empty($discount)) {
             $this->error(
@@ -1535,10 +1535,10 @@ trait Discounts {
      *
      */
     private function _setDiscountJSConfigValues() {
-        $this->wire('config')->js('discountActionStrings', array(
+        $this->wire('config')->js('discountActionStrings', [
             'confirm_delete_discount' => $this->_('Do you want to delete this discount? This can not be undone!'),
             'confirm_archive_discount' => $this->_('Do you want to archive this discount?'),
             'confirm_restore_discount' => $this->_('Do you want to restore this discount?'),
-        ));
+        ]);
     }
 }

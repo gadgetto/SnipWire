@@ -21,64 +21,64 @@ namespace ProcessWire;
  *
  */
 
-$resources = array(
+$resources = [
 
-    'config' => array(
-        'SnipWire' => array(
+    'config' => [
+        'SnipWire' => [
             'name' => 'SnipWire',
-            'options' => array(
-                'product_templates' => array('snipcart-product'),
-            ),
-        ),
-    ),
+            'options' => [
+                'product_templates' => ['snipcart-product'],
+            ],
+        ],
+    ],
     
-    'templates' => array(
-        'snipcart-shop' => array(
+    'templates' => [
+        'snipcart-shop' => [
             'name' => 'snipcart-shop',
             'label' => 'Snipcart Shop',
             'icon' => 'tags', 
             'noChildren' => 0,
             'tags' => 'Snipcart',
             '_allowedChildTemplates' => 'snipcart-product',
-        ),
-        'snipcart-product' => array(
+        ],
+        'snipcart-product' => [
             'name' => 'snipcart-product',
             'label' => 'Snipcart Product',
             'icon' => 'tag', 
             'noChildren' => 1,
             'tags' => 'Snipcart',
             '_allowedParentTemplates' => 'snipcart-shop',
-        ),
-    ),
+        ],
+    ],
     
-    'files' => array(
-        'snipcart-shop' => array(
+    'files' => [
+        'snipcart-shop' => [
             'name' => 'snipcart-shop.php',
             'type' => 'templates' // destination folder
-        ),
-        'snipcart-product' => array(
+        ],
+        'snipcart-product' => [
             'name' => 'snipcart-product.php',
             'type' => 'templates' // destination folder
-        ),
-    ),
+        ],
+    ],
 
     // Snipcart product fields:
     // @see: https://docs.snipcart.com/v3/setup/products
     // @see: /MarkupSnipWire/MarkupSnipWire.module.php for product attributes definitions
 
-    'fields' => array(
-        'title' => array(
+    'fields' => [
+        'title' => [
             'name' => 'title',
-            '_templateFieldOptions' => array(
-                'snipcart-product' => array(
+            '_templateFieldOptions' => [
+                'snipcart-product' => [
                     'label' => __('Product Name (Title)'),
                     'notes' => __('Name of the product to be used in catalogue and cart.'),
                     'columnWidth' => 70,
-                ),
-            ),
+                ],
+            ],
             '_configureOnly' => true,
-        ),
-        'snipcart_item_id' => array(
+        ],
+        'snipcart_item_id' => [
             'name' => 'snipcart_item_id',
             'type' => 'FieldtypeText',
             'label' => __('SKU'),
@@ -88,13 +88,13 @@ $resources = array(
             'pattern' => '^[\w\-_*+.,]+$',
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-            '_templateFieldOptions' => array(
-                'snipcart-product' => array(
+            '_templateFieldOptions' => [
+                'snipcart-product' => [
                     'columnWidth' => 30,
-                ),
-            ),
-        ),
-        'snipcart_item_price_eur' => array(
+                ],
+            ],
+        ],
+        'snipcart_item_price_eur' => [
             'name' => 'snipcart_item_price_eur',
             'type' => 'FieldtypeText',
             'label' => __('Product Price (EUR)'),
@@ -104,8 +104,8 @@ $resources = array(
             'pattern' => '[-+]?[0-9]*[.]?[0-9]+',
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_description' => array(
+        ],
+        'snipcart_item_description' => [
             'name' => 'snipcart_item_description',
             'type' => 'FieldtypeTextarea',
             'label' => __('Product Description'),
@@ -115,12 +115,12 @@ $resources = array(
             'rows' => 3,
             'showCount' => 1,
             'stripTags' => 1,
-            'textformatters' => array('TextformatterEntities'),
+            'textformatters' => ['TextformatterEntities'],
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_image' => array(
+        ],
+        'snipcart_item_image' => [
             'name' => 'snipcart_item_image',
             'type' => 'FieldtypeImage',
             'label' => __('Product Image(s)'),
@@ -130,8 +130,8 @@ $resources = array(
             'extensions' => 'gif jpg jpeg png',
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_categories' => array(
+        ],
+        'snipcart_item_categories' => [
             'name' => 'snipcart_item_categories',
             'type' => 'FieldtypePage',
             'inputfield' => 'InputfieldAsmSelect',
@@ -146,8 +146,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_weight' => array(
+        ],
+        'snipcart_item_weight' => [
             'name' => 'snipcart_item_weight',
             'type' => 'FieldtypeInteger',
             'label' => __('Product Weight'),
@@ -158,8 +158,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_width' => array(
+        ],
+        'snipcart_item_width' => [
             'name' => 'snipcart_item_width',
             'type' => 'FieldtypeInteger',
             'label' => __('Product Width'),
@@ -170,8 +170,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_length' => array(
+        ],
+        'snipcart_item_length' => [
             'name' => 'snipcart_item_length',
             'type' => 'FieldtypeInteger',
             'label' => __('Product Length'),
@@ -182,8 +182,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_height' => array(
+        ],
+        'snipcart_item_height' => [
             'name' => 'snipcart_item_height',
             'type' => 'FieldtypeInteger',
             'label' => __('Product Height'),
@@ -194,8 +194,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_quantity' => array(
+        ],
+        'snipcart_item_quantity' => [
             'name' => 'snipcart_item_quantity',
             'type' => 'FieldtypeInteger',
             'label' => __('Default Quantity'),
@@ -207,8 +207,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_max_quantity' => array(
+        ],
+        'snipcart_item_max_quantity' => [
             'name' => 'snipcart_item_max_quantity',
             'type' => 'FieldtypeInteger',
             'label' => __('Maximum Quantity'),
@@ -219,8 +219,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_min_quantity' => array(
+        ],
+        'snipcart_item_min_quantity' => [
             'name' => 'snipcart_item_min_quantity',
             'type' => 'FieldtypeInteger',
             'label' => __('Minimum Quantity'),
@@ -231,8 +231,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_quantity_step' => array(
+        ],
+        'snipcart_item_quantity_step' => [
             'name' => 'snipcart_item_quantity_step',
             'type' => 'FieldtypeInteger',
             'label' => __('Quantity Step'),
@@ -244,8 +244,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_stackable' => array(
+        ],
+        'snipcart_item_stackable' => [
             'name' => 'snipcart_item_stackable',
             'type' => 'FieldtypeCheckbox',
             'label' => __('Stackable'),
@@ -254,8 +254,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_taxable' => array(
+        ],
+        'snipcart_item_taxable' => [
             'name' => 'snipcart_item_taxable',
             'type' => 'FieldtypeCheckbox',
             'label' => __('Taxable'),
@@ -264,8 +264,8 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_taxes' => array(
+        ],
+        'snipcart_item_taxes' => [
             'name' => 'snipcart_item_taxes',
             'type' => 'FieldtypeSnipWireTaxSelector',
             'label' => __('VAT'),
@@ -274,8 +274,8 @@ $resources = array(
             'tags' => 'Snipcart',
             'taxesType' => 1, // Taxes::taxesTypeProducts
             '_addToTemplates' => 'snipcart-product',
-        ),
-        'snipcart_item_payment_interval' => array(
+        ],
+        'snipcart_item_payment_interval' => [
             'name' => 'snipcart_item_payment_interval',
             'type' => 'FieldtypeOptions',
             'inputfield' => 'InputfieldSelect',
@@ -284,8 +284,8 @@ $resources = array(
             'required' => true,
             'tags' => 'Snipcart',
             '_optionsString' => "1=Day|Day\n2=Week|Week\n3=Month|Month\n4=Year|Year", // Used in SelectableOptionManager->setOptionsString; Needs to be in double quotes!
-        ),
-        'snipcart_item_payment_interval_count' => array(
+        ],
+        'snipcart_item_payment_interval_count' => [
             'name' => 'snipcart_item_payment_interval_count',
             'type' => 'FieldtypeInteger',
             'label' => __('Interval Count'),
@@ -296,8 +296,8 @@ $resources = array(
             'inputType' => 'number',
             'required' => true,
             'tags' => 'Snipcart',
-        ),
-        'snipcart_item_payment_trial' => array(
+        ],
+        'snipcart_item_payment_trial' => [
             'name' => 'snipcart_item_payment_trial',
             'type' => 'FieldtypeInteger',
             'label' => __('Trial Period'),
@@ -307,8 +307,8 @@ $resources = array(
             'inputType' => 'number',
             'required' => false,
             'tags' => 'Snipcart',
-        ),
-        'snipcart_item_recurring_shipping' => array(
+        ],
+        'snipcart_item_recurring_shipping' => [
             'name' => 'snipcart_item_recurring_shipping',
             'type' => 'FieldtypeCheckbox',
             'label' => __('Recurring Shipping'),
@@ -316,8 +316,8 @@ $resources = array(
             'description' => __('Uncheck to add shipping costs to every upcoming recurring payment'),
             'required' => false,
             'tags' => 'Snipcart',
-        ),
-        'snipcart_item_shippable' => array(
+        ],
+        'snipcart_item_shippable' => [
             'name' => 'snipcart_item_shippable',
             'type' => 'FieldtypeCheckbox',
             'label' => __('Shippable'),
@@ -326,23 +326,23 @@ $resources = array(
             'required' => false,
             'tags' => 'Snipcart',
             '_addToTemplates' => 'snipcart-product',
-        ),
-    ),
+        ],
+    ],
 
-    'pages' => array(
-        'snipcart-shop' => array(
+    'pages' => [
+        'snipcart-shop' => [
             'name' => 'snipcart-shop',
             'title' => 'Snipcart Shop',
             'template' => 'snipcart-shop',
             'parent' => '/', // needs to be page path
             '_uninstall' => 'delete',
-        ),
-        'fuzzy-regalia' => array(
+        ],
+        'fuzzy-regalia' => [
             'name' => 'big-schlemel-stout',
             'title' => 'Big Schlemel Stout',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
-            'fields' => array(
+            'fields' => [
                 'snipcart_item_id' => 'BEER-10001',
                 'snipcart_item_price_eur' => '69.98',
                 'snipcart_item_description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
@@ -350,15 +350,15 @@ $resources = array(
                 'snipcart_item_taxable' => true,
                 'snipcart_item_shippable' => true,
                 'snipcart_item_stackable' => true,
-            ),
+            ],
             '_uninstall' => 'delete',
-        ),
-        'square-cream-hoax' => array(
+        ],
+        'square-cream-hoax' => [
             'name' => 'festish-wet-warmer',
             'title' => 'Festish Wet Warmer',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
-            'fields' => array(
+            'fields' => [
                 'snipcart_item_id' => 'BEER-10002',
                 'snipcart_item_price_eur' => '19.90',
                 'snipcart_item_description' => 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
@@ -366,15 +366,15 @@ $resources = array(
                 'snipcart_item_taxable' => true,
                 'snipcart_item_shippable' => true,
                 'snipcart_item_stackable' => true,
-            ),
+            ],
             '_uninstall' => 'delete',
-        ),
-        'axolotl-juicer' => array(
+        ],
+        'axolotl-juicer' => [
             'name' => 'axolotl-juicer',
             'title' => 'Axolotl Juicer',
             'template' => 'snipcart-product',
             'parent' => '/snipcart-shop/', // needs to be page path
-            'fields' => array(
+            'fields' => [
                 'snipcart_item_id' => 'BEER-10003',
                 'snipcart_item_price_eur' => '1199',
                 'snipcart_item_description' => 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
@@ -382,8 +382,8 @@ $resources = array(
                 'snipcart_item_taxable' => true,
                 'snipcart_item_shippable' => true,
                 'snipcart_item_stackable' => true,
-            ),
+            ],
             '_uninstall' => 'delete',
-        ),
-    ),
-);
+        ],
+    ],
+];

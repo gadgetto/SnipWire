@@ -54,7 +54,7 @@ class CurrencyFormat extends WireData {
      * 
      */
     public static function getDefaultCurrencyDefinition($json = false) {
-        $defaultCurrency = array(
+        $defaultCurrency = [
             'currency' => 'eur',
             'precision' => 2,
             'decimalSeparator' => ',',
@@ -62,7 +62,7 @@ class CurrencyFormat extends WireData {
             'negativeNumberFormat' => '- %s%v',
             'numberFormat' => '%s%v',
             'currencySymbol' => '€',
-        );
+        ];
         return ($json) ? \ProcessWire\wireEncodeJSON($defaultCurrency, true) : $defaultCurrency;
     }
 
@@ -173,7 +173,7 @@ class CurrencyFormat extends WireData {
         },
         */
 
-        $formattedPrices = array();
+        $formattedPrices = [];
 
         foreach ($prices as $currency => $price) {
             $currencyDefinition = self::getCurrencyDefinition($currency);

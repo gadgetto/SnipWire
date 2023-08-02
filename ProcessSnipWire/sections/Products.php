@@ -61,16 +61,16 @@ trait Products {
         $userDefinedId = $sanitizer->text($input->userDefinedId);
         $keywords = $sanitizer->text($input->keywords);
         $archived = $sanitizer->bool($input->archived);
-        $filter = array(
+        $filter = [
             'userDefinedId' => $userDefinedId ? $userDefinedId : '',
             'keywords' => $keywords ? $keywords : '',
             'archived' => $archived ? 'true' : 'false',
-        );
+        ];
 
-        $defaultSelector = array(
+        $defaultSelector = [
             'offset' => $offset,
             'limit' => $limit,
-        );
+        ];
 
         $selector = array_merge($defaultSelector, $filter);
 
@@ -84,10 +84,10 @@ trait Products {
         $dataKey = SnipREST::resPathProducts;
         $products = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         $total = isset($products['totalItems']) ? $products['totalItems'] : 0;
-        $items = isset($products['items']) ? $products['items'] : array();
+        $items = isset($products['items']) ? $products['items'] : [];
         $count = count($items);
 
         // Pagination out of bound
@@ -99,10 +99,10 @@ trait Products {
         $out = $this->_buildProductsFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
-        $headline = $pageArray->getPaginationString(array(
+        $headline = $pageArray->getPaginationString([
             'label' => $this->_('Products'),
             'zeroLabel' => $this->_('No products found'), // 3.0.127+ only
-        ));
+        ]);
 
         $pager = $modules->get('MarkupPagerNav');
         $pager->setBaseUrl($this->processUrl);
@@ -173,7 +173,7 @@ trait Products {
         $dataKey = SnipREST::resPathProducts . '/' . $id;
         $product = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         /** @var InputfieldMarkup $f */
         $f = $modules->get('InputfieldMarkup');
@@ -201,9 +201,9 @@ trait Products {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
-        $filterSettings = array(
+        $filterSettings = [
             'form' => '#ProductsFilterForm',
-        );
+        ];
 
         // Hand over configuration to JS
         $config->js('filterSettings', $filterSettings);
@@ -296,7 +296,7 @@ trait Products {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('SKU'),
                 $this->_('Thumb'),
                 $this->_('Name'),
@@ -306,7 +306,7 @@ trait Products {
                 //$this->_('Sales'), // not usable at the moment as Snipcart doesn't support multi currency for statistics
                 $this->_('Last modified'),
                 '&nbsp;',
-            ));
+            ]);
 
             foreach ($items as $item) {
                 $panelLink =
@@ -348,7 +348,7 @@ trait Products {
                     ? $item['stock']
                     : '-';
 
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     ($thumb ? $thumb : '-'),
                     $item['name'],
@@ -358,7 +358,7 @@ trait Products {
                     //CurrencyFormat::format($item['statistics']['totalSales'], 'usd'),  // not usable at the moment as Snipcart doesn't support multi currency for statistics
                     \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']),
                     $editLink,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -498,7 +498,7 @@ trait Products {
      *
      */
     private function _renderProductInfo($item) {
-        $infoCaptions = array(
+        $infoCaptions = [
             'sku' => $this->_('SKU'),
             'name' => $this->_('Product name'),
             'image' => $this->_('Product image'),
@@ -508,7 +508,7 @@ trait Products {
             'stock' => $this->_('Stock'),
             'creationDate' => $this->_('Created on'),
             'modificationDate' => $this->_('Last modified'),
-        );
+        ];
         
         $item['sku'] = $item['userDefinedId'];
         if (!empty($item['image'])) {
@@ -530,7 +530,7 @@ trait Products {
         $item['creationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
         $item['modificationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']);
 
-        $data = array();
+        $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
         }

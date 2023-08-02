@@ -39,64 +39,64 @@ class ProcessSnipWire extends Process implements Module {
      *
      */
     public static function getModuleInfo() {
-        return array(
+        return [
             'title' => __('SnipWire Dashboard'), // Module Title
             'summary' => __('Snipcart dashboard integration for ProcessWire.'), // Module Summary
             'version' => '0.8.7',
             'author'  => 'Martin Gartner',
             'icon' => 'shopping-cart', 
             'permission' => 'snipwire-dashboard',
-            'permissions' => array(
+            'permissions' => [
                 'snipwire-dashboard' => __('Use the SnipWire Dashboard sections'), // Permission Description
-            ), 
-            'page' => array(
+            ], 
+            'page' => [
                 'name' => 'snipwire',
                 'title' => 'SnipWire',
                 'parent' => 'setup',
-            ),
-            'nav' => array(
-                array(
+            ],
+            'nav' => [
+                [
                     'url' => 'orders/', 
                     'label' => __('Orders'), 
                     'icon' => self::iconOrder, 
-                ),
-                array(
+                ],
+                [
                     'url' => 'subscriptions/', 
                     'label' => __('Subscriptions'), 
                     'icon' => self::iconSubscription, 
-                ),
-                array(
+                ],
+                [
                     'url' => 'abandoned-carts/', 
                     'label' => __('Abandoned Carts'), 
                     'icon' => self::iconAbandonedCart, 
-                ),
-                array(
+                ],
+                [
                     'url' => 'customers/', 
                     'label' => __('Customers'), 
                     'icon' => self::iconCustomer, 
-                ),
-                array(
+                ],
+                [
                     'url' => 'products/', 
                     'label' => __('Products'), 
                     'icon' => self::iconProduct, 
-                ),
-                array(
+                ],
+                [
                     'url' => 'discounts/', 
                     'label' => __('Discounts'), 
                     'icon' => self::iconDiscount, 
-                ),
-                array(
+                ],
+                [
                     'url' => 'settings/', 
                     'label' => __('Settings'), 
                     'icon' => self::iconSettings, 
-                ),
-            ),
-            'requires' => array(
+                ],
+            ],
+            'requires' => [
                 'ProcessWire>=3.0.148',
                 'SnipWire',
                 'PHP>=7.0.0',
-            ),
-        );
+            ],
+        ];
     }
 
     const assetsIncludeDateRangePicker = 1;
@@ -122,10 +122,10 @@ class ProcessSnipWire extends Process implements Module {
     const iconDebug = 'bug';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
-    protected $snipwireConfig = array();
+    protected $snipwireConfig = [];
 
     /** @var array $currencies The activated currencies from SnipWire module config */
-    private $currencies = array();
+    private $currencies = [];
 
     /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
     protected $snipWireRootUrl = '';
@@ -137,37 +137,37 @@ class ProcessSnipWire extends Process implements Module {
     protected $processUrl = '';
 
     /**var array $orderStatuses The order statuses */
-    public $orderStatuses = array();
+    public $orderStatuses = [];
     
     /**var array $orderStatusesSelectable The order statuses for form selects */
-    public $orderStatusesSelectable = array();
+    public $orderStatusesSelectable = [];
     
     /**var array $subscriptionStatuses The subscription statuses */
-    public $subscriptionStatuses = array();
+    public $subscriptionStatuses = [];
     
     /**var array $commentTypes The comment types */
-    public $commentTypes = array();
+    public $commentTypes = [];
 
     /**var array $paymentStatuses The payment statuses */
-    public $paymentStatuses = array();
+    public $paymentStatuses = [];
 
     /**var array $abandonedCartsTimeRanges The abandoned carts time ranges */
-    public $abandonedCartsTimeRanges = array();
+    public $abandonedCartsTimeRanges = [];
 
     /**var array $customerAddressLabels The customer address labels (billing and shipping) */
-    public $customerAddressLabels = array();
+    public $customerAddressLabels = [];
 
     /**var array $customerStatuses The customer statuses */
-    public $customerStatuses = array();
+    public $customerStatuses = [];
 
     /**var array $discountsStatuses The discounts statuses */
-    public $discountsStatuses = array();
+    public $discountsStatuses = [];
 
     /**var array $discountsTypes The discounts types */
-    public $discountsTypes = array();
+    public $discountsTypes = [];
 
     /**var array $discountsTriggers The discounts triggers */
-    public $discountsTriggers = array();
+    public $discountsTriggers = [];
 
     /**
      * Initialize module config variables (properties)
@@ -206,7 +206,7 @@ class ProcessSnipWire extends Process implements Module {
         
         $this->_noticeTestMode();
         
-        $this->orderStatusesSelectable = array(
+        $this->orderStatusesSelectable = [
             'Processed' => $this->_('Processed'),
             'Disputed' => $this->_('Disputed'),
             'Shipped' => $this->_('Shipped'),
@@ -214,23 +214,23 @@ class ProcessSnipWire extends Process implements Module {
             'Pending' => $this->_('Pending'),
             'Cancelled' => $this->_('Cancelled'),
             'Dispatched' => $this->_('Dispatched'),
-        );
+        ];
         $this->orderStatuses = array_merge(
-            array(
+            [
                 'All' =>  $this->_('All Orders'),
                 'InProgress' => $this->_('In Progress'),
-            ),
+            ],
             $this->orderStatusesSelectable
         );
         // Unlike other API endpoints, subscriptions API only supports status keys in lower case!
-        $this->subscriptionStatuses = array(
+        $this->subscriptionStatuses = [
             'all' =>  $this->_('All Subscriptions'),
             'paid' => $this->_('Paid'),
             'active' => $this->_('Active'),
             'paused' => $this->_('Paused'),
             'canceled' => $this->_('Cancelled'), // Key 'Canceled' with a single "l" is not a typo here!
-        );
-        $this->commentTypes = array(
+        ];
+        $this->commentTypes = [
             'Comment' => $this->_('Comment'),
             'OrderStatusChanged' => $this->_('Status changed'),
             'OrderShipped' => $this->_('Order shipped'),
@@ -238,8 +238,8 @@ class ProcessSnipWire extends Process implements Module {
             'TrackingNumber' => $this->_('Tracking number'),
             'Invoice' => $this->_('Invoice sent'),
             'Refund' => $this->_('Refunded amount')
-        );
-        $this->paymentStatuses = array(
+        ];
+        $this->paymentStatuses = [
             'All' =>  $this->_('All Orders'),
             'Paid' => $this->_('Paid'),
             'PaidDeferred' => $this->_('Paid (deferred)'),
@@ -253,20 +253,20 @@ class ProcessSnipWire extends Process implements Module {
             'Cancelled' => $this->_('Cancelled'),
             'Open' => $this->_('Open'),
             'Authorized' => $this->_('Authorized'),
-        );
-        $this->paymentMethods = array(
+        ];
+        $this->paymentMethods = [
             'All' =>  $this->_('All Methods'),
             'CreditCard' => $this->_('Credit Card'),
             'WillBePaidLater' => $this->_('Deferred Payment'),
-        );
-        $this->abandonedCartsTimeRanges = array(
+        ];
+        $this->abandonedCartsTimeRanges = [
             'Anytime' =>  $this->_('Anytime'),
             'LessThan4Hours' => $this->_('Last 4 hours'),
             'LessThanADay' => $this->_('Last 24 hours'),
             'LessThanAWeek' => $this->_('Last 7 days'),
             'LessThanAMonth' => $this->_('Last 30 days'),
-        );
-        $this->customerAddressLabels = array(
+        ];
+        $this->customerAddressLabels = [
             'firstName' => $this->_('First Name'),
             'name' => $this->_('Last Name'),
             'company' => $this->_('Company'),
@@ -278,18 +278,18 @@ class ProcessSnipWire extends Process implements Module {
             'country' => $this->_('Country'),
             'phone' => $this->_('Phone'),
             'vatNumber' => $this->_('VAT Number'),
-        );
-        $this->customerStatuses = array(
+        ];
+        $this->customerStatuses = [
             'All' =>  $this->_('All Customers'),
             'Confirmed' => $this->_('Confirmed'),
             'Unconfirmed' => $this->_('Unconfirmed'),
-        );
-        $this->discountsStatuses = array(
+        ];
+        $this->discountsStatuses = [
             'All' =>  $this->_('All Discounts'),
             'Active' => $this->_('Active'),
             'Archived' => $this->_('Archived'),
-        );
-        $this->discountsTypes = array(
+        ];
+        $this->discountsTypes = [
             'FixedAmount' => $this->_('Fixed amount deducted from order total'),
             'Rate' => $this->_('Percentage rebate on order total'),
             'AlternatePrice' => $this->_('Discount price provided by alternate price list'),
@@ -301,8 +301,8 @@ class ProcessSnipWire extends Process implements Module {
             'GetFreeItems' => $this->_('Free products when customer buys specified quantity of product'),
             'AmountOnSubscription' => $this->_('Fixed amount on subscription'),
             'RateOnSubscription' => $this->_('Rate on subscription'),
-        );
-        $this->discountsTriggers = array(
+        ];
+        $this->discountsTriggers = [
             'Code' => $this->_('Enter discount code'),
             'Product' => $this->_('Specific product added'),
             'Total' => $this->_('Order reaches specific amount'),
@@ -310,7 +310,7 @@ class ProcessSnipWire extends Process implements Module {
             'CartContainsOnlySpecifiedProducts' => $this->_('Cart only contains specified products'),
             'CartContainsSomeSpecifiedProducts' => $this->_('Cart contains some of specified products'),
             'CartContainsAtLeastAllSpecifiedProducts' => $this->_('Cart contains at least all specified products'),
-        );
+        ];
     }
 
     /**
@@ -608,53 +608,53 @@ class ProcessSnipWire extends Process implements Module {
             return '<div id="SnipWireDashboardModal">' . $out . '</div>';
         }
 
-        $options = array(
+        $options = [
             'id' => 'SnipWireTabs',
             'rememberTabs' => JqueryWireTabs::rememberTabsNever,
-        );
+        ];
         // Hand over configuration to JS
         $config->js('tabsOptions', $options);
 
-        $tabsConfig = array(
-            'dashboard' => array(
+        $tabsConfig = [
+            'dashboard' => [
                 'label' => $this->_('Dashboard'),
                 'urlsegment' => '', // dashboard is root!
-            ),
-            'orders' => array(
+            ],
+            'orders' => [
                 'label' => $this->_('Orders'),
                 'urlsegment' => 'orders',
-            ),
-            'subscriptions' => array(
+            ],
+            'subscriptions' => [
                 'label' => $this->_('Subscriptions'),
                 'urlsegment' => 'subscriptions',
-            ),
-            'abandoned-carts' => array(
+            ],
+            'abandoned-carts' => [
                 'label' => $this->_('Abandoned Carts'),
                 'urlsegment' => 'abandoned-carts',
-            ),
-            'customers' => array(
+            ],
+            'customers' => [
                 'label' => $this->_('Customers'),
                 'urlsegment' => 'customers',
-            ),
-            'products' => array(
+            ],
+            'products' => [
                 'label' => $this->_('Products'),
                 'urlsegment' => 'products',
-            ),
-            'discounts' => array(
+            ],
+            'discounts' => [
                 'label' => $this->_('Discounts'),
                 'urlsegment' => 'discounts',
-            ),
-            'settings' => array(
+            ],
+            'settings' => [
                 'label' => wireIconMarkup(self::iconSettings),
                 'urlsegment' => 'settings',
                 'tooltip' => $this->_('SnipWire module settings'),
-            ),
-        );
+            ],
+        ];
 
-        $tabs = array();
+        $tabs = [];
         foreach ($tabsConfig as $id => $cfg) {
-            $cls = array();
-            $attrs = array();
+            $cls = [];
+            $attrs = [];
             $attrs[] = 'id="_' . $id . '"';
             if ($cfg['urlsegment'] == $this->getProcessPage()->urlSegment) $cls[] = 'on';
             if (!empty($cfg['tooltip'])) {
@@ -698,20 +698,20 @@ class ProcessSnipWire extends Process implements Module {
      * @return string WireTabs compatible Markup
      * 
      */
-    private function _renderTabListCustom(array $tabs, array $options = array()) {
+    private function _renderTabListCustom(array $tabs, array $options = []) {
         $settings = $this->wire('config')->get('JqueryWireTabs');
-        $defaults = array(
+        $defaults = [
             'class' => isset($options['class']) ? $options['class'] : $settings['ulClass'],
             'id' => '', 
-        );
+        ];
         $options = array_merge($defaults, $options); 
         $attrs = "class='$options[class]'" . ($options['id'] ? " id='$options[id]'" : "");
         if (!empty($settings['ulAttrs'])) $attrs .= " $settings[ulAttrs]";
         $out = "<ul $attrs>";
         
         foreach ($tabs as $tabID => $title) {
-            $tabCls = array();
-            $tabAttrs = array();
+            $tabCls = [];
+            $tabAttrs = [];
             if ($tabID == $this->getProcessPage()->urlSegment) {
                 $tabCls[] = 'uk-active';
                 $tabAttrs[] = 'aria-expanded="true"';
@@ -909,7 +909,7 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _getStartDate() {
         $session = $this->wire('session');
-        $periodFrom = $this->wire('input')->get->date('periodFrom', 'Y-m-d', array('strict' => true));
+        $periodFrom = $this->wire('input')->get->date('periodFrom', 'Y-m-d', ['strict' => true]);
         if ($periodFrom) {
             $session->setFor($this, 'periodFrom', $periodFrom);
         } else {
@@ -928,7 +928,7 @@ class ProcessSnipWire extends Process implements Module {
      */
     private function _getEndDate() {
         $session = $this->wire('session');
-        $periodTo = $this->wire('input')->get->date('periodTo', 'Y-m-d', array('strict' => true));
+        $periodTo = $this->wire('input')->get->date('periodTo', 'Y-m-d', ['strict' => true]);
         if ($periodTo) {
             $session->setFor($this, 'periodTo', $periodTo);
         } else {

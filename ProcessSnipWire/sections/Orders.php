@@ -67,18 +67,18 @@ trait Orders {
         $paymentStatus = $sanitizer->text($input->paymentStatus);
         $invoiceNumber = $sanitizer->text($input->invoiceNumber);
         $placedBy = $sanitizer->text($input->placedBy);
-        $filter = array(
+        $filter = [
             'status' => $status ? $status : 'All',
             'paymentStatus' => $paymentStatus ? $paymentStatus : 'All',
             'invoiceNumber' => $invoiceNumber ? $invoiceNumber : '',
             'placedBy' => $placedBy ? $placedBy : '',
-        );
+        ];
         
-        $defaultSelector = array(
+        $defaultSelector = [
             'offset' => $offset,
             'limit' => $limit,
             'format' => 'Excerpt',
-        );
+        ];
         
         $selector = array_merge($defaultSelector, $filter);
         
@@ -92,10 +92,10 @@ trait Orders {
         $dataKey = SnipREST::resPathOrders;
         $orders = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         $total = isset($orders['totalItems']) ? $orders['totalItems'] : 0;
-        $items = isset($orders['items']) ? $orders['items'] : array();
+        $items = isset($orders['items']) ? $orders['items'] : [];
         $count = count($items);
 
         // Pagination out of bound
@@ -107,10 +107,10 @@ trait Orders {
         $out .= $this->_buildOrdersFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
-        $headline = $pageArray->getPaginationString(array(
+        $headline = $pageArray->getPaginationString([
             'label' => $this->_('Orders'),
             'zeroLabel' => $this->_('No orders found'), // 3.0.127+ only
-        ));
+        ]);
 
         $pager = $modules->get('MarkupPagerNav');
         $pager->setBaseUrl($this->processUrl);
@@ -188,13 +188,13 @@ trait Orders {
         $dataKey = SnipREST::resPathOrders . '/' . $token;
         $order = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         unset($response, $dataKey);
 
-        $defaultSelector = array(
+        $defaultSelector = [
             'offset' => 0,
             'limit' => 100, // should be enough (@todo: currently no pagination)
-        );
+        ];
         $response = $sniprest->getOrderNotifications(
             $token,
             $defaultSelector,
@@ -203,11 +203,11 @@ trait Orders {
         );
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathOrdersNotifications,
-            array('token' => $token)
+            ['token' => $token]
         );
         $notifications = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         unset($response, $dataKey);
 
         $out = '';
@@ -238,9 +238,9 @@ trait Orders {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
         
-        $filterSettings = array(
+        $filterSettings = [
             'form' => '#OrdersFilterForm',
-        );
+        ];
 
         // Hand over configuration to JS
         $config->js('filterSettings', $filterSettings);
@@ -363,7 +363,7 @@ trait Orders {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
                 $this->_('Placed by'),
@@ -373,7 +373,7 @@ trait Orders {
                 $this->_('Total'),
                 $this->_('Refunded'),
                 '&nbsp;',
-            ));
+            ]);
             foreach ($items as $item) {
                 $panelLink =
                 '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
@@ -393,7 +393,7 @@ trait Orders {
                     : '-';
                 $downloadUrl = \ProcessWire\wirePopulateStringTags(
                     SnipREST::snipcartInvoiceUrl,
-                    array('token' => $item['token'])
+                    ['token' => $item['token']]
                 );
                 $downloadLink =
                 '<a href="' . $downloadUrl . '"
@@ -408,7 +408,7 @@ trait Orders {
                 $completionDate .= \ProcessWire\wireDate('relative', $item['completionDate']);
                 $completionDate .= '</span>';
 
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     $completionDate,
                     $item['placedBy'],
@@ -418,7 +418,7 @@ trait Orders {
                     $total,
                     $refunded,
                     $downloadLink,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -526,7 +526,7 @@ trait Orders {
         $wrapper = $modules->get('InputfieldForm');
 
             $address = $item['user']['billingAddress'];
-            $data = array();
+            $data = [];
             foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
             }
@@ -541,7 +541,7 @@ trait Orders {
         $wrapper->add($f);
 
             $address = $item['user']['shippingAddress'];
-            $data = array();
+            $data = [];
             foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
             }
@@ -962,7 +962,7 @@ trait Orders {
         $statusValue = $sanitizer->text($statusValue);
         $trackingNumberValue = $sanitizer->text($trackingNumberValue);
         $trackingUrlValue = $sanitizer->httpUrl($trackingUrlValue);
-        $deliveryMethodValue = $sanitizer->option($deliveryMethodValue, array('Email', 'None'));
+        $deliveryMethodValue = $sanitizer->option($deliveryMethodValue, ['Email', 'None']);
 
         $success = $this->_updateOrderStatus($token, $statusValue, $oldStatus, $trackingNumberValue, $trackingUrlValue, $deliveryMethodValue);
         if ($success) {
@@ -1074,7 +1074,7 @@ trait Orders {
 
         // Sanitize input
         $messageValue = $sanitizer->textarea($messageValue);
-        $deliveryMethodValue = $sanitizer->option($deliveryMethodValue, array('Email', 'None'));
+        $deliveryMethodValue = $sanitizer->option($deliveryMethodValue, ['Email', 'None']);
 
         $success = $this->_addOrderComment($token, $messageValue, $deliveryMethodValue);
         if ($success) {
@@ -1102,7 +1102,7 @@ trait Orders {
     private function _getOrderDetailActionButtons($token, $ret = '') {
         $downloadUrl = \ProcessWire\wirePopulateStringTags(
             SnipREST::snipcartInvoiceUrl,
-            array('token' => $token)
+            ['token' => $token]
         );
 
         $out =
@@ -1137,7 +1137,7 @@ trait Orders {
      *
      */
     private function _renderOrderInfo($item) {
-        $infoCaptions = array(
+        $infoCaptions = [
             'customer' => $this->_('Customer'),
             'email' => $this->_('Email'),
             'creationDate' => $this->_('Order date'),
@@ -1145,7 +1145,7 @@ trait Orders {
             'shippingMethod' => $this->_('Shipping method'),
             'shippingProvider' => $this->_('Shipping provider'),
             'trackingNumber' => $this->_('Tracking number'),
-        );
+        ];
         
         $item['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'];
         $item['email'] =
@@ -1169,7 +1169,7 @@ trait Orders {
         }
         $item['trackingNumber'] = $trackingNumber;
         
-        $data = array();
+        $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
         }
@@ -1185,14 +1185,14 @@ trait Orders {
      *
      */
     private function _renderPaymentInfo($item) {
-        $infoCaptions = array(
+        $infoCaptions = [
             'paymentMethod' => $this->_('Payment method'),
             'cardType' => $this->_('Card type'),
             'cardHolderName' => $this->_('Card holder'),
             'creditCardLast4Digits' => $this->_('Card number'),
             'currency' => $this->_('Currency'),
             'paymentStatus' => $this->_('Payment Status'),
-        );
+        ];
         
         $item['paymentMethod'] = $this->getPaymentMethod($item['paymentMethod']);
 
@@ -1207,7 +1207,7 @@ trait Orders {
 
         $item['paymentStatus'] = $this->getPaymentStatus($item['paymentStatus']);
 
-        $data = array();
+        $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
         }
@@ -1258,92 +1258,92 @@ trait Orders {
         $table->id = 'OrderSummaryTable';
         $table->setSortable(false);
         $table->setResizable(false);
-        $table->headerRow(array(
+        $table->headerRow([
             $this->_('SKU'),
             $this->_('Name'),
             $this->_('Quantity'),
             $this->_('Price'),
             $this->_('Total'),
-        ));
+        ]);
         foreach ($products as $product) {
-            $table->row(array(
+            $table->row([
                 $product['id'],
                 $product['name'],
                 $product['quantity'],
                 CurrencyFormat::format($product['price'], $currency),
                 CurrencyFormat::format($product['totalPrice'], $currency),
-            ));
+            ]);
         }
 
         // Subtotal row
-        $table->row(array(
+        $table->row([
             '',
             '<span class="subtotal-label">' . $this->_('Subtotal') . '</span>',
             '',
             '',
             '<span class="subtotal-value">' . CurrencyFormat::format($summary['subtotal'], $currency) . '</span>',
-        ), array(
+        ], [
             'class' => 'row-summary-subtotal',
-        ));
+        ]);
         
         // Shipping row
         $shippingMethod = $item['shippingMethod'] ? ' (' . $item['shippingMethod'] . ')' : '';
-        $table->row(array(
+        $table->row([
             '',
             $this->_('Shipping') . $shippingMethod,
             '',
             '',
             CurrencyFormat::format($item['shippingFees'], $currency),
-        ), array(
+        ], [
             'class' => 'row-summary-shipping',
-        ));
+        ]);
 
         // Taxes rows
         foreach ($taxes as $tax) {
-            $table->row(array(
+            $table->row([
                 '',
                 $tax['taxName'],
                 '',
                 '',
                 CurrencyFormat::format($tax['amount'], $currency),
-            ), array(
+            ], [
                 'class' => 'row-summary-tax',
-            ));
+            ]);
         }
 
         // Total row
-        $table->row(array(
+        $table->row([
             '',
             '<span class="total-label">' . $this->_('Total') . '</span>',
             '',
             '',
             '<span class="total-value">' . CurrencyFormat::format($summary['total'], $currency) . '</span>',
-        ), array(
+        ], [
             'class' => 'row-summary-total',
-        ));
+        ]);
 
         if ($item['refundsAmount']) {
             // Refunds row
-            $table->row(array(
+            $table->row([
                 '',
                 '<span class="refunds-label">' . $this->_('Refunded') . '</span>',
                 '',
                 '',
                 '<span class="refunds-value">' . CurrencyFormat::format($item['refundsAmount'], $currency) . '</span>',
-            ), array(
+            ], [
                 'class' => 'row-summary-refunds',
-            ));
+            ]);
     
             // Total after refunds row
-            $table->row(array(
+            $table->row([
                 '',
                 '<span class="total-adjusted-label">' . $this->_('Total after refunds') . '</span>',
                 '',
                 '',
                 '<span class="total-adjusted-value">' . CurrencyFormat::format($item['adjustedAmount'], $currency) . '</span>',
-            ), array(
+            ], [
                 'class' => 'row-summary-total-adjusted',
-            ));
+            ]);
         }
 
         $out = $table->render();            
@@ -1381,21 +1381,21 @@ trait Orders {
         $table->id = 'RefundsSummaryTable';
         $table->setSortable(false);
         $table->setResizable(false);
-        $table->headerRow(array(
+        $table->headerRow([
             $this->_('Refunded on'),
             $this->_('Amount'),
             $this->_('Reason for refund'),
             $this->_('Payment gateway'),
-        ));
+        ]);
         foreach ($refunds as $refund) {
-            $table->row(array(
+            $table->row([
                 \ProcessWire\wireDate('Y-m-d H:i:s', $refund['creationDate']),
                 CurrencyFormat::format($refund['amount'], $currency),
                 $refund['comment'],
                 $refund['refundedByPaymentGateway']
                     ? $this->_('Refunded')
                     : $this->_('Not refunded')
-            ));
+            ]);
         }
 
         $out = $table->render();            
@@ -1442,11 +1442,11 @@ trait Orders {
         $table->id = 'CommentsSummaryTable';
         $table->setSortable(false);
         $table->setResizable(false);
-        $table->headerRow(array(
+        $table->headerRow([
             $this->_('Created on'),
             $this->_('Notification'),   
             $this->_('Email sent on'),         
-        ));
+        ]);
         foreach ($notifications['items'] as $notification) {
 
             switch ($notification['type']) {
@@ -1502,11 +1502,11 @@ trait Orders {
                 $emailSent = '-';
             }
 
-            $table->row(array(
+            $table->row([
                 \ProcessWire\wireDate('Y-m-d H:i:s', $notification['creationDate']),
                 $message,
                 $emailSent,
-            ));
+            ]);
         }
 
         $out = $table->render(); 
@@ -1526,16 +1526,16 @@ trait Orders {
         
         if (empty($token)) return;
         
-        $options = array(
+        $options = [
             'type' => 'Invoice',
             'deliveryMethod' => 'Email',
-        );
+        ];
         
         $response = $sniprest->postOrderNotification($token, $options);
         
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathOrdersNotifications,
-            array('token' => $token)
+            ['token' => $token]
         );
         if (
             $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
@@ -1566,18 +1566,18 @@ trait Orders {
 
         if (empty($token) || empty($amount)) return;
 
-        $options = array(
+        $options = [
             'amount' => $amount,
             'comment' => $comment,
             'notifyCustomer' => $notifyCustomer,
-        );
+        ];
 
         $refunded = false;
         $response = $sniprest->postOrderRefund($token, $options);
         
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathOrdersRefunds,
-            array('token' => $token)
+            ['token' => $token]
         );
         if (
             $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
@@ -1611,11 +1611,11 @@ trait Orders {
         
         if (empty($token)) return;
         
-        $options = array(
+        $options = [
             'status' => $status,
             'trackingNumber' => $trackingNumber,
             'trackingUrl' => $trackingUrl,
-        );
+        ];
         
         $updated = false;
         $response = $sniprest->putOrderStatus($token, $options);
@@ -1642,27 +1642,27 @@ trait Orders {
             //
             if ($status == 'Shipped') {
                 if (!empty($trackingNumber)) {
-                    $options = array(
+                    $options = [
                         'type' => 'TrackingNumber',
                         'deliveryMethod' => 'Email',
-                    );
+                    ];
                 } elseif (empty($trackingNumber) && $deliveryMethod == 'Email') {
-                    $options = array(
+                    $options = [
                         'type' => 'OrderShipped',
                         'deliveryMethod' => 'Email',
-                    );
+                    ];
                 } else {
-                    $options = array(
+                    $options = [
                         'type' => 'OrderShipped',
                         'deliveryMethod' => 'None',
-                    );
+                    ];
                 }
                 
                 $response = $sniprest->postOrderNotification($token, $options);
                 
                 $dataKey = \ProcessWire\wirePopulateStringTags(
                     SnipREST::resPathOrdersNotifications,
-                    array('token' => $token)
+                    ['token' => $token]
                 );
                 if (
                     $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
@@ -1694,18 +1694,18 @@ trait Orders {
         
         if (empty($token)) return;
         
-        $options = array(
+        $options = [
             'type' => 'Comment',
             'message' => $message,
             'deliveryMethod' => $deliveryMethod,
-        );
+        ];
         
         $added = false;
         $response = $sniprest->postOrderNotification($token, $options);
         
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathOrdersNotifications,
-            array('token' => $token)
+            ['token' => $token]
         );
         if (
             $response[$dataKey][WireHttpExtended::resultKeyHttpCode] != 200 &&
@@ -1729,10 +1729,10 @@ trait Orders {
      *
      */
     private function _setOrderJSConfigValues() {
-        $this->wire('config')->js('orderActionStrings', array(
+        $this->wire('config')->js('orderActionStrings', [
             'info_download_invoice' => $this->_("To download an invoice, you first need to login to your Snipcart dashboard.\nAlso please be sure your browser allows popups from this site.\n\nStart download now?"),
             'confirm_resend_invoice' => $this->_('Do you want to resend this invoice?'),
             'confirm_send_refund' => $this->_('Do you want to send this refund?'),
-        ));
+        ]);
     }
 }

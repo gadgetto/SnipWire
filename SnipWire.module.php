@@ -27,7 +27,7 @@ use SnipWire\Services\WireHttpExtended;
 class SnipWire extends WireData implements Module, ConfigurableModule {
 
     public static function getModuleInfo() {
-        return array(
+        return [
             'title' => __('SnipWire'), // Module Title
             'summary' => __('Full Snipcart shopping cart integration for ProcessWire.'), // Module Summary
             'version' => '0.8.7',
@@ -36,23 +36,23 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             'icon' => 'shopping-cart', 
             'singular' => true, 
             'autoload' => true, 
-            'installs' => array(
+            'installs' => [
                 'ProcessSnipWire',
                 'MarkupSnipWire',
                 'FieldtypeSnipWireTaxSelector',
                 'FieldtypeOptions',
-            ),
-            'requires' => array(
+            ],
+            'requires' => [
                 'ProcessWire>=3.0.148',
                 'PHP>=7.0.0',
-            ),
-        );
+            ],
+        ];
     }
 
     const snipWireLogName = 'snipwire';
 
     /** @var array $snipwireConfig The module config of SnipWire module */
-    protected $snipwireConfig = array();
+    protected $snipwireConfig = [];
 
     /**
      * Returns a template array for a currency specific price input field.
@@ -64,7 +64,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * 
      */
     public static function getCurrencyFieldTemplate() {
-        return array(
+        return [
             'name' => 'snipcart_item_price_',
             'type' => 'FieldtypeText',
             'label' => __('Product Price'),
@@ -73,7 +73,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             'required' => true,
             'pattern' => '[-+]?[0-9]*[.]?[0-9]+',
             'tags' => 'Snipcart',
-        );
+        ];
     }
 
     /**

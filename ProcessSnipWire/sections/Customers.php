@@ -59,16 +59,16 @@ trait Customers {
         $status = $sanitizer->text($input->status);
         $email = $sanitizer->text($input->email);
         $name = $sanitizer->text($input->name);
-        $filter = array(
+        $filter = [
             'status' => $status ? $status : 'All',
             'email' => $email ? $email : '',
             'name' => $name ? $name : '',
-        );
+        ];
 
-        $defaultSelector = array(
+        $defaultSelector = [
             'offset' => $offset,
             'limit' => $limit,
-        );
+        ];
 
         $selector = array_merge($defaultSelector, $filter);
 
@@ -82,10 +82,10 @@ trait Customers {
         $dataKey = SnipREST::resPathCustomers;
         $customers = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         
         $total = isset($customers['totalItems']) ? $customers['totalItems'] : 0;
-        $items = isset($customers['items']) ? $customers['items'] : array();
+        $items = isset($customers['items']) ? $customers['items'] : [];
         $count = count($items);
 
         // Pagination out of bound
@@ -97,10 +97,10 @@ trait Customers {
         $out = $this->_buildCustomersFilter($filter);
 
         $pageArray = $this->_prepareItemListerPagination($total, $count, $limit, $offset);
-        $headline = $pageArray->getPaginationString(array(
+        $headline = $pageArray->getPaginationString([
             'label' => $this->_('Customers'),
             'zeroLabel' => $this->_('No customers found'), // 3.0.127+ only
-        ));
+        ]);
 
         $pager = $modules->get('MarkupPagerNav');
         $pager->setBaseUrl($this->processUrl);
@@ -169,7 +169,7 @@ trait Customers {
         $dataKey = SnipREST::resPathCustomers . '/' . $id;
         $customer = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         $out = '';
 
@@ -199,9 +199,9 @@ trait Customers {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
-        $filterSettings = array(
+        $filterSettings = [
             'form' => '#CustomersFilterForm',
-        );
+        ];
 
         // Hand over configuration to JS
         $config->js('filterSettings', $filterSettings);
@@ -290,14 +290,14 @@ trait Customers {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Name'),
                 $this->_('Email'),
                 $this->_('Created on'),
                 $this->_('# Orders'),
                 $this->_('# Subscriptions'),
                 $this->_('Status'),
-            ));
+            ]);
 
             foreach ($items as $item) {
                 $panelLink =
@@ -312,14 +312,14 @@ trait Customers {
                 $creationDate .= \ProcessWire\wireDate('relative', $item['creationDate']);
                 $creationDate .= '</span>';
 
-                $table->row(array(
+                $table->row([
                     $panelLink,
                     $item['email'],
                     $creationDate,
                     $item['statistics']['ordersCount'],
                     $item['statistics']['subscriptionsCount'],
                     $this->getCustomerStatus($item['status']),
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -372,23 +372,23 @@ trait Customers {
         $dataKey = SnipREST::resPathCustomersOrders;
         $orders = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         unset($response, $dataKey);
         
-        $response = $sniprest->getSubscriptionsItems(array(
+        $response = $sniprest->getSubscriptionsItems([
             'userDefinedCustomerNameOrEmail' => $email,
-        ));
+        ]);
         $dataKey = SnipREST::resPathSubscriptions;
         $subscriptions = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         unset($response, $dataKey);
         
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
             $address = $item['billingAddress'];
-            $data = array();
+            $data = [];
             foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
                 if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
@@ -405,7 +405,7 @@ trait Customers {
         $wrapper->add($f);
 
             $address = $item['shippingAddress'];
-            $data = array();
+            $data = [];
             foreach ($this->getCustomerAddressLabels() as $key => $caption) {
                 $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
                 if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
@@ -536,7 +536,7 @@ trait Customers {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Invoice #'),
                 $this->_('Placed on'),
                 $this->_('Country'),
@@ -546,7 +546,7 @@ trait Customers {
                 $this->_('Total'),
                 //$this->_('Refunded'),
                 '&nbsp;',
-            ));
+            ]);
             foreach ($items as $item) {
                 // Need to attach a return URL to be able to stay in modal panel when order detail is opened
                 $ret = urlencode($this->snipWireRootUrl . 'customer/' . $customerId);
@@ -567,7 +567,7 @@ trait Customers {
                     : '-';
                 $downloadUrl = \ProcessWire\wirePopulateStringTags(
                     SnipREST::snipcartInvoiceUrl,
-                    array('token' => $item['token'])
+                    ['token' => $item['token']]
                 );
                 $downloadLink =
                 '<a href="' . $downloadUrl . '"
@@ -582,7 +582,7 @@ trait Customers {
                 $creationDate .= \ProcessWire\wireDate('relative', $item['creationDate']);
                 $creationDate .= '</span>';
 
-                $table->row(array(
+                $table->row([
                     $invoiceNumber,
                     $creationDate,
                     Countries::getCountry($item['billingAddressCountry']),
@@ -592,7 +592,7 @@ trait Customers {
                     $total,
                     //$refunded,
                     $downloadLink,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -626,14 +626,14 @@ trait Customers {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Plan'),
                 $this->_('Subscription Date'),
                 $this->_('Interval'),
                 $this->_('Price'),
                 $this->_('Total Spent'),
                 $this->_('Status'),
-            ));
+            ]);
             foreach ($items as $item) {
                 // Need to attach a return URL to be able to stay in modal panel when subscription detail is opened
                 $ret = urlencode($this->snipWireRootUrl . 'customer/' . $customerId);
@@ -665,14 +665,14 @@ trait Customers {
                     $status = $this->getSubscriptionStatus('active');
                 }
 
-                $table->row(array(
+                $table->row([
                     $planName,
                     $creationDate,
                     $interval,
                     $amount,
                     $totalSpent,
                     $status,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {

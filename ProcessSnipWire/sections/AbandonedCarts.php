@@ -60,18 +60,18 @@ trait AbandonedCarts {
         if (!$timeRange) $timeRange = 'LessThanAWeek';
         $minimalValue = $sanitizer->text($input->minimalValue);
         $email = $sanitizer->text($input->email);
-        $filter = array(
+        $filter = [
             'timeRange' => $timeRange,
             'minimalValue' => $minimalValue ? $minimalValue : '',
             'email' => $email ? $email : '',
-        );
+        ];
 
         // Currently there is no pagination available as Snipcart has no offset param in this case.
         // @todo: create an alternative way to use pagination here
-        $defaultSelector = array(
+        $defaultSelector = [
             'limit' => $limit,
             'continuationToken' => $continuationToken,
-        );
+        ];
 
         $selector = array_merge($defaultSelector, $filter);
 
@@ -85,9 +85,9 @@ trait AbandonedCarts {
         $dataKey = SnipREST::resPathCartsAbandoned;
         $abandonedCarts = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
         
-        $items = isset($abandonedCarts['items']) ? $abandonedCarts['items'] : array();
+        $items = isset($abandonedCarts['items']) ? $abandonedCarts['items'] : [];
 
         $out = $this->_buildAbandonedCartsFilter($filter);
 
@@ -153,7 +153,7 @@ trait AbandonedCarts {
         $dataKey = SnipREST::resPathCartsAbandoned . '/' . $id;
         $cart = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
-            : array();
+            : [];
 
         $out = '';
 
@@ -183,9 +183,9 @@ trait AbandonedCarts {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
-        $filterSettings = array(
+        $filterSettings = [
             'form' => '#AbandonedCartsFilterForm',
-        );
+        ];
 
         // Hand over configuration to JS
         $config->js('filterSettings', $filterSettings);
@@ -274,14 +274,14 @@ trait AbandonedCarts {
             $table->setSortable(false);
             $table->setResizable(true);
             $table->setResponsive(true);
-            $table->headerRow(array(
+            $table->headerRow([
                 $this->_('Order Email'),
                 $this->_('Cart last modified'),
                 $this->_('# Items'),
                 $this->_('Items'),
                 $this->_('Value'),
                 $this->_('Contacted'),
-            ));
+            ]);
 
             foreach ($items as $item) {
                 $customerEmail =
@@ -303,7 +303,7 @@ trait AbandonedCarts {
 
                 $itemsCount = count($item['items']);
                 
-                $products = array();
+                $products = [];
                 foreach ($item['items'] as $product) {
                     $products[] = $product['name'];
                 }
@@ -314,7 +314,7 @@ trait AbandonedCarts {
                     CurrencyFormat::format($item['summary']['total'], $item['currency']) .
                 '</strong>';
                 
-                $notifications = isset($item['notifications']) ? $item['notifications'] : array();
+                $notifications = isset($item['notifications']) ? $item['notifications'] : [];
                 $notificationsCount = count($notifications);
                 if ($notificationsCount) {
                     $customerContacted = '<span class="success-color">' . $this->_('Yes') . '</span>';
@@ -322,14 +322,14 @@ trait AbandonedCarts {
                     $customerContacted = '<span class="ui-priority-secondary">' . $this->_('No') . '</span>';
                 }
                 
-                $table->row(array(
+                $table->row([
                     $customerEmail,
                     $modificationDate,
                     $itemsCount,
                     $productNames,
                     $total,
                     $customerContacted,
-                ));
+                ]);
             }
             $out = $table->render();
         } else {
@@ -362,7 +362,7 @@ trait AbandonedCarts {
         }
 
         $id = $item['id'];
-        $notifications = isset($item['notifications']) ? $item['notifications'] : array();
+        $notifications = isset($item['notifications']) ? $item['notifications'] : [];
         $notificationsCount = count($notifications);
 
         $out =
@@ -557,13 +557,13 @@ trait AbandonedCarts {
      *
      */
     private function _renderCartInfo($item) {
-        $infoCaptions = array(
+        $infoCaptions = [
             'status' => $this->_('Cart status'),
             'creationDate' => $this->_('Created on'),
             'modificationDate' => $this->_('Modified on'),
             'shippingMethod' => $this->_('Shipping method'),
             'currency' => $this->_('Currency'),
-        );
+        ];
 
         $item['creationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
         $item['modificationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']);
@@ -574,7 +574,7 @@ trait AbandonedCarts {
             ? $supportedCurrencies[$item['currency']]
             : $item['currency'];
 
-        $data = array();
+        $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
         }
@@ -590,15 +590,15 @@ trait AbandonedCarts {
      *
      */
     private function _renderCustomerInfo($item) {
-        $infoCaptions = array(
+        $infoCaptions = [
             'email' => $this->_('Email'),
             'firstName' => $this->_('First Name'),
             'name' => $this->_('Last Name'),
             'country' => $this->_('Country'),
             'lang' => $this->_('Language'),
-        );
+        ];
 
-        $customerInfos = array();
+        $customerInfos = [];
 
         if (!empty($item['email'])) {
             $customerInfos['email'] =
@@ -617,7 +617,7 @@ trait AbandonedCarts {
             : '';
         $customerInfos['lang'] = $item['lang'];
 
-        $data = array();
+        $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($customerInfos[$key]) ? $customerInfos[$key] : '-';
         }
@@ -646,59 +646,59 @@ trait AbandonedCarts {
         $table->id = 'CartSummaryTable';
         $table->setSortable(false);
         $table->setResizable(false);
-        $table->headerRow(array(
+        $table->headerRow([
             $this->_('SKU'),
             $this->_('Name'),
             $this->_('Quantity'),
             $this->_('Price'),
             $this->_('Total'),
-        ));
+        ]);
         foreach ($products as $product) {
-            $table->row(array(
+            $table->row([
                 $product['id'],
                 $product['name'],
                 $product['quantity'],
                 CurrencyFormat::format($product['price'], $currency),
                 CurrencyFormat::format($product['totalPrice'], $currency),
-            ));
+            ]);
         }
 
         // Subtotal row
-        $table->row(array(
+        $table->row([
             '',
             '<span class="subtotal-label">' . $this->_('Subtotal') . '</span>',
             '',
             '',
             '<span class="subtotal-value">' . CurrencyFormat::format($summary['subtotal'], $currency) . '</span>',
-        ), array(
+        ], [
             'class' => 'row-summary-subtotal',
-        ));
+        ]);
         
         // Shipping row
         $shippingMethod = $shipping['method'] ? ' (' . $shipping['method'] . ')' : '';
         $fees = isset($shipping['fees']) ? $shipping['fees'] : 0;
         $shippingFees = CurrencyFormat::format($fees, $currency);
 
-        $table->row(array(
+        $table->row([
             '',
             $this->_('Shipping') . $shippingMethod,
             '',
             '',
             $shippingFees,
-        ), array(
+        ], [
             'class' => 'row-summary-shipping',
-        ));
+        ]);
 
         // Total row
-        $table->row(array(
+        $table->row([
             '',
             '<span class="total-label">' . $this->_('Total') . '</span>',
             '',
             '',
             '<span class="total-value">' . CurrencyFormat::format($summary['total'], $currency) . '</span>',
-        ), array(
+        ], [
             'class' => 'row-summary-total',
-        ));
+        ]);
 
         $out = $table->render();            
 
@@ -719,7 +719,7 @@ trait AbandonedCarts {
         /*
         Sample notification item:
         
-        array(
+        [
             "sentOn" => "2020-01-22T17:43:26.7572848Z",
             "seenOn" => "",
             "type" => "Comment",
@@ -733,7 +733,7 @@ trait AbandonedCarts {
             "cartId" => "f8de173d-e333-4302-9e47-f5b0359c87f9",
             "accountId" => "52084",
             "mode" => "Test",
-        )
+        ]
         */
 
         /** @var MarkupAdminDataTable $table */
@@ -742,12 +742,12 @@ trait AbandonedCarts {
         $table->id = 'CartCommentsSummaryTable';
         $table->setSortable(false);
         $table->setResizable(false);
-        $table->headerRow(array(
+        $table->headerRow([
             $this->_('Email sent on'),
             $this->_('Email sent to'),
             $this->_('Message'),
             $this->_('Email seen on'),
-        ));
+        ]);
 
         foreach ($notifications as $notification) {            
             if (!empty($notification['sentOn'])) {
@@ -777,12 +777,12 @@ trait AbandonedCarts {
                 $seenOn = '-';
             }
 
-            $table->row(array(
+            $table->row([
                 $sentOn,
                 $to,
                 $message,
                 $seenOn,
-            ));
+            ]);
         }
 
         $out = $table->render(); 
@@ -805,11 +805,11 @@ trait AbandonedCarts {
 
         if (empty($id)) return;
 
-        $options = array(
+        $options = [
             'type' => 'Comment',
             'message' => $message,
             'deliveryMethod' => $deliveryMethod,
-        );
+        ];
 
         $added = false;
         $response = $sniprest->postAbandonedCartNotification($id, $options);

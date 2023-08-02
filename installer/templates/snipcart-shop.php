@@ -95,14 +95,14 @@ function ukProductOverview(PageArray $products) {
         // We use the first image in snipcart_item_image field for demo
         $imageMedia = '';
         if ($image = $product->snipcart_item_image->first()) {
-            $productImageMedium = $image->size(600, 0, array('quality' => 70));
+            $productImageMedium = $image->size(600, 0, ['quality' => 70]);
             $imageDesc = $productImageMedium->description ? $productImageMedium->description : $product->title;
             $imageMedia = '<img src="' . $productImageMedium->url . '" alt="' . $imageDesc . '">';
         } else {
             $imageMedia = 
             '<div class="uk-width-1-1 uk-height-small uk-background-muted uk-text-muted uk-flex uk-flex-center uk-flex-middle">' .
                 '<div title="' . __('No product image available') . '">' . 
-                    ukIcon('image', array('ratio' => 3)) . 
+                    ukIcon('image', ['ratio' => 3]) . 
                 '</div>' .
             '</div>';
             
@@ -112,11 +112,11 @@ function ukProductOverview(PageArray $products) {
         // with all data-item-* attributes required by Snipcart.
         // The anchor method is provided by MarkupSnipWire module and can be called 
         // via custom API variable: $snipwire->anchor()
-        $options = array(
+        $options = [
             'label' => ukIcon('cart'),
             'class' => 'uk-button uk-button-primary',
-            'attr' => array('aria-label' => __('Add item to cart')),
-        );
+            'attr' => ['aria-label' => __('Add item to cart')],
+        ];
         $anchor = wire('snipwire')->anchor($product, $options);
         
         // Get the formatted product price.
