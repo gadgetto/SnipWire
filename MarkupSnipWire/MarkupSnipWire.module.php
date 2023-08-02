@@ -20,7 +20,7 @@ use SnipWire\Helpers\CurrencyFormat;
 class MarkupSnipWire extends WireData implements Module {
     
     public static function getModuleInfo() {
-        return array(
+        return [
             'title' => __('SnipWire Markup'),
             'summary' => __('Snipcart markup output for SnipWire.'),
             'version' => '0.8.7',
@@ -28,12 +28,12 @@ class MarkupSnipWire extends WireData implements Module {
             'icon' => 'shopping-cart', 
             'singular' => true, 
             'autoload' => true, 
-            'requires' => array(
+            'requires' => [
                 'ProcessWire>=3.0.148',
                 'SnipWire',
                 'PHP>=7.0.0',
-             )
-        );
+             ]
+        ];
     }
 
     const snicpartAnchorTypeButton = 1;
@@ -46,7 +46,7 @@ class MarkupSnipWire extends WireData implements Module {
     private $currency = '';
 
     /** @var Page $customCartFieldsPage The "Custom Cart Fields" page */
-    protected $customCartFieldsPage = array();
+    protected $customCartFieldsPage = [];
 
     /** @var string $cartCustomFields The content of the "snipcart_cart_custom_fields" field */
     protected $cartCustomFields = '';
@@ -55,7 +55,7 @@ class MarkupSnipWire extends WireData implements Module {
      * Snipcart JS API configuration properties.
      *
      */
-    protected $snipcartAPIproperties = array(
+    protected $snipcartAPIproperties = [
         'credit_cards',
         'allowed_shipping_methods',
         'excluded_shipping_methods',
@@ -66,7 +66,7 @@ class MarkupSnipWire extends WireData implements Module {
         'provinces_for_country',
         'show_continue_shopping',
         'split_firstname_and_lastname',
-    );
+    ];
 
     /**
      * Initalize module config variables (properties)
@@ -186,8 +186,8 @@ class MarkupSnipWire extends WireData implements Module {
             $environmentStatus = '<!-- Snipcart TEST mode -->';
         }
 
-        $cssResources = array();
-        $jsResources = array();
+        $cssResources = [];
+        $jsResources = [];
 
         // Add Snipcart CSS resource
         $cssResources[] = $environmentStatus;
@@ -221,7 +221,7 @@ class MarkupSnipWire extends WireData implements Module {
         $jsResources[] = $out;
 
         // Pick available Snipcart JS API properties from module config for API output
-        $snipcartAPI = array();
+        $snipcartAPI = [];
         foreach ($this->getSnipcartAPIproperties() as $key) {
             if (isset($snipwireConfig->$key)) {
                 $snipcartAPI[$key] = $snipwireConfig->$key;
@@ -334,18 +334,18 @@ class MarkupSnipWire extends WireData implements Module {
      * - data-item-shippable: boolean Setting this to false, the product will be flagged as an item that can not be shipped.
      *
      */
-    public function anchor(Page $product, $options = array()) {
+    public function anchor(Page $product, $options = []) {
         // Return early if $product (Page) is not a Snipcart product
         if (!$this->isProductTemplate($product->template)) return '';
 
         $snipwireConfig = $this->snipwireConfig;
 
-        $defaults = array(
+        $defaults = [
             'type' => self::snicpartAnchorTypeButton,
             'class' => 'snipcart-add-item',
-            'attr' => array('title' => $this->_('Add to cart')),
+            'attr' => ['title' => $this->_('Add to cart')],
             'label' => $this->_('Add to cart'),
-        );
+        ];
         $options = $this->_mergeOptions($defaults, $options);
 
         $modules = $this->wire('modules');
@@ -392,14 +392,14 @@ class MarkupSnipWire extends WireData implements Module {
         }
 
         // Metadata to be stored with each product (PW page related data)
-        $meta = array(
+        $meta = [
             'id' => $product->id,
             'created' => $product->created,
             'modified' => $product->modified,
             'published' => $product->published,
             'created_users_id' => $product->created_users_id,
             'modified_users_id' => $product->modified_users_id,
-        );
+        ];
         $out .= " data-item-metadata='" . wireEncodeJSON($meta) . "'";
 
         if ($product->snipcart_item_weight) {
@@ -559,7 +559,7 @@ class MarkupSnipWire extends WireData implements Module {
         if (!is_array($currencies)) return ''; 
 
         // Collect all price fields values
-        $prices = array();
+        $prices = [];
         foreach ($currencies as $currency) {
             // Snipcart always needs a . as separator - so we may not typecasting (float) as it
             // would be locale aware so it could lead to , as decimal separator
@@ -577,7 +577,7 @@ class MarkupSnipWire extends WireData implements Module {
         
         // sample format:
         // 
-        // array(
+        // [
         //     'currency' => 'eur',
         //     'precision' => 2,
         //     'decimalSeparator' => ',',
@@ -585,7 +585,7 @@ class MarkupSnipWire extends WireData implements Module {
         //     'negativeNumberFormat' => '- %s%v',
         //     'numberFormat' => '%s%v',
         //     'currencySymbol' => '€',
-        // )
+        // ]
         
         // Get currency from method param or $snipwire->currency
         if (!$currencySelected) $currencySelected = $this->currency;
@@ -648,7 +648,7 @@ class MarkupSnipWire extends WireData implements Module {
         if (!$this->isProductTemplate($product->template)) return null;
 
         $snipwireConfig = $this->snipwireConfig;
-        $categories = array();
+        $categories = [];
         if ($categoriesFieldName = $snipwireConfig['data_item_categories_field']) {
             if ($categoriesField = $product->$categoriesFieldName) {
                 $categories = $categoriesField->each('title');
@@ -684,7 +684,7 @@ class MarkupSnipWire extends WireData implements Module {
                 if ($t = $this->wire('templates')->get($template)) $productTemplates->add($t);
             }
         } else {
-            $productTemplates = $templates ?? array();
+            $productTemplates = $templates ?? [];
         }
         return $productTemplates;
     }
@@ -717,7 +717,7 @@ class MarkupSnipWire extends WireData implements Module {
      * @return WireArray $selectedFields
      * 
      */
-    public function getProductTemplateFields($defaultFieldName, $allowedFieldTypes = array(), $excludeFieldNames = array()) {
+    public function getProductTemplateFields($defaultFieldName, $allowedFieldTypes = [], $excludeFieldNames = []) {
         $selectedFields = new WireArray();
         
         // Collect fields from all product templates and make unique
@@ -759,14 +759,14 @@ class MarkupSnipWire extends WireData implements Module {
      *
      */
     public function addCreditCardLabels($cards) {
-        $cardsWithLabels = array();
+        $cardsWithLabels = [];
         
         $creditcardLabels = SnipWireConfig::getCreditCardLabels();
         foreach ($cards as $card) {
-            $cardsWithLabels[] = array(
+            $cardsWithLabels[] = [
                 'type' => $card,
                 'display' => isset($creditcardLabels[$card]) ? $creditcardLabels[$card] : $card,
-            );
+            ];
         }
 
         return $cardsWithLabels;
@@ -781,13 +781,13 @@ class MarkupSnipWire extends WireData implements Module {
      *
      */
     private function _mergeOptions(array $defaults, array $options) {
-        $defaultsClass = isset($defaults['class']) ? explode(' ', $defaults['class']) : array();
-        $optionsClass = isset($options['class']) ? explode(' ', $options['class']) : array();
+        $defaultsClass = isset($defaults['class']) ? explode(' ', $defaults['class']) : [];
+        $optionsClass = isset($options['class']) ? explode(' ', $options['class']) : [];
         $options['class'] = implode(' ', array_merge($defaultsClass, $optionsClass));
 
         // Prepare tag attributes
-        $defaultsAttr = isset($defaults['attr']) && is_array($defaults['attr']) ? $defaults['attr'] : array();
-        $optionsAttr = isset($options['attr']) && is_array($options['attr']) ? $options['attr'] : array();
+        $defaultsAttr = isset($defaults['attr']) && is_array($defaults['attr']) ? $defaults['attr'] : [];
+        $optionsAttr = isset($options['attr']) && is_array($options['attr']) ? $options['attr'] : [];
         $options['attr'] = array_unique(array_merge($defaultsAttr, $optionsAttr));
         unset($defaults['attr']);
         
