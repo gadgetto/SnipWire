@@ -212,7 +212,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
-     * Check for webohook request and process them.
+     * Check for webhook request and process them.
      * (Method triggered before ProcessPageView execute)
      *
      */
