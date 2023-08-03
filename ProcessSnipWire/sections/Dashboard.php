@@ -101,7 +101,7 @@ trait Dashboard {
             /** @var InputfieldMarkup $f */
             $f = $modules->get('InputfieldMarkup');
             $f->label = $this->_('Performance Chart');
-            $f->icon = self::iconDasboard;
+            $f->icon = self::iconDashboard;
             $f->value = $chart;
             $f->columnWidth = 100;
             $f->collapsed = Inputfield::collapsedNever;

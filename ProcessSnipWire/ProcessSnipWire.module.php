@@ -105,7 +105,7 @@ class ProcessSnipWire extends Process implements Module {
     const assetsIncludeItemLister = 8;
     const assetsIncludeAll = 15;
 
-    const iconDasboard = 'bar-chart';
+    const iconDashboard = 'bar-chart';
     const iconOrder = 'file-text';
     const iconSubscription = 'calendar';
     const iconAbandonedCart = 'shopping-cart';
