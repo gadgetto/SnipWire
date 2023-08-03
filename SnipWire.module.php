@@ -77,7 +77,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
-     * Initalize module config variables (properties).
+     * Initialize module config variables (properties).
      * (Called before module config is populated)
      *
      */
