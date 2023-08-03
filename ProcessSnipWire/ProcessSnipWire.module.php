@@ -595,7 +595,7 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * SnipWire dashboard output wrapper with tabbed interface.
      *
-     * @return markup
+     * @return string
      *
      */
     private function _wrapDashboardOutput($out) {
