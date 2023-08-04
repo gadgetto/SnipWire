@@ -416,7 +416,7 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get a pre-translated payment status by it's key.
+     * Get a pre-translated payment status by its key.
      *
      * @param string $key The array key
      * @return string
@@ -431,7 +431,7 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated payment methods.
      *
-     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
      *
      */
@@ -491,7 +491,7 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated customer statuses.
      *
-     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
      *
      */
