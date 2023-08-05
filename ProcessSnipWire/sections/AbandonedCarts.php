@@ -18,12 +18,21 @@ use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
 use ProcessWire\Inputfield;
+use ProcessWire\InputfieldMarkup;
+use ProcessWire\InputfieldFieldset;
+use ProcessWire\InputfieldForm;
+use ProcessWire\InputfieldHidden;
+use ProcessWire\InputfieldSelect;
+use ProcessWire\InputfieldSubmit;
+use ProcessWire\InputfieldText;
+use ProcessWire\InputfieldTextarea;
+use ProcessWire\MarkupAdminDataTable;
 
 trait AbandonedCarts {
     /**
      * The SnipWire Snipcart Abandoned Carts page.
      *
-     * @return page markup
+     * @return string
      *
      */
     public function ___executeAbandonedCarts() {
@@ -112,7 +121,7 @@ trait AbandonedCarts {
     /**
      * The SnipWire Abandoned Cart detail page.
      *
-     * @return page markup
+     * @return string
      *
      */
     public function ___executeAbandonedCart() {
@@ -176,7 +185,7 @@ trait AbandonedCarts {
      * Build the abandoned carts filter form.
      *
      * @param array $filter The current filter values
-     * @return markup InputfieldForm
+     * @return string
      *
      */
     private function _buildAbandonedCartsFilter($filter) {
@@ -257,7 +266,7 @@ trait AbandonedCarts {
      * Render the abandoned carts table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
+     * @return string MarkupAdminDataTable | custom html with `no items` display
      *
      */
     private function _renderTableAbandonedCarts($items) {
@@ -346,7 +355,7 @@ trait AbandonedCarts {
      *
      * @param array $item
      * @param string $ret A return URL (optional)
-     * @return markup 
+     * @return string
      *
      */
     private function _renderDetailAbandonedCart($item, $ret = '') {
@@ -458,7 +467,7 @@ trait AbandonedCarts {
      *
      * @param array $item
      * @param string $ret A return URL (optional)
-     * @return markup 
+     * @return string
      *
      */
     private function _processCartNotificationForm($item, $ret = '') {
@@ -553,7 +562,7 @@ trait AbandonedCarts {
      * Render the cart info block.
      *
      * @param array $item
-     * @return markup 
+     * @return string
      *
      */
     private function _renderCartInfo($item) {
@@ -586,7 +595,7 @@ trait AbandonedCarts {
      * Render the customer info block.
      *
      * @param array $item
-     * @return markup 
+     * @return string
      *
      */
     private function _renderCustomerInfo($item) {
@@ -629,7 +638,7 @@ trait AbandonedCarts {
      * Render the cart summmary table.
      *
      * @param array $item
-     * @return markup MarkupAdminDataTable 
+     * @return string MarkupAdminDataTable
      *
      */
     private function _renderTableCartSummary($item) {
@@ -709,7 +718,7 @@ trait AbandonedCarts {
      * Render the abandoned cart notifications table.
      *
      * @param array $notifications The notifications array
-     * @return markup MarkupAdminDataTable 
+     * @return string MarkupAdminDataTable
      *
      */
     private function _renderTableCartNotifications($notifications) {
