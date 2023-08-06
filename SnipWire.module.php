@@ -88,7 +88,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     /**
      * Initialize the module and set required hooks.
      * (Called after module config is populated)
-     * 
+     *
+     * @throws WireException
      */
      public function init() {
         /** @var SnipREST $sniprest Custom ProcessWire API variable */
@@ -124,6 +125,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Validate and sanitize taxes repeater input fields.
      * (Method triggered before module config save)
      *
+     * @throws WireException
      */
     public function validateTaxesRepeater(HookEvent $event) {
         $class = $event->arguments(0);
@@ -166,6 +168,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * - Fields will be created on demand (if not exists).
      *
+     * @throws WireException
      */
     public function manageCurrencyPriceFields(HookEvent $event) {
         $class = $event->arguments(0);
@@ -215,6 +218,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Check for webhook request and process them.
      * (Method triggered before ProcessPageView execute)
      *
+     * @throws WireException
      */
     public function checkWebhookRequest(HookEvent $event) {
         if ($webhooksEndpoint = $this->get('webhooks_endpoint')) {
@@ -229,11 +233,12 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     /**
      * Preset value of field snipcart_item_id (SKU) with page ID.
      * Preset value of field snipcart_item_taxes (VAT) with first element of taxes config.
-     * Preset value of checkbox field snipcart_item_taxable so it's checked by default.
-     * Preset value of checkbox field snipcart_item_shippable so it's checked by default.
-     * Preset value of checkbox field snipcart_item_recurring_shipping so it's checked by default.
+     * Preset value of checkbox field snipcart_item_taxable, so it's checked by default.
+     * Preset value of checkbox field snipcart_item_shippable, so it's checked by default.
+     * Preset value of checkbox field snipcart_item_recurring_shipping, so it's checked by default.
      * (Method triggered after Pages added)
      *
+     * @throws WireException
      */
     public function presetProductFields(HookEvent $event) {
         $snipwire = $this->wire('snipwire');
@@ -253,6 +258,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Preset value of field snipcart_item_taxes (VAT) with first element of taxes config.
      * (Method triggered after Pages added)
      *
+     * @throws WireException
      */
     public function presetProductTaxesField(HookEvent $event) {
         $snipwire = $this->wire('snipwire');
@@ -303,6 +309,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Automatically creates/restores a Snipcart product by manually fetching URL (archived flag is set to false).
      * (Method triggered after a page has just been saved)
      *
+     * @throws WireException
      */
     public function publishSnipcartProduct(HookEvent $event) {
         $snipwire = $this->wire('snipwire');
@@ -342,9 +349,10 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     }
 
     /**
-     * Archive a Snipcart product so it won't be visible in the products listing anymore (archived flag is set to true).
+     * Archive a Snipcart product, so it won't be visible in the products listing anymore (archived flag is set to true).
      * (Method triggered after a published page has just been unpublished)
      *
+     * @throws WireException
      */
     public function unpublishSnipcartProduct(HookEvent $event) {
         $snipwire = $this->wire('snipwire');
@@ -393,6 +401,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @param HookEvent $event
      *
+     * @throws WireException
      */
     public function convertFieldtypeTaxSelector(HookEvent $event) {   
         $class = $event->arguments(0);
@@ -413,6 +422,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     /**
      * Called on module uninstall
      *
+     * @throws WireException
      */
     public function ___uninstall() {
         // Remove all caches created by SnipWire (SnipWire namespace)
