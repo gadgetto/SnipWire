@@ -88,20 +88,20 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
                 'numberForInvoice' => '',
                 'rate' => '0.20',
                 'appliesOnShipping' => [], // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
-            ),
-             [
+            ],
+            [
                 'name' => '10% VAT',
                 'numberForInvoice' => '',
                 'rate' => '0.10',
                 'appliesOnShipping' => [] // empty array --> taxesTypeProducts (jquery.repeater checkbox values are arrays)
-            ),            
-             [
+            ],
+            [
                 'name' => '20% VAT',
                 'numberForInvoice' => '',
                 'rate' => '0.20',
                 'appliesOnShipping' => [1] // array value = 1 --> taxesTypeShipping (jquery.repeater checkbox values are arrays)
-            ),            
-       );
+            ],
+        ];
         */
         foreach ($taxes as $tax) {
             $tax['attributes'] = [];
