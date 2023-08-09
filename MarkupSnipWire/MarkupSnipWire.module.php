@@ -36,8 +36,8 @@ class MarkupSnipWire extends WireData implements Module {
         ];
     }
 
-    const snicpartAnchorTypeButton = 1;
-    const snicpartAnchorTypeLink = 2;
+    const snipcartAnchorTypeButton = 1;
+    const snipcartAnchorTypeLink = 2;
 
     /** @var SnipWire $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = null;
@@ -270,7 +270,7 @@ class MarkupSnipWire extends WireData implements Module {
      *  - `class` (string): Any additional class names to add, separated by ' ' (default='').
      *  - `attr` (array): Any additional tag attributes to add, as attr => value (default: 'title' => 'Add to cart').
      *  - `label` (string): The button or link label (default='Add to cart').
-     *  - `type` (integer): The anchor type - can be button or link [default=self::snicpartAnchorTypeButton]
+     *  - `type` (integer): The anchor type - can be button or link [default=self::snipcartAnchorTypeButton]
      * @return string $out The HTML for a Snipcart buy button or link (HTML button | a tag)
      *
      * @see: https://docs.snipcart.com/v3/setup/products
@@ -342,7 +342,7 @@ class MarkupSnipWire extends WireData implements Module {
         $snipwireConfig = $this->snipwireConfig;
 
         $defaults = [
-            'type' => self::snicpartAnchorTypeButton,
+            'type' => self::snipcartAnchorTypeButton,
             'class' => 'snipcart-add-item',
             'attr' => ['title' => $this->_('Add to cart')],
             'label' => $this->_('Add to cart'),
@@ -352,7 +352,7 @@ class MarkupSnipWire extends WireData implements Module {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
         
-        if ($options['type'] == self::snicpartAnchorTypeLink) {
+        if ($options['type'] == self::snipcartAnchorTypeLink) {
             $open = '<a href="#"';
             $close = '</a>';
         } else { 
