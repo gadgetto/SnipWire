@@ -48,10 +48,11 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
 		$this->allowTextFormatters(false);
 	}
 
-	/**
-	 * Return all Fieldtypes derived from FieldtypeText, which we will consider compatible.
-	 *
-	 */
+    /**
+     * Return all Fieldtypes derived from FieldtypeText, which we will consider compatible.
+     *
+     * @throws WireException
+     */
     public function ___getCompatibleFieldtypes(Field $field) {
 		$fieldtypes = $this->wire(new Fieldtypes());
         foreach ($this->wire('fieldtypes') as $fieldtype) {
@@ -66,6 +67,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
      * Return the associated Inputfield.
      * (Default: InputfieldSelect)
      *
+     * @throws WireException
      */
     public function getInputfield(Page $page, Field $field) {
         $inputfieldClass = $field->get('inputfieldClass'); 
@@ -112,8 +114,9 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
     }
 
     /**
-	 * Return the fields required to configure an instance of this Fieldtype
+     * Return the fields required to configure an instance of this Fieldtype
      *
+     * @throws WireException
      */
     public function ___getConfigInputfields(Field $field) {
         $inputfields = parent::___getConfigInputfields($field);
