@@ -39,7 +39,7 @@ class MarkupSnipWire extends WireData implements Module {
     const snicpartAnchorTypeButton = 1;
     const snicpartAnchorTypeLink = 2;
 
-    /** @var Module $snipwireConfig The module config of SnipWire module */
+    /** @var SnipWire $snipwireConfig The module config of SnipWire module */
     protected $snipwireConfig = null;
 
     /** @var string $currency The currency to be used in cart and catalogue ('eur' or 'usd' or 'cad' ...) */
