@@ -51,8 +51,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
     const snipWireLogName = 'snipwire';
 
-    /** @var array $snipwireConfig The module config of SnipWire module */
-    protected $snipwireConfig = [];
+    /** @var SnipWire $snipwireConfig The module config of SnipWire module */
+    protected $snipwireConfig = null;
 
     /**
      * Returns a template array for a currency specific price input field.

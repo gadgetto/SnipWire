@@ -68,8 +68,8 @@ class Webhooks extends WireData {
     const webhookModeLive = 'Live';
     const webhookModeTest = 'Test';
 
-    /** @var array $snipwireConfig The module config of SnipWire module */
-    protected $snipwireConfig = [];
+    /** @var SnipWire $snipwireConfig The module config of SnipWire module */
+    protected $snipwireConfig = null;
 
     /** @var boolean Turn on/off debug mode for Webhooks class */
     private $debug = false;
