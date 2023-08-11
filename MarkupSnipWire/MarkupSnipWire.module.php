@@ -108,6 +108,33 @@ class MarkupSnipWire extends WireData implements Module {
     }
 
     /**
+     * Checks if SnipWire module config is complete.
+     *
+     * @param SnipWire $config The SnipWire config object
+     * @return boolean
+     */
+    public function configComplete($config) {
+        $complete = false;
+        // Snipcart environment (TEST | LIVE?)
+        if ($config->snipcart_environment === 1) {
+            if (
+                !empty($config->api_key) &&
+                !empty($config->api_key_secret)
+            ) {
+                $complete = true;
+            }
+        } else {
+            if (
+                !empty($config->api_key_test) &&
+                !empty($config->api_key_secret_test)
+            ) {
+                $complete = true;
+            }
+        }
+        return $complete;
+    }
+
+    /**
      * Set cart and catalogue currency (ISO 4217 currency code) using $input, $session or module config.
      *
      * @throws WireException
@@ -169,9 +196,11 @@ class MarkupSnipWire extends WireData implements Module {
                 
         // Prevent adding to pages with system templates assigned
         if ($page->template->flags & Template::flagSystem) return;
-        
-        // Prevent rendering if module config was never saved
-        if (!$snipwireConfig->submit_save_module) return;
+
+        // Prevent rendering if module config is not complete
+        if (!$this->configComplete($snipwireConfig)) {
+            return;
+        }
 
         // Prevent adding to pages with excluded templates assigned
         if (in_array($page->template->name, $snipwireConfig->excluded_templates)) return;
