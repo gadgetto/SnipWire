@@ -92,10 +92,10 @@ class SnipWireConfig extends ModuleConfig {
      */
     public function getDefaults() {
         return [
-            'api_key' => 'YOUR_LIVE_API_KEY',
-            'api_key_test' => 'YOUR_TEST_API_KEY',
-            'api_key_secret' => 'YOUR_LIVE_API_KEY_SECRET',
-            'api_key_secret_test' => 'YOUR_TEST_API_KEY_SECRET',
+            'api_key' => '',
+            'api_key_test' => '',
+            'api_key_secret' => '',
+            'api_key_secret_test' => '',
             'snipcart_environment' => 0,
             'single_page_shop' => 0,
             'single_page_shop_page' => 1,
