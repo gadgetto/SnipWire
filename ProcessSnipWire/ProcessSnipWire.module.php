@@ -10,7 +10,6 @@ namespace ProcessWire;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 require_once dirname(__DIR__) . '/helpers/Functions.php';
@@ -121,57 +120,56 @@ class ProcessSnipWire extends Process implements Module {
     const iconSettings = 'cog';
     const iconDebug = 'bug';
 
-    /** @var array $snipwireConfig The module config of SnipWire module */
-    protected $snipwireConfig = [];
+    /** @var SnipWire $snipwireConfig The module config of SnipWire module */
+    protected $snipwireConfig = null;
 
     /** @var array $currencies The activated currencies from SnipWire module config */
     private $currencies = [];
 
-    /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
+    /** @var string $snipWireRootUrl The root URL to ProcessSnipWire page */
     protected $snipWireRootUrl = '';
 
-    /**var string $currentUrl The URL to current (virtual) page + path + url-segments */
+    /** @var string $currentUrl The URL to current (virtual) page + path + url-segments */
     protected $currentUrl = '';
 
-    /**var string $processUrl The URL to current (virtual) page */
+    /** @var string $processUrl The URL to current (virtual) page */
     protected $processUrl = '';
 
-    /**var array $orderStatuses The order statuses */
+    /** @var array $orderStatuses The order statuses */
     public $orderStatuses = [];
     
-    /**var array $orderStatusesSelectable The order statuses for form selects */
+    /** @var array $orderStatusesSelectable The order statuses for form selects */
     public $orderStatusesSelectable = [];
     
-    /**var array $subscriptionStatuses The subscription statuses */
+    /** @var array $subscriptionStatuses The subscription statuses */
     public $subscriptionStatuses = [];
     
-    /**var array $commentTypes The comment types */
+    /** @var array $commentTypes The comment types */
     public $commentTypes = [];
 
-    /**var array $paymentStatuses The payment statuses */
+    /** @var array $paymentStatuses The payment statuses */
     public $paymentStatuses = [];
 
-    /**var array $abandonedCartsTimeRanges The abandoned carts time ranges */
+    /** @var array $abandonedCartsTimeRanges The abandoned carts time ranges */
     public $abandonedCartsTimeRanges = [];
 
-    /**var array $customerAddressLabels The customer address labels (billing and shipping) */
+    /** @var array $customerAddressLabels The customer address labels (billing and shipping) */
     public $customerAddressLabels = [];
 
-    /**var array $customerStatuses The customer statuses */
+    /** @var array $customerStatuses The customer statuses */
     public $customerStatuses = [];
 
-    /**var array $discountsStatuses The discounts statuses */
+    /** @var array $discountsStatuses The discounts statuses */
     public $discountsStatuses = [];
 
-    /**var array $discountsTypes The discounts types */
+    /** @var array $discountsTypes The discounts types */
     public $discountsTypes = [];
 
-    /**var array $discountsTriggers The discounts triggers */
+    /** @var array $discountsTriggers The discounts triggers */
     public $discountsTriggers = [];
 
     /**
      * Initialize module config variables (properties)
-     *
      */
     public function __construct() {
         parent::__construct();
@@ -180,7 +178,8 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Initialize the module.
      * (Called before any execute functions)
-     * 
+     *
+     * @throws WireException
      */
     public function init() {
         parent::init();
@@ -316,9 +315,8 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated order statuses.
      *
-     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
-     *
      */
     public function getOrderStatuses($includeAllKey = true) {
         if ($includeAllKey) return $this->orderStatuses;
@@ -331,7 +329,6 @@ class ProcessSnipWire extends Process implements Module {
      * Get all selectable pre-translated order statuses.
      *
      * @return array
-     *
      */
     public function getOrderStatusesSelectable() {
         return $this->orderStatusesSelectable;
@@ -342,7 +339,6 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getOrderStatus($key) {
         return isset($this->orderStatuses[$key])
@@ -353,9 +349,8 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated subscription statuses.
      *
-     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
-     *
      */
     public function getSubscriptionStatuses($includeAllKey = true) {
         if ($includeAllKey) return $this->subscriptionStatuses;
@@ -365,11 +360,10 @@ class ProcessSnipWire extends Process implements Module {
     }
     
     /**
-     * Get a pre-translated subscription status by it's key.
+     * Get a pre-translated subscription status by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getSubscriptionStatus($key) {
         $key = strtolower($key);
@@ -382,18 +376,16 @@ class ProcessSnipWire extends Process implements Module {
      * Get all pre-translated comment types.
      *
      * @return array
-     *
      */
     public function getCommentTypes() {
         return $this->commentTypes;
     }
 
     /**
-     * Get a pre-translated comment type by it's key.
+     * Get a pre-translated comment type by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getCommentType($key) {
         return isset($this->commentTypes[$key])
@@ -404,9 +396,8 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated payment statuses.
      *
-     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
-     *
      */
     public function getPaymentStatuses($includeAllKey = true) {
         if ($includeAllKey) return $this->paymentStatuses;
@@ -420,7 +411,6 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getPaymentStatus($key) {
         return isset($this->paymentStatuses[$key])
@@ -433,7 +423,6 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
-     *
      */
     public function getPaymentMethods($includeAllKey = true) {
         if ($includeAllKey) return $this->paymentMethods;
@@ -443,11 +432,10 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get a pre-translated payment method by it's key.
+     * Get a pre-translated payment method by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getPaymentMethod($key) {
         return isset($this->paymentMethods[$key])
@@ -459,18 +447,16 @@ class ProcessSnipWire extends Process implements Module {
      * Get all pre-translated abandoned carts time-ranges.
      *
      * @return array
-     *
      */
     public function getAbandonedCartsTimeRanges() {
         return $this->abandonedCartsTimeRanges;
     }
 
     /**
-     * Get a pre-translated abandoned carts time-range by it's key.
+     * Get a pre-translated abandoned carts time-range by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getAbandonedCartsTimeRange($key) {
         return isset($this->abandonedCartsTimeRanges[$key])
@@ -482,7 +468,6 @@ class ProcessSnipWire extends Process implements Module {
      * Get all pre-translated customer address-labels.
      *
      * @return array
-     *
      */
     public function getCustomerAddressLabels() {
         return $this->customerAddressLabels;
@@ -493,7 +478,6 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
-     *
      */
     public function getCustomerStatuses($includeAllKey = true) {
         if ($includeAllKey) return $this->customerStatuses;
@@ -503,11 +487,10 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get a pre-translated customer status by it's key.
+     * Get a pre-translated customer status by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getCustomerStatus($key) {
         return isset($this->customerStatuses[$key])
@@ -518,9 +501,8 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Get all pre-translated discounts statuses.
      *
-     * @param boolean $includeAllKey Wether to return the array with the "All" key included
+     * @param boolean $includeAllKey Whether to return the array with the "All" key included
      * @return array
-     *
      */
     public function getDiscountsStatuses($includeAllKey = true) {
         if ($includeAllKey) return $this->discountsStatuses;
@@ -530,11 +512,10 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get a pre-translated discounts status by it's key.
+     * Get a pre-translated discounts status by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getDiscountsStatus($key) {
         return isset($this->discountsStatuses[$key])
@@ -547,7 +528,6 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param boolean $keysonly Whether to return only the array keys
      * @return array
-     *
      */
     public function getDiscountsTypes($keysonly = false) {
         if ($keysonly) return array_keys($this->discountsTypes);
@@ -555,11 +535,10 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get a pre-translated discounts type by it's key.
+     * Get a pre-translated discounts type by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getDiscountsType($key) {
         return isset($this->discountsTypes[$key])
@@ -572,7 +551,6 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param boolean $keysonly Whether to return only the array keys
      * @return array
-     *
      */
     public function getDiscountsTriggers($keysonly = false) {
         if ($keysonly) return array_keys($this->discountsTriggers);
@@ -580,11 +558,10 @@ class ProcessSnipWire extends Process implements Module {
     }
 
     /**
-     * Get a pre-translated discounts trigger by it's key.
+     * Get a pre-translated discounts trigger by its key.
      *
      * @param string $key The array key
      * @return string
-     *
      */
     public function getDiscountsTrigger($key) {
         return isset($this->discountsTriggers[$key])
@@ -596,7 +573,7 @@ class ProcessSnipWire extends Process implements Module {
      * SnipWire dashboard output wrapper with tabbed interface.
      *
      * @return string
-     *
+     * @throws WireException
      */
     private function _wrapDashboardOutput($out) {
         $modules = $this->wire('modules');
@@ -691,12 +668,11 @@ class ProcessSnipWire extends Process implements Module {
      * Render a tab list (WireTabs) to prevent "jump of tabs" on page reload in UIKit admin theme
      * (This is a modified version of renderTabList method from JqueryWireTabs class)
      *
-     * @todo: should be fixed in WireTabs core module!
-     * 
      * @param array $tabs array of (tabID => title)
      * @param array $options to modify behavior
      * @return string WireTabs compatible Markup
-     * 
+     * @throws WireException
+     * @todo: should be fixed in WireTabs core module!
      */
     private function _renderTabListCustom(array $tabs, array $options = []) {
         $settings = $this->wire('config')->get('JqueryWireTabs');
@@ -739,8 +715,8 @@ class ProcessSnipWire extends Process implements Module {
      *
      * @param boolean $showRefreshButtons Whether to display refresh cache buttons [default=true]
      * @param string $buttons Pre-rendered additional action buttons markup [default='']
-     * @return markup
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderActionButtons($showRefreshButtons = true, $buttons = '') {
         $modules = $this->wire('modules');
@@ -778,20 +754,16 @@ class ProcessSnipWire extends Process implements Module {
             $refreshButtons .= $btn->render();
             $refreshButtons = '<div class="RefreshButtonsWrapper' . $right . '">' . $refreshButtons . '</div>';
         }
-
-        $out = '<div class="ActionButtonsWrapper">' . $additionalButtons . $refreshButtons . '</div>';
-        return $out;
+        return '<div class="ActionButtonsWrapper">' . $additionalButtons . $refreshButtons . '</div>';
     }
 
     /**
      * Renders a data sheet (styled like AdminDataTable).
      *
      * @param array $data (label => value)
-     * @return markup
-     *
+     * @return string
      */
     public function renderDataSheet(array $data) {
-
         $out = '<table class="SnipWireDataSheet">';
         foreach ($data as $label => $value) {
             $out .=
@@ -801,13 +773,11 @@ class ProcessSnipWire extends Process implements Module {
             '</tr>';
         }
         $out .= '</table>';
-
         return $out;
     }
     
     /**
      * Show a notice if SnipWire is set to use Snipcart TEST mode
-     *
      */
     private function _noticeTestMode() {
         if ($this->snipwireConfig->snipcart_environment != 0) return; // 0 = TEST mode
@@ -826,8 +796,7 @@ class ProcessSnipWire extends Process implements Module {
      * Renders a wrapper for the item lister headline.
      *
      * @param string $headline
-     * @return headline markup
-     *
+     * @return string
      */
     private function _wrapItemListerHeadline($headline) {
         return '<h2 class="ItemListerHeadline">' . $headline . '</h2>';
@@ -841,7 +810,6 @@ class ProcessSnipWire extends Process implements Module {
      * @param integer $limit
      * @param integer $offset
      * @return PageArray $pageArray A PageArray filled with generic pages
-     *
      */
     private function _prepareItemListerPagination($total, $count, $limit, $offset) {
         // Add in generic placeholder pages
@@ -864,8 +832,7 @@ class ProcessSnipWire extends Process implements Module {
      * Get markup for custom filter form buttons.
      *
      * @param string $resetUrl Currency string
-     * @return markup Button markup for filter forms
-     *
+     * @return string Button markup for filter forms
      */
     private function _getFilterFormButtons($resetUrl) {
         // Currently need to add button(s) below a form this way as 
@@ -893,6 +860,7 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Reset the date range session to default.
      *
+     * @throws WireException
      */
     private function _resetDateRange() {
         $session = $this->wire('session');
@@ -905,7 +873,7 @@ class ProcessSnipWire extends Process implements Module {
      * (session var is only set if date is selected by datepicker)
      *
      * @return string Sanitized ISO 8601 [default: back 29 days]
-     * 
+     * @throws WireException
      */
     private function _getStartDate() {
         $session = $this->wire('session');
@@ -924,7 +892,7 @@ class ProcessSnipWire extends Process implements Module {
      * (session var is only set if date is selected by datepicker)
      *
      * @return string Sanitized ISO 8601 [default: today]
-     * 
+     * @throws WireException
      */
     private function _getEndDate() {
         $session = $this->wire('session');
@@ -943,7 +911,7 @@ class ProcessSnipWire extends Process implements Module {
      * (session var is always set)
      *
      * @return string The currency string (e.g. 'eur') [default: first currency from config]
-     * 
+     * @throws WireException
      */
     private function _getCurrency() {
         $session = $this->wire('session');
@@ -962,7 +930,7 @@ class ProcessSnipWire extends Process implements Module {
      * Get the sanitized action URL param from input.
      *
      * @return string Action URL param
-     * 
+     * @throws WireException
      */
     private function _getInputAction() {
         $input = $this->wire('input');
@@ -974,7 +942,7 @@ class ProcessSnipWire extends Process implements Module {
      * Include asset files for SnipWire Dashboard.
      *
      * @param integer $mode
-     *
+     * @throws WireException
      */
     private function _includeAssets($mode = self::assetsIncludeAll) {
         $config = $this->wire('config');
@@ -1006,8 +974,8 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Redirect to SniWire module settings.
      *
-     * @return page Markup
-     *
+     * @return string
+     * @throws WireException
      */
     public function ___executeSettings() {
         $modules = $this->wire('modules');
@@ -1018,7 +986,7 @@ class ProcessSnipWire extends Process implements Module {
         $this->headline($this->_('Snipcart Module Settings'));
         
         if (!$user->isSuperuser()) {
-            $this->error($this->_('You dont have permisson to change SnipWire module settings - please contact your admin!'));
+            $this->error($this->_('You dont have permission to change SnipWire module settings - please contact your admin!'));
             return '';
         }
 
@@ -1041,6 +1009,7 @@ class ProcessSnipWire extends Process implements Module {
      * Test the connection to the Snipcart REST API.
      * (Called when the URL is this module's page URL + "/test-snipcart-rest-connection/")
      *
+     * @throws WireException
      */
     public function ___executeTestSnipcartRestConnection() {
         $input = $this->wire('input');
@@ -1055,7 +1024,7 @@ class ProcessSnipWire extends Process implements Module {
         if (($result = $sniprest->testConnection()) !== true) {                        
             $this->warning($result . ' ' . $this->_('Snipcart REST API connection failed! Please check your secret API keys.'));
         } else {
-            $this->message($this->_('Snipcart REST API connection successfull!'));
+            $this->message($this->_('Snipcart REST API connection successful!'));
         }
         if ($comeFromUrl) $this->wire('session')->redirect($comeFromUrl);
 
@@ -1078,6 +1047,7 @@ class ProcessSnipWire extends Process implements Module {
      *
      * This extra installation step is needed to prevent unintended deletion of SnipCart products when module is uninstalled!
      *
+     * @throws WireException
      */
     public function ___executeInstallProductPackage() {
         $modules = $this->wire('modules');
@@ -1117,7 +1087,7 @@ class ProcessSnipWire extends Process implements Module {
                 $apiReady = false;
             }
 
-            /** @var ExstendedInstaller $installer */
+            /** @var ExtendedInstaller $installer */
             $installer = $this->wire(new ExtendedInstaller());
             $installer->setResourcesFile('ProductsPackage.php');
 
@@ -1166,14 +1136,14 @@ class ProcessSnipWire extends Process implements Module {
             if ($submitInstall) {
                 $installResources = $installer->installResources(ExtendedInstaller::installerModeAll);
                 if (!$installResources) {                        
-                    $this->warning($this->_('Installation of SnipWire product package not completet. Please check for errors and warnings...'));
+                    $this->warning($this->_('Installation of SnipWire product package not completed. Please check for errors and warnings...'));
                 } else {
                     // Update SnipWire module config to tell system that product package is installed
                     // (need to load config again as it could be changed meanwhile!)
                     $snipwireConfig = $modules->getConfig('SnipWire');
                     $snipwireConfig['product_package'] = true;
                     $modules->saveConfig('SnipWire', $snipwireConfig);            
-                    $this->message($this->_('Installation of SnipWire product package completet!'));
+                    $this->message($this->_('Installation of SnipWire product package completed!'));
                 }
                 $this->wire('session')->redirect($comeFromUrl);
             }
@@ -1189,7 +1159,7 @@ class ProcessSnipWire extends Process implements Module {
      * Install additional SnipWire system resources.
      *
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _installSystemResources() {
         /** @var ExtendedInstaller $installer */
@@ -1202,7 +1172,7 @@ class ProcessSnipWire extends Process implements Module {
      * Uninstall additional SnipWire system resources.
      *
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _uninstallSystemResources() {
         /** @var ExtendedInstaller $installer */
@@ -1214,6 +1184,7 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Called on module install
      *
+     * @throws WireException
      */
     public function ___install() {
         parent::___install();
@@ -1225,10 +1196,10 @@ class ProcessSnipWire extends Process implements Module {
 
     /**
      * Called on module version change
-     * 
+     *
      * @param int|string $fromVersion Previous version
      * @param int|string $toVersion New version
-     * 
+     * @throws WireException
      */
     public function ___upgrade($fromVersion, $toVersion) {
         // added since v 0.7.1: custom cart fields support
@@ -1255,6 +1226,7 @@ class ProcessSnipWire extends Process implements Module {
     /**
      * Called on module uninstall
      *
+     * @throws WireException
      */
     public function ___uninstall() {
         if (!$this->_uninstallSystemResources()) {                        
