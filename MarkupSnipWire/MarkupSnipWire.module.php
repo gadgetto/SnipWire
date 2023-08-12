@@ -174,7 +174,6 @@ class MarkupSnipWire extends WireData implements Module {
      * Getter for snipcartAPIproperties
      *
      * @return array
-     *
      */
     public function getSnipcartAPIproperties() {
         return $this->snipcartAPIproperties;
@@ -360,7 +359,6 @@ class MarkupSnipWire extends WireData implements Module {
      * Others:
      *
      * - data-item-shippable: boolean Setting this to false, the product will be flagged as an item that can not be shipped.
-     *
      */
     public function anchor(Page $product, $options = []) {
         // Return early if $product (Page) is not a Snipcart product

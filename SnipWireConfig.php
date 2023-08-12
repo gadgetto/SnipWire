@@ -10,7 +10,6 @@ namespace ProcessWire;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 wire('classLoader')->addNamespace('SnipWire\Helpers', __DIR__ . '/helpers');
@@ -20,7 +19,7 @@ use SnipWire\Helpers\Taxes;
 
 class SnipWireConfig extends ModuleConfig {
 
-    /** @var array $availableCreditCards Available creditcard types */
+    /** @var array $availableCreditCards Available credit-card types */
     protected $availableCreditCards = [            
         'visa',
         'mastercard',
@@ -52,7 +51,6 @@ class SnipWireConfig extends ModuleConfig {
      * Returns an array of credit card labels, indexed by card name
      * 
      * @return array
-     * 
      */
     public static function getCreditCardLabels() {
         return [
@@ -88,7 +86,6 @@ class SnipWireConfig extends ModuleConfig {
      * (overriding the method from parent class)
      *
      * @return array of 'fieldName' => 'default value'
-     *
      */
     public function getDefaults() {
         return [
@@ -142,7 +139,6 @@ class SnipWireConfig extends ModuleConfig {
      * any of the values from $this->[property]; as needed.
      *
      * @return InputfieldWrapper
-     *
      * @throws WireException
      */
     public function getInputfields() {
@@ -924,7 +920,6 @@ class SnipWireConfig extends ModuleConfig {
      * 
      * @param array $step 
      * @return string
-     * 
      */
     protected function renderStep(array $step) {
         $out = '';
@@ -970,9 +965,9 @@ class SnipWireConfig extends ModuleConfig {
 
     /**
      * Get all templates except system templates (name => label)
-     * 
+     *
      * @return WireArray $templates
-     * 
+     * @throws WireException
      */
     private function _getTemplates() {
         $templates = new WireArray();
@@ -987,11 +982,12 @@ class SnipWireConfig extends ModuleConfig {
 
     /**
      * Get a selection of fields suitable for SnipWire product templates.
-     * 
+     *
      * @param array $allowedFieldTypes An array of allowed field types to be returned [optional]
      * @param array $excludeFieldNames An array of field names to be excluded from result [optional]
      * @return WireArray $fields
-     * 
+     *
+     * @throws WireException
      */
     private function _getFields($allowedFieldTypes = [], $excludeFieldNames = []) {        
         $fields = new WireArray();
@@ -1011,6 +1007,7 @@ class SnipWireConfig extends ModuleConfig {
     /**
      * Include asset files for SnipWire config editor.
      *
+     * @throws WireException
      */
     private function _includeAssets() {
         $config = $this->wire('config');
