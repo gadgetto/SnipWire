@@ -10,7 +10,6 @@ namespace SnipWire\Helpers;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 use ProcessWire\WireData;
@@ -44,8 +43,7 @@ class Countries extends WireData {
     /**
      * Get the full countries array (as language-code => country-name).
      *
-     * @return void
-     * 
+     * @return array
      */
     public static function getCountries() {
         if (empty(self::$countriesCache)) self::setStaticCountriesCache();
@@ -53,7 +51,7 @@ class Countries extends WireData {
     }
 
     /**
-     * Get a country by it's alpha-2 language code as defined by ISO 3166.
+     * Get a country by its alpha-2 language code as defined by ISO 3166.
      *
      * @param string $key The alpha-2 language code
      * @return string

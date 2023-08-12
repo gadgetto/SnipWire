@@ -10,7 +10,6 @@ namespace SnipWire\Helpers;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 use ProcessWire\WireData;
@@ -21,16 +20,15 @@ class CurrencyFormat extends WireData {
     public static $currenciesCache = null;
 
     /**
-     * Set the static curencies definition cache.
+     * Set the static currencies definition cache.
      *
      * @return void
-     * 
      */
     public static function setStaticCurrenciesCache() {
         if (!$currencies = \ProcessWire\wire('sniprest')->getSettings('currencies')) {
             $currencies = self::getDefaultCurrencyDefinition();
         }
-        // Cache currency definitons in static property (DB is queried only once!)
+        // Cache currency definitions in static property (DB is queried only once!)
         self::$currenciesCache = $currencies;
     }
 
@@ -40,7 +38,6 @@ class CurrencyFormat extends WireData {
      * supported by Snipcart -> copied from Snipcart dashboard)
      * 
      * @return array
-     * 
      */
     public static function getSupportedCurrencies() {
         return require __DIR__ . '/CurrenciesTable.php';
@@ -49,9 +46,8 @@ class CurrencyFormat extends WireData {
     /**
      * Get the default currency definition.
      *
-     * @param boolean $json Wether to return as JSON formatted string and not array
+     * @param boolean $json Whether to return as JSON formatted string and not array
      * @return array|string String of JSON data
-     * 
      */
     public static function getDefaultCurrencyDefinition($json = false) {
         $defaultCurrency = [
@@ -67,18 +63,17 @@ class CurrencyFormat extends WireData {
     }
 
     /**
-     * Get a specific currency definition by it's currency tag.
+     * Get a specific currency definition by its currency tag.
      *
      * @param string $currency The currency tag [default: `eur`]
      * @param string $key The array key to be returned [default: ``]
-     * @param boolean $json Wether to return as JSON formatted string and not array (ignored if $key param is set) [default: false]
+     * @param boolean $json Whether to return as JSON formatted string and not array (ignored if $key param is set) [default: false]
      * @return array|json|string|boolean
-     * 
      */
     public static function getCurrencyDefinition($currency = 'eur', $key = '', $json = false) {
         if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
 
-        // Searches the static $currencys array for $currency tag and returns the corresponding key
+        // Searches the static currency array for $currency tag and returns the corresponding key
         $cacheKey = array_search(
             $currency,
             array_column(self::$currenciesCache, 'currency')
@@ -99,7 +94,6 @@ class CurrencyFormat extends WireData {
      * @param int|float|string|array $price The price value to format (can be multi currency)
      * @param string $currency The currency tag [default: `eur`]
      * @return string The formatted price (can be empty if something goes wrong)
-     * 
      */
     public static function format($price, $currency = 'eur') {
         if (empty($price)) $price = 0.0;
@@ -132,7 +126,7 @@ class CurrencyFormat extends WireData {
         $floatPrice = \ProcessWire\wire('sanitizer')->float($price);
         if ($floatPrice < 0) {
             $numberFormatString = $currencyDefinition['negativeNumberFormat'];
-            $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
+            $floatPrice = $floatPrice * -1; // price needs to be unsigned ('-' sign position defined by $numberFormatString)
         } else {
             $numberFormatString = $currencyDefinition['numberFormat'];
         }
@@ -158,7 +152,6 @@ class CurrencyFormat extends WireData {
      * @param boolean $verbose Should the verbose currency name be added to output [default: false]
      * @param string $separator The separator for each formatted currency string [default: '<br>']
      * @return string The formatted prices (can be empty string if something goes wrong)
-     * 
      */
     public static function formatMulti($prices, $verbose = false, $separator = '<br>') {
         if (empty($prices) || !is_array($prices)) return '';
@@ -181,7 +174,7 @@ class CurrencyFormat extends WireData {
             $floatPrice = \ProcessWire\wire('sanitizer')->float($price);
             if ($floatPrice < 0) {
                 $numberFormatString = $currencyDefinition['negativeNumberFormat'];
-                $floatPrice = $floatPrice * -1; // price needs to be unsingned ('-' sign position defined by $numberFormatString)
+                $floatPrice = $floatPrice * -1; // price needs to be unsigned ('-' sign position defined by $numberFormatString)
             } else {
                 $numberFormatString = $currencyDefinition['numberFormat'];
             }

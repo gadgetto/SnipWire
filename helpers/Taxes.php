@@ -12,7 +12,6 @@ namespace SnipWire\Helpers;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 class Taxes {
@@ -29,9 +28,8 @@ class Taxes {
     /**
      * Get the default taxes definition.
      *
-     * @param boolean $json Wether to return as JSON formatted string and not array
+     * @param boolean $json Whether to return as JSON formatted string and not array
      * @return array|string String of JSON data
-     * 
      */
     public static function getDefaultTaxesConfig($json = false) {
         $defaultTaxes = array(
@@ -60,11 +58,10 @@ class Taxes {
     /**
      * Get the taxes definition from module config.
      *
-     * @param boolean $json Wether to return as JSON formatted string and not array
+     * @param boolean $json Whether to return as JSON formatted string and not array
      * @param integer $type The taxes type (product = 1, shipping = 2, all = 3) [default: taxesTypeAll]
      * @param string $name The name of the tax (optional to get a specific taxes definition)
      * @return array|string String of JSON data
-     * 
      */
     public static function getTaxesConfig($json = false, $type = self::taxesTypeAll, $name = '') {
         $taxes = \ProcessWire\wire('modules')->getConfig('SnipWire', 'taxes'); // JSON string
@@ -106,10 +103,9 @@ class Taxes {
     /**
      * Get the first tax definition from module config.
      *
-     * @param boolean $json Wether to return as JSON formatted string and not array
+     * @param boolean $json Whether to return as JSON formatted string and not array
      * @param integer $type The taxes type (product = 1, shipping = 2, all = 3) [default: taxesTypeAll]
      * @return array|string String of JSON data
-     * 
      */
     public static function getFirstTax($json = false, $type = self::taxesTypeAll) {
         $taxes = self::getTaxesConfig(false, $type);
@@ -124,7 +120,6 @@ class Taxes {
      * Get the taxes_included (= hasTaxesIncluded) setting from module config.
      *
      * @return boolean
-     * 
      */
     public static function getTaxesIncludedConfig() {
         $taxesIncluded = \ProcessWire\wire('modules')->getConfig('SnipWire', 'taxes_included');
@@ -136,7 +131,6 @@ class Taxes {
      * Get the shipping_taxes_type setting from module config.
      *
      * @return integer
-     * 
      */
     public static function getShippingTaxesTypeConfig() {
         $shippingTaxesType = \ProcessWire\wire('modules')->getConfig('SnipWire', 'shipping_taxes_type');
@@ -153,8 +147,7 @@ class Taxes {
      *  - true: taxes won't be added on top of cart total
      *  - false: taxes will be added on top of cart total
      * @param integer $digits The number of decimal places the value will be rounded
-     * @return string The calulated tax value
-     * 
+     * @return string The calculated tax value
      */
     public static function calculateTax($value, $rate, $includedInPrice = true, $digits = 2) {
         if ($includedInPrice) {
@@ -166,5 +159,4 @@ class Taxes {
         }
         return number_format($tax, $digits, '.', '');
     }
-
 }

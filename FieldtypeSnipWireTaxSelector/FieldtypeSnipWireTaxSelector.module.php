@@ -14,7 +14,6 @@ namespace ProcessWire;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 wire('classLoader')->addNamespace('SnipWire\Helpers', dirname(__DIR__) . '/helpers');
@@ -41,7 +40,6 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
 
 	/**
 	 * Initialize the Fieldtype.
-	 *
 	 */
 	public function init() {
 		parent::init();

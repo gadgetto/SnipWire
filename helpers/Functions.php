@@ -10,7 +10,6 @@ namespace SnipWire\Helpers;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 class Functions {
@@ -20,7 +19,6 @@ class Functions {
      * @param string $value The string to be checked
      * @param string $pattern The pattern to be used for check
      * @return boolean
-     *
      */
     public static function checkPattern($value, $pattern) {
         $regex = '#' . str_replace('#', '\#', $pattern) . '#';

@@ -34,7 +34,7 @@ class SnipWireConfig extends ModuleConfig {
         'postepay',
     ];
 
-    /**var string $snipWireRootUrl The root URL to ProcessSnipWire page */
+    /** @var string $snipWireRootUrl The root URL to ProcessSnipWire page */
     protected $snipWireRootUrl = '';
 
     /**
