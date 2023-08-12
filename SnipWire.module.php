@@ -10,7 +10,6 @@ namespace ProcessWire;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 wire('classLoader')->addNamespace('SnipWire\Helpers', __DIR__ . '/helpers');
@@ -61,7 +60,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * currencies in SnipWireModuleConfig.
      * 
      * @return array
-     * 
      */
     public static function getCurrencyFieldTemplate() {
         return [
@@ -79,7 +77,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     /**
      * Initialize module config variables (properties).
      * (Called before module config is populated)
-     *
      */
     public function __construct() {
         parent::__construct();
@@ -276,7 +273,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * (Method triggered after Pages saveReady -> just before page is saved)
      *
      * @throws WireException
-     *
      */
     public function checkSKUUnique(HookEvent $event) {
         $snipwire = $this->wire('snipwire');
@@ -400,7 +396,6 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * (Method triggered before modules uninstall)
      *
      * @param HookEvent $event
-     *
      * @throws WireException
      */
     public function convertFieldtypeTaxSelector(HookEvent $event) {   
@@ -431,5 +426,4 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->wire('log')->delete(self::snipWireLogName);
         $this->wire('log')->delete(Webhooks::snipWireWebhooksLogName);
     }
-
 }
