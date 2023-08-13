@@ -10,7 +10,6 @@ namespace SnipWire\Installer;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 use ProcessWire\Field;
@@ -42,12 +41,12 @@ class ExtendedInstaller extends Wire {
     
     /** @var array $resources Installation resources */
     protected $resources = [];
-    
+
     /**
      * Constructor for ExtendedInstaller class.
-     * 
+     *
      * @return void
-     * 
+     * @throws WireException
      */
     public function __construct() {
         $this->snipwirePagePath = $this->wire('pages')->findOne('template=admin, name=snipwire')->path;
@@ -60,7 +59,6 @@ class ExtendedInstaller extends Wire {
      * 
      * @param string $fileName The name of the resources file
      * @throws WireException
-     * 
      */
     public function setResourcesFile($fileName) {
         $path = __DIR__ . '/' . self::installerResourcesDirName . '/' . $fileName;
@@ -83,7 +81,6 @@ class ExtendedInstaller extends Wire {
      * 
      * @param array $resources Installation resources array
      * @throws WireException
-     * 
      */
     public function setResources($resources) {
         if (!is_array($resources) || !count($resources)) {
@@ -97,18 +94,17 @@ class ExtendedInstaller extends Wire {
      * Get install resources array.
      *
      * @return array
-     *
      */
     public function getResources() {
         return $this->resources;
     }
-    
+
     /**
      * Installer for extended resources.
      *
      * @param integer $mode
      * @return boolean true | false (if installations has errors)
-     *
+     * @throws WireException
      */
     public function installResources($mode = self::installerModeAll) {        
         if (!$this->resources) {
@@ -207,7 +203,7 @@ class ExtendedInstaller extends Wire {
      *
      * @param integer $mode
      * @return boolean true | false (if uninstallation has errors)
-     *
+     * @throws WireException
      */
     public function uninstallResources($mode = self::installerModeAll) {
         if (!$this->resources) {
@@ -285,10 +281,10 @@ class ExtendedInstaller extends Wire {
     }
 
     /**
-     * Save module(s) configiguration(s).
+     * Save module(s) configuration(s).
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _addModuleConfigData(array $item) {
         $modules = $this->wire('modules');
@@ -306,12 +302,12 @@ class ExtendedInstaller extends Wire {
         }
         $modules->saveConfig($moduleName, $config);
     }
-    
+
     /**
      * Install a template.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _installTemplate(array $item) {
         $fields = $this->wire('fields');
@@ -340,12 +336,12 @@ class ExtendedInstaller extends Wire {
             $this->warning($message);
         }
     }
-    
+
     /**
      * Uninstall a template.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _uninstallTemplate(array $item) {
         $templates = $this->wire('templates');
@@ -366,12 +362,12 @@ class ExtendedInstaller extends Wire {
             $this->message($message);
         }
     }
-    
+
     /**
      * Set template dependencies.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _setTemplateDependencies(array $item) {
         $templates = $this->wire('templates');
@@ -400,7 +396,7 @@ class ExtendedInstaller extends Wire {
      * Install a file.
      *
      * @param array $file
-     *
+     * @throws WireException
      */
     private function _installFile(array $file) {
         $config = $this->wire('config');
@@ -420,12 +416,12 @@ class ExtendedInstaller extends Wire {
             $this->warning($message);
         }
     }
-    
+
     /**
      * Uninstall a file.
      *
      * @param array $file
-     *
+     * @throws WireException
      */
     private function _uninstallFile(array $file) {
         $config = $this->wire('config');
@@ -441,12 +437,12 @@ class ExtendedInstaller extends Wire {
             }
         }
     }
-    
+
     /**
      * Install a field.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _installField(array $item) {
         $fields = $this->wire('fields');
@@ -557,12 +553,12 @@ class ExtendedInstaller extends Wire {
             }
         }
     }
-    
+
     /**
      * Uninstall a field.
      *
-     * @param array $file
-     *
+     * @param array $item
+     * @throws WireException
      */
     private function _uninstallField(array $item) {
         $fields = $this->wire('fields');
@@ -587,12 +583,12 @@ class ExtendedInstaller extends Wire {
             $this->message($message);
         }
     }
-    
+
     /**
      * Install a page.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _installPage(array $item) {
         $templates = $this->wire('templates');
@@ -653,7 +649,7 @@ class ExtendedInstaller extends Wire {
      * Uninstall a page.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _uninstallPage(array $item) {
         $pages = $this->wire('pages');
@@ -680,12 +676,12 @@ class ExtendedInstaller extends Wire {
             }
         }
     }
-    
+
     /**
      * Install a permission.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _installPermission(array $item) {
         $permissions = $this->wire('permissions');
@@ -703,12 +699,12 @@ class ExtendedInstaller extends Wire {
             $this->warning($message);
         }
     }
-    
+
     /**
      * Uninstall a permission.
      *
      * @param array $item
-     *
+     * @throws WireException
      */
     private function _uninstallPermission(array $item) {
         $permissions = $this->wire('permissions');
