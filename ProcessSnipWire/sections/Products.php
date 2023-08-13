@@ -10,9 +10,9 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
@@ -22,8 +22,8 @@ trait Products {
     /**
      * The SnipWire Snipcart Products page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeProducts() {
         $modules = $this->wire('modules');
@@ -38,7 +38,7 @@ trait Products {
         $this->headline($this->_('Snipcart Products'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -130,8 +130,8 @@ trait Products {
     /**
      * The SnipWire Snipcart Product detail page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeProduct() {
         $modules = $this->wire('modules');
@@ -147,7 +147,7 @@ trait Products {
         $this->breadcrumb($this->snipWireRootUrl . 'products/', $this->_('Snipcart Products'));
 
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -194,8 +194,8 @@ trait Products {
      * Build the products filter form.
      *
      * @param array $filter The current filter values
-     * @return markup InputfieldForm
-     *
+     * @return string markup InputfieldForm
+     * @throws WireException
      */
     private function _buildProductsFilter($filter) {
         $modules = $this->wire('modules');
@@ -277,8 +277,8 @@ trait Products {
      *
      * @param array $items
      * @param string $currency Currency tag
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableProducts($items, $currency) {
         $pages = $this->wire('pages');
@@ -374,8 +374,8 @@ trait Products {
      * Render the product detail view.
      *
      * @param array $item
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderDetailProduct($item) {
         $modules = $this->wire('modules');
@@ -445,9 +445,9 @@ trait Products {
      *
      * (Currently uses custom button markup as we need to simulate disabled buttons)
      *
-     * @param $userDefinedId The user defined id (SKU) of the product
-     * @return buttons markup 
-     *
+     * @param mixed $userDefinedId The user defined id (SKU) of the product
+     * @return string buttons markup
+     * @throws WireException
      */
     private function _getProductDetailActionButtons($userDefinedId) {
         $pages = $this->wire('pages');
@@ -494,15 +494,15 @@ trait Products {
      * Render the product info block.
      *
      * @param array $item
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderProductInfo($item) {
         $infoCaptions = [
             'sku' => $this->_('SKU'),
             'name' => $this->_('Product name'),
             'image' => $this->_('Product image'),
-            'description' => $this->_('Product decription'),
+            'description' => $this->_('Product description'),
             'categories' => $this->_('Categories'),
             'prices' => $this->_('Product price(s)'),
             'stock' => $this->_('Stock'),
@@ -543,8 +543,8 @@ trait Products {
      * (If image doesn't exist, provide a placeholder)
      *
      * @param string $url The image url from product item
-     * @return img markup | placeholder markup | empty string
-     *
+     * @return string img markup | placeholder markup | empty string
+     * @throws WireException
      */
     public function getProductImg($url) {
         $config = $this->wire('config');

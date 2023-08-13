@@ -10,9 +10,9 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\Countries;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
@@ -33,7 +33,7 @@ trait AbandonedCarts {
      * The SnipWire Snipcart Abandoned Carts page.
      *
      * @return string
-     *
+     * @throws WireException
      */
     public function ___executeAbandonedCarts() {
         $modules = $this->wire('modules');
@@ -48,7 +48,7 @@ trait AbandonedCarts {
         $this->headline($this->_('Snipcart Abandoned Carts'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -122,7 +122,7 @@ trait AbandonedCarts {
      * The SnipWire Abandoned Cart detail page.
      *
      * @return string
-     *
+     * @throws WireException
      */
     public function ___executeAbandonedCart() {
         $modules = $this->wire('modules');
@@ -138,7 +138,7 @@ trait AbandonedCarts {
         $this->breadcrumb($this->snipWireRootUrl . 'abandoned-carts/', $this->_('Snipcart Abandoned Carts'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -186,7 +186,7 @@ trait AbandonedCarts {
      *
      * @param array $filter The current filter values
      * @return string
-     *
+     * @throws WireException
      */
     private function _buildAbandonedCartsFilter($filter) {
         $modules = $this->wire('modules');
@@ -267,7 +267,7 @@ trait AbandonedCarts {
      *
      * @param array $items
      * @return string MarkupAdminDataTable | custom html with `no items` display
-     *
+     * @throws WireException
      */
     private function _renderTableAbandonedCarts($items) {
         $modules = $this->wire('modules');
@@ -356,7 +356,7 @@ trait AbandonedCarts {
      * @param array $item
      * @param string $ret A return URL (optional)
      * @return string
-     *
+     * @throws WireException
      */
     private function _renderDetailAbandonedCart($item, $ret = '') {
         $modules = $this->wire('modules');
@@ -468,7 +468,7 @@ trait AbandonedCarts {
      * @param array $item
      * @param string $ret A return URL (optional)
      * @return string
-     *
+     * @throws WireException
      */
     private function _processCartNotificationForm($item, $ret = '') {
         $modules = $this->wire('modules');
@@ -563,7 +563,6 @@ trait AbandonedCarts {
      *
      * @param array $item
      * @return string
-     *
      */
     private function _renderCartInfo($item) {
         $infoCaptions = [
@@ -596,7 +595,6 @@ trait AbandonedCarts {
      *
      * @param array $item
      * @return string
-     *
      */
     private function _renderCustomerInfo($item) {
         $infoCaptions = [
@@ -635,11 +633,11 @@ trait AbandonedCarts {
     }
 
     /**
-     * Render the cart summmary table.
+     * Render the cart summary table.
      *
      * @param array $item
      * @return string MarkupAdminDataTable
-     *
+     * @throws WireException
      */
     private function _renderTableCartSummary($item) {
         $modules = $this->wire('modules');
@@ -719,7 +717,7 @@ trait AbandonedCarts {
      *
      * @param array $notifications The notifications array
      * @return string MarkupAdminDataTable
-     *
+     * @throws WireException
      */
     private function _renderTableCartNotifications($notifications) {
         $modules = $this->wire('modules');
@@ -807,7 +805,7 @@ trait AbandonedCarts {
      * @param string $message The message text
      * @param string $deliveryMethod The delivery method [default: 'Email']
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _addCartNotification($id, $message, $deliveryMethod = 'Email') {
         $sniprest = $this->wire('sniprest');

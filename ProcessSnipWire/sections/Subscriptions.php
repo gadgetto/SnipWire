@@ -10,9 +10,9 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\Countries;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
@@ -23,8 +23,8 @@ trait Subscriptions {
     /**
      * The SnipWire Snipcart Subscriptions page.
      *
-     * @return page markup
-     *
+     * @return string
+     * @throws WireException
      */
     public function ___executeSubscriptions() {
         $modules = $this->wire('modules');
@@ -39,7 +39,7 @@ trait Subscriptions {
         $this->headline($this->_('Snipcart Subscriptions'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
         
@@ -130,8 +130,8 @@ trait Subscriptions {
     /**
      * The SnipWire Snipcart Subscription detail page.
      *
-     * @return page markup
-     *
+     * @return string
+     * @throws WireException
      */
     public function ___executeSubscription() {
         $modules = $this->wire('modules');
@@ -147,7 +147,7 @@ trait Subscriptions {
         $this->breadcrumb($this->snipWireRootUrl . 'subscriptions/', $this->_('Snipcart Subscriptions'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
         
@@ -219,8 +219,8 @@ trait Subscriptions {
      * Build the subscriptions filter form.
      *
      * @param array $filter The current filter values
-     * @return markup InputfieldForm
-     *
+     * @return string markup InputfieldForm
+     * @throws WireException
      */
     private function _buildSubscriptionsFilter($filter) {
         $modules = $this->wire('modules');
@@ -301,8 +301,8 @@ trait Subscriptions {
      * Render the subscriptions table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableSubscriptions($items) {
         $modules = $this->wire('modules');
@@ -394,10 +394,10 @@ trait Subscriptions {
      * Render the subscription detail view.
      *
      * @param array $item
-     * @param array $invoices The invoices of this subscription
+     * @param array $invoices The invoices for this subscription
      * @param string $ret A return URL (optional)
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderDetailSubscription($item, $invoices, $ret = '') {
         $modules = $this->wire('modules');
@@ -517,8 +517,7 @@ trait Subscriptions {
      *
      * @param array $item The subscription item
      * @param string $ret A return URL (optional)
-     * @return buttons markup 
-     *
+     * @return string buttons markup
      */
     private function _getSubscriptionDetailActionButtons($item, $ret = '') {
         $pauseUrl = $this->currentUrl . '?action=pause_subscription&modal=1';
@@ -570,8 +569,7 @@ trait Subscriptions {
      * Render the subscription plan info block.
      *
      * @param array $item
-     * @return markup 
-     *
+     * @return string
      */
     private function _renderPlanInfo($item) {
         $infoCaptions = [
@@ -616,8 +614,7 @@ trait Subscriptions {
      * Render the subscriber info block.
      *
      * @param array $item
-     * @return markup 
-     *
+     * @return string
      */
     private function _renderSubscriberInfo($item) {
         $infoCaptions = [
@@ -647,14 +644,14 @@ trait Subscriptions {
         
         return $this->renderDataSheet($data);
     }
-    
+
     /**
      * Render the subscription invoices table.
      *
      * @param array $invoices
      * @param string $subscriptionId The subscription id
-     * @return markup MarkupAdminDataTable 
-     *
+     * @return string markup MarkupAdminDataTable
+     * @throws WireException
      */
     private function _renderTableSubscriptionInvoices($invoices, $subscriptionId) {
         $modules = $this->wire('modules');
@@ -698,13 +695,13 @@ trait Subscriptions {
         
         return $out;
     }
-    
+
     /**
      * Pause an active subscription.
      *
      * @param string $id The subscription id
-     * @return void 
-     *
+     * @return void
+     * @throws WireException
      */
     private function _pauseSubscription($id) {
         $sniprest = $this->wire('sniprest');
@@ -725,13 +722,13 @@ trait Subscriptions {
             $this->message($this->_('The subscription has been paused.'));
         }
     }
-    
+
     /**
      * Resume a paused subscription.
      *
      * @param string $id The subscription id
-     * @return void 
-     *
+     * @return void
+     * @throws WireException
      */
     private function _resumeSubscription($id) {
         $sniprest = $this->wire('sniprest');
@@ -752,13 +749,13 @@ trait Subscriptions {
             $this->message($this->_('The subscription has been resumed.'));
         }
     }
-    
+
     /**
      * Cancel a subscription.
      *
      * @param string $id The subscription id
-     * @return void 
-     *
+     * @return void
+     * @throws WireException
      */
     private function _cancelSubscription($id) {
         $sniprest = $this->wire('sniprest');
@@ -779,12 +776,12 @@ trait Subscriptions {
             $this->message($this->_('The subscription has been cancelled.'));
         }
     }
-    
+
     /**
      * Set JS config values for subscription pages.
      *
-     * @return void 
-     *
+     * @return void
+     * @throws WireException
      */
     private function _setSubscriptionJSConfigValues() {
         $this->wire('config')->js('subscriptionActionStrings', [

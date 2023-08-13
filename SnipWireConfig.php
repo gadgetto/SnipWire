@@ -709,7 +709,7 @@ class SnipWireConfig extends ModuleConfig {
         $fsCartImage->label = $this->_('Cart Thumbnail Sizing');
         $fsCartImage->description =        $this->_('Snipcart uses the first image from preinstalled `snipcart_item_image` PageField as cart thumbnail.');
         $fsCartImage->description .= ' ' . $this->_('The following settings will define how the cart thumbnail variant is sized/cropped to the specified dimensions.');
-        $fsCartImage->description .= ' ' . $this->_('Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop paramaters behave.');
+        $fsCartImage->description .= ' ' . $this->_('Please refer to the [ProcessWire Docs](https://processwire.com/api/ref/pageimage/size/) how the size/crop parameters behave.');
         $fsCartImage->set('themeOffset', true);
         
             /** @var InputfieldInteger $f */
@@ -986,7 +986,6 @@ class SnipWireConfig extends ModuleConfig {
      * @param array $allowedFieldTypes An array of allowed field types to be returned [optional]
      * @param array $excludeFieldNames An array of field names to be excluded from result [optional]
      * @return WireArray $fields
-     *
      * @throws WireException
      */
     private function _getFields($allowedFieldTypes = [], $excludeFieldNames = []) {        

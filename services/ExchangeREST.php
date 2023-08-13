@@ -14,11 +14,11 @@ namespace SnipWire\Services;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 \ProcessWire\wire('classLoader')->addNamespace('SnipWire\Helpers', dirname(__DIR__) . '/helpers');
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\CurrencyFormat;
 use ProcessWire\WireCache;
 
@@ -35,7 +35,6 @@ class ExchangeREST extends WireHttpExtended {
     
     /**
      * Construct/initialize
-     * 
      */
     public function __construct() {
         parent::__construct();
@@ -65,7 +64,6 @@ class ExchangeREST extends WireHttpExtended {
      * Returns messages texts (message, warning, error) based on given key.
      *
      * @return string (will be empty if key not found)
-     *
      */
     public static function getMessagesText($key) {
         $texts = [
@@ -84,9 +82,9 @@ class ExchangeREST extends WireHttpExtended {
      *
      * @param string $currency The currency to quote against (default: eur)
      * @param mixed $expires Lifetime of this cache, in seconds, OR one of the options from $cache->save() [default: 1 day]
-     * @param boolean $forceRefresh Wether to refresh the cache
+     * @param boolean $forceRefresh Whether to refresh the cache
      * @return boolean|array False if request failed or conversions array
-     *
+     * @throws WireException
      */
     public function getLatest($currency = 'eur', $expires = WireCache::expireDaily, $forceRefresh = false) {
         if (!$this->getHeaders()) {
@@ -124,5 +122,4 @@ class ExchangeREST extends WireHttpExtended {
         ];
         return $data;
     }
-
 }

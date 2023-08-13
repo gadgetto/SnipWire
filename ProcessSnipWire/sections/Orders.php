@@ -10,9 +10,9 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\Functions;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
@@ -23,8 +23,8 @@ trait Orders {
     /**
      * The SnipWire Snipcart Orders page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeOrders() {
         $modules = $this->wire('modules');
@@ -39,7 +39,7 @@ trait Orders {
         $this->headline($this->_('Snipcart Orders'));
 
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -138,8 +138,8 @@ trait Orders {
     /**
      * The SnipWire Snipcart Order detail page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeOrder() {
         $modules = $this->wire('modules');
@@ -156,7 +156,7 @@ trait Orders {
         $this->breadcrumb($this->snipWireRootUrl . 'orders/', $this->_('Snipcart Orders'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -231,8 +231,8 @@ trait Orders {
      * Build the orders filter form.
      *
      * @param array $filter The current filter values
-     * @return markup InputfieldForm
-     *
+     * @return string markup InputfieldForm
+     * @throws WireException
      */
     private function _buildOrdersFilter($filter) {
         $modules = $this->wire('modules');
@@ -326,8 +326,8 @@ trait Orders {
      * Render the orders table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableOrders($items) {
         $modules = $this->wire('modules');
@@ -436,8 +436,8 @@ trait Orders {
      * @param array $item The order item
      * @param array $notifications The order comments and notifications
      * @param string $ret A return URL (optional)
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderDetailOrder($item, $notifications, $ret = '') {
         $modules = $this->wire('modules');
@@ -624,14 +624,14 @@ trait Orders {
 
         return $out;
     }
-    
+
     /**
      * Render and process the refund form.
      *
      * @param array $item
      * @param string $ret A return URL (optional)
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _processRefundForm($item, $ret = '') {
         $modules = $this->wire('modules');
@@ -804,14 +804,14 @@ trait Orders {
         
         return $form->render();
     }
-    
+
     /**
      * Render and process the order status form.
      *
      * @param array $item
      * @param string $ret A return URL (optional)
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _processOrderStatusForm($item, $ret = '') {
         $modules = $this->wire('modules');
@@ -981,8 +981,8 @@ trait Orders {
      *
      * @param array $item
      * @param string $ret A return URL (optional)
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _processOrderCommentForm($item, $ret = '') {
         $modules = $this->wire('modules');
@@ -1096,8 +1096,7 @@ trait Orders {
      *
      * @param $token The order token
      * @param string $ret A return URL (optional)
-     * @return buttons markup 
-     *
+     * @return string buttons markup
      */
     private function _getOrderDetailActionButtons($token, $ret = '') {
         $downloadUrl = \ProcessWire\wirePopulateStringTags(
@@ -1133,8 +1132,7 @@ trait Orders {
      * Render the order info block.
      *
      * @param array $item
-     * @return markup 
-     *
+     * @return string
      */
     private function _renderOrderInfo($item) {
         $infoCaptions = [
@@ -1181,8 +1179,7 @@ trait Orders {
      * Render the payment info block.
      *
      * @param array $item
-     * @return markup 
-     *
+     * @return string
      */
     private function _renderPaymentInfo($item) {
         $infoCaptions = [
@@ -1216,11 +1213,11 @@ trait Orders {
     }
 
     /**
-     * Render the order summmary table.
+     * Render the order summary table.
      *
      * @param array $item
-     * @return markup MarkupAdminDataTable 
-     *
+     * @return string markup MarkupAdminDataTable
+     * @throws WireException
      */
     private function _renderTableOrderSummary($item) {
         $modules = $this->wire('modules');
@@ -1228,7 +1225,7 @@ trait Orders {
         /*
         ...
         "refundsAmount": <-- is the sum of all refunds
-        "adjustedAmount": <-- is the amont after refunds, when there aren't any refunds, it's the same as 'grandTotal'.
+        "adjustedAmount": <-- is the amount after refunds, when there aren't any refunds, it's the same as 'grandTotal'.
         "finalGrandTotal": <-- is the total saved once the order is completed. Will be the same as 'grandTotal' which is a "computed" property.
         "subtotal": 
         "baseTotal": <-- should be ignored!
@@ -1356,8 +1353,8 @@ trait Orders {
      *
      * @param array $refunds
      * @param string $currency
-     * @return markup MarkupAdminDataTable 
-     *
+     * @return string markup MarkupAdminDataTable
+     * @throws WireException
      */
     private function _renderTableRefunds($refunds, $currency) {
         $modules = $this->wire('modules');
@@ -1407,8 +1404,8 @@ trait Orders {
      * Render the order notifications table.
      *
      * @param array $notifications The order comments and notifications
-     * @return markup MarkupAdminDataTable 
-     *
+     * @return string markup MarkupAdminDataTable
+     * @throws WireException
      */
     private function _renderTableOrderNotifications($notifications) {
         $modules = $this->wire('modules');
@@ -1518,8 +1515,8 @@ trait Orders {
      * Resend a Snipcart invoice to customer.
      *
      * @param string $token The order token
-     * @return void 
-     *
+     * @return void
+     * @throws WireException
      */
     private function _resendInvoice($token) {
         $sniprest = $this->wire('sniprest');
@@ -1559,7 +1556,7 @@ trait Orders {
      * @param boolean $notifyCustomer Send reason for refund (textfield) with customer notification
      * @param string $comment The reason for the refund (internal note - not for customer)
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _refund($token, $amount, $amountFormatted, $notifyCustomer, $comment = '') {
         $sniprest = $this->wire('sniprest');
@@ -1604,7 +1601,7 @@ trait Orders {
      * @param string $trackingUrl The URL where the customer will be able to track its order (used by putOrderStatus)
      * @param string $deliveryMethod The delivery method ('Email' or 'None') (used by postOrderNotification)
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _updateOrderStatus($token, $status, $oldStatus, $trackingNumber, $trackingUrl, $deliveryMethod) {
         $sniprest = $this->wire('sniprest');
@@ -1634,7 +1631,7 @@ trait Orders {
             
             //
             // After status has been changed successfully, trigger a notification.
-            // Posssible statuses: 'Processed', 'Disputed', 'Shipped', 'Delivered', 'Pending', 'Cancelled'
+            // Possible statuses: 'Processed', 'Disputed', 'Shipped', 'Delivered', 'Pending', 'Cancelled'
             // Notification types: 'OrderStatusChanged', 'OrderShipped', 'TrackingNumber' ('Invoice' and 'Comment' are handled separately)
             //
             // @todo: Currently only uses status 'Shipped' - as no email is sent when type is 'OrderStatusChanged'
@@ -1687,7 +1684,7 @@ trait Orders {
      * @param string $message The comment text
      * @param string $deliveryMethod The delivery method ('Email' or 'None')
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _addOrderComment($token, $message, $deliveryMethod) {
         $sniprest = $this->wire('sniprest');
@@ -1725,8 +1722,8 @@ trait Orders {
     /**
      * Set JS config values for order pages.
      *
-     * @return void 
-     *
+     * @return void
+     * @throws WireException
      */
     private function _setOrderJSConfigValues() {
         $this->wire('config')->js('orderActionStrings', [

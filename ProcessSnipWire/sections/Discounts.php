@@ -10,9 +10,9 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\Functions;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
@@ -25,8 +25,8 @@ trait Discounts {
     /**
      * The SnipWire Snipcart Discounts page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeDiscounts() {
         $modules = $this->wire('modules');
@@ -41,7 +41,7 @@ trait Discounts {
         $this->headline($this->_('Snipcart Discounts'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -116,7 +116,7 @@ trait Discounts {
         }
         if (!empty($discounts) && $name) {
             $discounts = array_filter($discounts, function ($discounts) use ($name) {
-                // Compare case insensitive and part of string
+                // Compare case-insensitive and part of string
                 return (stripos($discounts['name'], $name) !== false);
             });
         }
@@ -163,8 +163,8 @@ trait Discounts {
     /**
      * The SnipWire Discount edit page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeDiscountEdit() {
         $modules = $this->wire('modules');
@@ -180,7 +180,7 @@ trait Discounts {
         $this->breadcrumb($this->snipWireRootUrl . 'discounts/', $this->_('Snipcart Discounts'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -217,8 +217,8 @@ trait Discounts {
     /**
      * The SnipWire Discount add page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeDiscountAdd() {
         $modules = $this->wire('modules');
@@ -234,7 +234,7 @@ trait Discounts {
         $this->breadcrumb($this->snipWireRootUrl . 'discounts/', $this->_('Snipcart Discounts'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -255,8 +255,8 @@ trait Discounts {
      * Build the discounts filter form.
      *
      * @param array $filter The current filter values
-     * @return markup InputfieldForm
-     *
+     * @return string markup InputfieldForm
+     * @throws WireException
      */
     private function _buildDiscountsFilter($filter) {
         $modules = $this->wire('modules');
@@ -336,8 +336,8 @@ trait Discounts {
      * Render the discounts table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableDiscounts($items) {
         $modules = $this->wire('modules');
@@ -462,8 +462,8 @@ trait Discounts {
      *
      * @param array $item
      * @param string $ret A return URL (optional)
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderEditDiscount($item, $ret) {
         $modules = $this->wire('modules');
@@ -543,8 +543,8 @@ trait Discounts {
     /**
      * Render the discount add view.
      *
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderAddDiscount() {
         $modules = $this->wire('modules');
@@ -568,8 +568,8 @@ trait Discounts {
      *
      * @param array $item (optional)
      * @param string $ret A return URL (optional)
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _processDiscountForm($item = null, $ret = '') {
         $modules = $this->wire('modules');
@@ -1272,17 +1272,17 @@ trait Discounts {
              // already sanitized
             'type' => $typeValue,
             
-            // don't santize to float because we always need . as decimal separator
+            // don't sanitize to float because we always need . as decimal separator
             'amount' => $sanitizer->sanitize($amountValue, 'text, entities'),
             
-            // don't santize to float because we always need . as decimal separator
+            // don't sanitize to float because we always need . as decimal separator
             'rate' => $sanitizer->sanitize($rateValue, 'text, entities'),
             
             'alternatePrice' => $sanitizer->sanitize($alternatePriceValue, 'text, entities'),
             
             'shippingDescription' => $sanitizer->sanitize($shippingDescriptionValue, 'text, entities'),
             
-            // don't santize to float because we always need . as decimal separator
+            // don't sanitize to float because we always need . as decimal separator
             'shippingCost' => $sanitizer->sanitize($shippingCostValue, 'text, entities'),
             
             // already sanitized (integer or empty)
@@ -1308,10 +1308,10 @@ trait Discounts {
             
             'itemId' => $sanitizer->text($itemIdValue),
             
-            // don't santize to float because we always need . as decimal separator
+            // don't sanitize to float because we always need . as decimal separator
             'totalToReach' => $sanitizer->sanitize($totalToReachValue, 'text, entities'),
             
-            // don't santize to float because we always need . as decimal separator
+            // don't sanitize to float because we always need . as decimal separator
             'maxAmountToReach' => $sanitizer->sanitize($maxAmountToReachValue, 'text, entities'),
             
             // checkbox
@@ -1354,7 +1354,7 @@ trait Discounts {
      * @param string $id The discount id
      * @param array $options The discount values as array
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _updateDiscount($id, $options) {
         $sniprest = $this->wire('sniprest');
@@ -1382,6 +1382,7 @@ trait Discounts {
      * @param string $id The discount id
      * @return boolean
      *
+     * @throws WireException
      */
     private function _archiveDiscount($id) {
         $sniprest = $this->wire('sniprest');
@@ -1427,11 +1428,11 @@ trait Discounts {
     }
 
     /**
-     * Triggers an "restore" (unarchive) for a Snipcart discount.
+     * Triggers a "restore" (unarchive) for a Snipcart discount.
      *
      * @param string $id The discount id
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _restoreDiscount($id) {
         $sniprest = $this->wire('sniprest');
@@ -1481,7 +1482,7 @@ trait Discounts {
      *
      * @param array $options The discount values as array
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _createDiscount($options) {
         $sniprest = $this->wire('sniprest');
@@ -1507,7 +1508,7 @@ trait Discounts {
      *
      * @param string $id The discount id
      * @return boolean
-     *
+     * @throws WireException
      */
     private function _deleteDiscount($id) {
         $sniprest = $this->wire('sniprest');
@@ -1531,8 +1532,8 @@ trait Discounts {
     /**
      * Set JS config values for discount pages.
      *
-     * @return void 
-     *
+     * @return void
+     * @throws WireException
      */
     private function _setDiscountJSConfigValues() {
         $this->wire('config')->js('discountActionStrings', [

@@ -10,7 +10,6 @@ namespace SnipWire\Services;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
 use ProcessWire\WireException;
@@ -36,7 +35,6 @@ class WireHttpExtended extends WireHttp {
 
     /**
      * Constructor/initialize.
-     * 
      */
     public function __construct() {
         parent::__construct();
@@ -49,7 +47,6 @@ class WireHttpExtended extends WireHttp {
      * Set cURL options to be used for all requests.
      *
      * @param array $options cURL options (will set default options if param not set)
-     *
      */
     public function setCurlMultiOptions($options = []) {
         $this->_curlMultiOptions = $this->sanitizeOptions($options);
@@ -70,10 +67,9 @@ class WireHttpExtended extends WireHttp {
      * @param array $options cURL options array:
      *  - `connect_timeout` (float) Number of seconds to wait while trying to connect. Use 0 to wait indefinitely.
      *  - `timeout` (float) Maximum number of seconds to allow cURL functions to execute.
-     *  - `useragent` (string) Contents of the "User-Agent: " header to be used in a HTTP(S) request.
+     *  - `useragent` (string) Contents of the "User-Agent: " header to be used in an HTTP(S) request.
      *  - `proxy` (string) The HTTP proxy to tunnel requests through.
      * @return array $options Sanitized cURL options
-     *
      */
     protected function sanitizeOptions($options) {
         $allowedOptions = ['connect_timeout', 'timeout', 'useragent', 'proxy'];
@@ -102,9 +98,8 @@ class WireHttpExtended extends WireHttp {
      * @param array $customOptions Custom cURL options for current request(s):
      *  - `connect_timeout` (float) Number of seconds to wait while trying to connect. Use 0 to wait indefinitely.
      *  - `timeout` (float) Maximum number of seconds to allow cURL functions to execute.
-     *  - `useragent` (string) Contents of the "User-Agent: " header to be used in a HTTP(S) request.
+     *  - `useragent` (string) Contents of the "User-Agent: " header to be used in an HTTP(S) request.
      *  - `proxy` (string) The HTTP proxy to tunnel requests through.
-     *
      */
     public function addMultiCURLRequest($url, $method = 'GET', $customOptions = []) {
         if (!$url) return;
@@ -157,22 +152,22 @@ class WireHttpExtended extends WireHttp {
         curl_setopt($this->_curlHandles[$url], CURLOPT_URL, $url);        
     }
 
-	/**
-	 * Send GET requests to multiple URLs using cURL multi requests.
-	 * 
+    /**
+     * Send GET requests to multiple URLs using cURL multi requests.
+     *
      * @return array The cURL multi result
-	 *
-	 */
+     * @throws WireException
+     */
 	public function getMulti() {
 		return $this->sendMultiCURL();
 	}
 
-	/**
-	 * Send to multiple URLs that respond with JSON (using GET request) and return the resulting array.
-	 * 
+    /**
+     * Send to multiple URLs that respond with JSON (using GET request) and return the resulting array.
+     *
      * @return array The cURL multi result
-	 *
-	 */
+     * @throws WireException
+     */
 	public function getMultiJSON() {
     	$decoded = [];
     	if (empty($results = $this->getMulti())) return $decoded;
@@ -270,9 +265,8 @@ class WireHttpExtended extends WireHttp {
     /**
      * Getter for $headers from WireHttp.
      *
-     * @return array $headers (may be empty)
+     * @return array $headers (can be empty)
 	 * @since 3.0.131 this method is already available in WireHttp (we keep it for older versions)
-     *
      */
     public function getHeaders() {
         return $this->headers;
@@ -283,7 +277,6 @@ class WireHttpExtended extends WireHttp {
      *
      * @param int $code Specify the HTTP code number
      * @return string (empty string if $code doesn't exist)
-     *
      */
     public function getHttpStatusCodeString($code) {
         if (isset($this->httpCodes[$code])) {
@@ -291,5 +284,4 @@ class WireHttpExtended extends WireHttp {
         }
         return '';
     }
-
 }

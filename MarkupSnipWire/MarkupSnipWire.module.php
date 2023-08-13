@@ -146,7 +146,7 @@ class MarkupSnipWire extends WireData implements Module {
 
         $currencyParam = $this->snipwireConfig->currency_param ?? 'currency';
 
-        // Get allowed currencies from module config (set to 'eur' if no currecy config available)
+        // Get allowed currencies from module config (set to 'eur' if no currency config available)
         $currencies = $this->snipwireConfig->currencies;
         if (empty($currencies) || !is_array($currencies)) $currencies[] = 'eur';
 
@@ -547,6 +547,7 @@ class MarkupSnipWire extends WireData implements Module {
      *
      * @param Page $product The product page which holds Snipcart related product fields
      * @return string $productUrl The product page url
+     * @throws WireException
      */
     public function getProductUrl(Page $product) {
         // Check if $product (Page) is a Snipcart product
@@ -583,7 +584,7 @@ class MarkupSnipWire extends WireData implements Module {
         $prices = [];
         foreach ($currencies as $currency) {
             // Snipcart always needs a . as separator - so we may not typecasting (float) as it
-            // would be locale aware so it could lead to , as decimal separator
+            // would be locale aware, so it could lead to , as decimal separator
             if ($price = $product->get("snipcart_item_price_$currency")) {
                 $prices[$currency] = $price;
             }

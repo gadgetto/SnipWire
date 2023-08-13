@@ -10,9 +10,9 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
@@ -23,8 +23,8 @@ trait Dashboard {
     /**
      * The SnipWire Dashboard page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___execute() {
         $modules = $this->wire('modules');
@@ -37,7 +37,7 @@ trait Dashboard {
         $this->headline($this->_('SnipWire Dashboard'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -161,7 +161,6 @@ trait Dashboard {
      *
      * @param array $packages The raw data array returned by Snipcart API
      * @return mixed The prepared array ready for rendering or false
-     *
      */
     private function _prepareDashboardData($packages) {
         if (empty($packages) || !is_array($packages)) return false;
@@ -273,8 +272,8 @@ trait Dashboard {
      * @param string $start ISO 8601 date format string
      * @param string $end ISO 8601 date format string
      * @param string $currency Currency string
-     * @return markup InputfieldForm
-     *
+     * @return string markup InputfieldForm
+     * @throws WireException
      */
     private function _buildDashboardFilter($start = '', $end = '', $currency = '') {
         $modules = $this->wire('modules');
@@ -472,8 +471,7 @@ trait Dashboard {
      *
      * @param array $results
      * @param string $currency Currency string
-     * @return markup Custom HTML
-     *
+     * @return string markup Custom HTML
      */
     private function _renderPerformanceBoxes($results, $currency) {
         
@@ -577,8 +575,8 @@ trait Dashboard {
      * @param array $salesData
      * @param array $ordersData
      * @param string $currency Currency string
-     * @return markup Chart
-     *
+     * @return string markup Chart
+     * @throws WireException
      */
     private function _renderChart($salesData, $ordersData, $currency) {
         $config = $this->wire('config');
@@ -651,8 +649,8 @@ trait Dashboard {
      * Render the top customers table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableTopCustomers($items) {
         $modules = $this->wire('modules');
@@ -707,8 +705,8 @@ trait Dashboard {
      *
      * @param array $items
      * @param string $currency Currency tag
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableTopProducts($items, $currency) {
         $pages = $this->wire('pages');
@@ -795,8 +793,8 @@ trait Dashboard {
      * Render the recent orders table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableRecentOrders($items) {
         $modules = $this->wire('modules');

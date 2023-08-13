@@ -35,7 +35,6 @@ class ProcessSnipWire extends Process implements Module {
 
     /**
      * Returns information for ProcessSnipWire module.
-     *
      */
     public static function getModuleInfo() {
         return [

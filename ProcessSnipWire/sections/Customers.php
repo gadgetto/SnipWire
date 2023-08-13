@@ -10,9 +10,9 @@ namespace SnipWire\ProcessSnipWire\Sections;
  *
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
- *
  */
 
+use ProcessWire\WireException;
 use SnipWire\Helpers\Countries;
 use SnipWire\Helpers\CurrencyFormat;
 use SnipWire\Services\SnipREST;
@@ -23,8 +23,8 @@ trait Customers {
     /**
      * The SnipWire Snipcart Customers page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeCustomers() {
         $modules = $this->wire('modules');
@@ -39,7 +39,7 @@ trait Customers {
         $this->headline($this->_('Snipcart Customers'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -128,8 +128,8 @@ trait Customers {
     /**
      * The SnipWire Snipcart Customer detail page.
      *
-     * @return page markup
-     *
+     * @return string page markup
+     * @throws WireException
      */
     public function ___executeCustomer() {
         $modules = $this->wire('modules');
@@ -145,7 +145,7 @@ trait Customers {
         $this->breadcrumb($this->snipWireRootUrl . 'customers/', $this->_('Snipcart Customers'));
         
         if (!$user->hasPermission('snipwire-dashboard')) {
-            $this->error($this->_('You dont have permisson to use the SnipWire Dashboard - please contact your admin!'));
+            $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
@@ -192,8 +192,8 @@ trait Customers {
      * Build the customers filter form.
      *
      * @param array $filter The current filter values
-     * @return markup InputfieldForm
-     *
+     * @return string markup InputfieldForm
+     * @throws WireException
      */
     private function _buildCustomersFilter($filter) {
         $modules = $this->wire('modules');
@@ -273,8 +273,8 @@ trait Customers {
      * Render the customers table.
      *
      * @param array $items
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableCustomers($items) {
         $modules = $this->wire('modules');
@@ -335,8 +335,8 @@ trait Customers {
      * Render the customer detail view.
      *
      * @param array $item
-     * @return markup 
-     *
+     * @return string
+     * @throws WireException
      */
     private function _renderDetailCustomer($item) {
         $modules = $this->wire('modules');
@@ -495,10 +495,9 @@ trait Customers {
      * (Currently uses custom button markup as there is a PW bug which 
      * triggers href targets twice + we need to attach JavaScript events on button click)
      *
-     * @param $id The customer id
-     * @param $email The customer email
-     * @return buttons markup 
-     *
+     * @param mixed $id The customer id
+     * @param string $email The customer email
+     * @return string buttons markup
      */
     private function _getCustomerDetailActionButtons($id, $email) {
         
@@ -518,9 +517,9 @@ trait Customers {
      * Render the customer orders table.
      *
      * @param array $items
-     * @param array $customerId The customer id
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @param mixed $customerId The customer id
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableCustomerOrders($items, $customerId) {
         $modules = $this->wire('modules');
@@ -608,9 +607,9 @@ trait Customers {
      * Render the customer subscriptions table.
      *
      * @param array $items
-     * @param array $customerId The customer id
-     * @return markup MarkupAdminDataTable | custom html with `no items` display 
-     *
+     * @param mixed $customerId The customer id
+     * @return string markup MarkupAdminDataTable | custom html with `no items` display
+     * @throws WireException
      */
     private function _renderTableCustomerSubscriptions($items, $customerId) {
         $modules = $this->wire('modules');
