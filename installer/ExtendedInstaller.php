@@ -64,12 +64,13 @@ class ExtendedInstaller extends Wire {
         $path = __DIR__ . '/' . self::installerResourcesDirName . '/' . $fileName;
         if (file_exists($path)) {
             include $path;
+            /** @var array $resources Resources array from included file */
             if (!is_array($resources) || !count($resources)) {
-                $message = sprintf($this->_('Installation aborted. Invalid resources array in file [%s].'), $resources);
+                $message = sprintf($this->_('Installation aborted. Invalid resources array in file [%s].'), $fileName);
                 throw new WireException($message);
             }
         } else  {
-            $message = sprintf($this->_('Installation aborted. File [%s] not found.'), $resources);
+            $message = sprintf($this->_('Installation aborted. File [%s] not found.'), $fileName);
             throw new WireException($message);
         }
         $this->resources = $resources;
