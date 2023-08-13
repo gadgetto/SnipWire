@@ -18,7 +18,6 @@ namespace ProcessWire;
  * 'pages' - special array keys:
  *
  *  - _uninstall: what should happen when the page is uninstalled (possible values "trash", "delete", "no")
- *
  */
 
 $resources = [

@@ -8,7 +8,6 @@ namespace ProcessWire;
  *
  * We are using the "regular" site-profile as it offers Markup Regions as its output 
  * strategy and so it's easy to demonstrate how SnipCart works.
- * 
  */
 
 if (!defined('PROCESSWIRE')) die();
