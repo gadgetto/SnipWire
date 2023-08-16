@@ -43,7 +43,7 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
             ],
             'requires' => [
                 'ProcessWire>=3.0.148',
-                'PHP>=7.0.0',
+                'PHP>=7.4.0',
             ],
         ];
     }

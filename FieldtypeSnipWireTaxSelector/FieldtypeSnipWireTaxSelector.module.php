@@ -33,7 +33,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
                 'ProcessWire>=3.0.148',
                 'SnipWire',
                 'InputfieldSelect',
-                'PHP>=7.0.0',
+                'PHP>=7.4.0',
             ],
         ];
     }
