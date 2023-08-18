@@ -1,3 +1,4 @@
 .DS_Store
 /.nova
+/.idea
 .fake_placeholder_fix_git_problem
