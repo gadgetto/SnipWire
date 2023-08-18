@@ -1,10 +1,11 @@
 <?php
+
 namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Products trait - sections file for ProcessSnipWire.module.php.
  * (This file is part of the SnipWire package)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -18,14 +19,16 @@ use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
 use ProcessWire\Inputfield;
 
-trait Products {
+trait Products
+{
     /**
      * The SnipWire Snipcart Products page.
      *
      * @return string page markup
      * @throws WireException
      */
-    public function ___executeProducts() {
+    public function ___executeProducts()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
@@ -33,10 +36,10 @@ trait Products {
         $sanitizer = $this->wire('sanitizer');
         $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Products'));
         $this->headline($this->_('Snipcart Products'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
@@ -133,7 +136,8 @@ trait Products {
      * @return string page markup
      * @throws WireException
      */
-    public function ___executeProduct() {
+    public function ___executeProduct()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
@@ -197,7 +201,8 @@ trait Products {
      * @return string markup InputfieldForm
      * @throws WireException
      */
-    private function _buildProductsFilter($filter) {
+    private function _buildProductsFilter($filter)
+    {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
@@ -209,67 +214,67 @@ trait Products {
         $config->js('filterSettings', $filterSettings);
 
         /** @var InputfieldForm $form */
-        $form = $modules->get('InputfieldForm'); 
+        $form = $modules->get('InputfieldForm');
         $form->attr('id', 'ProductsFilterForm');
         $form->method = 'post';
         $form->action = $this->currentUrl;
 
-            /** @var InputfieldFieldset $fsSnipWire */
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Search for Products');
-            $fieldset->icon = 'search';
-            if (
-                $filter['userDefinedId'] ||
-                $filter['keywords'] ||
-                ($filter['archived'] && $filter['archived'] != 'false')
-            ) {
-                $fieldset->collapsed = Inputfield::collapsedNo;
-            } else {
-                $fieldset->collapsed = Inputfield::collapsedYes;
-            }
+        /** @var InputfieldFieldset $fsSnipWire */
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->label = $this->_('Search for Products');
+        $fieldset->icon = 'search';
+        if (
+            $filter['userDefinedId'] ||
+            $filter['keywords'] ||
+            ($filter['archived'] && $filter['archived'] != 'false')
+        ) {
+            $fieldset->collapsed = Inputfield::collapsedNo;
+        } else {
+            $fieldset->collapsed = Inputfield::collapsedYes;
+        }
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->attr('name', 'userDefinedId');
-                $f->label = $this->_('SKU');
-                $f->value = $filter['userDefinedId'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'userDefinedId');
+        $f->label = $this->_('SKU');
+        $f->value = $filter['userDefinedId'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 33;
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->attr('name', 'keywords');
-                $f->label = $this->_('Keywords');
-                $f->value = $filter['keywords'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'keywords');
+        $f->label = $this->_('Keywords');
+        $f->value = $filter['keywords'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 33;
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect');
-                $f->addClass('filter-form-select');
-                $f->attr('name', 'archived'); 
-                $f->label = $this->_('Status'); 
-                $f->value = $filter['archived'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 34;
-                $f->required = true;
-                $f->addOption('false', $this->_('Not archived'));
-                $f->addOption('true', $this->_('Archived'));
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->addClass('filter-form-select');
+        $f->attr('name', 'archived');
+        $f->label = $this->_('Status');
+        $f->value = $filter['archived'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 34;
+        $f->required = true;
+        $f->addOption('false', $this->_('Not archived'));
+        $f->addOption('true', $this->_('Archived'));
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                $buttonsWrapper = $modules->get('InputfieldMarkup');
-                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
+        $buttonsWrapper = $modules->get('InputfieldMarkup');
+        $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
-            $fieldset->add($buttonsWrapper);
+        $fieldset->add($buttonsWrapper);
 
         $form->add($fieldset);
 
-        return $form->render(); 
+        return $form->render();
     }
 
     /**
@@ -280,7 +285,8 @@ trait Products {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableProducts($items, $currency) {
+    private function _renderTableProducts($items, $currency)
+    {
         $pages = $this->wire('pages');
         $modules = $this->wire('modules');
         $snipwireConfig = $this->snipwireConfig;
@@ -310,38 +316,38 @@ trait Products {
 
             foreach ($items as $item) {
                 $panelLink =
-                '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
+                    '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        \ProcessWire\wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
-                '</a>';
+                    \ProcessWire\wireIconMarkup(self::iconProduct, 'fa-right-margin') . $item['userDefinedId'] .
+                    '</a>';
                 $thumb = $this->getProductImg($item['image']);
 
                 $product = $pages->findOne('snipcart_item_id="' . $item['userDefinedId'] . '"');
                 if ($product->url) {
                     if ($product->editable()) {
                         $editLink =
-                        '<a href="' . $product->editUrl . '"
+                            '<a href="' . $product->editUrl . '"
                             class="pw-tooltip pw-modal pw-modal-large"
-                            title="' . $this->_('Edit product page') .'">' .
-                                \ProcessWire\wireIconMarkup('pencil-square-o') .
-                        '</a>';
+                            title="' . $this->_('Edit product page') . '">' .
+                            \ProcessWire\wireIconMarkup('pencil-square-o') .
+                            '</a>';
                     } else {
                         $editLink =
-                        '<span
+                            '<span
                             class="pw-tooltip"
-                            title="' . $this->_('Product not editable') .'">' .
-                                \ProcessWire\wireIconMarkup('pencil-square-o') .
-                        '</span>';
+                            title="' . $this->_('Product not editable') . '">' .
+                            \ProcessWire\wireIconMarkup('pencil-square-o') .
+                            '</span>';
                     }
                 } else {
                     // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
                     $editLink =
-                    '<span
+                        '<span
                         class="pw-tooltip"
-                        title="' . $this->_('No matching ProcessWire page found') .'">' . 
-                            \ProcessWire\wireIconMarkup('exclamation-triangle') .
-                    '</span>';
+                        title="' . $this->_('No matching ProcessWire page found') . '">' .
+                        \ProcessWire\wireIconMarkup('exclamation-triangle') .
+                        '</span>';
                 }
 
                 $stock = isset($item['stock'])
@@ -363,9 +369,9 @@ trait Products {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No products found') .
-            '</div>';
+                '</div>';
         }
         return '<div class="ItemListerTable">' . $out . '</div>';
     }
@@ -377,45 +383,46 @@ trait Products {
      * @return string
      * @throws WireException
      */
-    private function _renderDetailProduct($item) {
+    private function _renderDetailProduct($item)
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
 
         if (empty($item)) {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No order selected') .
-            '</div>';
+                '</div>';
             return $out;
         }
-        
+
         $out = '';
 
         $out .=
-        '<div class="ItemDetailHeader">' .
+            '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                \ProcessWire\wireIconMarkup(self::iconProduct, 'fa-right-margin') .
-                $this->_('Product') . ': ' .
-                $item['name'] .
+            \ProcessWire\wireIconMarkup(self::iconProduct, 'fa-right-margin') .
+            $this->_('Product') . ': ' .
+            $item['name'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                $this->_getProductDetailActionButtons($item['userDefinedId']) .
+            $this->_getProductDetailActionButtons($item['userDefinedId']) .
             '</div>' .
-        '</div>';
+            '</div>';
 
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->entityEncodeLabel = false;
-            $f->label = $this->_('Product Details');
-            if ($item['archived']) {
-                $f->label .= ' <span class="snipwire-badge snipwire-badge-warning">' . $this->_('archived') . '</span>';
-            }
-            $f->icon = self::iconProduct;
-            $f->value = $this->_renderProductInfo($item);
-            
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->entityEncodeLabel = false;
+        $f->label = $this->_('Product Details');
+        if ($item['archived']) {
+            $f->label .= ' <span class="snipwire-badge snipwire-badge-warning">' . $this->_('archived') . '</span>';
+        }
+        $f->icon = self::iconProduct;
+        $f->value = $this->_renderProductInfo($item);
+
         $wrapper->add($f);
 
         $out .= $wrapper->render();
@@ -425,13 +432,13 @@ trait Products {
             /** @var InputfieldForm $wrapper */
             $wrapper = $modules->get('InputfieldForm');
 
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Debug Infos');
-                $f->collapsed = Inputfield::collapsedYes;
-                $f->icon = self::iconDebug;
-                $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
-                
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Debug Infos');
+            $f->collapsed = Inputfield::collapsedYes;
+            $f->icon = self::iconDebug;
+            $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
+
             $wrapper->add($f);
 
             $out .= $wrapper->render();
@@ -449,7 +456,8 @@ trait Products {
      * @return string buttons markup
      * @throws WireException
      */
-    private function _getProductDetailActionButtons($userDefinedId) {
+    private function _getProductDetailActionButtons($userDefinedId)
+    {
         $pages = $this->wire('pages');
 
         $out = '';
@@ -458,33 +466,33 @@ trait Products {
         if ($product->url) {
             if ($product->editable()) {
                 $out .=
-                '<a href="' . $product->editUrl .'"
+                    '<a href="' . $product->editUrl . '"
                     class="ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary pw-modal pw-modal-large"
                     role="button">' .
-                        '<span class="ui-button-text">' .
-                            \ProcessWire\wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
-                        '</span>' .
-                '</a>';
+                    '<span class="ui-button-text">' .
+                    \ProcessWire\wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
+                    '</span>' .
+                    '</a>';
             } else {
                 $out .=
-                '<span
+                    '<span
                     class="ui-button ui-widget ui-corner-all ui-state-disabled ui-priority-secondary pw-tooltip"
-                    title="' . $this->_('Product not editable') .'">' .
-                        '<span class="ui-button-text">' .
-                            \ProcessWire\wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
-                        '</span>' .
-                '</span>';
+                    title="' . $this->_('Product not editable') . '">' .
+                    '<span class="ui-button-text">' .
+                    \ProcessWire\wireIconMarkup('pencil-square-o') . ' ' . $this->_('Edit product page') .
+                    '</span>' .
+                    '</span>';
             }
         } else {
             // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
             $out .=
-            '<span
+                '<span
                 class="ui-button ui-widget ui-corner-all ui-state-disabled ui-priority-secondary pw-tooltip"
-                title="' . $this->_('No matching ProcessWire page found') .'">' .
-                    '<span class="ui-button-text">' .
-                        \ProcessWire\wireIconMarkup('exclamation-triangle') . ' ' . $this->_('Edit product page') .
-                    '</span>' .
-            '</span>';
+                title="' . $this->_('No matching ProcessWire page found') . '">' .
+                '<span class="ui-button-text">' .
+                \ProcessWire\wireIconMarkup('exclamation-triangle') . ' ' . $this->_('Edit product page') .
+                '</span>' .
+                '</span>';
         }
 
         return $out;
@@ -497,7 +505,8 @@ trait Products {
      * @return string
      * @throws WireException
      */
-    private function _renderProductInfo($item) {
+    private function _renderProductInfo($item)
+    {
         $infoCaptions = [
             'sku' => $this->_('SKU'),
             'name' => $this->_('Product name'),
@@ -509,7 +518,7 @@ trait Products {
             'creationDate' => $this->_('Created on'),
             'modificationDate' => $this->_('Last modified'),
         ];
-        
+
         $item['sku'] = $item['userDefinedId'];
         if (!empty($item['image'])) {
             $item['image_path'] = $item['image']
@@ -546,28 +555,29 @@ trait Products {
      * @return string img markup | placeholder markup | empty string
      * @throws WireException
      */
-    public function getProductImg($url) {
+    public function getProductImg($url)
+    {
         $config = $this->wire('config');
 
         $snipwireConfig = $this->snipwireConfig;
         $absPath = rtrim($config->paths->root, '/');
-        
+
         $width = $snipwireConfig['cart_image_width'];
         $height = $snipwireConfig['cart_image_height'];
 
         // UIKit "image" svg icon as placeholder
         $placeholder =
-        '<div
+            '<div
             style="width: ' . $width . 'px; height: ' . $height . 'px; padding: .75rem; background-color: #dfe6e9; border-radius: .25rem;"
             class="pw-tooltip"
             title="' . $this->_('Product image not found') . '">' .
             '<svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' .
-                '<circle fill="#fff" cx="16.1" cy="6.1" r="1.1" />' .
-                '<rect fill="none" stroke="#fff" x="0.5" y="2.5" width="19" height="15" />' .
-                '<polyline fill="none" stroke="#fff" stroke-width="1.01" points="4,13 8,9 13,14" />' .
-                '<polyline fill="none" stroke="#fff" stroke-width="1.01" points="11,12 12.5,10.5 16,14" />' .
+            '<circle fill="#fff" cx="16.1" cy="6.1" r="1.1" />' .
+            '<rect fill="none" stroke="#fff" x="0.5" y="2.5" width="19" height="15" />' .
+            '<polyline fill="none" stroke="#fff" stroke-width="1.01" points="4,13 8,9 13,14" />' .
+            '<polyline fill="none" stroke="#fff" stroke-width="1.01" points="11,12 12.5,10.5 16,14" />' .
             '</svg>' .
-        '</div>';
+            '</div>';
 
         $out = $placeholder;
 

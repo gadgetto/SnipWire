@@ -1,10 +1,11 @@
 <?php
+
 namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Dashboard trait - sections file for ProcessSnipWire.module.php.
  * (This file is part of the SnipWire package)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -19,31 +20,33 @@ use SnipWire\Services\WireHttpExtended;
 use ProcessWire\Inputfield;
 use ProcessWire\InputfieldDatetime;
 
-trait Dashboard {
+trait Dashboard
+{
     /**
      * The SnipWire Dashboard page.
      *
      * @return string page markup
      * @throws WireException
      */
-    public function ___execute() {
+    public function ___execute()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('SnipWire Dashboard'));
         $this->headline($this->_('SnipWire Dashboard'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
         }
 
         $this->_includeAssets(
-            self::assetsIncludeDateRangePicker | 
-            self::assetsIncludeCurrencyPicker | 
+            self::assetsIncludeDateRangePicker |
+            self::assetsIncludeCurrencyPicker |
             self::assetsIncludeApexCharts
         );
 
@@ -76,9 +79,9 @@ trait Dashboard {
 
         if (!$dashboard) {
             $out =
-            '<div class="dashboard-empty">' .
+                '<div class="dashboard-empty">' .
                 $this->_('Dashboard data could not be fetched') .
-            '</div>';
+                '</div>';
             return $this->_wrapDashboardOutput($out);
         }
 
@@ -98,38 +101,13 @@ trait Dashboard {
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Performance Chart');
-            $f->icon = self::iconDashboard;
-            $f->value = $chart;
-            $f->columnWidth = 100;
-            $f->collapsed = Inputfield::collapsedNever;
-            
-        $wrapper->add($f);
-
-        $out .= $wrapper->render();
-
-        /** @var InputfieldForm $wrapper */
-        $wrapper = $modules->get('InputfieldForm');
-
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Top Customers For Selected Period');
-            $f->icon = self::iconCustomer;
-            $f->value = $this->_renderTableTopCustomers($dashboard[SnipREST::resPathCustomers]);
-            $f->columnWidth = 50;
-            $f->collapsed = Inputfield::collapsedNever;
-
-        $wrapper->add($f);
-
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Top Products For Selected Period');
-            $f->icon = self::iconProduct;
-            $f->value = $this->_renderTableTopProducts($dashboard[SnipREST::resPathProducts], $currency);
-            $f->columnWidth = 50;
-            $f->collapsed = Inputfield::collapsedNever;
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Performance Chart');
+        $f->icon = self::iconDashboard;
+        $f->value = $chart;
+        $f->columnWidth = 100;
+        $f->collapsed = Inputfield::collapsedNever;
 
         $wrapper->add($f);
 
@@ -138,14 +116,39 @@ trait Dashboard {
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Recent Orders');
-            $f->icon = self::iconOrder;
-            $f->value = $this->_renderTableRecentOrders($dashboard[SnipREST::resPathOrders]);
-            $f->columnWidth = 100;
-            $f->collapsed = Inputfield::collapsedNever;
-            
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Top Customers For Selected Period');
+        $f->icon = self::iconCustomer;
+        $f->value = $this->_renderTableTopCustomers($dashboard[SnipREST::resPathCustomers]);
+        $f->columnWidth = 50;
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $wrapper->add($f);
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Top Products For Selected Period');
+        $f->icon = self::iconProduct;
+        $f->value = $this->_renderTableTopProducts($dashboard[SnipREST::resPathProducts], $currency);
+        $f->columnWidth = 50;
+        $f->collapsed = Inputfield::collapsedNever;
+
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Recent Orders');
+        $f->icon = self::iconOrder;
+        $f->value = $this->_renderTableRecentOrders($dashboard[SnipREST::resPathOrders]);
+        $f->columnWidth = 100;
+        $f->collapsed = Inputfield::collapsedNever;
+
         $wrapper->add($f);
 
         $out .= $wrapper->render();
@@ -156,13 +159,14 @@ trait Dashboard {
     }
 
     /**
-     * Extract data packages from Snipcart API results and create new 
+     * Extract data packages from Snipcart API results and create new
      * array ready for dashboard rendering.
      *
      * @param array $packages The raw data array returned by Snipcart API
      * @return mixed The prepared array ready for rendering or false
      */
-    private function _prepareDashboardData($packages) {
+    private function _prepareDashboardData($packages)
+    {
         if (empty($packages) || !is_array($packages)) return false;
 
         // Initialize dashboard
@@ -180,13 +184,13 @@ trait Dashboard {
         $averageOrdersValue = 0.0;
 
         foreach ($packages as $key => $package) {
-            
+
             if (strpos($key, SnipREST::resPathDataPerformance) !== false) {
 
                 // Performance data is NOT currency dependent therefore some values need to be 
                 // determined from other currency dependent sources and will be replaced later.
                 // (marked with "calc" in sample array)
-                
+
                 /*
                 Sample performance array:
                 [
@@ -204,9 +208,9 @@ trait Dashboard {
                 ]
                 */
                 $dashboard[SnipREST::resPathDataPerformance] = $package;
-                
+
             } elseif (strpos($key, SnipREST::resPathDataOrdersSales) !== false) {
-                
+
                 $dashboard[SnipREST::resPathDataOrdersSales] = $package;
 
                 // Calc sales sum
@@ -218,9 +222,9 @@ trait Dashboard {
                 }
 
             } elseif (strpos($key, SnipREST::resPathDataOrdersCount) !== false) {
-                
+
                 $dashboard[SnipREST::resPathDataOrdersCount] = $package;
-                
+
                 // Calc orders count
                 if (isset($dashboard[SnipREST::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'])) {
                     $data = $dashboard[SnipREST::resPathDataOrdersCount][WireHttpExtended::resultKeyContent]['data'];
@@ -228,21 +232,21 @@ trait Dashboard {
                         $ordersCount += $item['value'];
                     }
                 }
-                
+
             } elseif (strpos($key, SnipREST::resPathCustomers) !== false) {
-                
+
                 $dashboard[SnipREST::resPathCustomers] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : [];
-                
+
             } elseif (strpos($key, SnipREST::resPathProducts) !== false) {
-                
+
                 $dashboard[SnipREST::resPathProducts] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : [];
-                
+
             } elseif (strpos($key, SnipREST::resPathOrders) !== false) {
-                
+
                 $dashboard[SnipREST::resPathOrders] = isset($package[WireHttpExtended::resultKeyContent]['items'])
                     ? $package[WireHttpExtended::resultKeyContent]['items']
                     : [];
@@ -262,7 +266,7 @@ trait Dashboard {
         );
 
         unset($packages, $key, $package); // free space
-        
+
         return $dashboard;
     }
 
@@ -275,11 +279,12 @@ trait Dashboard {
      * @return string markup InputfieldForm
      * @throws WireException
      */
-    private function _buildDashboardFilter($start = '', $end = '', $currency = '') {
+    private function _buildDashboardFilter($start = '', $end = '', $currency = '')
+    {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
         $input = $this->wire('input');
-        
+
         $periodDateFormat = 'Y-m-d';
         $periodPlaceholder = 'YYYY-MM-DD';
 
@@ -309,7 +314,7 @@ trait Dashboard {
             'last30days' => $this->_('Last 30 Days'),
             'thismonth' => $this->_('This Month'),
             'lastmonth' => $this->_('Last Month'),
-            'custom' =>  $this->_('Custom range'),
+            'custom' => $this->_('Custom range'),
         ];
 
         $pickerMessages = [
@@ -363,107 +368,107 @@ trait Dashboard {
         $config->js('pickerMessages', $pickerMessages);
 
         /** @var InputfieldForm $form */
-        $form = $modules->get('InputfieldForm'); 
+        $form = $modules->get('InputfieldForm');
         $form->attr('id', 'StorePerformanceFilterForm');
         $form->method = 'get';
         $form->action = $this->currentUrl;
 
-            $dateRangeDisplay = 
+        $dateRangeDisplay =
             '<div id="DateRangeDisplay">' .
-                '<em>' . $start . '</em>' . \ProcessWire\wireIconMarkup('arrows-h') . '<em>' . $end . '</em>' .
+            '<em>' . $start . '</em>' . \ProcessWire\wireIconMarkup('arrows-h') . '<em>' . $end . '</em>' .
             '</div>';
 
-            // Date range reset button
-            $dateRangeReset = 
+        // Date range reset button
+        $dateRangeReset =
             '<a href="' . $this->currentUrl . '?action=reset"
                 id="DateRangeReset"
                 class="ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary pw-tooltip"
                 role="button"
-                title="' . $this->_('Reset date range to default') .'">' .
-                    '<span class="ui-button-text">' .
-                        \ProcessWire\wireIconMarkup('rotate-left') .
-                    '</span>' .
+                title="' . $this->_('Reset date range to default') . '">' .
+            '<span class="ui-button-text">' .
+            \ProcessWire\wireIconMarkup('rotate-left') .
+            '</span>' .
             '</a>';
 
-            /** @var InputfieldFieldset $fieldset */
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = '<span class="hidable-inputfield-label">';
-            $fieldset->label .= $this->_('Store Performance');
-            $fieldset->label .= '</span>';
-            $fieldset->label .= $dateRangeDisplay;
-            $fieldset->label .= $dateRangeReset;
-            $fieldset->icon = 'calendar';
-            $fieldset->entityEncodeLabel = false;
+        /** @var InputfieldFieldset $fieldset */
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->label = '<span class="hidable-inputfield-label">';
+        $fieldset->label .= $this->_('Store Performance');
+        $fieldset->label .= '</span>';
+        $fieldset->label .= $dateRangeDisplay;
+        $fieldset->label .= $dateRangeReset;
+        $fieldset->icon = 'calendar';
+        $fieldset->entityEncodeLabel = false;
 
         $form->add($fieldset);
 
-            /** @var InputfieldSelect $f */
-            $f = $modules->get('InputfieldSelect');
-            $f->attr('id+name', 'periodSelect');
-            $f->attr('value', $knownRange);
-            $f->addClass('InputfieldMaxWidth');
-            $f->label = $this->_('Predefined period');
-            $f->required = true;
-            $f->columnWidth = 40;
-            $f->collapsed = Inputfield::collapsedNever;
-            $f->addOptions($perioRangeLabels);
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->attr('id+name', 'periodSelect');
+        $f->attr('value', $knownRange);
+        $f->addClass('InputfieldMaxWidth');
+        $f->label = $this->_('Predefined period');
+        $f->required = true;
+        $f->columnWidth = 40;
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->addOptions($perioRangeLabels);
 
         $fieldset->add($f);
 
-            /** @var InputfieldDatetime $f */
-            $f = $modules->get('InputfieldDatetime');
-            $f->attr('id+name', 'periodFrom');
-            $f->attr('value', $start);
-            $f->attr('placeholder', $periodPlaceholder);
-            $f->attr('autocomplete', 'off');
-            $f->addClass('InputfieldMaxWidth');
-            $f->label = $this->_('Period from');
-            $f->datepicker = InputfieldDatetime::datepickerFocus;
-            $f->dateInputFormat = $periodDateFormat;
-            $f->yearRange = '-15:+0';
-            $f->collapsed = Inputfield::collapsedNever;
-            $f->columnWidth = 20;
+        /** @var InputfieldDatetime $f */
+        $f = $modules->get('InputfieldDatetime');
+        $f->attr('id+name', 'periodFrom');
+        $f->attr('value', $start);
+        $f->attr('placeholder', $periodPlaceholder);
+        $f->attr('autocomplete', 'off');
+        $f->addClass('InputfieldMaxWidth');
+        $f->label = $this->_('Period from');
+        $f->datepicker = InputfieldDatetime::datepickerFocus;
+        $f->dateInputFormat = $periodDateFormat;
+        $f->yearRange = '-15:+0';
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 20;
 
         $fieldset->add($f);
 
-            /** @var InputfieldDatetime $f */
-            $f = $modules->get('InputfieldDatetime');
-            $f->attr('id+name', 'periodTo');
-            $f->attr('value', $end);
-            $f->attr('placeholder', $periodPlaceholder);
-            $f->attr('autocomplete', 'off');
-            $f->addClass('InputfieldMaxWidth');
-            $f->label = $this->_('Period to');
-            $f->datepicker = InputfieldDatetime::datepickerFocus;
-            $f->dateInputFormat = $periodDateFormat;
-            $f->yearRange = '-15:+0';
-            $f->collapsed = Inputfield::collapsedNever;
-            $f->columnWidth = 20;
+        /** @var InputfieldDatetime $f */
+        $f = $modules->get('InputfieldDatetime');
+        $f->attr('id+name', 'periodTo');
+        $f->attr('value', $end);
+        $f->attr('placeholder', $periodPlaceholder);
+        $f->attr('autocomplete', 'off');
+        $f->addClass('InputfieldMaxWidth');
+        $f->label = $this->_('Period to');
+        $f->datepicker = InputfieldDatetime::datepickerFocus;
+        $f->dateInputFormat = $periodDateFormat;
+        $f->yearRange = '-15:+0';
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 20;
 
         $fieldset->add($f);
 
-            /** @var InputfieldSelect $f */
-            $f = $modules->get('InputfieldSelect'); 
-            $f->attr('id', 'currency-picker'); 
-            $f->attr('name', 'currency'); 
-            $f->wrapClass = 'CurrencyPickerContainer';
-            $f->label = $this->_('Currency'); 
-            $f->value = $currency;
-            $f->collapsed = Inputfield::collapsedNever;
-            $f->columnWidth = 20;
-            $f->required = true;
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->attr('id', 'currency-picker');
+        $f->attr('name', 'currency');
+        $f->wrapClass = 'CurrencyPickerContainer';
+        $f->label = $this->_('Currency');
+        $f->value = $currency;
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 20;
+        $f->required = true;
 
-            $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
-            foreach ($this->currencies as $currencyOption) {
-                $currencyLabel = isset($supportedCurrencies[$currencyOption])
-                    ? $supportedCurrencies[$currencyOption]
-                    : $currencyOption;
-                $f->addOption($currencyOption, $currencyLabel);
-            }
+        $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
+        foreach ($this->currencies as $currencyOption) {
+            $currencyLabel = isset($supportedCurrencies[$currencyOption])
+                ? $supportedCurrencies[$currencyOption]
+                : $currencyOption;
+            $f->addOption($currencyOption, $currencyLabel);
+        }
 
-        $fieldset->add($f);            
+        $fieldset->add($f);
 
-        return $form->render(); 
+        return $form->render();
     }
 
     /**
@@ -473,8 +478,9 @@ trait Dashboard {
      * @param string $currency Currency string
      * @return string markup Custom HTML
      */
-    private function _renderPerformanceBoxes($results, $currency) {
-        
+    private function _renderPerformanceBoxes($results, $currency)
+    {
+
         $content = $results[WireHttpExtended::resultKeyContent];
         $httpCode = $results[WireHttpExtended::resultKeyHttpCode];
         $error = $results[WireHttpExtended::resultKeyError];
@@ -483,15 +489,15 @@ trait Dashboard {
             $errorMessage = $this->_('Values for store performance boxes could not be fetched:');
             $this->error($errorMessage . ' ' . $error);
             $errorIcon =
-            '<span
+                '<span
                 class="pw-tooltip"
-                title="' . $errorMessage .'">' .
-                    \ProcessWire\wireIconMarkup('exclamation-triangle') .
-            '</span>';
+                title="' . $errorMessage . '">' .
+                \ProcessWire\wireIconMarkup('exclamation-triangle') .
+                '</span>';
 
             $values = [
                 'orders' => $errorIcon,
-                'sales' => $errorIcon, 
+                'sales' => $errorIcon,
                 'average' => $errorIcon,
                 'customers' => [
                     'new' => $errorIcon,
@@ -501,11 +507,11 @@ trait Dashboard {
         } else {
             $errorMessage = $this->_('Missing value in Snipcart data');
             $errorIcon =
-            '<span
+                '<span
                 class="pw-tooltip"
-                title="' . $errorMessage .'">' .
-                    \ProcessWire\wireIconMarkup('exclamation-triangle') .
-            '</span>';
+                title="' . $errorMessage . '">' .
+                \ProcessWire\wireIconMarkup('exclamation-triangle') .
+                '</span>';
 
             $values = [
                 'orders' => isset($content['ordersCount'])
@@ -538,33 +544,33 @@ trait Dashboard {
         $out = '';
 
         foreach ($boxes as $box => $label) {
-            $out .= 
-            '<div class="snipwire-perf-box">' .
+            $out .=
+                '<div class="snipwire-perf-box">' .
                 '<div class="snipwire-perf-box-header">' .
-                    $label .
+                $label .
                 '</div>' .
                 '<div class="snipwire-perf-box-body">';
-            
+
             if ($box == 'customers' && is_array($values[$box])) {
                 $out .=
-                '<div class="customers-multivalue">' .
+                    '<div class="customers-multivalue">' .
                     '<div>' .
-                        '<span>' . $values[$box]['new'] . '</span>' .
-                        '<small>' . $this->_('New') . '</small>' .
+                    '<span>' . $values[$box]['new'] . '</span>' .
+                    '<small>' . $this->_('New') . '</small>' .
                     '</div>' .
                     '<div>' .
-                        '<span>' . $values[$box]['returning'] . '</span>' .
-                        '<small>' . $this->_('Returning') . '</small>' .
+                    '<span>' . $values[$box]['returning'] . '</span>' .
+                    '<small>' . $this->_('Returning') . '</small>' .
                     '</div>' .
-                '</div>';
+                    '</div>';
             } else {
                 $out .=
-                '<span>' . $values[$box] . '</span>';
+                    '<span>' . $values[$box] . '</span>';
             }
-            
+
             $out .=
                 '</div>' .
-            '</div>';
+                '</div>';
         }
         return '<div id="PerformanceBoxesContainer">' . $out . '</div>';
     }
@@ -578,7 +584,8 @@ trait Dashboard {
      * @return string markup Chart
      * @throws WireException
      */
-    private function _renderChart($salesData, $ordersData, $currency) {
+    private function _renderChart($salesData, $ordersData, $currency)
+    {
         $config = $this->wire('config');
 
         $salesDataContent = $salesData[WireHttpExtended::resultKeyContent];
@@ -604,7 +611,7 @@ trait Dashboard {
         $ordersDataError = $ordersData[WireHttpExtended::resultKeyError];
         $ordersCategories = [];
         $orders = [];
- 
+
         if ($ordersDataError) {
             $this->error($this->_('Values for orders chart could not be fetched:') . ' ' . $ordersDataError);
         } else {
@@ -625,7 +632,7 @@ trait Dashboard {
         } else {
             $categories = [];
         }
-        
+
         // Hand over chartData to JS
         $config->js('chartData', [
             'categories' => $categories,
@@ -637,11 +644,11 @@ trait Dashboard {
         ]);
 
         $out =
-        '<div id="PerformanceChart"' .
-        ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
-        ' role="img">' .
-        '</div>';
-        
+            '<div id="PerformanceChart"' .
+            ' aria-label="' . $this->_('Snipcart Performance Chart') . '"' .
+            ' role="img">' .
+            '</div>';
+
         return $out;
     }
 
@@ -652,9 +659,10 @@ trait Dashboard {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableTopCustomers($items) {
+    private function _renderTableTopCustomers($items)
+    {
         $modules = $this->wire('modules');
-                    
+
         if (!empty($items)) {
             /** @var MarkupAdminDataTable $table */
             $table = $modules->get('MarkupAdminDataTable');
@@ -669,11 +677,11 @@ trait Dashboard {
             ]);
             foreach ($items as $item) {
                 $panelLink =
-                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
+                    '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        $item['billingAddress']['fullName'] .
-                '</a>';
+                    $item['billingAddress']['fullName'] .
+                    '</a>';
                 $table->row([
                     $panelLink,
                     $item['statistics']['ordersCount'],
@@ -683,9 +691,9 @@ trait Dashboard {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No customers in selected period') .
-            '</div>';
+                '</div>';
         }
 
         /** @var InputfieldButton $btn */
@@ -708,7 +716,8 @@ trait Dashboard {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableTopProducts($items, $currency) {
+    private function _renderTableTopProducts($items, $currency)
+    {
         $pages = $this->wire('pages');
         $modules = $this->wire('modules');
 
@@ -728,37 +737,37 @@ trait Dashboard {
             ]);
             foreach ($items as $item) {
                 $panelLink =
-                '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
+                    '<a href="' . $this->snipWireRootUrl . 'product/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        $item['name'] .
-                '</a>';
+                    $item['name'] .
+                    '</a>';
 
                 $product = $pages->findOne('snipcart_item_id="' . $item['userDefinedId'] . '"');
                 if ($product->url) {
                     if ($product->editable()) {
                         $editLink =
-                        '<a href="' . $product->editUrl . '"
+                            '<a href="' . $product->editUrl . '"
                             class="pw-tooltip pw-modal pw-modal-large"
-                            title="' . $this->_('Edit product page') .'">' .
-                                \ProcessWire\wireIconMarkup('pencil-square-o') .
-                        '</a>';
+                            title="' . $this->_('Edit product page') . '">' .
+                            \ProcessWire\wireIconMarkup('pencil-square-o') .
+                            '</a>';
                     } else {
                         $editLink =
-                        '<span
+                            '<span
                             class="pw-tooltip"
-                            title="' . $this->_('Product not editable') .'">' .
-                                \ProcessWire\wireIconMarkup('pencil-square-o') .
-                        '</span>';
+                            title="' . $this->_('Product not editable') . '">' .
+                            \ProcessWire\wireIconMarkup('pencil-square-o') .
+                            '</span>';
                     }
                 } else {
                     // If for some reason the Snipcart "userDefinedId" no longer matches the ID of the ProcessWire field "snipcart_item_id"
                     $editLink =
-                    '<span
+                        '<span
                         class="pw-tooltip"
-                        title="' . $this->_('No matching ProcessWire page found.') .'">' . 
-                            \ProcessWire\wireIconMarkup('exclamation-triangle') .
-                    '</span>';
+                        title="' . $this->_('No matching ProcessWire page found.') . '">' .
+                        \ProcessWire\wireIconMarkup('exclamation-triangle') .
+                        '</span>';
                 }
 
                 $table->row([
@@ -772,9 +781,9 @@ trait Dashboard {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No products in selected period') .
-            '</div>';
+                '</div>';
         }
 
         /** @var InputfieldButton $btn */
@@ -796,7 +805,8 @@ trait Dashboard {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableRecentOrders($items) {
+    private function _renderTableRecentOrders($items)
+    {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -817,15 +827,15 @@ trait Dashboard {
             ]);
             foreach ($items as $item) {
                 $panelLink =
-                '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
+                    '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        $item['invoiceNumber'] .
-                '</a>';
+                    $item['invoiceNumber'] .
+                    '</a>';
                 $total =
-                '<strong class="price-field">' .
+                    '<strong class="price-field">' .
                     CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
-                '</strong>';
+                    '</strong>';
                 $completionDate = '<span class="tooltip" title="';
                 $completionDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['completionDate']);
                 $completionDate .= '">';
@@ -842,12 +852,12 @@ trait Dashboard {
                     $total,
                 ]);
             }
-            $out = $table->render();            
+            $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No orders in selected period') .
-            '</div>';
+                '</div>';
         }
 
         /** @var InputfieldButton $btn */

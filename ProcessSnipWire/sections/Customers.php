@@ -1,10 +1,11 @@
 <?php
+
 namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Customers trait - sections file for ProcessSnipWire.module.php.
  * (This file is part of the SnipWire package)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -19,14 +20,16 @@ use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
 use ProcessWire\Inputfield;
 
-trait Customers {
+trait Customers
+{
     /**
      * The SnipWire Snipcart Customers page.
      *
      * @return string page markup
      * @throws WireException
      */
-    public function ___executeCustomers() {
+    public function ___executeCustomers()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
@@ -34,10 +37,10 @@ trait Customers {
         $sanitizer = $this->wire('sanitizer');
         $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Customers'));
         $this->headline($this->_('Snipcart Customers'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
@@ -83,7 +86,7 @@ trait Customers {
         $customers = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : [];
-        
+
         $total = isset($customers['totalItems']) ? $customers['totalItems'] : 0;
         $items = isset($customers['items']) ? $customers['items'] : [];
         $count = count($items);
@@ -131,19 +134,20 @@ trait Customers {
      * @return string page markup
      * @throws WireException
      */
-    public function ___executeCustomer() {
+    public function ___executeCustomer()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Customer'));
         $this->headline($this->_('Snipcart Customer'));
 
         $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
         $this->breadcrumb($this->snipWireRootUrl . 'customers/', $this->_('Snipcart Customers'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
@@ -195,7 +199,8 @@ trait Customers {
      * @return string markup InputfieldForm
      * @throws WireException
      */
-    private function _buildCustomersFilter($filter) {
+    private function _buildCustomersFilter($filter)
+    {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
@@ -212,57 +217,57 @@ trait Customers {
         $form->method = 'post';
         $form->action = $this->currentUrl;
 
-            /** @var InputfieldFieldset $fsSnipWire */
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Search for Customers');
-            $fieldset->icon = 'search';
-            if (
-                ($filter['status'] && $filter['status'] != 'All') ||
-                $filter['email'] ||
-                $filter['name']
-            ) {
-                $fieldset->collapsed = Inputfield::collapsedNo;
-            } else {
-                $fieldset->collapsed = Inputfield::collapsedYes;
-            }
+        /** @var InputfieldFieldset $fsSnipWire */
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->label = $this->_('Search for Customers');
+        $fieldset->icon = 'search';
+        if (
+            ($filter['status'] && $filter['status'] != 'All') ||
+            $filter['email'] ||
+            $filter['name']
+        ) {
+            $fieldset->collapsed = Inputfield::collapsedNo;
+        } else {
+            $fieldset->collapsed = Inputfield::collapsedYes;
+        }
 
-                /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect');
-                $f->addClass('filter-form-select');
-                $f->attr('name', 'status');
-                $f->label = $this->_('Status');
-                $f->value = $filter['status'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
-                $f->required = true;
-                $f->addOptions($this->getCustomerStatuses());
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->addClass('filter-form-select');
+        $f->attr('name', 'status');
+        $f->label = $this->_('Status');
+        $f->value = $filter['status'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 33;
+        $f->required = true;
+        $f->addOptions($this->getCustomerStatuses());
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldEmail');
-                $f->attr('name', 'email');
-                $f->label = $this->_('Email');
-                $f->value = $filter['email'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldEmail');
+        $f->attr('name', 'email');
+        $f->label = $this->_('Email');
+        $f->value = $filter['email'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 33;
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->attr('name', 'name');
-                $f->label = $this->_('Name');
-                $f->value = $filter['name'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 34;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'name');
+        $f->label = $this->_('Name');
+        $f->value = $filter['name'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 34;
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                $buttonsWrapper = $modules->get('InputfieldMarkup');
-                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
+        $buttonsWrapper = $modules->get('InputfieldMarkup');
+        $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
-            $fieldset->add($buttonsWrapper);
+        $fieldset->add($buttonsWrapper);
 
         $form->add($fieldset);
 
@@ -276,7 +281,8 @@ trait Customers {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableCustomers($items) {
+    private function _renderTableCustomers($items)
+    {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -301,11 +307,11 @@ trait Customers {
 
             foreach ($items as $item) {
                 $panelLink =
-                '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
+                    '<a href="' . $this->snipWireRootUrl . 'customer/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        \ProcessWire\wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
-                '</a>';
+                    \ProcessWire\wireIconMarkup(self::iconCustomer, 'fa-right-margin') . $item['billingAddress']['fullName'] .
+                    '</a>';
                 $creationDate = '<span class="tooltip" title="';
                 $creationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
                 $creationDate .= '">';
@@ -324,9 +330,9 @@ trait Customers {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No customers found') .
-            '</div>';
+                '</div>';
         }
         return '<div class="ItemListerTable">' . $out . '</div>';
     }
@@ -338,16 +344,17 @@ trait Customers {
      * @return string
      * @throws WireException
      */
-    private function _renderDetailCustomer($item) {
+    private function _renderDetailCustomer($item)
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
         $sniprest = $this->wire('sniprest');
 
         if (empty($item)) {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No customer selected') .
-            '</div>';
+                '</div>';
             return $out;
         }
 
@@ -357,16 +364,16 @@ trait Customers {
         $subscriptionsCount = $item['statistics']['subscriptionsCount'];
 
         $out =
-        '<div class="ItemDetailHeader">' .
+            '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                \ProcessWire\wireIconMarkup(self::iconCustomer, 'fa-right-margin') .
-                $this->_('Customer') . ': ' .
-                $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'] .
+            \ProcessWire\wireIconMarkup(self::iconCustomer, 'fa-right-margin') .
+            $this->_('Customer') . ': ' .
+            $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                $this->_getCustomerDetailActionButtons($id, $email) .
+            $this->_getCustomerDetailActionButtons($id, $email) .
             '</div>' .
-        '</div>';
+            '</div>';
 
         $response = $sniprest->getCustomersOrders($id);
         $dataKey = SnipREST::resPathCustomersOrders;
@@ -374,7 +381,7 @@ trait Customers {
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : [];
         unset($response, $dataKey);
-        
+
         $response = $sniprest->getSubscriptionsItems([
             'userDefinedCustomerNameOrEmail' => $email,
         ]);
@@ -383,45 +390,66 @@ trait Customers {
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : [];
         unset($response, $dataKey);
-        
+
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            $address = $item['billingAddress'];
-            $data = [];
-            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
-                $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
-                if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
-                if (empty($data[$caption])) $data[$caption] = '-';
-            }
+        $address = $item['billingAddress'];
+        $data = [];
+        foreach ($this->getCustomerAddressLabels() as $key => $caption) {
+            $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
+            if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
+            if (empty($data[$caption])) $data[$caption] = '-';
+        }
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Billing Address');
-            $f->icon = self::iconAddress;
-            $f->value = $this->renderDataSheet($data);
-            $f->columnWidth = 50;
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Billing Address');
+        $f->icon = self::iconAddress;
+        $f->value = $this->renderDataSheet($data);
+        $f->columnWidth = 50;
 
         $wrapper->add($f);
 
-            $address = $item['shippingAddress'];
-            $data = [];
-            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
-                $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
-                if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
-                if (empty($data[$caption])) $data[$caption] = '-';
-            }
+        $address = $item['shippingAddress'];
+        $data = [];
+        foreach ($this->getCustomerAddressLabels() as $key => $caption) {
+            $data[$caption] = !empty($address[$key]) ? $address[$key] : '';
+            if ($key == 'country' && !empty($address[$key])) $data[$caption] = Countries::getCountry($address[$key]);
+            if (empty($data[$caption])) $data[$caption] = '-';
+        }
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->entityEncodeLabel = false;
-            $f->label = $this->_('Shipping Address');
-            if ($item['shippingAddressSameAsBilling']) {
-                $f->label .= ' <span class="snipwire-badge snipwire-badge-info">' . $this->_('same as billing') . '</span>';
-            }
-            $f->icon = self::iconAddress;
-            $f->value = $this->renderDataSheet($data);
-            $f->columnWidth = 50;
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->entityEncodeLabel = false;
+        $f->label = $this->_('Shipping Address');
+        if ($item['shippingAddressSameAsBilling']) {
+            $f->label .= ' <span class="snipwire-badge snipwire-badge-info">' . $this->_('same as billing') . '</span>';
+        }
+        $f->icon = self::iconAddress;
+        $f->value = $this->renderDataSheet($data);
+        $f->columnWidth = 50;
+
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+        $ordersBadge =
+            ' <span class="snipwire-badge snipwire-badge-info">' .
+            sprintf($this->_n("%d order", "%d orders", $ordersCount), $ordersCount) .
+            '</span>';
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->entityEncodeLabel = false;
+        $f->label = $this->_('Order History');
+        $f->label .= $ordersBadge;
+        $f->collapsed = Inputfield::collapsedYes;
+        $f->icon = self::iconOrder;
+        $f->value = $this->_renderTableCustomerOrders($orders, $id);
 
         $wrapper->add($f);
 
@@ -430,41 +458,20 @@ trait Customers {
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            $ordersBadge = 
+        $subscriptionsBadge =
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf($this->_n("%d order", "%d orders", $ordersCount), $ordersCount) .
+            sprintf($this->_n("%d subscription", "%d subscriptions", $subscriptionsCount), $subscriptionsCount) .
             '</span>';
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->entityEncodeLabel = false;
-            $f->label = $this->_('Order History');
-            $f->label .= $ordersBadge;
-            $f->collapsed = Inputfield::collapsedYes;
-            $f->icon = self::iconOrder;
-            $f->value = $this->_renderTableCustomerOrders($orders, $id);
-            
-        $wrapper->add($f);
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->entityEncodeLabel = false;
+        $f->label = $this->_('Subscriptions');
+        $f->label .= $subscriptionsBadge;
+        $f->collapsed = Inputfield::collapsedYes;
+        $f->icon = self::iconOrder;
+        $f->value = $this->_renderTableCustomerSubscriptions($subscriptions, $id);
 
-        $out .= $wrapper->render();
-        
-        /** @var InputfieldForm $wrapper */
-        $wrapper = $modules->get('InputfieldForm');
-
-            $subscriptionsBadge = 
-            ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf($this->_n("%d subscription", "%d subscriptions", $subscriptionsCount), $subscriptionsCount) .
-            '</span>';
-
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->entityEncodeLabel = false;
-            $f->label = $this->_('Subscriptions');
-            $f->label .= $subscriptionsBadge;
-            $f->collapsed = Inputfield::collapsedYes;
-            $f->icon = self::iconOrder;
-            $f->value = $this->_renderTableCustomerSubscriptions($subscriptions, $id);
-            
         $wrapper->add($f);
 
         $out .= $wrapper->render();
@@ -474,13 +481,13 @@ trait Customers {
             /** @var InputfieldForm $wrapper */
             $wrapper = $modules->get('InputfieldForm');
 
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Debug Infos');
-                $f->collapsed = Inputfield::collapsedYes;
-                $f->icon = self::iconDebug;
-                $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
-                
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Debug Infos');
+            $f->collapsed = Inputfield::collapsedYes;
+            $f->icon = self::iconDebug;
+            $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
+
             $wrapper->add($f);
 
             $out .= $wrapper->render();
@@ -492,23 +499,24 @@ trait Customers {
     /**
      * Render customer detail action buttons.
      *
-     * (Currently uses custom button markup as there is a PW bug which 
+     * (Currently uses custom button markup as there is a PW bug which
      * triggers href targets twice + we need to attach JavaScript events on button click)
      *
      * @param mixed $id The customer id
      * @param string $email The customer email
      * @return string buttons markup
      */
-    private function _getCustomerDetailActionButtons($id, $email) {
-        
+    private function _getCustomerDetailActionButtons($id, $email)
+    {
+
         $out =
-        '<a href="mailto:' . $email . '"
+            '<a href="mailto:' . $email . '"
             class="SendCustomerEmailButton ui-button ui-widget ui-corner-all ui-state-default"
             role="button">' .
-                '<span class="ui-button-text ui-button-text-email">' .
-                    \ProcessWire\wireIconMarkup('envelope') . ' ' . $email .
-                '</span>' .
-        '</a>';                    
+            '<span class="ui-button-text ui-button-text-email">' .
+            \ProcessWire\wireIconMarkup('envelope') . ' ' . $email .
+            '</span>' .
+            '</a>';
 
         return $out;
     }
@@ -521,7 +529,8 @@ trait Customers {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableCustomerOrders($items, $customerId) {
+    private function _renderTableCustomerOrders($items, $customerId)
+    {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -550,31 +559,31 @@ trait Customers {
                 // Need to attach a return URL to be able to stay in modal panel when order detail is opened
                 $ret = urlencode($this->snipWireRootUrl . 'customer/' . $customerId);
                 $invoiceNumber =
-                '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '?modal=1&ret=' . $ret . '"
+                    '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '?modal=1&ret=' . $ret . '"
                     class="pw-panel-links">' .
-                        \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
-                '</a>';
+                    \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
+                    '</a>';
                 $total =
-                '<strong>' .
+                    '<strong>' .
                     CurrencyFormat::format($item['total'], $item['currency']) .
-                '</strong>';
+                    '</strong>';
                 // refunds values are currently missing in payload - so can't be used now
                 $refunded = $item['refundsAmount']
                     ? '<span class="warning-color-dark">' .
-                          CurrencyFormat::format($item['refundsAmount'], $item['currency']) .
-                      '</span>'
+                    CurrencyFormat::format($item['refundsAmount'], $item['currency']) .
+                    '</span>'
                     : '-';
                 $downloadUrl = \ProcessWire\wirePopulateStringTags(
                     SnipREST::snipcartInvoiceUrl,
                     ['token' => $item['token']]
                 );
                 $downloadLink =
-                '<a href="' . $downloadUrl . '"
+                    '<a href="' . $downloadUrl . '"
                     target="' . $item['token'] . '"
                     class="DownloadInvoiceButton pw-tooltip"
-                    title="' . $this->_('Download invoice') .'">' .
-                        \ProcessWire\wireIconMarkup('download') .
-                '</a>';
+                    title="' . $this->_('Download invoice') . '">' .
+                    \ProcessWire\wireIconMarkup('download') .
+                    '</a>';
                 $creationDate = '<span class="tooltip" title="';
                 $creationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
                 $creationDate .= '">';
@@ -596,9 +605,9 @@ trait Customers {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No orders found') .
-            '</div>';
+                '</div>';
         }
         return '<div class="ItemListerTable">' . $out . '</div>';
     }
@@ -611,7 +620,8 @@ trait Customers {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableCustomerSubscriptions($items, $customerId) {
+    private function _renderTableCustomerSubscriptions($items, $customerId)
+    {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -637,11 +647,11 @@ trait Customers {
                 // Need to attach a return URL to be able to stay in modal panel when subscription detail is opened
                 $ret = urlencode($this->snipWireRootUrl . 'customer/' . $customerId);
                 $planName =
-                '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '?modal=1&ret=' . $ret . '"
+                    '<a href="' . $this->snipWireRootUrl . 'subscription/' . $item['id'] . '?modal=1&ret=' . $ret . '"
                     class="pw-panel-links"
                     data-panel-width="85%">' .
-                        \ProcessWire\wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
-                '</a>';
+                    \ProcessWire\wireIconMarkup(self::iconSubscription, 'fa-right-margin') . $item['name'] .
+                    '</a>';
                 $creationDate = '<span class="tooltip" title="';
                 $creationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
                 $creationDate .= '">';
@@ -649,13 +659,13 @@ trait Customers {
                 $creationDate .= '</span>';
                 $interval = $item['schedule']['intervalCount'] . '&nbsp;/&nbsp;' . $item['schedule']['interval'];
                 $amount =
-                '<strong class="price-field">' .
+                    '<strong class="price-field">' .
                     CurrencyFormat::format($item['amount'], $item['currency']) .
-                '</strong>';
+                    '</strong>';
                 $totalSpent =
-                '<strong class="price-field">' .
+                    '<strong class="price-field">' .
                     CurrencyFormat::format($item['totalSpent'], $item['currency']) .
-                '</strong>';
+                    '</strong>';
                 if ($item['pausedOn']) {
                     $status = '<span class="info-color-dark">' . $this->getSubscriptionStatus('paused') . '</span>';
                 } elseif ($item['cancelledOn']) {
@@ -676,9 +686,9 @@ trait Customers {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No subscriptions found') .
-            '</div>';
+                '</div>';
         }
         return '<div class="ItemListerTable">' . $out . '</div>';
     }

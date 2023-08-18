@@ -3,10 +3,10 @@ namespace ProcessWire;
 
 /**
  * SnipWire sample shop parent template for "regular" site-profile.
- * 
+ *
  * The purpose of this template file is to provide a product overview for your Snipcart shop.
  *
- * We are using the "regular" site-profile as it offers Markup Regions as its output 
+ * We are using the "regular" site-profile as it offers Markup Regions as its output
  * strategy and so it's easy to demonstrate how SnipCart works.
  */
 
@@ -41,16 +41,20 @@ and here: https://docs.snipcart.com/getting-started/customer-dashboard
 -->
 <div class="uk-text-center snipcart-summary" pw-after="masthead-logo">
     <a href="#" class="uk-link-reset snipcart-checkout" aria-label="Shopping cart">
-        <?=ukIcon('cart')?>
+        <?= ukIcon('cart') ?>
         <span class="uk-badge uk-text-middle snipcart-total-items" aria-label="Items in cart"></span>
         <span class=" uk-text-middle snipcart-total-price" aria-label="Total"></span>
     </a>
     <button class="uk-button uk-button-default uk-button-small snipcart-user-profile" type="button">
-        <?=ukIcon('user', 'ratio: .8')?> <span class="snipcart-user-email">My Account</span>
+        <?= ukIcon('user', 'ratio: .8') ?> <span class="snipcart-user-email">My Account</span>
     </button>
     <div class="uk-inline snipcart-user-logout">
-        <button class="uk-button uk-button-default uk-button-small snipcart-edit-profile" type="button"><?=ukIcon('pencil', 'ratio: .8')?> Edit Profile</button>
-        <button class="uk-button uk-button-default uk-button-small snipcart-user-logout" type="button"><?=ukIcon('sign-out', 'ratio: .8')?> Logout</button>
+        <button class="uk-button uk-button-default uk-button-small snipcart-edit-profile"
+                type="button"><?= ukIcon('pencil', 'ratio: .8') ?> Edit Profile
+        </button>
+        <button class="uk-button uk-button-default uk-button-small snipcart-user-logout"
+                type="button"><?= ukIcon('sign-out', 'ratio: .8') ?> Logout
+        </button>
     </div>
 </div>
 
@@ -64,9 +68,9 @@ The content element holds your products catalogue.
 -->
 <div id="content">
     <?php
-    echo ukHeading1(page()->title, 'divider'); 
+    echo ukHeading1(page()->title, 'divider');
     $products = page()->children('limit=9');
-    echo ukProductOverview($products); 
+    echo ukProductOverview($products);
     ?>
 </div>
 
@@ -83,14 +87,15 @@ We remove the <aside> element which is not used in our shop sample.
  * @return string
  *
  */
-function ukProductOverview(PageArray $products) {
+function ukProductOverview(PageArray $products)
+{
 
     if (!$products->count) return '';
-    
+
     $out = '<div class="uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>';
 
     foreach ($products as $product) {
-        
+
         // We use the first image in snipcart_item_image field for demo
         $imageMedia = '';
         if ($image = $product->snipcart_item_image->first()) {
@@ -98,15 +103,15 @@ function ukProductOverview(PageArray $products) {
             $imageDesc = $productImageMedium->description ? $productImageMedium->description : $product->title;
             $imageMedia = '<img src="' . $productImageMedium->url . '" alt="' . $imageDesc . '">';
         } else {
-            $imageMedia = 
-            '<div class="uk-width-1-1 uk-height-small uk-background-muted uk-text-muted uk-flex uk-flex-center uk-flex-middle">' .
-                '<div title="' . __('No product image available') . '">' . 
-                    ukIcon('image', ['ratio' => 3]) . 
+            $imageMedia =
+                '<div class="uk-width-1-1 uk-height-small uk-background-muted uk-text-muted uk-flex uk-flex-center uk-flex-middle">' .
+                '<div title="' . __('No product image available') . '">' .
+                ukIcon('image', ['ratio' => 3]) .
                 '</div>' .
-            '</div>';
-            
+                '</div>';
+
         }
-        
+
         // This is the part where we render the Snipcart anchor (buy button)
         // with all data-item-* attributes required by Snipcart.
         // The anchor method is provided by MarkupSnipWire module and can be called 
@@ -117,28 +122,28 @@ function ukProductOverview(PageArray $products) {
             'attr' => ['aria-label' => __('Add item to cart')],
         ];
         $anchor = wire('snipwire')->anchor($product, $options);
-        
+
         // Get the formatted product price.
         // The getProductPriceFormatted method is provided by MarkupSnipWire module and can be called 
         // via custom API variable: $snipwire->getProductPriceFormatted()
         $priceFormatted = wire('snipwire')->getProductPriceFormatted($product);
 
         $out .=
-        '<a class="uk-link-reset" href="' . $product->url . '">' .
+            '<a class="uk-link-reset" href="' . $product->url . '">' .
             '<div class="uk-card uk-card-small uk-card-default uk-card-hover">' .
-                '<div class="uk-card-media-top">' .
-                    $imageMedia .
-                '</div>' .
-                '<div class="uk-card-body">' .
-                    '<h3 class="uk-card-title">' . $product->title . '</h3>' .
-                    '<p>' . $product->snipcart_item_description . '</p>' .
-                '</div>' .
-                '<div class="uk-card-footer">' .
-                    $anchor .
-                    '<span class="uk-align-right uk-text-primary">' . $priceFormatted . '</span>' .
-                '</div>' .
+            '<div class="uk-card-media-top">' .
+            $imageMedia .
             '</div>' .
-        '</a>';
+            '<div class="uk-card-body">' .
+            '<h3 class="uk-card-title">' . $product->title . '</h3>' .
+            '<p>' . $product->snipcart_item_description . '</p>' .
+            '</div>' .
+            '<div class="uk-card-footer">' .
+            $anchor .
+            '<span class="uk-align-right uk-text-primary">' . $priceFormatted . '</span>' .
+            '</div>' .
+            '</div>' .
+            '</a>';
     }
 
     $out .= '</div>';

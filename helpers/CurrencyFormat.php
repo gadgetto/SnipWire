@@ -1,4 +1,5 @@
 <?php
+
 namespace SnipWire\Helpers;
 
 /**
@@ -14,8 +15,8 @@ namespace SnipWire\Helpers;
 
 use ProcessWire\WireData;
 
-class CurrencyFormat extends WireData {
-    
+class CurrencyFormat extends WireData
+{
     /** @var array $currenciesCache An array of available currency formats (currency formats memory cache) */
     public static $currenciesCache = null;
 
@@ -24,7 +25,8 @@ class CurrencyFormat extends WireData {
      *
      * @return void
      */
-    public static function setStaticCurrenciesCache() {
+    public static function setStaticCurrenciesCache()
+    {
         if (!$currencies = \ProcessWire\wire('sniprest')->getSettings('currencies')) {
             $currencies = self::getDefaultCurrencyDefinition();
         }
@@ -34,22 +36,24 @@ class CurrencyFormat extends WireData {
 
     /**
      * Returns an array of worldwide supported currencies, as name => label
-     * (comes from static file CurrenciesTable.php which holds all currencies 
+     * (comes from static file CurrenciesTable.php which holds all currencies
      * supported by Snipcart -> copied from Snipcart dashboard)
-     * 
+     *
      * @return array
      */
-    public static function getSupportedCurrencies() {
+    public static function getSupportedCurrencies()
+    {
         return require __DIR__ . '/CurrenciesTable.php';
     }
-    
+
     /**
      * Get the default currency definition.
      *
      * @param boolean $json Whether to return as JSON formatted string and not array
      * @return array|string String of JSON data
      */
-    public static function getDefaultCurrencyDefinition($json = false) {
+    public static function getDefaultCurrencyDefinition($json = false)
+    {
         $defaultCurrency = [
             'currency' => 'eur',
             'precision' => 2,
@@ -70,7 +74,8 @@ class CurrencyFormat extends WireData {
      * @param boolean $json Whether to return as JSON formatted string and not array (ignored if $key param is set) [default: false]
      * @return array|json|string|boolean
      */
-    public static function getCurrencyDefinition($currency = 'eur', $key = '', $json = false) {
+    public static function getCurrencyDefinition($currency = 'eur', $key = '', $json = false)
+    {
         if (empty(self::$currenciesCache)) self::setStaticCurrenciesCache();
 
         // Searches the static currency array for $currency tag and returns the corresponding key
@@ -79,7 +84,7 @@ class CurrencyFormat extends WireData {
             array_column(self::$currenciesCache, 'currency')
         );
         if ($cacheKey === false) return false;
-        
+
         $currencyDefinition = self::$currenciesCache[$cacheKey];
         if ($key && isset($currencyDefinition[$key])) {
             $currencyDefinition = $currencyDefinition[$key];
@@ -95,7 +100,8 @@ class CurrencyFormat extends WireData {
      * @param string $currency The currency tag [default: `eur`]
      * @return string The formatted price (can be empty if something goes wrong)
      */
-    public static function format($price, $currency = 'eur') {
+    public static function format($price, $currency = 'eur')
+    {
         if (empty($price)) $price = 0.0;
         $currencyDefinition = self::getCurrencyDefinition($currency);
 
@@ -132,9 +138,9 @@ class CurrencyFormat extends WireData {
         }
         $price = number_format(
             $floatPrice,
-            (integer) $currencyDefinition['precision'],
-            (string) $currencyDefinition['decimalSeparator'],
-            (string) $currencyDefinition['thousandSeparator']
+            (integer)$currencyDefinition['precision'],
+            (string)$currencyDefinition['decimalSeparator'],
+            (string)$currencyDefinition['thousandSeparator']
         );
         $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
         $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value
@@ -153,7 +159,8 @@ class CurrencyFormat extends WireData {
      * @param string $separator The separator for each formatted currency string [default: '<br>']
      * @return string The formatted prices (can be empty string if something goes wrong)
      */
-    public static function formatMulti($prices, $verbose = false, $separator = '<br>') {
+    public static function formatMulti($prices, $verbose = false, $separator = '<br>')
+    {
         if (empty($prices) || !is_array($prices)) return '';
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
 
@@ -170,7 +177,7 @@ class CurrencyFormat extends WireData {
 
         foreach ($prices as $currency => $price) {
             $currencyDefinition = self::getCurrencyDefinition($currency);
-            
+
             $floatPrice = \ProcessWire\wire('sanitizer')->float($price);
             if ($floatPrice < 0) {
                 $numberFormatString = $currencyDefinition['negativeNumberFormat'];
@@ -180,9 +187,9 @@ class CurrencyFormat extends WireData {
             }
             $price = number_format(
                 $floatPrice,
-                (integer) $currencyDefinition['precision'],
-                (string) $currencyDefinition['decimalSeparator'],
-                (string) $currencyDefinition['thousandSeparator']
+                (integer)$currencyDefinition['precision'],
+                (string)$currencyDefinition['decimalSeparator'],
+                (string)$currencyDefinition['thousandSeparator']
             );
             $numberFormatString = str_replace('%s', '%1$s', $numberFormatString); // will be currencySymbol
             $numberFormatString = str_replace('%v', '%2$s', $numberFormatString); // will be value

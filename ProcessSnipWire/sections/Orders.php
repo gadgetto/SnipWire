@@ -1,10 +1,11 @@
 <?php
+
 namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * Orders trait - sections file for ProcessSnipWire.module.php.
  * (This file is part of the SnipWire package)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -19,14 +20,16 @@ use SnipWire\Services\SnipREST;
 use SnipWire\Services\WireHttpExtended;
 use ProcessWire\Inputfield;
 
-trait Orders {
+trait Orders
+{
     /**
      * The SnipWire Snipcart Orders page.
      *
      * @return string page markup
      * @throws WireException
      */
-    public function ___executeOrders() {
+    public function ___executeOrders()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
@@ -44,7 +47,7 @@ trait Orders {
         }
 
         $this->_setOrderJSConfigValues();
-        
+
         $out = '';
 
         $forceRefresh = false;
@@ -62,7 +65,7 @@ trait Orders {
         } elseif ($action == 'download_invoice') {
             $out .= $this->_downloadInvoice($token);
         }
-        
+
         $status = $sanitizer->text($input->status);
         $paymentStatus = $sanitizer->text($input->paymentStatus);
         $invoiceNumber = $sanitizer->text($input->invoiceNumber);
@@ -73,22 +76,22 @@ trait Orders {
             'invoiceNumber' => $invoiceNumber ? $invoiceNumber : '',
             'placedBy' => $placedBy ? $placedBy : '',
         ];
-        
+
         $defaultSelector = [
             'offset' => $offset,
             'limit' => $limit,
             'format' => 'Excerpt',
         ];
-        
+
         $selector = array_merge($defaultSelector, $filter);
-        
+
         $response = $sniprest->getOrders(
             '',
             $selector,
             SnipREST::cacheExpireDefault,
             $forceRefresh
         );
-        
+
         $dataKey = SnipREST::resPathOrders;
         $orders = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
@@ -141,20 +144,21 @@ trait Orders {
      * @return string page markup
      * @throws WireException
      */
-    public function ___executeOrder() {
+    public function ___executeOrder()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
         $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Order'));
         $this->headline($this->_('Snipcart Order'));
 
         $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
         $this->breadcrumb($this->snipWireRootUrl . 'orders/', $this->_('Snipcart Orders'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
@@ -234,10 +238,11 @@ trait Orders {
      * @return string markup InputfieldForm
      * @throws WireException
      */
-    private function _buildOrdersFilter($filter) {
+    private function _buildOrdersFilter($filter)
+    {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
-        
+
         $filterSettings = [
             'form' => '#OrdersFilterForm',
         ];
@@ -246,80 +251,80 @@ trait Orders {
         $config->js('filterSettings', $filterSettings);
 
         /** @var InputfieldForm $form */
-        $form = $modules->get('InputfieldForm'); 
+        $form = $modules->get('InputfieldForm');
         $form->attr('id', 'OrdersFilterForm');
         $form->method = 'post';
         $form->action = $this->currentUrl;
 
-            /** @var InputfieldFieldset $fsSnipWire */
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Search for Orders');
-            $fieldset->icon = 'search';
-            if (
-                ($filter['status'] && $filter['status'] != 'All') ||
-                ($filter['paymentStatus'] && $filter['paymentStatus'] != 'All') ||
-                $filter['invoiceNumber'] ||
-                $filter['placedBy']
-            ) {
-                $fieldset->collapsed = Inputfield::collapsedNo;
-            } else {
-                $fieldset->collapsed = Inputfield::collapsedYes;
-            }
+        /** @var InputfieldFieldset $fsSnipWire */
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->label = $this->_('Search for Orders');
+        $fieldset->icon = 'search';
+        if (
+            ($filter['status'] && $filter['status'] != 'All') ||
+            ($filter['paymentStatus'] && $filter['paymentStatus'] != 'All') ||
+            $filter['invoiceNumber'] ||
+            $filter['placedBy']
+        ) {
+            $fieldset->collapsed = Inputfield::collapsedNo;
+        } else {
+            $fieldset->collapsed = Inputfield::collapsedYes;
+        }
 
-                /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect');
-                $f->addClass('filter-form-select');
-                $f->attr('name', 'status'); 
-                $f->label = $this->_('Status'); 
-                $f->value = $filter['status'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 50;
-                $f->required = true;
-                $f->addOptions($this->getOrderStatuses());
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->addClass('filter-form-select');
+        $f->attr('name', 'status');
+        $f->label = $this->_('Status');
+        $f->value = $filter['status'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 50;
+        $f->required = true;
+        $f->addOptions($this->getOrderStatuses());
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect'); 
-                $f->addClass('filter-form-select');
-                $f->attr('name', 'paymentStatus'); 
-                $f->label = $this->_('Payment Status'); 
-                $f->value = $filter['paymentStatus'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 50;
-                $f->required = true;
-                $f->addOptions($this->getPaymentStatuses());
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->addClass('filter-form-select');
+        $f->attr('name', 'paymentStatus');
+        $f->label = $this->_('Payment Status');
+        $f->value = $filter['paymentStatus'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 50;
+        $f->required = true;
+        $f->addOptions($this->getPaymentStatuses());
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->attr('name', 'invoiceNumber');
-                $f->label = $this->_('Invoice Number');
-                $f->value = $filter['invoiceNumber'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 50;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'invoiceNumber');
+        $f->label = $this->_('Invoice Number');
+        $f->value = $filter['invoiceNumber'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 50;
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->attr('name', 'placedBy');
-                $f->label = $this->_('Placed By');
-                $f->value = $filter['placedBy'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 50;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'placedBy');
+        $f->label = $this->_('Placed By');
+        $f->value = $filter['placedBy'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 50;
 
-            $fieldset->add($f);
-            
-                $buttonsWrapper = $modules->get('InputfieldMarkup');
-                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
+        $fieldset->add($f);
 
-            $fieldset->add($buttonsWrapper);
+        $buttonsWrapper = $modules->get('InputfieldMarkup');
+        $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
+
+        $fieldset->add($buttonsWrapper);
 
         $form->add($fieldset);
 
-        return $form->render(); 
+        return $form->render();
     }
 
     /**
@@ -329,7 +334,8 @@ trait Orders {
      * @return string markup MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableOrders($items) {
+    private function _renderTableOrders($items)
+    {
         $modules = $this->wire('modules');
 
         /*
@@ -351,7 +357,7 @@ trait Orders {
             "currency": "eur"
         }
         */
-        
+
         if (!empty($items)) {
             $modules->get('JqueryTableSorter')->use('widgets');
 
@@ -376,32 +382,32 @@ trait Orders {
             ]);
             foreach ($items as $item) {
                 $panelLink =
-                '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
+                    '<a href="' . $this->snipWireRootUrl . 'order/' . $item['token'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
-                '</a>';
+                    \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') . $item['invoiceNumber'] .
+                    '</a>';
                 $total =
-                '<strong class="price-field">' .
+                    '<strong class="price-field">' .
                     CurrencyFormat::format($item['finalGrandTotal'], $item['currency']) .
-                '</strong>';
+                    '</strong>';
                 $refundsAmount = $item['finalGrandTotal'] - $item['adjustedAmount'];
                 $refunded = $refundsAmount
                     ? '<span class="warning-color-dark">' .
-                          CurrencyFormat::format($refundsAmount, $item['currency']) .
-                      '</span>'
+                    CurrencyFormat::format($refundsAmount, $item['currency']) .
+                    '</span>'
                     : '-';
                 $downloadUrl = \ProcessWire\wirePopulateStringTags(
                     SnipREST::snipcartInvoiceUrl,
                     ['token' => $item['token']]
                 );
                 $downloadLink =
-                '<a href="' . $downloadUrl . '"
+                    '<a href="' . $downloadUrl . '"
                     target="' . $item['token'] . '"
                     class="DownloadInvoiceButton pw-tooltip"
-                    title="' . $this->_('Download invoice') .'">' .
-                        \ProcessWire\wireIconMarkup('download') .
-                '</a>';
+                    title="' . $this->_('Download invoice') . '">' .
+                    \ProcessWire\wireIconMarkup('download') .
+                    '</a>';
                 $completionDate = '<span class="tooltip" title="';
                 $completionDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['completionDate']);
                 $completionDate .= '">';
@@ -423,9 +429,9 @@ trait Orders {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No orders found') .
-            '</div>';
+                '</div>';
         }
         return '<div class="ItemListerTable">' . $out . '</div>';
     }
@@ -439,15 +445,16 @@ trait Orders {
      * @return string
      * @throws WireException
      */
-    private function _renderDetailOrder($item, $notifications, $ret = '') {
+    private function _renderDetailOrder($item, $notifications, $ret = '')
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
 
         if (empty($item)) {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No order selected') .
-            '</div>';
+                '</div>';
             return $out;
         }
 
@@ -459,26 +466,26 @@ trait Orders {
 
         if ($ret) {
             $out .=
-            '<div class="ItemDetailBackLink">' . 
-                '<a href="' .$ret . '?modal=1"
+                '<div class="ItemDetailBackLink">' .
+                '<a href="' . $ret . '?modal=1"
                     class="pw-panel-links">' .
-                        \ProcessWire\wireIconMarkup('times-circle', 'fa-right-margin') .
-                        $this->_('Close order details') .
+                \ProcessWire\wireIconMarkup('times-circle', 'fa-right-margin') .
+                $this->_('Close order details') .
                 '</a>' .
-            '</div>';
+                '</div>';
         }
 
         $out .=
-        '<div class="ItemDetailHeader">' .
+            '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') .
-                $this->_('Order') . ': ' .
-                $item['invoiceNumber'] .
+            \ProcessWire\wireIconMarkup(self::iconOrder, 'fa-right-margin') .
+            $this->_('Order') . ': ' .
+            $item['invoiceNumber'] .
             '</h2>' .
             '<div class="ItemDetailActionButtons">' .
-                $this->_getOrderDetailActionButtons($token, $ret) .
+            $this->_getOrderDetailActionButtons($token, $ret) .
             '</div>' .
-        '</div>';
+            '</div>';
 
         $out .= $this->_processRefundForm($item, $ret);
         $out .= $this->_processOrderStatusForm($item, $ret);
@@ -487,37 +494,22 @@ trait Orders {
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Order Info');
-            $f->icon = self::iconInfo;
-            $f->value = $this->_renderOrderInfo($item);
-            $f->columnWidth = 50;
-            
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Order Info');
+        $f->icon = self::iconInfo;
+        $f->value = $this->_renderOrderInfo($item);
+        $f->columnWidth = 50;
+
         $wrapper->add($f);
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Payment Info');
-            $f->icon = self::iconPayment;
-            $f->value = $this->_renderPaymentInfo($item);
-            $f->columnWidth = 50;
-            
-        $wrapper->add($f);
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Payment Info');
+        $f->icon = self::iconPayment;
+        $f->value = $this->_renderPaymentInfo($item);
+        $f->columnWidth = 50;
 
-        $out .= $wrapper->render();
-
-        /** @var InputfieldForm $wrapper */
-        $wrapper = $modules->get('InputfieldForm');
-
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Order Details');
-            $f->icon = self::iconOrder;
-            // We don't use 'taxes' key from 'summary' as it has wrong values for 'includedInPrice'
-            // (instead we use the global 'taxes' key)
-            $f->value = $this->_renderTableOrderSummary($item);
-            
         $wrapper->add($f);
 
         $out .= $wrapper->render();
@@ -525,37 +517,52 @@ trait Orders {
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            $address = $item['user']['billingAddress'];
-            $data = [];
-            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
-                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
-            }
-
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Billing Address');
-            $f->icon = self::iconAddress;
-            $f->value = $this->renderDataSheet($data);
-            $f->columnWidth = 50;
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Order Details');
+        $f->icon = self::iconOrder;
+        // We don't use 'taxes' key from 'summary' as it has wrong values for 'includedInPrice'
+        // (instead we use the global 'taxes' key)
+        $f->value = $this->_renderTableOrderSummary($item);
 
         $wrapper->add($f);
 
-            $address = $item['user']['shippingAddress'];
-            $data = [];
-            foreach ($this->getCustomerAddressLabels() as $key => $caption) {
-                $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
-            }
+        $out .= $wrapper->render();
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Shipping Address');
-            $f->entityEncodeLabel = false;
-            if ($item['user']['shippingAddressSameAsBilling']) {
-                $f->label .= ' <span class="snipwire-badge snipwire-badge-info">' . $this->_('same as billing') . '</span>';
-            }
-            $f->icon = self::iconAddress;
-            $f->value = $this->renderDataSheet($data);
-            $f->columnWidth = 50;
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+        $address = $item['user']['billingAddress'];
+        $data = [];
+        foreach ($this->getCustomerAddressLabels() as $key => $caption) {
+            $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+        }
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Billing Address');
+        $f->icon = self::iconAddress;
+        $f->value = $this->renderDataSheet($data);
+        $f->columnWidth = 50;
+
+        $wrapper->add($f);
+
+        $address = $item['user']['shippingAddress'];
+        $data = [];
+        foreach ($this->getCustomerAddressLabels() as $key => $caption) {
+            $data[$caption] = !empty($address[$key]) ? $address[$key] : '-';
+        }
+
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Shipping Address');
+        $f->entityEncodeLabel = false;
+        if ($item['user']['shippingAddressSameAsBilling']) {
+            $f->label .= ' <span class="snipwire-badge snipwire-badge-info">' . $this->_('same as billing') . '</span>';
+        }
+        $f->icon = self::iconAddress;
+        $f->value = $this->renderDataSheet($data);
+        $f->columnWidth = 50;
 
         $wrapper->add($f);
 
@@ -565,42 +572,42 @@ trait Orders {
             /** @var InputfieldForm $wrapper */
             $wrapper = $modules->get('InputfieldForm');
 
-                $refundsBadge = 
+            $refundsBadge =
                 ' <span class="snipwire-badge snipwire-badge-info">' .
-                    sprintf($this->_n("%d refund", "%d refunds", $refundsCount), $refundsCount) .
+                sprintf($this->_n("%d refund", "%d refunds", $refundsCount), $refundsCount) .
                 '</span>';
 
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->entityEncodeLabel = false;
-                $f->label = $this->_('Refunds');
-                $f->label .= $refundsBadge;
-                $f->icon = self::iconRefund;
-                $f->value = $this->_renderTableRefunds($item['refunds'], $item['currency']);
-                $f->collapsed = Inputfield::collapsedYes;
-                
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->entityEncodeLabel = false;
+            $f->label = $this->_('Refunds');
+            $f->label .= $refundsBadge;
+            $f->icon = self::iconRefund;
+            $f->value = $this->_renderTableRefunds($item['refunds'], $item['currency']);
+            $f->collapsed = Inputfield::collapsedYes;
+
             $wrapper->add($f);
-    
+
             $out .= $wrapper->render();
         }
 
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            $notificationsBadge = 
+        $notificationsBadge =
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf($this->_n("%d notification", "%d notifications", $notificationsCount), $notificationsCount) .
+            sprintf($this->_n("%d notification", "%d notifications", $notificationsCount), $notificationsCount) .
             '</span>';
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->entityEncodeLabel = false;
-            $f->label = $this->_('Notifications');
-            $f->label .= $notificationsBadge;
-            $f->icon = self::iconComment;
-            $f->value = $this->_renderTableOrderNotifications($notifications);
-            $f->collapsed = Inputfield::collapsedYes;
-            
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->entityEncodeLabel = false;
+        $f->label = $this->_('Notifications');
+        $f->label .= $notificationsBadge;
+        $f->icon = self::iconComment;
+        $f->value = $this->_renderTableOrderNotifications($notifications);
+        $f->collapsed = Inputfield::collapsedYes;
+
         $wrapper->add($f);
 
         $out .= $wrapper->render();
@@ -610,13 +617,13 @@ trait Orders {
             /** @var InputfieldForm $wrapper */
             $wrapper = $modules->get('InputfieldForm');
 
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Debug Infos');
-                $f->collapsed = Inputfield::collapsedYes;
-                $f->icon = self::iconDebug;
-                $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
-                
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Debug Infos');
+            $f->collapsed = Inputfield::collapsedYes;
+            $f->icon = self::iconDebug;
+            $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
+
             $wrapper->add($f);
 
             $out .= $wrapper->render();
@@ -633,12 +640,13 @@ trait Orders {
      * @return string
      * @throws WireException
      */
-    private function _processRefundForm($item, $ret = '') {
+    private function _processRefundForm($item, $ret = '')
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
         $input = $this->wire('input');
         $session = $this->wire('session');
-        
+
         $token = $item['token'];
         $currency = $item['currency'];
         $total = $item['total'];
@@ -647,124 +655,124 @@ trait Orders {
         $maxAmountFormatted = CurrencyFormat::format($maxAmount, $currency);
         $refundsAmount = $item['refundsAmount'];
         $refundsAmountFormatted = CurrencyFormat::format($refundsAmount, $currency);
-        
+
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
         $currencyLabel = isset($supportedCurrencies[$currency])
             ? $supportedCurrencies[$currency]
             : $currency;
-            
-		/** @var InputfieldForm $form */
+
+        /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm');
         $form->id = 'RefundForm';
         $form->action = $this->currentUrl;
-            
-            if ($ret) {
-                /** @var InputfieldHidden $f */
-                $f = $modules->get('InputfieldHidden');
-                $f->name = 'ret';
-                $f->value = urlencode($ret);
-                
-                $form->add($f);
-            }
-            
-            $refundBadges = 
+
+        if ($ret) {
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->name = 'ret';
+            $f->value = urlencode($ret);
+
+            $form->add($f);
+        }
+
+        $refundBadges =
             ' <span class="snipwire-badge snipwire-badge-info">';
-            if ($refundingEnabled) {
-                $refundBadges .=
+        if ($refundingEnabled) {
+            $refundBadges .=
                 $this->_('max.') .
                 ' ' . $maxAmountFormatted;
-            } else {
-                if ($total == 0) {
-                    $refundBadges .= $this->_('nothing to refund');
-                } else {
-                    $refundBadges .= $this->_('total order refunded');
-                }
-            }
-            $refundBadges .= 
-            '</span>';
-            if ($item['refundsAmount']) {
-                $refundBadges .=
-                ' <span class="snipwire-badge snipwire-badge-warning">' .
-                    $this->_('already refunded') .
-                    ' ' . $refundsAmountFormatted .
-                '</span>';
-            }
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->entityEncodeLabel = false;
-            $fieldset->label = $this->_('Refund an amount');
-            $fieldset->label .= $refundBadges;
-            $fieldset->icon = self::iconRefund;
-            $fieldset->collapsed = ($input->refunding_active)
-                ? Inputfield::collapsedNo
-                : Inputfield::collapsedYes;
-                
-        $form->add($fieldset);
-        
-        if ($refundingEnabled) {
-                
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->name = 'amount';
-                $f->label = $this->_('Amount');
-                $f->label .= ' (' . $currencyLabel . ')';
-                $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
-                $f->required = true;
-                $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
-                
-            $fieldset->add($f);
-                
-                /** @var InputfieldTextarea $f */
-                $f = $modules->get('InputfieldTextarea');
-                $f->name = 'comment';
-                $f->label = $this->_('Reason for refund');
-                $f->rows = 3;
-                
-            $fieldset->add($f);
-                
-                /** @var InputfieldCheckbox $f */
-                $f = $modules->get('InputfieldCheckbox');
-                $f->name = 'notifyCustomer'; 
-                $f->label = $this->_('Send reason for refund with customer notification');
-                
-            $fieldset->add($f);
-                
-                /** @var InputfieldHidden $f */
-        		$f = $modules->get('InputfieldHidden');
-        		$f->name = 'refunding_active';
-        		$f->value = true;
-                
-            $fieldset->add($f);
-                
-                /** @var InputfieldSubmit $btn */
-                $btn = $modules->get('InputfieldSubmit');
-                $btn->id = 'SendRefundButton';
-                $btn->name = 'send_refund';
-                $btn->value = $this->_('Send refund');
-                $btn->small = true;
-                
-            $fieldset->add($btn);
-            
         } else {
-                
-                $disabledMarkup =
+            if ($total == 0) {
+                $refundBadges .= $this->_('nothing to refund');
+            } else {
+                $refundBadges .= $this->_('total order refunded');
+            }
+        }
+        $refundBadges .=
+            '</span>';
+        if ($item['refundsAmount']) {
+            $refundBadges .=
+                ' <span class="snipwire-badge snipwire-badge-warning">' .
+                $this->_('already refunded') .
+                ' ' . $refundsAmountFormatted .
+                '</span>';
+        }
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->entityEncodeLabel = false;
+        $fieldset->label = $this->_('Refund an amount');
+        $fieldset->label .= $refundBadges;
+        $fieldset->icon = self::iconRefund;
+        $fieldset->collapsed = ($input->refunding_active)
+            ? Inputfield::collapsedNo
+            : Inputfield::collapsedYes;
+
+        $form->add($fieldset);
+
+        if ($refundingEnabled) {
+
+            /** @var InputfieldText $f */
+            $f = $modules->get('InputfieldText');
+            $f->name = 'amount';
+            $f->label = $this->_('Amount');
+            $f->label .= ' (' . $currencyLabel . ')';
+            $f->detail = $this->_('Decimal with a dot (.) as separator e.g. 19.99');
+            $f->required = true;
+            $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
+
+            $fieldset->add($f);
+
+            /** @var InputfieldTextarea $f */
+            $f = $modules->get('InputfieldTextarea');
+            $f->name = 'comment';
+            $f->label = $this->_('Reason for refund');
+            $f->rows = 3;
+
+            $fieldset->add($f);
+
+            /** @var InputfieldCheckbox $f */
+            $f = $modules->get('InputfieldCheckbox');
+            $f->name = 'notifyCustomer';
+            $f->label = $this->_('Send reason for refund with customer notification');
+
+            $fieldset->add($f);
+
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->name = 'refunding_active';
+            $f->value = true;
+
+            $fieldset->add($f);
+
+            /** @var InputfieldSubmit $btn */
+            $btn = $modules->get('InputfieldSubmit');
+            $btn->id = 'SendRefundButton';
+            $btn->name = 'send_refund';
+            $btn->value = $this->_('Send refund');
+            $btn->small = true;
+
+            $fieldset->add($btn);
+
+        } else {
+
+            $disabledMarkup =
                 '<div class="RefundFormDisabled">' .
-                    $this->_('Nothing to refund or maximum refund amount reached') .
+                $this->_('Nothing to refund or maximum refund amount reached') .
                 '</div>';
-                
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Refunding disabled');
-                $f->value = $disabledMarkup;
-                $f->collapsed = Inputfield::collapsedNever;
-                
+
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Refunding disabled');
+            $f->value = $disabledMarkup;
+            $f->collapsed = Inputfield::collapsedNever;
+
             $fieldset->add($f);
         }
-        
+
         // Render form without processing if not submitted
         if (!$input->post->refunding_active) return $form->render();
-        
+
         $form->processInput($input->post);
-        
+
         // Validate input
         $amount = $form->get('amount');
         $amountValue = $amount->value;
@@ -775,24 +783,24 @@ trait Orders {
         } elseif ($amountValue > $maxAmount) {
             $amount->error($this->_('Maximum amount is') . ' ' . $maxAmountFormatted);
         }
-        
+
         $notifyCustomer = $form->get('notifyCustomer');
         $notifyCustomerValue = !empty($notifyCustomer) ? 1 : 0;
-        
+
         $comment = $form->get('comment');
         $commentValue = $comment->value;
-        
+
         if ($form->getErrors()) {
             // The form is processed and populated but contains errors
             return $form->render();
         }
-        
+
         // Sanitize input
         $amountValue = $sanitizer->float($amountValue);
         $amountValueFormatted = CurrencyFormat::format($amountValue, $currency);
         $notifyCustomerValue = $sanitizer->bool($notifyCustomerValue);
         $commentValue = $sanitizer->textarea($commentValue);
-        
+
         $success = $this->_refund($token, $amountValue, $amountValueFormatted, $notifyCustomerValue, $commentValue);
         if ($success) {
             // Reset cache for this order and redirect to itself to display updated values
@@ -801,7 +809,7 @@ trait Orders {
             if ($ret) $redirectUrl .= '&ret=' . urlencode($ret);
             $session->redirect($redirectUrl);
         }
-        
+
         return $form->render();
     }
 
@@ -813,7 +821,8 @@ trait Orders {
      * @return string
      * @throws WireException
      */
-    private function _processOrderStatusForm($item, $ret = '') {
+    private function _processOrderStatusForm($item, $ret = '')
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
         $input = $this->wire('input');
@@ -821,7 +830,7 @@ trait Orders {
 
         $token = $item['token'];
         $oldStatus = $item['status'];
-        
+
         if ($input->post->updating_orderstatus_active) {
             $status = $input->post->status;
             $trackingNumber = $input->post->trackingNumber;
@@ -832,99 +841,99 @@ trait Orders {
             $trackingUrl = $item['trackingUrl'];
         }
 
-		/** @var InputfieldForm $form */
+        /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm');
         $form->id = 'OrderStatusForm';
         $form->action = $this->currentUrl;
 
-            if ($ret) {
-                /** @var InputfieldHidden $f */
-                $f = $modules->get('InputfieldHidden');
-                $f->name = 'ret';
-                $f->value = urlencode($ret);
-    
-                $form->add($f);
-            }
+        if ($ret) {
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->name = 'ret';
+            $f->value = urlencode($ret);
 
-            $statusBadges = 
+            $form->add($f);
+        }
+
+        $statusBadges =
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                $this->getOrderStatus($item['status']) .
+            $this->getOrderStatus($item['status']) .
             '</span>';
 
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->entityEncodeLabel = false;
-            $fieldset->label = $this->_('Update order status');
-            $fieldset->label .= $statusBadges;
-            $fieldset->icon = self::iconOrderStatus;
-            $fieldset->collapsed = ($input->updating_orderstatus_active)
-                ? Inputfield::collapsedNo
-                : Inputfield::collapsedYes;
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->entityEncodeLabel = false;
+        $fieldset->label = $this->_('Update order status');
+        $fieldset->label .= $statusBadges;
+        $fieldset->icon = self::iconOrderStatus;
+        $fieldset->collapsed = ($input->updating_orderstatus_active)
+            ? Inputfield::collapsedNo
+            : Inputfield::collapsedYes;
 
         $form->add($fieldset);
 
-            /** @var InputfieldSelect $f */
-            $f = $modules->get('InputfieldSelect');
-            $f->name = 'status';
-            $f->label = $this->_('Order status');
-            $f->value = $status;
-            $f->required = true;
-            $f->addOptions($this->getOrderStatusesSelectable());
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->name = 'status';
+        $f->label = $this->_('Order status');
+        $f->value = $status;
+        $f->required = true;
+        $f->addOptions($this->getOrderStatusesSelectable());
 
         $fieldset->add($f);
 
-            /** @var InputfieldText $f */
-            $f = $modules->get('InputfieldText');
-            $f->name = 'trackingNumber';
-            $f->label = $this->_('Tracking number');
-            $f->required = true;
-            $f->value = $trackingNumber;
-            $f->detail = $this->_('Enter the tracking number associated to the order');
-            $f->showIf = 'status=Shipped';
-            $f->requiredIf = 'trackingUrl!=""';
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldText');
+        $f->name = 'trackingNumber';
+        $f->label = $this->_('Tracking number');
+        $f->required = true;
+        $f->value = $trackingNumber;
+        $f->detail = $this->_('Enter the tracking number associated to the order');
+        $f->showIf = 'status=Shipped';
+        $f->requiredIf = 'trackingUrl!=""';
 
         $fieldset->add($f);
 
-            /** @var InputfieldURL $f */
-            $f = $modules->get('InputfieldURL');
-            $f->name = 'trackingUrl';
-            $f->label = $this->_('Tracking URL');
-            $f->value = $trackingUrl;
-            $f->detail = $this->_('Optionally enter the URL where the customer will be able to track its order');
-            $f->noRelative = true;
-            $f->showIf = 'status=Shipped';
+        /** @var InputfieldURL $f */
+        $f = $modules->get('InputfieldURL');
+        $f->name = 'trackingUrl';
+        $f->label = $this->_('Tracking URL');
+        $f->value = $trackingUrl;
+        $f->detail = $this->_('Optionally enter the URL where the customer will be able to track its order');
+        $f->noRelative = true;
+        $f->showIf = 'status=Shipped';
 
         $fieldset->add($f);
 
-            /** @var InputfieldRadios $f */
-            $f = $modules->get('InputfieldRadios');
-            $f->id = 'OrderStatusForm_deliveryMethod'; // needed to prevent duplicate HTML id
-            $f->name = 'deliveryMethod'; 
-            $f->label = $this->_('No tracking number set. Notify customer anyway?');
-            $f->optionColumns = 1;
-            $f->addOption('Email', $this->_('Yes'));
-            $f->addOption('None', $this->_('No'));
-            $f->value = $input->post->deliveryMethod ? $input->post->deliveryMethod : 'None';
-            $f->showIf = 'status=Shipped, trackingNumber=""';
+        /** @var InputfieldRadios $f */
+        $f = $modules->get('InputfieldRadios');
+        $f->id = 'OrderStatusForm_deliveryMethod'; // needed to prevent duplicate HTML id
+        $f->name = 'deliveryMethod';
+        $f->label = $this->_('No tracking number set. Notify customer anyway?');
+        $f->optionColumns = 1;
+        $f->addOption('Email', $this->_('Yes'));
+        $f->addOption('None', $this->_('No'));
+        $f->value = $input->post->deliveryMethod ? $input->post->deliveryMethod : 'None';
+        $f->showIf = 'status=Shipped, trackingNumber=""';
 
         $fieldset->add($f);
 
-            /*
-            @todo: metadata ...
-            */
+        /*
+        @todo: metadata ...
+        */
 
-            /** @var InputfieldHidden $f */
-    		$f = $modules->get('InputfieldHidden');
-    		$f->name = 'updating_orderstatus_active';
-    		$f->value = true;
+        /** @var InputfieldHidden $f */
+        $f = $modules->get('InputfieldHidden');
+        $f->name = 'updating_orderstatus_active';
+        $f->value = true;
 
         $fieldset->add($f);
 
-            /** @var InputfieldSubmit $btn */
-            $btn = $modules->get('InputfieldSubmit');
-            $btn->id = 'UpdateOrderButton';
-            $btn->name = 'send_orderstatus';
-            $btn->value = $this->_('Update order');
-            $btn->small = true;
+        /** @var InputfieldSubmit $btn */
+        $btn = $modules->get('InputfieldSubmit');
+        $btn->id = 'UpdateOrderButton';
+        $btn->name = 'send_orderstatus';
+        $btn->value = $this->_('Update order');
+        $btn->small = true;
 
         $fieldset->add($btn);
 
@@ -984,7 +993,8 @@ trait Orders {
      * @return string
      * @throws WireException
      */
-    private function _processOrderCommentForm($item, $ret = '') {
+    private function _processOrderCommentForm($item, $ret = '')
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
         $input = $this->wire('input');
@@ -992,63 +1002,63 @@ trait Orders {
 
         $token = $item['token'];
 
-		/** @var InputfieldForm $form */
+        /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm');
         $form->id = 'OrderCommentForm';
         $form->action = $this->currentUrl;
 
-            if ($ret) {
-                /** @var InputfieldHidden $f */
-                $f = $modules->get('InputfieldHidden');
-                $f->name = 'ret';
-                $f->value = urlencode($ret);
-    
-                $form->add($f);
-            }
+        if ($ret) {
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->name = 'ret';
+            $f->value = urlencode($ret);
 
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Add a comment');
-            $fieldset->icon = self::iconComment;
-            $fieldset->collapsed = ($input->sending_ordercomment_active)
-                ? Inputfield::collapsedNo
-                : Inputfield::collapsedYes;
+            $form->add($f);
+        }
+
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->label = $this->_('Add a comment');
+        $fieldset->icon = self::iconComment;
+        $fieldset->collapsed = ($input->sending_ordercomment_active)
+            ? Inputfield::collapsedNo
+            : Inputfield::collapsedYes;
 
         $form->add($fieldset);
 
-            /** @var InputfieldTextarea $f */
-            $f = $modules->get('InputfieldTextarea');
-            $f->name = 'message';
-            $f->label = $this->_('Comment');
-            $f->detail = $this->_('You need to define a [Snipcart **Order Comment** email template](https://app.snipcart.com/dashboard/email-templates) before using this form. Your Comment will populate the {{{ message }}} variable in your template.');
-            $f->rows = 4;
+        /** @var InputfieldTextarea $f */
+        $f = $modules->get('InputfieldTextarea');
+        $f->name = 'message';
+        $f->label = $this->_('Comment');
+        $f->detail = $this->_('You need to define a [Snipcart **Order Comment** email template](https://app.snipcart.com/dashboard/email-templates) before using this form. Your Comment will populate the {{{ message }}} variable in your template.');
+        $f->rows = 4;
 
         $fieldset->add($f);
 
-            /** @var InputfieldRadios $f */
-            $f = $modules->get('InputfieldRadios');
-            $f->id = 'OrderCommentForm_deliveryMethod'; // needed to prevent duplicate HTML id
-            $f->name = 'deliveryMethod'; 
-            $f->label = $this->_('Send this comment to your customer via email or keep it private?');
-            $f->optionColumns = 1;
-            $f->addOption('Email', $this->_('Email'));
-            $f->addOption('None', $this->_('Private'));
-            $f->value = $input->post->deliveryMethod ? $input->post->deliveryMethod : 'Email';
+        /** @var InputfieldRadios $f */
+        $f = $modules->get('InputfieldRadios');
+        $f->id = 'OrderCommentForm_deliveryMethod'; // needed to prevent duplicate HTML id
+        $f->name = 'deliveryMethod';
+        $f->label = $this->_('Send this comment to your customer via email or keep it private?');
+        $f->optionColumns = 1;
+        $f->addOption('Email', $this->_('Email'));
+        $f->addOption('None', $this->_('Private'));
+        $f->value = $input->post->deliveryMethod ? $input->post->deliveryMethod : 'Email';
 
         $fieldset->add($f);
 
-            /** @var InputfieldHidden $f */
-    		$f = $modules->get('InputfieldHidden');
-    		$f->name = 'sending_ordercomment_active';
-    		$f->value = true;
+        /** @var InputfieldHidden $f */
+        $f = $modules->get('InputfieldHidden');
+        $f->name = 'sending_ordercomment_active';
+        $f->value = true;
 
         $fieldset->add($f);
 
-            /** @var InputfieldSubmit $btn */
-            $btn = $modules->get('InputfieldSubmit');
-            $btn->id = 'AddCommentButton';
-            $btn->name = 'send_ordercomment';
-            $btn->value = $this->_('Add comment');
-            $btn->small = true;
+        /** @var InputfieldSubmit $btn */
+        $btn = $modules->get('InputfieldSubmit');
+        $btn->id = 'AddCommentButton';
+        $btn->name = 'send_ordercomment';
+        $btn->value = $this->_('Add comment');
+        $btn->small = true;
 
         $fieldset->add($btn);
 
@@ -1091,39 +1101,40 @@ trait Orders {
     /**
      * Render order detail action buttons.
      *
-     * (Currently uses custom button markup as there is a PW bug which 
+     * (Currently uses custom button markup as there is a PW bug which
      * triggers href targets twice + we need to attach JavaScript events on button click)
      *
      * @param $token The order token
      * @param string $ret A return URL (optional)
      * @return string buttons markup
      */
-    private function _getOrderDetailActionButtons($token, $ret = '') {
+    private function _getOrderDetailActionButtons($token, $ret = '')
+    {
         $downloadUrl = \ProcessWire\wirePopulateStringTags(
             SnipREST::snipcartInvoiceUrl,
             ['token' => $token]
         );
 
         $out =
-        '<a href="' . $downloadUrl . '"
+            '<a href="' . $downloadUrl . '"
             target="' . $token . '"
             class="DownloadInvoiceButton ui-button ui-widget ui-corner-all ui-state-default ui-priority-secondary"
             role="button">' .
-                '<span class="ui-button-text">' .
-                    \ProcessWire\wireIconMarkup('download') . ' ' . $this->_('Download Invoice') .
-                '</span>' .
-        '</a>';
+            '<span class="ui-button-text">' .
+            \ProcessWire\wireIconMarkup('download') . ' ' . $this->_('Download Invoice') .
+            '</span>' .
+            '</a>';
 
         $resendInvoiceUrl = $this->currentUrl . '?action=resend_invoice&modal=1';
         if ($ret) $resendInvoiceUrl .= '&ret=' . urlencode($ret);
         $out .=
-        '<a href="' . $resendInvoiceUrl . '"
+            '<a href="' . $resendInvoiceUrl . '"
             class="ResendInvoiceButton ui-button ui-widget ui-corner-all ui-state-default"
             role="button">' .
-                '<span class="ui-button-text">' .
-                    \ProcessWire\wireIconMarkup('share') . ' ' . $this->_('Resend Invoice') .
-                '</span>' .
-        '</a>';
+            '<span class="ui-button-text">' .
+            \ProcessWire\wireIconMarkup('share') . ' ' . $this->_('Resend Invoice') .
+            '</span>' .
+            '</a>';
 
         return $out;
     }
@@ -1134,7 +1145,8 @@ trait Orders {
      * @param array $item
      * @return string
      */
-    private function _renderOrderInfo($item) {
+    private function _renderOrderInfo($item)
+    {
         $infoCaptions = [
             'customer' => $this->_('Customer'),
             'email' => $this->_('Email'),
@@ -1144,29 +1156,29 @@ trait Orders {
             'shippingProvider' => $this->_('Shipping provider'),
             'trackingNumber' => $this->_('Tracking number'),
         ];
-        
+
         $item['customer'] = $item['billingAddressFirstName'] . ' ' . $item['billingAddressName'];
         $item['email'] =
-        '<a href="mailto:' . $item['email'] . '"
+            '<a href="mailto:' . $item['email'] . '"
             class="pw-tooltip"
-            title="' . $this->_('Send email to customer') .'">' .
-                $item['email'] .
-        '</a>';
+            title="' . $this->_('Send email to customer') . '">' .
+            $item['email'] .
+            '</a>';
         $item['creationDate'] = \ProcessWire\wireDate('Y-m-d H:i:s', $item['creationDate']);
         $item['status'] = $this->getOrderStatus($item['status']);
 
         $trackingNumber = $item['trackingNumber'];
         if ($item['trackingUrl'] && $item['trackingNumber']) {
             $trackingNumber =
-            '<a href="' . $item['trackingUrl'] . '"
+                '<a href="' . $item['trackingUrl'] . '"
                 target="_blank"
                 class="pw-tooltip"
-                title="' . $this->_('Open tracking URL') .'">' .
-                    $trackingNumber .
-            '</a>';
+                title="' . $this->_('Open tracking URL') . '">' .
+                $trackingNumber .
+                '</a>';
         }
         $item['trackingNumber'] = $trackingNumber;
-        
+
         $data = [];
         foreach ($infoCaptions as $key => $caption) {
             $data[$caption] = !empty($item[$key]) ? $item[$key] : '-';
@@ -1181,7 +1193,8 @@ trait Orders {
      * @param array $item
      * @return string
      */
-    private function _renderPaymentInfo($item) {
+    private function _renderPaymentInfo($item)
+    {
         $infoCaptions = [
             'paymentMethod' => $this->_('Payment method'),
             'cardType' => $this->_('Card type'),
@@ -1190,7 +1203,7 @@ trait Orders {
             'currency' => $this->_('Currency'),
             'paymentStatus' => $this->_('Payment Status'),
         ];
-        
+
         $item['paymentMethod'] = $this->getPaymentMethod($item['paymentMethod']);
 
         $item['creditCardLast4Digits'] = !empty($item['creditCardLast4Digits'])
@@ -1219,7 +1232,8 @@ trait Orders {
      * @return string markup MarkupAdminDataTable
      * @throws WireException
      */
-    private function _renderTableOrderSummary($item) {
+    private function _renderTableOrderSummary($item)
+    {
         $modules = $this->wire('modules');
 
         /*
@@ -1282,7 +1296,7 @@ trait Orders {
         ], [
             'class' => 'row-summary-subtotal',
         ]);
-        
+
         // Shipping row
         $shippingMethod = $item['shippingMethod'] ? ' (' . $item['shippingMethod'] . ')' : '';
         $table->row([
@@ -1330,7 +1344,7 @@ trait Orders {
             ], [
                 'class' => 'row-summary-refunds',
             ]);
-    
+
             // Total after refunds row
             $table->row([
                 '',
@@ -1343,7 +1357,7 @@ trait Orders {
             ]);
         }
 
-        $out = $table->render();            
+        $out = $table->render();
 
         return $out;
     }
@@ -1356,7 +1370,8 @@ trait Orders {
      * @return string markup MarkupAdminDataTable
      * @throws WireException
      */
-    private function _renderTableRefunds($refunds, $currency) {
+    private function _renderTableRefunds($refunds, $currency)
+    {
         $modules = $this->wire('modules');
 
         /*
@@ -1395,7 +1410,7 @@ trait Orders {
             ]);
         }
 
-        $out = $table->render();            
+        $out = $table->render();
 
         return $out;
     }
@@ -1407,7 +1422,8 @@ trait Orders {
      * @return string markup MarkupAdminDataTable
      * @throws WireException
      */
-    private function _renderTableOrderNotifications($notifications) {
+    private function _renderTableOrderNotifications($notifications)
+    {
         $modules = $this->wire('modules');
 
         /*
@@ -1441,8 +1457,8 @@ trait Orders {
         $table->setResizable(false);
         $table->headerRow([
             $this->_('Created on'),
-            $this->_('Notification'),   
-            $this->_('Email sent on'),         
+            $this->_('Notification'),
+            $this->_('Email sent on'),
         ]);
         foreach ($notifications['items'] as $notification) {
 
@@ -1488,7 +1504,7 @@ trait Orders {
                 default:
                     $message = $this->_('-- unknown --');
             }
-            
+
             if ($notification['deliveryMethod'] == 'Email') {
                 $emailSent = '<span class="ui-priority-secondary tooltip" title="';
                 $emailSent .= \ProcessWire\wireDate('Y-m-d H:i:s', $notification['sentOn']);
@@ -1506,7 +1522,7 @@ trait Orders {
             ]);
         }
 
-        $out = $table->render(); 
+        $out = $table->render();
 
         return $out;
     }
@@ -1518,18 +1534,19 @@ trait Orders {
      * @return void
      * @throws WireException
      */
-    private function _resendInvoice($token) {
+    private function _resendInvoice($token)
+    {
         $sniprest = $this->wire('sniprest');
-        
+
         if (empty($token)) return;
-        
+
         $options = [
             'type' => 'Invoice',
             'deliveryMethod' => 'Email',
         ];
-        
+
         $response = $sniprest->postOrderNotification($token, $options);
-        
+
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathOrdersNotifications,
             ['token' => $token]
@@ -1558,7 +1575,8 @@ trait Orders {
      * @return boolean
      * @throws WireException
      */
-    private function _refund($token, $amount, $amountFormatted, $notifyCustomer, $comment = '') {
+    private function _refund($token, $amount, $amountFormatted, $notifyCustomer, $comment = '')
+    {
         $sniprest = $this->wire('sniprest');
 
         if (empty($token) || empty($amount)) return;
@@ -1571,7 +1589,7 @@ trait Orders {
 
         $refunded = false;
         $response = $sniprest->postOrderRefund($token, $options);
-        
+
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathOrdersRefunds,
             ['token' => $token]
@@ -1603,17 +1621,18 @@ trait Orders {
      * @return boolean
      * @throws WireException
      */
-    private function _updateOrderStatus($token, $status, $oldStatus, $trackingNumber, $trackingUrl, $deliveryMethod) {
+    private function _updateOrderStatus($token, $status, $oldStatus, $trackingNumber, $trackingUrl, $deliveryMethod)
+    {
         $sniprest = $this->wire('sniprest');
-        
+
         if (empty($token)) return;
-        
+
         $options = [
             'status' => $status,
             'trackingNumber' => $trackingNumber,
             'trackingUrl' => $trackingUrl,
         ];
-        
+
         $updated = false;
         $response = $sniprest->putOrderStatus($token, $options);
         $dataKey = $token;
@@ -1628,7 +1647,7 @@ trait Orders {
             $sniprest->deleteOrderCache();
             $this->message($this->_('The order status has been updated.'));
             $updated = true;
-            
+
             //
             // After status has been changed successfully, trigger a notification.
             // Possible statuses: 'Processed', 'Disputed', 'Shipped', 'Delivered', 'Pending', 'Cancelled'
@@ -1654,9 +1673,9 @@ trait Orders {
                         'deliveryMethod' => 'None',
                     ];
                 }
-                
+
                 $response = $sniprest->postOrderNotification($token, $options);
-                
+
                 $dataKey = \ProcessWire\wirePopulateStringTags(
                     SnipREST::resPathOrdersNotifications,
                     ['token' => $token]
@@ -1686,20 +1705,21 @@ trait Orders {
      * @return boolean
      * @throws WireException
      */
-    private function _addOrderComment($token, $message, $deliveryMethod) {
+    private function _addOrderComment($token, $message, $deliveryMethod)
+    {
         $sniprest = $this->wire('sniprest');
-        
+
         if (empty($token)) return;
-        
+
         $options = [
             'type' => 'Comment',
             'message' => $message,
             'deliveryMethod' => $deliveryMethod,
         ];
-        
+
         $added = false;
         $response = $sniprest->postOrderNotification($token, $options);
-        
+
         $dataKey = \ProcessWire\wirePopulateStringTags(
             SnipREST::resPathOrdersNotifications,
             ['token' => $token]
@@ -1725,7 +1745,8 @@ trait Orders {
      * @return void
      * @throws WireException
      */
-    private function _setOrderJSConfigValues() {
+    private function _setOrderJSConfigValues()
+    {
         $this->wire('config')->js('orderActionStrings', [
             'info_download_invoice' => $this->_("To download an invoice, you first need to login to your Snipcart dashboard.\nAlso please be sure your browser allows popups from this site.\n\nStart download now?"),
             'confirm_resend_invoice' => $this->_('Do you want to resend this invoice?'),

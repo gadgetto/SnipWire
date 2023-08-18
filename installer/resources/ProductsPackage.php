@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessWire;
 
 /**
@@ -30,12 +31,12 @@ $resources = [
             ],
         ],
     ],
-    
+
     'templates' => [
         'snipcart-shop' => [
             'name' => 'snipcart-shop',
             'label' => 'Snipcart Shop',
-            'icon' => 'tags', 
+            'icon' => 'tags',
             'noChildren' => 0,
             'tags' => 'Snipcart',
             '_allowedChildTemplates' => 'snipcart-product',
@@ -43,13 +44,13 @@ $resources = [
         'snipcart-product' => [
             'name' => 'snipcart-product',
             'label' => 'Snipcart Product',
-            'icon' => 'tag', 
+            'icon' => 'tag',
             'noChildren' => 1,
             'tags' => 'Snipcart',
             '_allowedParentTemplates' => 'snipcart-shop',
         ],
     ],
-    
+
     'files' => [
         'snipcart-shop' => [
             'name' => 'snipcart-shop.php',

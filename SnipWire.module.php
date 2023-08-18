@@ -1,10 +1,11 @@
 <?php
+
 namespace ProcessWire;
 
 /**
  * SnipWire - Full Snipcart shopping cart integration for ProcessWire CMF.
  * (This module is the master for all other SnipWire modules and files)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -23,18 +24,19 @@ use SnipWire\Services\SnipREST;
 use SnipWire\Services\Webhooks;
 use SnipWire\Services\WireHttpExtended;
 
-class SnipWire extends WireData implements Module, ConfigurableModule {
-
-    public static function getModuleInfo() {
+class SnipWire extends WireData implements Module, ConfigurableModule
+{
+    public static function getModuleInfo()
+    {
         return [
             'title' => __('SnipWire'),
             'summary' => __('Full Snipcart shopping cart integration for ProcessWire.'),
             'version' => '0.8.7',
-            'author'  => 'Martin Gartner',
+            'author' => 'Martin Gartner',
             'href' => 'https://processwire.com/talk/topic/21554-snipwire-snipcart-integration-for-processwire/',
-            'icon' => 'shopping-cart', 
-            'singular' => true, 
-            'autoload' => true, 
+            'icon' => 'shopping-cart',
+            'singular' => true,
+            'autoload' => true,
             'installs' => [
                 'ProcessSnipWire',
                 'MarkupSnipWire',
@@ -56,12 +58,13 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
     /**
      * Returns a template array for a currency specific price input field.
      *
-     * Currency specific price input fields will be created on demand by selecting 
+     * Currency specific price input fields will be created on demand by selecting
      * currencies in SnipWireModuleConfig.
-     * 
+     *
      * @return array
      */
-    public static function getCurrencyFieldTemplate() {
+    public static function getCurrencyFieldTemplate()
+    {
         return [
             'name' => 'snipcart_item_price_',
             'type' => 'FieldtypeText',
@@ -78,7 +81,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * Initialize module config variables (properties).
      * (Called before module config is populated)
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -88,7 +92,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-     public function init() {
+    public function init()
+    {
         /** @var SnipREST $sniprest Custom ProcessWire API variable */
         $this->wire('sniprest', new SnipREST());
         /** @var ExchangeREST $exchangerest Custom ProcessWire API variable */
@@ -114,8 +119,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
         $this->addHookAfter('Pages::saved', $this, 'publishSnipcartProduct');
         $this->addHookAfter('Pages::unpublished', $this, 'unpublishSnipcartProduct');
         $this->addHookAfter('Pages::trashed', $this, 'unpublishSnipcartProduct');
-        
-		$this->addHookBefore('Modules::uninstall', $this, 'convertFieldtypeTaxSelector');
+
+        $this->addHookBefore('Modules::uninstall', $this, 'convertFieldtypeTaxSelector');
     }
 
     /**
@@ -124,7 +129,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function validateTaxesRepeater(HookEvent $event) {
+    public function validateTaxesRepeater(HookEvent $event)
+    {
         $class = $event->arguments(0);
         if (is_object($class)) $class = $class->className();
         // Get class name without namespace
@@ -167,7 +173,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function manageCurrencyPriceFields(HookEvent $event) {
+    public function manageCurrencyPriceFields(HookEvent $event)
+    {
         $class = $event->arguments(0);
         if (is_object($class)) $class = $class->className();
         // Get class name without namespace
@@ -181,10 +188,10 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
 
         $fields = $this->wire('fields');
         $modules = $this->wire('modules');
-        
+
         $fieldTemplate = self::getCurrencyFieldTemplate();
         $supportedCurrencies = CurrencyFormat::getSupportedCurrencies();
-        
+
         foreach ($currencies as $currency) {
             $fieldName = $fieldTemplate['name'] . $currency;
             if ($fields->get($fieldName)) continue; // No need to create - already exists!
@@ -217,7 +224,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function checkWebhookRequest(HookEvent $event) {
+    public function checkWebhookRequest(HookEvent $event)
+    {
         if ($webhooksEndpoint = $this->get('webhooks_endpoint')) {
             if ($this->sanitizer->url($this->input->url) == $webhooksEndpoint) {
                 $this->wire('webhooks')->process();
@@ -237,7 +245,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function presetProductFields(HookEvent $event) {
+    public function presetProductFields(HookEvent $event)
+    {
         $snipwire = $this->wire('snipwire');
         if (!$snipwire) return;
 
@@ -257,7 +266,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function presetProductTaxesField(HookEvent $event) {
+    public function presetProductTaxesField(HookEvent $event)
+    {
         $snipwire = $this->wire('snipwire');
         if (!$snipwire) return;
 
@@ -274,27 +284,28 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function checkSKUUnique(HookEvent $event) {
+    public function checkSKUUnique(HookEvent $event)
+    {
         $snipwire = $this->wire('snipwire');
         if (!$snipwire) return;
-        
+
         $page = $event->arguments(0);
         if ($snipwire->isProductTemplate($page->template)) {
             $field = $page->getField('snipcart_item_id');
             $sku = $page->snipcart_item_id; // SKU field value
             if (!$sku) return;
-            
+
             if ($page->isChanged('snipcart_item_id')) {
                 $exists = $this->wire('pages')->get("snipcart_item_id=$sku, id!=$page, status<" . Page::statusTrash);
                 if ($exists->id) {
                     // value is not unique!
-                    $error = $this->_('SKU must be unique'); 
+                    $error = $this->_('SKU must be unique');
                     $exception = sprintf(
                         $this->_('SKU [%s] is already in use'),
                         $sku
-                    ); 
+                    );
                     $inputfield = $page->getInputfield($field);
-                    $inputfield->error($error); 
+                    $inputfield->error($error);
                     throw new WireException($exception); // Prevent saving of non-unique value!
                 }
             }
@@ -307,7 +318,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function publishSnipcartProduct(HookEvent $event) {
+    public function publishSnipcartProduct(HookEvent $event)
+    {
         $snipwire = $this->wire('snipwire');
         $sniprest = $this->wire('sniprest');
         $log = $this->wire('log');
@@ -319,12 +331,12 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
                 // Only fetch if published and viewable!
                 $snipcart_item_id = $page->snipcart_item_id;
                 $response = $sniprest->postProduct($page->httpUrl);
-                
+
                 $dataKey = $page->httpUrl;
                 $content = $response[$dataKey][WireHttpExtended::resultKeyContent];
                 $httpCode = $response[$dataKey][WireHttpExtended::resultKeyHttpCode];
                 $error = $response[$dataKey][WireHttpExtended::resultKeyError];
-                
+
                 if ($httpCode == 200 || $httpCode == 201) {
                     $id = isset($content[0]['id']) ? $content[0]['id'] : '';
                     $message = sprintf(
@@ -350,23 +362,24 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function unpublishSnipcartProduct(HookEvent $event) {
+    public function unpublishSnipcartProduct(HookEvent $event)
+    {
         $snipwire = $this->wire('snipwire');
         $sniprest = $this->wire('sniprest');
         $log = $this->wire('log');
         if (!$snipwire || !$sniprest) return;
-        
+
         $page = $event->arguments(0);
         if ($snipwire->isProductTemplate($page->template)) {
             $snipcart_item_id = $page->snipcart_item_id;
-            
+
             if ($id = $sniprest->getProductId($snipcart_item_id)) {
                 $response = $sniprest->deleteProduct($id);
-                
+
                 $dataKey = $id;
                 $httpCode = $response[$dataKey][WireHttpExtended::resultKeyHttpCode];
                 $error = $response[$dataKey][WireHttpExtended::resultKeyError];
-                
+
                 if ($httpCode == 200 || $httpCode == 201) {
                     $message = sprintf(
                         $this->_('Archived Snipcart product with SKU [%1$s] / ID [%2$s]'),
@@ -398,7 +411,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      * @param HookEvent $event
      * @throws WireException
      */
-    public function convertFieldtypeTaxSelector(HookEvent $event) {   
+    public function convertFieldtypeTaxSelector(HookEvent $event)
+    {
         $class = $event->arguments(0);
         if ($class == 'SnipWire') {
             $fields = $this->wire('fields')->find('type=FieldtypeSnipWireTaxSelector');
@@ -419,7 +433,8 @@ class SnipWire extends WireData implements Module, ConfigurableModule {
      *
      * @throws WireException
      */
-    public function ___uninstall() {
+    public function ___uninstall()
+    {
         // Remove all caches created by SnipWire (SnipWire namespace)
         $this->wire('cache')->deleteFor('SnipWire');
         // Remove all logs created by SnipWire

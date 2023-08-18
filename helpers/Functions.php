@@ -1,4 +1,5 @@
 <?php
+
 namespace SnipWire\Helpers;
 
 /**
@@ -11,8 +12,8 @@ namespace SnipWire\Helpers;
  * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
  */
-
-class Functions {
+class Functions
+{
     /**
      * Check a string against a regex pattern.
      *
@@ -20,7 +21,8 @@ class Functions {
      * @param string $pattern The pattern to be used for check
      * @return boolean
      */
-    public static function checkPattern($value, $pattern) {
+    public static function checkPattern($value, $pattern)
+    {
         $regex = '#' . str_replace('#', '\#', $pattern) . '#';
         return preg_match($regex, $value) ? true : false;
     }

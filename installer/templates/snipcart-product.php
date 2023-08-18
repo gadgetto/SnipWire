@@ -3,10 +3,10 @@ namespace ProcessWire;
 
 /**
  * SnipWire sample shop product detail template for "regular" site-profile.
- * 
+ *
  * The purpose of this template file is to provide a product detail template for your Snipcart shop.
  *
- * We are using the "regular" site-profile as it offers Markup Regions as its output 
+ * We are using the "regular" site-profile as it offers Markup Regions as its output
  * strategy and so it's easy to demonstrate how SnipCart works.
  */
 
@@ -41,16 +41,20 @@ and here: https://docs.snipcart.com/getting-started/customer-dashboard
 -->
 <div class="uk-text-center snipcart-summary" pw-after="masthead-logo">
     <a href="#" class="uk-link-reset snipcart-checkout" aria-label="Shopping cart">
-        <?=ukIcon('cart')?>
+        <?= ukIcon('cart') ?>
         <span class="uk-badge uk-text-middle snipcart-total-items" aria-label="Items in cart"></span>
         <span class=" uk-text-middle snipcart-total-price" aria-label="Total"></span>
     </a>
     <button class="uk-button uk-button-default uk-button-small snipcart-user-profile" type="button">
-        <?=ukIcon('user', 'ratio: .8')?> <span class="snipcart-user-email">My Account</span>
+        <?= ukIcon('user', 'ratio: .8') ?> <span class="snipcart-user-email">My Account</span>
     </button>
     <div class="uk-inline snipcart-user-logout">
-        <button class="uk-button uk-button-default uk-button-small snipcart-edit-profile" type="button"><?=ukIcon('pencil', 'ratio: .8')?> Edit Profile</button>
-        <button class="uk-button uk-button-default uk-button-small snipcart-user-logout" type="button"><?=ukIcon('sign-out', 'ratio: .8')?> Logout</button>
+        <button class="uk-button uk-button-default uk-button-small snipcart-edit-profile"
+                type="button"><?= ukIcon('pencil', 'ratio: .8') ?> Edit Profile
+        </button>
+        <button class="uk-button uk-button-default uk-button-small snipcart-user-logout"
+                type="button"><?= ukIcon('sign-out', 'ratio: .8') ?> Logout
+        </button>
     </div>
 </div>
 
@@ -72,12 +76,12 @@ The content element holds your product detail view.
         $imageDesc = $productImageLarge->description ? $productImageLarge->description : page()->title;
         $imageMedia = '<img src="' . $productImageLarge->url . '" alt="' . $imageDesc . '">';
     } else {
-        $imageMedia = 
-        '<div class="uk-width-1-1 uk-height-medium uk-background-muted uk-text-muted uk-flex uk-flex-center uk-flex-middle">' .
-            '<div title="' . __('No product image available') . '">' . 
-                ukIcon('image', ['ratio' => 5]) . 
+        $imageMedia =
+            '<div class="uk-width-1-1 uk-height-medium uk-background-muted uk-text-muted uk-flex uk-flex-center uk-flex-middle">' .
+            '<div title="' . __('No product image available') . '">' .
+            ukIcon('image', ['ratio' => 5]) .
             '</div>' .
-        '</div>';
+            '</div>';
     }
 
     // This is the part where we render the Snipcart anchor (buy button)
@@ -97,23 +101,23 @@ The content element holds your product detail view.
     $priceFormatted = wire('snipwire')->getProductPriceFormatted(page());
 
     $out =
-    '<div class="uk-margin-medium-bottom" uk-grid>' .
+        '<div class="uk-margin-medium-bottom" uk-grid>' .
         '<div class="uk-width-2-5@s">' .
-            $imageMedia .
+        $imageMedia .
         '</div>' .
         '<div class="uk-width-3-5@s">' .
-            '<dl class="uk-description-list uk-description-list-divider">' .
-                '<dt>Price</dt>' .
-                '<dd><span class="uk-text-primary uk-text-large">' . $priceFormatted . '</span></dd>' .
-                '<dt>Description</dt>' .
-                '<dd>' . page()->snipcart_item_description . '</dd>' .
-                '<dt>Product ID</dt>' .
-                '<dd>' . page()->snipcart_item_id . '</dd>' .
-            '</dl>' .
-            $anchor .
+        '<dl class="uk-description-list uk-description-list-divider">' .
+        '<dt>Price</dt>' .
+        '<dd><span class="uk-text-primary uk-text-large">' . $priceFormatted . '</span></dd>' .
+        '<dt>Description</dt>' .
+        '<dd>' . page()->snipcart_item_description . '</dd>' .
+        '<dt>Product ID</dt>' .
+        '<dd>' . page()->snipcart_item_id . '</dd>' .
+        '</dl>' .
+        $anchor .
         '</div>' .
-    '</div>';
-    
+        '</div>';
+
     echo $out;
     ?>
 </div>

@@ -1,17 +1,18 @@
 <?php
+
 namespace ProcessWire;
 
 /**
  * An array of ISO 4217 currency codes with translatable currency names.
  */
 return [
-    
+
     // supported by Snipcart AND exchangeratesapi
-    
+
     'eur' => __('Euro'),
     'usd' => __('US-Dollar'),
     'gbp' => __('British Pound'),
-    
+
     'aud' => __('Australian Dollar'),
     'bgn' => __('Bulgarian Lev'),
     'brl' => __('Brazilian Real'),
@@ -42,9 +43,9 @@ return [
     'thb' => __('Thai Baht'),
     'try' => __('Turkish Lira'),
     'zar' => __('South African Rand'),
-    
+
     // supported by Snipcart (NOT exchangeratesapi)
-    
+
     'aed' => __('UAE Dirham'),
     'afn' => __('Afghan Afghani'),
     'all' => __('Albanian Lek'),

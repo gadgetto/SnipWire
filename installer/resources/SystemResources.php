@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessWire;
 
 /**
@@ -20,7 +21,7 @@ namespace ProcessWire;
  *  - _uninstall: what should happen when the page is uninstalled (possible values "trash", "delete", "no")
  */
 
-$cartCustomVal  = 'data-cart-custom1-name="By checking this box, I have read and agree to the <a href=\'https://www.domain.com/terms-and-conditions\' class=\'js-real-link\' target=\'_blank\'>Terms &amp; Conditions</a>"' . PHP_EOL;
+$cartCustomVal = 'data-cart-custom1-name="By checking this box, I have read and agree to the <a href=\'https://www.domain.com/terms-and-conditions\' class=\'js-real-link\' target=\'_blank\'>Terms &amp; Conditions</a>"' . PHP_EOL;
 $cartCustomVal .= 'data-cart-custom1-options="true|false"' . PHP_EOL;
 $cartCustomVal .= 'data-cart-custom1-required="true"';
 
@@ -68,7 +69,7 @@ $resources = [
             'collapsed' => 1, // Inputfield::collapsedYes
             'tags' => 'Snipcart',
         ],
-    ],            
+    ],
     'pages' => [
         'custom-cart-fields' => [
             'name' => 'custom-cart-fields',

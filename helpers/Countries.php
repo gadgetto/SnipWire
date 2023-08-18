@@ -1,4 +1,5 @@
 <?php
+
 namespace SnipWire\Helpers;
 
 /**
@@ -14,8 +15,8 @@ namespace SnipWire\Helpers;
 
 use ProcessWire\WireData;
 
-class Countries extends WireData {
-    
+class Countries extends WireData
+{
     /** @var array $countriesCache An array of worldwide countries (static cached) */
     public static $countriesCache = null;
 
@@ -23,20 +24,22 @@ class Countries extends WireData {
      * Set the static countries cache.
      *
      * @return void
-     * 
+     *
      */
-    public static function setStaticCountriesCache() {
+    public static function setStaticCountriesCache()
+    {
         // Cache countries in static property
         self::$countriesCache = self::importCountries();
     }
 
     /**
      * Import worldwide countries from file.
-     * 
+     *
      * @return array
-     * 
+     *
      */
-    public static function importCountries() {
+    public static function importCountries()
+    {
         return require __DIR__ . '/CountriesTable.php';
     }
 
@@ -45,7 +48,8 @@ class Countries extends WireData {
      *
      * @return array
      */
-    public static function getCountries() {
+    public static function getCountries()
+    {
         if (empty(self::$countriesCache)) self::setStaticCountriesCache();
         return self::$countriesCache;
     }
@@ -57,10 +61,11 @@ class Countries extends WireData {
      * @return string
      *
      */
-	public static function getCountry($key) {
+    public static function getCountry($key)
+    {
         if (empty(self::$countriesCache)) self::setStaticCountriesCache();
-		return isset(self::$countriesCache[$key])
-		    ? self::$countriesCache[$key]
-		    : \ProcessWire\__('-- unknown --');
-	}
+        return isset(self::$countriesCache[$key])
+            ? self::$countriesCache[$key]
+            : \ProcessWire\__('-- unknown --');
+    }
 }

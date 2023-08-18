@@ -1,11 +1,12 @@
 <?php
+
 namespace ProcessWire;
 
 /**
- * FieldtypeSnipWireTaxSelector - Special (internal SnipWire) Fieldtype which fetches 
+ * FieldtypeSnipWireTaxSelector - Special (internal SnipWire) Fieldtype which fetches
  * available taxes setting from SnipWire module config and builds a dropdown list.
  * (This file is part of the SnipWire package)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -20,15 +21,16 @@ wire('classLoader')->addNamespace('SnipWire\Helpers', dirname(__DIR__) . '/helpe
 
 use SnipWire\Helpers\Taxes;
 
-class FieldtypeSnipWireTaxSelector extends FieldtypeText {
-
-    public static function getModuleInfo() {
+class FieldtypeSnipWireTaxSelector extends FieldtypeText
+{
+    public static function getModuleInfo()
+    {
         return [
             'title' => __('SnipWire TaxSelector'),
             'summary' => __('Fieldtype which fetches taxes setting from SnipWire module config and builds a dropdown list.'),
             'version' => '0.8.7',
-            'author'  => 'Martin Gartner',
-            'icon' => 'shopping-cart', 
+            'author' => 'Martin Gartner',
+            'icon' => 'shopping-cart',
             'requires' => [
                 'ProcessWire>=3.0.210',
                 'SnipWire',
@@ -38,21 +40,23 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         ];
     }
 
-	/**
-	 * Initialize the Fieldtype.
-	 */
-	public function init() {
-		parent::init();
-		$this->allowTextFormatters(false);
-	}
+    /**
+     * Initialize the Fieldtype.
+     */
+    public function init()
+    {
+        parent::init();
+        $this->allowTextFormatters(false);
+    }
 
     /**
      * Return all Fieldtypes derived from FieldtypeText, which we will consider compatible.
      *
      * @throws WireException
      */
-    public function ___getCompatibleFieldtypes(Field $field) {
-		$fieldtypes = $this->wire(new Fieldtypes());
+    public function ___getCompatibleFieldtypes(Field $field)
+    {
+        $fieldtypes = $this->wire(new Fieldtypes());
         foreach ($this->wire('fieldtypes') as $fieldtype) {
             if ($fieldtype instanceof FieldtypeText) {
                 $fieldtypes->add($fieldtype);
@@ -67,16 +71,17 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
      *
      * @throws WireException
      */
-    public function getInputfield(Page $page, Field $field) {
-        $inputfieldClass = $field->get('inputfieldClass'); 
+    public function getInputfield(Page $page, Field $field)
+    {
+        $inputfieldClass = $field->get('inputfieldClass');
         if (!$inputfieldClass) $inputfieldClass = 'InputfieldSelect';
 
         $taxesType = $field->get('taxesType');
         if (!$taxesType) $taxesType = Taxes::taxesTypeAll;
 
         $inputfield = $this->wire('modules')->get($inputfieldClass);
-        if (!$inputfield) $inputfield = $this->wire('modules')->get('InputfieldSelect'); 
-        
+        if (!$inputfield) $inputfield = $this->wire('modules')->get('InputfieldSelect');
+
         $taxes = Taxes::getTaxesConfig(false, $taxesType);
 
         /*
@@ -108,7 +113,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
             if ($tax['name'] == $field->value) $tax['attributes'] = array_merge($tax['attributes'], ['selected']);
             $inputfield->addOption($tax['name'], $tax['name'], $tax['attributes']);
         }
-        return $inputfield; 
+        return $inputfield;
     }
 
     /**
@@ -116,16 +121,17 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
      *
      * @throws WireException
      */
-    public function ___getConfigInputfields(Field $field) {
+    public function ___getConfigInputfields(Field $field)
+    {
         $inputfields = parent::___getConfigInputfields($field);
 
         $modules = $this->wire('modules');
-        
+
         /** @var InputfieldSelect $f */
         $f = $modules->get('InputfieldSelect');
         $f->attr('name', 'inputfieldClass');
         $f->label = $this->_('What should be used for input?');
-        $f->description = $this->_('Some input types also provide more settings on the Input tab (visible after you save).'); 
+        $f->description = $this->_('Some input types also provide more settings on the Input tab (visible after you save).');
 
         foreach ($modules as $module) {
             if (strpos($module->className(), 'Inputfield') !== 0) continue;
@@ -141,13 +147,13 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
                 }
             }
         }
-        
+
         $value = $field->get('inputfieldClass');
         if (!$value) $value = 'InputfieldSelect';
         $f->attr('value', $value);
-        
+
         $inputfields->add($f);
-        
+
         /** @var InputfieldSelect $f */
         $f = $modules->get('InputfieldSelect');
         $f->attr('name', 'taxesType');
@@ -160,7 +166,7 @@ class FieldtypeSnipWireTaxSelector extends FieldtypeText {
         $f->attr('value', $value);
 
         $inputfields->add($f);
-        
+
         return $inputfields;
     }
 }

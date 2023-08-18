@@ -1,10 +1,11 @@
 <?php
+
 namespace SnipWire\Installer;
 
 /**
  * Extended resources installer for SnipWire.
  * (This file is part of the SnipWire package)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -21,10 +22,10 @@ use ProcessWire\Wire;
 use ProcessWire\WireException;
 use ProcessWire\SelectableOptionManager;
 
-class ExtendedInstaller extends Wire {
-
+class ExtendedInstaller extends Wire
+{
     const installerResourcesDirName = 'resources';
-    
+
     const installerModeConfig = 1;
     const installerModeTemplates = 2;
     const installerModeFields = 4;
@@ -38,7 +39,7 @@ class ExtendedInstaller extends Wire {
 
     /** @var string $resourcesFile Name of file which holds installer resources */
     protected $resourcesFile = '';
-    
+
     /** @var array $resources Installation resources */
     protected $resources = [];
 
@@ -48,7 +49,8 @@ class ExtendedInstaller extends Wire {
      * @return void
      * @throws WireException
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->snipwirePagePath = $this->wire('pages')->findOne('template=admin, name=snipwire')->path;
         parent::__construct();
     }
@@ -56,11 +58,12 @@ class ExtendedInstaller extends Wire {
     /**
      * Retrieve extended installation resources from file.
      * (file needs to be in same folder as this class file)
-     * 
+     *
      * @param string $fileName The name of the resources file
      * @throws WireException
      */
-    public function setResourcesFile($fileName) {
+    public function setResourcesFile($fileName)
+    {
         $path = __DIR__ . '/' . self::installerResourcesDirName . '/' . $fileName;
         if (file_exists($path)) {
             include $path;
@@ -69,7 +72,7 @@ class ExtendedInstaller extends Wire {
                 $message = sprintf($this->_('Installation aborted. Invalid resources array in file [%s].'), $fileName);
                 throw new WireException($message);
             }
-        } else  {
+        } else {
             $message = sprintf($this->_('Installation aborted. File [%s] not found.'), $fileName);
             throw new WireException($message);
         }
@@ -79,11 +82,12 @@ class ExtendedInstaller extends Wire {
     /**
      * Set installation resources from array.
      * (multidimensional array)
-     * 
+     *
      * @param array $resources Installation resources array
      * @throws WireException
      */
-    public function setResources($resources) {
+    public function setResources($resources)
+    {
         if (!is_array($resources) || !count($resources)) {
             $message = $this->_('Installation aborted. Invalid resources array.');
             throw new WireException($message);
@@ -96,7 +100,8 @@ class ExtendedInstaller extends Wire {
      *
      * @return array
      */
-    public function getResources() {
+    public function getResources()
+    {
         return $this->resources;
     }
 
@@ -107,13 +112,14 @@ class ExtendedInstaller extends Wire {
      * @return boolean true | false (if installations has errors)
      * @throws WireException
      */
-    public function installResources($mode = self::installerModeAll) {        
+    public function installResources($mode = self::installerModeAll)
+    {
         if (!$this->resources) {
-            $message  =       $this->_('Installation aborted. No resources array provided.');
+            $message = $this->_('Installation aborted. No resources array provided.');
             $message .= ' ' . $this->_('Please use "setResourcesFile" or "setResources" method to provide a resources array.');
             throw new WireException($message);
         }
-        
+
         //
         // Save module(s) config(s)
         //
@@ -143,7 +149,7 @@ class ExtendedInstaller extends Wire {
                 $this->_setTemplateDependencies($item);
             }
         }
-        
+
         //
         // Install files
         //
@@ -195,8 +201,8 @@ class ExtendedInstaller extends Wire {
                 $this->_installPermission($item);
             }
         }
-        
-        return ($this->errors('array')) ? false : true;    
+
+        return ($this->errors('array')) ? false : true;
     }
 
     /**
@@ -206,9 +212,10 @@ class ExtendedInstaller extends Wire {
      * @return boolean true | false (if uninstallation has errors)
      * @throws WireException
      */
-    public function uninstallResources($mode = self::installerModeAll) {
+    public function uninstallResources($mode = self::installerModeAll)
+    {
         if (!$this->resources) {
-            $message  =       $this->_('Uninstallation aborted. No resources array provided.');
+            $message = $this->_('Uninstallation aborted. No resources array provided.');
             $message .= ' ' . $this->_('Please use "setResourcesFile" or "setResources" method to provide a resources array.');
             throw new WireException($message);
         }
@@ -278,7 +285,7 @@ class ExtendedInstaller extends Wire {
             }
         }
 
-        return ($this->errors('array')) ? false : true;    
+        return ($this->errors('array')) ? false : true;
     }
 
     /**
@@ -287,12 +294,13 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _addModuleConfigData(array $item) {
+    private function _addModuleConfigData(array $item)
+    {
         $modules = $this->wire('modules');
-        
+
         $moduleName = $item['name'];
         if (!$modules->isInstalled($moduleName) || !$modules->isConfigurable($moduleName)) return;
-        
+
         $config = $modules->getConfig($moduleName);
         foreach ($item['options'] as $key => $value) {
             if (isset($config[$key]) && is_array($config[$key]) && is_array($value)) {
@@ -310,7 +318,8 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _installTemplate(array $item) {
+    private function _installTemplate(array $item)
+    {
         $fields = $this->wire('fields');
         $templates = $this->wire('templates');
 
@@ -319,8 +328,8 @@ class ExtendedInstaller extends Wire {
             $fg->name = $item['name'];
             // Add title field (mandatory!)
             $fg->add($fields->get('title'));
-            $fg->save();             
-           
+            $fg->save();
+
             $t = new Template();
             $t->name = $item['name'];
             $t->fieldgroup = $fg;
@@ -344,7 +353,8 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _uninstallTemplate(array $item) {
+    private function _uninstallTemplate(array $item)
+    {
         $templates = $this->wire('templates');
         $fieldgroups = $this->wire('fieldgroups');
 
@@ -355,7 +365,7 @@ class ExtendedInstaller extends Wire {
         if ($templates->getNumPages($t) > 0) {
             $message = sprintf($this->_('Could not delete template [%s]. The template is assigned to at least one page!'), $item['name']);
             $this->warning($message);
-        // All OK - delete!
+            // All OK - delete!
         } else {
             $templates->delete($t);
             $fieldgroups->delete($t->fieldgroup); // delete the associated fieldgroup
@@ -370,7 +380,8 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _setTemplateDependencies(array $item) {
+    private function _setTemplateDependencies(array $item)
+    {
         $templates = $this->wire('templates');
 
         $t = $templates->get($item['name']);
@@ -399,7 +410,8 @@ class ExtendedInstaller extends Wire {
      * @param array $file
      * @throws WireException
      */
-    private function _installFile(array $file) {
+    private function _installFile(array $file)
+    {
         $config = $this->wire('config');
 
         $source = __DIR__ . '/' . $file['type'] . '/' . $file['name'];
@@ -424,7 +436,8 @@ class ExtendedInstaller extends Wire {
      * @param array $file
      * @throws WireException
      */
-    private function _uninstallFile(array $file) {
+    private function _uninstallFile(array $file)
+    {
         $config = $this->wire('config');
 
         $destination = $config->paths->templates . $file['name'];
@@ -445,7 +458,8 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _installField(array $item) {
+    private function _installField(array $item)
+    {
         $fields = $this->wire('fields');
         $templates = $this->wire('templates');
         $pages = $this->wire('pages');
@@ -508,11 +522,11 @@ class ExtendedInstaller extends Wire {
             $this->message($message);
         } elseif (!empty($item['_configureOnly'])) {
             // do nothing
-        } else{
+        } else {
             $message = sprintf($this->_('Field [%s] already exists. Skipped installation!'), $item['name']);
             $this->warning($message);
-        }        
-        
+        }
+
         // Add field to templates */
         if (!empty($item['_addToTemplates'])) {
             foreach (explode(',', $item['_addToTemplates']) as $tn) {
@@ -561,7 +575,8 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _uninstallField(array $item) {
+    private function _uninstallField(array $item)
+    {
         $fields = $this->wire('fields');
         $templates = $this->wire('templates');
 
@@ -591,7 +606,8 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _installPage(array $item) {
+    private function _installPage(array $item)
+    {
         $templates = $this->wire('templates');
         $pages = $this->wire('pages');
 
@@ -612,7 +628,7 @@ class ExtendedInstaller extends Wire {
             $this->error($message);
             return;
         }
-        
+
         if (!$pages->findOne('name=' . $item['name'] . ', include=all')->id) {
             $page = new Page();
             $page->name = $item['name'];
@@ -624,7 +640,7 @@ class ExtendedInstaller extends Wire {
             $page->save();
             $message = sprintf($this->_('Installed page [%s].'), $page->path);
             $this->message($message);
-            
+
             // Populate page-field values
             if (!empty($item['fields']) && is_array($item['fields'])) {
                 foreach ($item['fields'] as $fieldname => $value) {
@@ -652,14 +668,15 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _uninstallPage(array $item) {
+    private function _uninstallPage(array $item)
+    {
         $pages = $this->wire('pages');
 
-        $p = $pages->get('template=' . $item['template'] . ', name=' . $item['name']); 
+        $p = $pages->get('template=' . $item['template'] . ', name=' . $item['name']);
         if ($p->id) {
             if (isset($item['_uninstall'])) {
                 if (($item['_uninstall'] == 'delete' || $item['_uninstall'] == 'trash') && $p->hasStatus(Page::statusSystem)) {
-                    $p->addStatus(Page::statusSystemOverride); 
+                    $p->addStatus(Page::statusSystemOverride);
                     $p->removeStatus(Page::statusSystem);
                     $p->removeStatus(Page::statusSystemOverride);
                 }
@@ -684,7 +701,8 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _installPermission(array $item) {
+    private function _installPermission(array $item)
+    {
         $permissions = $this->wire('permissions');
 
         $permission = $permissions->get('name=' . $item['name']);
@@ -707,11 +725,12 @@ class ExtendedInstaller extends Wire {
      * @param array $item
      * @throws WireException
      */
-    private function _uninstallPermission(array $item) {
+    private function _uninstallPermission(array $item)
+    {
         $permissions = $this->wire('permissions');
 
         $permission = $permissions->get('name=' . $item['name']);
-        if ($permission){
+        if ($permission) {
             $permission->delete();
             $message = sprintf($this->_('Deleted permission [%s].'), $item['name']);
             $this->message($message);

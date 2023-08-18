@@ -1,10 +1,11 @@
 <?php
+
 namespace SnipWire\ProcessSnipWire\Sections;
 
 /**
  * AbandonedCarts trait - sections file for ProcessSnipWire.module.php.
  * (This file is part of the SnipWire package)
- * 
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -28,14 +29,16 @@ use ProcessWire\InputfieldText;
 use ProcessWire\InputfieldTextarea;
 use ProcessWire\MarkupAdminDataTable;
 
-trait AbandonedCarts {
+trait AbandonedCarts
+{
     /**
      * The SnipWire Snipcart Abandoned Carts page.
      *
      * @return string
      * @throws WireException
      */
-    public function ___executeAbandonedCarts() {
+    public function ___executeAbandonedCarts()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
@@ -43,10 +46,10 @@ trait AbandonedCarts {
         $sanitizer = $this->wire('sanitizer');
         $session = $this->wire('session');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Abandoned Carts'));
         $this->headline($this->_('Snipcart Abandoned Carts'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
@@ -95,7 +98,7 @@ trait AbandonedCarts {
         $abandonedCarts = isset($response[$dataKey][WireHttpExtended::resultKeyContent])
             ? $response[$dataKey][WireHttpExtended::resultKeyContent]
             : [];
-        
+
         $items = isset($abandonedCarts['items']) ? $abandonedCarts['items'] : [];
 
         $out = $this->_buildAbandonedCartsFilter($filter);
@@ -124,19 +127,20 @@ trait AbandonedCarts {
      * @return string
      * @throws WireException
      */
-    public function ___executeAbandonedCart() {
+    public function ___executeAbandonedCart()
+    {
         $modules = $this->wire('modules');
         $user = $this->wire('user');
         $config = $this->wire('config');
         $input = $this->wire('input');
         $sniprest = $this->wire('sniprest');
-        
+
         $this->browserTitle($this->_('Snipcart Abandoned Cart'));
         $this->headline($this->_('Snipcart Abandoned Cart'));
 
         $this->breadcrumb($this->snipWireRootUrl, $this->_('SnipWire Dashboard'));
         $this->breadcrumb($this->snipWireRootUrl . 'abandoned-carts/', $this->_('Snipcart Abandoned Carts'));
-        
+
         if (!$user->hasPermission('snipwire-dashboard')) {
             $this->error($this->_('You dont have permission to use the SnipWire Dashboard - please contact your admin!'));
             return '';
@@ -188,7 +192,8 @@ trait AbandonedCarts {
      * @return string
      * @throws WireException
      */
-    private function _buildAbandonedCartsFilter($filter) {
+    private function _buildAbandonedCartsFilter($filter)
+    {
         $modules = $this->wire('modules');
         $config = $this->wire('config');
 
@@ -205,57 +210,57 @@ trait AbandonedCarts {
         $form->method = 'post';
         $form->action = $this->currentUrl;
 
-            /** @var InputfieldFieldset $fsSnipWire */
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Search for Abandoned Carts');
-            $fieldset->icon = 'search';
-            if (
-                ($filter['timeRange'] && $filter['timeRange'] != 'LessThanAWeek') ||
-                $filter['minimalValue']
-            ) {
-                $fieldset->collapsed = Inputfield::collapsedNo;
-            } else {
-                $fieldset->collapsed = Inputfield::collapsedYes;
-            }
+        /** @var InputfieldFieldset $fsSnipWire */
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->label = $this->_('Search for Abandoned Carts');
+        $fieldset->icon = 'search';
+        if (
+            ($filter['timeRange'] && $filter['timeRange'] != 'LessThanAWeek') ||
+            $filter['minimalValue']
+        ) {
+            $fieldset->collapsed = Inputfield::collapsedNo;
+        } else {
+            $fieldset->collapsed = Inputfield::collapsedYes;
+        }
 
-                /** @var InputfieldSelect $f */
-                $f = $modules->get('InputfieldSelect');
-                $f->addClass('filter-form-select');
-                $f->attr('name', 'timeRange');
-                $f->label = $this->_('Time range');
-                $f->value = $filter['timeRange'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
-                $f->required = true;
-                $f->addOptions($this->getAbandonedCartsTimeRanges());
+        /** @var InputfieldSelect $f */
+        $f = $modules->get('InputfieldSelect');
+        $f->addClass('filter-form-select');
+        $f->attr('name', 'timeRange');
+        $f->label = $this->_('Time range');
+        $f->value = $filter['timeRange'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 33;
+        $f->required = true;
+        $f->addOptions($this->getAbandonedCartsTimeRanges());
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldText');
-                $f->attr('name', 'minimalValue');
-                $f->label = $this->_('Minimum value');
-                $f->value = $filter['minimalValue'];
-                $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 33;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'minimalValue');
+        $f->label = $this->_('Minimum value');
+        $f->value = $filter['minimalValue'];
+        $f->pattern = '[-+]?[0-9]*[.]?[0-9]+';
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 33;
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                /** @var InputfieldText $f */
-                $f = $modules->get('InputfieldEmail');
-                $f->attr('name', 'email');
-                $f->label = $this->_('Email');
-                $f->value = $filter['email'];
-                $f->collapsed = Inputfield::collapsedNever;
-                $f->columnWidth = 34;
+        /** @var InputfieldText $f */
+        $f = $modules->get('InputfieldEmail');
+        $f->attr('name', 'email');
+        $f->label = $this->_('Email');
+        $f->value = $filter['email'];
+        $f->collapsed = Inputfield::collapsedNever;
+        $f->columnWidth = 34;
 
-            $fieldset->add($f);
+        $fieldset->add($f);
 
-                $buttonsWrapper = $modules->get('InputfieldMarkup');
-                $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
+        $buttonsWrapper = $modules->get('InputfieldMarkup');
+        $buttonsWrapper->markupText = $this->_getFilterFormButtons($this->processUrl);
 
-            $fieldset->add($buttonsWrapper);
+        $fieldset->add($buttonsWrapper);
 
         $form->add($fieldset);
 
@@ -269,7 +274,8 @@ trait AbandonedCarts {
      * @return string MarkupAdminDataTable | custom html with `no items` display
      * @throws WireException
      */
-    private function _renderTableAbandonedCarts($items) {
+    private function _renderTableAbandonedCarts($items)
+    {
         $modules = $this->wire('modules');
 
         if (!empty($items)) {
@@ -294,13 +300,13 @@ trait AbandonedCarts {
 
             foreach ($items as $item) {
                 $customerEmail =
-                '<a href="' . $this->snipWireRootUrl . 'abandoned-cart/' . $item['id'] . '"
+                    '<a href="' . $this->snipWireRootUrl . 'abandoned-cart/' . $item['id'] . '"
                     class="pw-panel pw-panel-links"
                     data-panel-width="85%">' .
-                        \ProcessWire\wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
-                '</a>';
+                    \ProcessWire\wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') . $item['email'] .
+                    '</a>';
 
-                if(!empty($item['modificationDate'])) {
+                if (!empty($item['modificationDate'])) {
                     $modificationDate = '<span class="tooltip" title="';
                     $modificationDate .= \ProcessWire\wireDate('Y-m-d H:i:s', $item['modificationDate']);
                     $modificationDate .= '">';
@@ -311,18 +317,18 @@ trait AbandonedCarts {
                 }
 
                 $itemsCount = count($item['items']);
-                
+
                 $products = [];
                 foreach ($item['items'] as $product) {
                     $products[] = $product['name'];
                 }
                 $productNames = implode(',<br>', $products);
-                
+
                 $total =
-                '<strong class="price-field">' .
+                    '<strong class="price-field">' .
                     CurrencyFormat::format($item['summary']['total'], $item['currency']) .
-                '</strong>';
-                
+                    '</strong>';
+
                 $notifications = isset($item['notifications']) ? $item['notifications'] : [];
                 $notificationsCount = count($notifications);
                 if ($notificationsCount) {
@@ -330,7 +336,7 @@ trait AbandonedCarts {
                 } else {
                     $customerContacted = '<span class="ui-priority-secondary">' . $this->_('No') . '</span>';
                 }
-                
+
                 $table->row([
                     $customerEmail,
                     $modificationDate,
@@ -343,9 +349,9 @@ trait AbandonedCarts {
             $out = $table->render();
         } else {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No abandoned carts found') .
-            '</div>';
+                '</div>';
         }
         return '<div class="ItemListerTable">' . $out . '</div>';
     }
@@ -358,15 +364,16 @@ trait AbandonedCarts {
      * @return string
      * @throws WireException
      */
-    private function _renderDetailAbandonedCart($item, $ret = '') {
+    private function _renderDetailAbandonedCart($item, $ret = '')
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
 
         if (empty($item)) {
             $out =
-            '<div class="snipwire-no-items">' . 
+                '<div class="snipwire-no-items">' .
                 $this->_('No cart selected') .
-            '</div>';
+                '</div>';
             return $out;
         }
 
@@ -375,48 +382,35 @@ trait AbandonedCarts {
         $notificationsCount = count($notifications);
 
         $out =
-        '<div class="ItemDetailHeader">' .
+            '<div class="ItemDetailHeader">' .
             '<h2 class="ItemDetailTitle">' .
-                \ProcessWire\wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') .
-                $this->_('Cart') . ': ' .
-                $item['email'] .
+            \ProcessWire\wireIconMarkup(self::iconAbandonedCart, 'fa-right-margin') .
+            $this->_('Cart') . ': ' .
+            $item['email'] .
             '</h2>' .
-        '</div>';
+            '</div>';
 
         $out .= $this->_processCartNotificationForm($item, $ret);
 
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Cart Info');
-            $f->icon = self::iconInfo;
-            $f->value = $this->_renderCartInfo($item);
-            $f->columnWidth = 50;
-            
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Cart Info');
+        $f->icon = self::iconInfo;
+        $f->value = $this->_renderCartInfo($item);
+        $f->columnWidth = 50;
+
         $wrapper->add($f);
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Customer Info');
-            $f->icon = self::iconCustomer;
-            $f->value = $this->_renderCustomerInfo($item);
-            $f->columnWidth = 50;
-            
-        $wrapper->add($f);
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Customer Info');
+        $f->icon = self::iconCustomer;
+        $f->value = $this->_renderCustomerInfo($item);
+        $f->columnWidth = 50;
 
-        $out .= $wrapper->render();
-
-        /** @var InputfieldForm $wrapper */
-        $wrapper = $modules->get('InputfieldForm');
-
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->label = $this->_('Cart Details');
-            $f->icon = self::iconAbandonedCart;
-            $f->value = $this->_renderTableCartSummary($item);
-            
         $wrapper->add($f);
 
         $out .= $wrapper->render();
@@ -424,20 +418,33 @@ trait AbandonedCarts {
         /** @var InputfieldForm $wrapper */
         $wrapper = $modules->get('InputfieldForm');
 
-            $notificationsBadge = 
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->label = $this->_('Cart Details');
+        $f->icon = self::iconAbandonedCart;
+        $f->value = $this->_renderTableCartSummary($item);
+
+        $wrapper->add($f);
+
+        $out .= $wrapper->render();
+
+        /** @var InputfieldForm $wrapper */
+        $wrapper = $modules->get('InputfieldForm');
+
+        $notificationsBadge =
             ' <span class="snipwire-badge snipwire-badge-info">' .
-                sprintf($this->_n("%d message", "%d messages", $notificationsCount), $notificationsCount) .
+            sprintf($this->_n("%d message", "%d messages", $notificationsCount), $notificationsCount) .
             '</span>';
 
-            /** @var InputfieldMarkup $f */
-            $f = $modules->get('InputfieldMarkup');
-            $f->entityEncodeLabel = false;
-            $f->label = $this->_('Customer messages');
-            $f->label .= $notificationsBadge;
-            $f->icon = self::iconComment;
-            $f->value = $this->_renderTableCartNotifications($notifications);
-            $f->collapsed = Inputfield::collapsedYes;
-            
+        /** @var InputfieldMarkup $f */
+        $f = $modules->get('InputfieldMarkup');
+        $f->entityEncodeLabel = false;
+        $f->label = $this->_('Customer messages');
+        $f->label .= $notificationsBadge;
+        $f->icon = self::iconComment;
+        $f->value = $this->_renderTableCartNotifications($notifications);
+        $f->collapsed = Inputfield::collapsedYes;
+
         $wrapper->add($f);
 
         $out .= $wrapper->render();
@@ -447,13 +454,13 @@ trait AbandonedCarts {
             /** @var InputfieldForm $wrapper */
             $wrapper = $modules->get('InputfieldForm');
 
-                /** @var InputfieldMarkup $f */
-                $f = $modules->get('InputfieldMarkup');
-                $f->label = $this->_('Debug Infos');
-                $f->collapsed = Inputfield::collapsedYes;
-                $f->icon = self::iconDebug;
-                $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
-                
+            /** @var InputfieldMarkup $f */
+            $f = $modules->get('InputfieldMarkup');
+            $f->label = $this->_('Debug Infos');
+            $f->collapsed = Inputfield::collapsedYes;
+            $f->icon = self::iconDebug;
+            $f->value = '<pre>' . $sanitizer->entities(print_r($item, true)) . '</pre>';
+
             $wrapper->add($f);
 
             $out .= $wrapper->render();
@@ -470,7 +477,8 @@ trait AbandonedCarts {
      * @return string
      * @throws WireException
      */
-    private function _processCartNotificationForm($item, $ret = '') {
+    private function _processCartNotificationForm($item, $ret = '')
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
         $input = $this->wire('input');
@@ -478,51 +486,51 @@ trait AbandonedCarts {
 
         $id = $item['id'];
 
-		/** @var InputfieldForm $form */
+        /** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm');
         $form->id = 'CartNotificationForm';
         $form->action = $this->currentUrl;
 
-            if ($ret) {
-                /** @var InputfieldHidden $f */
-                $f = $modules->get('InputfieldHidden');
-                $f->name = 'ret';
-                $f->value = urlencode($ret);
-    
-                $form->add($f);
-            }
+        if ($ret) {
+            /** @var InputfieldHidden $f */
+            $f = $modules->get('InputfieldHidden');
+            $f->name = 'ret';
+            $f->value = urlencode($ret);
 
-            $fieldset = $modules->get('InputfieldFieldset');
-            $fieldset->label = $this->_('Send message to customer');
-            $fieldset->icon = self::iconComment;
-            $fieldset->collapsed = ($input->sending_cartnotification_active)
-                ? Inputfield::collapsedNo
-                : Inputfield::collapsedYes;
+            $form->add($f);
+        }
+
+        $fieldset = $modules->get('InputfieldFieldset');
+        $fieldset->label = $this->_('Send message to customer');
+        $fieldset->icon = self::iconComment;
+        $fieldset->collapsed = ($input->sending_cartnotification_active)
+            ? Inputfield::collapsedNo
+            : Inputfield::collapsedYes;
 
         $form->add($fieldset);
 
-            /** @var InputfieldTextarea $f */
-            $f = $modules->get('InputfieldTextarea');
-            $f->name = 'message';
-            $f->label = $this->_('Message');
-            $f->detail = $this->_('You need to define a [Snipcart **Abandoned Cart** email template](https://app.snipcart.com/dashboard/email-templates) before using this form. Your Message will populate the {{{ message }}} variable in your template.');
-            $f->rows = 4;
+        /** @var InputfieldTextarea $f */
+        $f = $modules->get('InputfieldTextarea');
+        $f->name = 'message';
+        $f->label = $this->_('Message');
+        $f->detail = $this->_('You need to define a [Snipcart **Abandoned Cart** email template](https://app.snipcart.com/dashboard/email-templates) before using this form. Your Message will populate the {{{ message }}} variable in your template.');
+        $f->rows = 4;
 
         $fieldset->add($f);
 
-            /** @var InputfieldHidden $f */
-    		$f = $modules->get('InputfieldHidden');
-    		$f->name = 'sending_cartnotification_active';
-    		$f->value = true;
+        /** @var InputfieldHidden $f */
+        $f = $modules->get('InputfieldHidden');
+        $f->name = 'sending_cartnotification_active';
+        $f->value = true;
 
         $fieldset->add($f);
 
-            /** @var InputfieldSubmit $btn */
-            $btn = $modules->get('InputfieldSubmit');
-            $btn->id = 'SendMessageButton';
-            $btn->name = 'send_cartnotification';
-            $btn->value = $this->_('Send message');
-            $btn->small = true;
+        /** @var InputfieldSubmit $btn */
+        $btn = $modules->get('InputfieldSubmit');
+        $btn->id = 'SendMessageButton';
+        $btn->name = 'send_cartnotification';
+        $btn->value = $this->_('Send message');
+        $btn->small = true;
 
         $fieldset->add($btn);
 
@@ -564,7 +572,8 @@ trait AbandonedCarts {
      * @param array $item
      * @return string
      */
-    private function _renderCartInfo($item) {
+    private function _renderCartInfo($item)
+    {
         $infoCaptions = [
             'status' => $this->_('Cart status'),
             'creationDate' => $this->_('Created on'),
@@ -596,7 +605,8 @@ trait AbandonedCarts {
      * @param array $item
      * @return string
      */
-    private function _renderCustomerInfo($item) {
+    private function _renderCustomerInfo($item)
+    {
         $infoCaptions = [
             'email' => $this->_('Email'),
             'firstName' => $this->_('First Name'),
@@ -609,11 +619,11 @@ trait AbandonedCarts {
 
         if (!empty($item['email'])) {
             $customerInfos['email'] =
-            '<a href="mailto:' . $item['email'] . '"
+                '<a href="mailto:' . $item['email'] . '"
                 class="pw-tooltip"
-                title="' . $this->_('Send email to customer') .'">' .
-                    $item['email'] .
-            '</a>';
+                title="' . $this->_('Send email to customer') . '">' .
+                $item['email'] .
+                '</a>';
         } else {
             $customerInfos['email'] = '';
         }
@@ -639,7 +649,8 @@ trait AbandonedCarts {
      * @return string MarkupAdminDataTable
      * @throws WireException
      */
-    private function _renderTableCartSummary($item) {
+    private function _renderTableCartSummary($item)
+    {
         $modules = $this->wire('modules');
 
         $products = $item['items'];
@@ -680,7 +691,7 @@ trait AbandonedCarts {
         ], [
             'class' => 'row-summary-subtotal',
         ]);
-        
+
         // Shipping row
         $shippingMethod = $shipping['method'] ? ' (' . $shipping['method'] . ')' : '';
         $fees = isset($shipping['fees']) ? $shipping['fees'] : 0;
@@ -707,7 +718,7 @@ trait AbandonedCarts {
             'class' => 'row-summary-total',
         ]);
 
-        $out = $table->render();            
+        $out = $table->render();
 
         return $out;
     }
@@ -719,7 +730,8 @@ trait AbandonedCarts {
      * @return string MarkupAdminDataTable
      * @throws WireException
      */
-    private function _renderTableCartNotifications($notifications) {
+    private function _renderTableCartNotifications($notifications)
+    {
         $modules = $this->wire('modules');
         $sanitizer = $this->wire('sanitizer');
 
@@ -756,7 +768,7 @@ trait AbandonedCarts {
             $this->_('Email seen on'),
         ]);
 
-        foreach ($notifications as $notification) {            
+        foreach ($notifications as $notification) {
             if (!empty($notification['sentOn'])) {
                 $sentOn = '<span class="tooltip" title="';
                 $sentOn .= \ProcessWire\wireDate('Y-m-d H:i:s', $notification['sentOn']);
@@ -768,7 +780,7 @@ trait AbandonedCarts {
             }
 
             $to = $notification['to'] ? $notification['to'] : '-';
-            
+
             $message = $notification['message']
                 ? $sanitizer->truncate($notification['message'], 100)
                 : '-';
@@ -792,7 +804,7 @@ trait AbandonedCarts {
             ]);
         }
 
-        $out = $table->render(); 
+        $out = $table->render();
 
         return $out;
     }
@@ -807,7 +819,8 @@ trait AbandonedCarts {
      * @return boolean
      * @throws WireException
      */
-    private function _addCartNotification($id, $message, $deliveryMethod = 'Email') {
+    private function _addCartNotification($id, $message, $deliveryMethod = 'Email')
+    {
         $sniprest = $this->wire('sniprest');
 
         if (empty($id)) return;

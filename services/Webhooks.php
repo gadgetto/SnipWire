@@ -1,13 +1,14 @@
 <?php
+
 namespace SnipWire\Services;
 
 /**
  * Webhooks - service class for SnipWire to provide webhooks for Snipcart.
  * (This file is part of the SnipWire package)
  *
- * Replaces the ProcessWire page rendering as a whole. It will only accept 
- * POST request from Snipcart. 
- * 
+ * Replaces the ProcessWire page rendering as a whole. It will only accept
+ * POST request from Snipcart.
+ *
  * Licensed under MPL 2.0 (see LICENSE file provided with this package)
  * Copyright 2023 by Martin Gartner
  *
@@ -32,7 +33,7 @@ namespace SnipWire\Services;
  * $webhooks->addHookAfter('handleOrderCompleted', function($event) {
  *     $payload = $event->return;
  *     //... your code here ...
- * }); 
+ * });
  * ~~~~~
  *
  * PLEASE NOTE: those hooks will currently only work when placed in init.php or init() or ready() module methods!
@@ -45,11 +46,11 @@ use SnipWire\Helpers\Taxes;
 use ProcessWire\WireData;
 use ProcessWire\WireException;
 
-class Webhooks extends WireData {
-
+class Webhooks extends WireData
+{
     const snipWireWebhooksLogName = 'snipwire-webhooks';
     const snipcartRequestTokenServerVar = 'HTTP_X_SNIPCART_REQUESTTOKEN';
-    
+
     // Snipcart webhook events
     const webhookOrderCompleted = 'order.completed';
     const webhookOrderStatusChanged = 'order.status.changed';
@@ -63,7 +64,7 @@ class Webhooks extends WireData {
     const webhookShippingratesFetch = 'shippingrates.fetch';
     const webhookTaxesCalculate = 'taxes.calculate';
     const webhookCustomerUpdated = 'customauth:customer_updated'; // not documented
-    
+
     const webhookModeLive = 'Live';
     const webhookModeTest = 'Test';
 
@@ -72,22 +73,22 @@ class Webhooks extends WireData {
 
     /** @var boolean Turn on/off debug mode for Webhooks class */
     private $debug = false;
-    
+
     /** @var string $serverProtocol The server protocol (e.g. HTTP/1.1) */
     protected $serverProtocol = '';
-    
+
     /** @var array $webhookEventsIndex All available webhook events */
     protected $webhookEventsIndex = [];
-    
+
     /** @var string $event The current Snipcart event */
     protected $event = '';
-    
+
     /** @var array $payload The current JSON decoded POST input */
     protected $payload = null;
-    
+
     /** @var integer $responseStatus The response status code for SnipCart */
     private $responseStatus = null;
-    
+
     /** @var string (JSON) $responseBody The JSON formatted response array for Snipcart */
     private $responseBody = '';
 
@@ -96,7 +97,8 @@ class Webhooks extends WireData {
      *
      * @throws WireException
      */
-    public function __construct() {        
+    public function __construct()
+    {
         $this->webhookEventsIndex = [
             self::webhookOrderCompleted => 'handleOrderCompleted',
             self::webhookOrderStatusChanged => 'handleOrderStatusChanged',
@@ -125,10 +127,11 @@ class Webhooks extends WireData {
      * @return void
      * @throws WireException
      */
-    public function process() {
+    public function process()
+    {
         $sniprest = $this->wire('sniprest');
         $log = $this->wire('log');
-        
+
         // Set default header
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Cache-Control: post-check=0, pre-check=0', false);
@@ -147,13 +150,13 @@ class Webhooks extends WireData {
             return;
         }
         $this->_handleWebhookData();
-        
+
         header($this->serverProtocol . ' ' . $sniprest->getHttpStatusCodeString($this->responseStatus));
         if (!empty($this->responseBody)) {
             header('Content-Type: application/json; charset=utf-8');
             echo $this->responseBody;
         }
-        
+
         if ($this->debug) {
             $log->save(
                 self::snipWireWebhooksLogName,
@@ -173,7 +176,8 @@ class Webhooks extends WireData {
      *
      * @return array The current payload
      */
-    public function getPayload() {
+    public function getPayload()
+    {
         return $this->payload;
     }
 
@@ -182,7 +186,8 @@ class Webhooks extends WireData {
      *
      * @return integer The current response status code
      */
-    public function getResponseStatus() {
+    public function getResponseStatus()
+    {
         return $this->responseStatus;
     }
 
@@ -191,7 +196,8 @@ class Webhooks extends WireData {
      *
      * @return string The current response body (JSON formatted)
      */
-    public function getResponseBody() {
+    public function getResponseBody()
+    {
         return $this->responseBody;
     }
 
@@ -203,13 +209,14 @@ class Webhooks extends WireData {
      * @return boolean
      * @throws WireException
      */
-    private function _isValidRequest() {
+    private function _isValidRequest()
+    {
         $sniprest = $this->wire('sniprest');
         $log = $this->wire('log');
 
         // Perform multiple checks for valid request
         if (
-            $this->getServerVar('REQUEST_METHOD') != 'POST' || 
+            $this->getServerVar('REQUEST_METHOD') != 'POST' ||
             stripos($this->getServerVar('CONTENT_TYPE'), 'application/json') === false
         ) {
             $log->save(
@@ -255,7 +262,7 @@ class Webhooks extends WireData {
             );
             return false;
         }
-        return true;  
+        return true;
     }
 
     /**
@@ -264,48 +271,49 @@ class Webhooks extends WireData {
      * @return boolean
      * @throws WireException
      */
-    private function _hasValidRequestData() {
+    private function _hasValidRequestData()
+    {
         $log = $this->wire('log');
         $rawPayload = file_get_contents('php://input');
         $payload = json_decode($rawPayload, true);
-        
+
         if ($this->debug) $log->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request payload: ' . $rawPayload
         );
-        
+
         // Perform multiple checks for valid request data
         $check = false;
         if (is_null($payload) || !is_array($payload)) {
             $log->save(
-                self::snipWireWebhooksLogName, 
+                self::snipWireWebhooksLogName,
                 $this->_('Webhooks request: invalid request data - not an array')
             );
-        
+
         } elseif (!isset($payload['eventName'])) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 $this->_('Webhooks request: invalid request data - key eventName missing')
             );
-            
+
         } elseif (!array_key_exists($payload['eventName'], $this->webhookEventsIndex)) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 $this->_('Webhooks request: invalid request data - unknown event')
             );
-            
+
         } elseif (!isset($payload['mode']) || !in_array($payload['mode'], [self::webhookModeLive, self::webhookModeTest])) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 $this->_('Webhooks request: invalid request data - wrong or missing mode')
             );
-            
+
         } elseif (!isset($payload['content'])) {
             $log->save(
                 self::snipWireWebhooksLogName,
                 $this->_('Webhooks request: invalid request data - missing content')
             );
-            
+
         } else {
             $this->event = $payload['eventName'];
             $this->payload = $payload;
@@ -319,9 +327,10 @@ class Webhooks extends WireData {
      *
      * @throws WireException
      */
-    private function _handleWebhookData() {
+    private function _handleWebhookData()
+    {
         $log = $this->wire('log');
-        
+
         if (empty($this->event)) {
             $log->save(
                 self::snipWireWebhooksLogName,
@@ -339,7 +348,7 @@ class Webhooks extends WireData {
             $this->responseStatus = 500; // Internal Server Error
             return;
         }
-        
+
         // Call the appropriate handler
         $this->{$methodName}();
     }
@@ -356,7 +365,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleOrderCompleted() {
+    public function ___handleOrderCompleted()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleOrderCompleted'
@@ -374,7 +384,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleOrderStatusChanged() {
+    public function ___handleOrderStatusChanged()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleOrderStatusChanged'
@@ -392,7 +403,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleOrderPaymentStatusChanged() {
+    public function ___handleOrderPaymentStatusChanged()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleOrderPaymentStatusChanged'
@@ -409,7 +421,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleOrderTrackingNumberChanged() {
+    public function ___handleOrderTrackingNumberChanged()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleOrderTrackingNumberChanged'
@@ -425,7 +438,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleSubscriptionCreated() {
+    public function ___handleSubscriptionCreated()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleSubscriptionCreated'
@@ -441,7 +455,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleSubscriptionCancelled() {
+    public function ___handleSubscriptionCancelled()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleSubscriptionCancelled'
@@ -457,7 +472,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleSubscriptionPaused() {
+    public function ___handleSubscriptionPaused()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleSubscriptionPaused'
@@ -473,7 +489,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleSubscriptionResumed() {
+    public function ___handleSubscriptionResumed()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleSubscriptionResumed'
@@ -490,7 +507,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleSubscriptionInvoiceCreated() {
+    public function ___handleSubscriptionInvoiceCreated()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleSubscriptionInvoiceCreated'
@@ -506,16 +524,17 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleShippingratesFetch() {
+    public function ___handleShippingratesFetch()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleShippingratesFetch'
         );
-        
-        
+
+
         // @todo: implement custom shipping rates
-        
-         
+
+
         $this->responseStatus = 202; // Accepted
         return $this->payload;
     }
@@ -527,9 +546,10 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleTaxesCalculate() {        
+    public function ___handleTaxesCalculate()
+    {
         $log = $this->wire('log');
-        
+
         if ($this->debug) $log->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleTaxesCalculate'
@@ -546,7 +566,7 @@ class Webhooks extends WireData {
         }
 
         // Sample payload array: https://docs.snipcart.com/webhooks/taxes
-        
+
         $payload = $this->payload;
         $content = isset($payload['content']) ? $payload['content'] : null;
         if ($content) {
@@ -555,7 +575,7 @@ class Webhooks extends WireData {
             $itemsTotal = isset($content['itemsTotal']) ? $content['itemsTotal'] : null; // decimal
             $currency = isset($content['currency']) ? $content['currency'] : null; // string
         }
-        
+
         if (!$items || !$shippingInformation || !$itemsTotal || !$currency) {
             $log->save(
                 self::snipWireWebhooksLogName,
@@ -699,13 +719,13 @@ class Webhooks extends WireData {
                                 ];
                             }
                         }
-                        break;                
+                        break;
                 }
             }
         }
 
         $taxes = ['taxes' => $taxesResponse];
-        
+
         $this->responseStatus = 202; // Accepted
         $this->responseBody = \ProcessWire\wireEncodeJSON($taxes, true);
         return $this->payload;
@@ -720,7 +740,8 @@ class Webhooks extends WireData {
      * @return array The payload sent by Snipcart
      * @throws WireException
      */
-    public function ___handleCustomerUpdated() {
+    public function ___handleCustomerUpdated()
+    {
         if ($this->debug) $this->wire('log')->save(
             self::snipWireWebhooksLogName,
             '[DEBUG] Webhooks request: handleCustomerUpdated'
@@ -737,8 +758,8 @@ class Webhooks extends WireData {
      *
      * (This could return an empty string so needs to checked with === false)
      */
-    public function getServerVar($var) {
+    public function getServerVar($var)
+    {
         return isset($_SERVER[$var]) ? $_SERVER[$var] : false;
     }
-    
 }
