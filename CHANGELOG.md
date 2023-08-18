@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Added a new "config complete" check to re-enable "config saved" check after "submit_save_module" key was removed from module config in earlier PW version
+
+### Changed
+- Removed Page::statusSystem from installed custom-cart-fields page so it can be removed on uninstall
+- Increased min. PHP requirement to 7.4.0
+- Increased min. ProcessWire version requirement to 3.0.210
+
+### Fixed
+- Fixed PHP Deprecated: strtolower(): Passing null to parameter 1 in MarkupSnipWire.module.php
+- Fixed „unknown variable“ in installer
 
 ## [0.8.7] - 2020-07-03
 ### Added
