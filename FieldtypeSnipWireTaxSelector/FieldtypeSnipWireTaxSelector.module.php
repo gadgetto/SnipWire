@@ -13,7 +13,7 @@ namespace ProcessWire;
  * Based on FieldtypeDropdownDynamic by @BitPoet
  * https://github.com/BitPoet/FieldtypeDropdownDynamic
  *
- * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
+ * ProcessWire 3.x, Copyright Ryan Cramer
  * https://processwire.com
  */
 
